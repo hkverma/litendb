@@ -48,7 +48,13 @@ Apache Arrow is a submodule within external_libs. It was registered as a submodu
 ```
 git submodule add https://github.com/apache/arrow
 ```
-Do the following to get to the right release.
+Do the following to get the submodules and build it.
+```
+$ cd ${TENDB_ROOT_DIR}/cpp/external_libs
+$ git submodule init
+$ git submodule update
+$ ./buildarrow.sh
+```
 
 #### Poco library setups
 TODO
