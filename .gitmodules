@@ -1,3 +1,6 @@
 [submodule "cpp/external_libs/arrow/arrow"]
 	path = cpp/external_libs/arrow/arrow
 	url = https://github.com/apache/arrow
+[submodule "cpp/external_libs/poco/poco"]
+	path = cpp/external_libs/poco/poco
+	url = https://github.com/pocoproject/poco
