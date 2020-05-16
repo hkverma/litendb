@@ -1,3 +1,0 @@
-[submodule "cpp/external_libs/arrow"]
-	path = cpp/external_libs/arrow
-	url = https://github.com/apache/arrow
