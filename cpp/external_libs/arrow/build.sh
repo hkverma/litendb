@@ -3,4 +3,5 @@ cd arrow/cpp
 mkdir release
 cd release
 cmake ..
-make
+make arrow
+make install
