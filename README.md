@@ -58,7 +58,7 @@ Download 1.73.0 from https://www.boost.org/users/download to the following direc
  $ cd ${TENDB_ROOT_DIR}/cpp/external_libs/boost
  $ gunzip gunzip boost_1_73_0.tar.gz
  $ tar xvf gunzip boost_1_73_0.tar
- $ sudo ./buildall.sh
+ $ sudo ./build.sh
  ```
 
 #### POCO
@@ -107,7 +107,7 @@ Follow the following steps to build it.
 $ cd ${TENDB_ROOT_DIR}/cpp/external_libs
 $ git submodule --update --recursive
 $ cd arrow
-$ ./build.sh
+$ sudo ./build.sh
 ```
 It was registered as a submodule using steps shown below. It is currently fixed as release  3cbcb7b62c2f2d02851bff837758637eb592a64b arrow (apache-arrow-0.17.0)
 
