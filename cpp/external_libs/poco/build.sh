@@ -1,3 +1,4 @@
+#!/bin/bash
 # Build arrow
 cd poco
 mkdir cmake-build

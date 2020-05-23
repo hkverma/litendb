@@ -13,7 +13,7 @@ if [[ "$#" -gt 0 ]]; then
     fi
 fi
 # Build these on top of default components
-cmake_command="cmake ../arrow/cpp -DCMAKE_BUILD_TYPE="${build_target}" -DARROW_CSV=ON"
+cmake_command="cmake ../arrow/cpp -DCMAKE_BUILD_TYPE="${build_target}" -DARROW_CSV=ON -DARROW_FILESYSTEM=ON"
 echo "cmake command= "$cmake_command
 
 if [[ ${build_target} = "Release" ]]; then

@@ -4,6 +4,8 @@
 #include <vector>
 
 #include <arrow/api.h>
+#include <arrow/csv/api.h>
+#include <arrow/filesystem/api.h>
 
 using arrow::DoubleBuilder;
 using arrow::Int64Builder;
@@ -167,7 +169,9 @@ arrow::Status ColumnarTableToVector
     }                                              \
   } while (0);
 
-int main(int argc, char** argv) {
+int TestVectorAndColumnar()
+{
+
   std::vector<data_row> rows = {
     {1, 1.0, {1.0}}, {2, 2.0, {1.0, 2.0}}, {3, 3.0, {1.0, 2.0, 3.0}}};
 
@@ -178,6 +182,54 @@ int main(int argc, char** argv) {
   EXIT_ON_FAILURE(ColumnarTableToVector(table, &expected_rows));
 
   assert(rows.size() == expected_rows.size());
+  return EXIT_SUCCESS;
+}
 
+int main(int argc, char** argv) {
+
+  if (argc < 2) {
+    std::cout << "Usage: nvec file_name" << std::endl;
+    return EXIT_SUCCESS;
+  }
+  std::string fileName = argv[1];
+
+  // A default memory pool
+  arrow::MemoryPool* pool = arrow::default_memory_pool();
+
+  // shared_ptr filesystem
+  std::shared_ptr<arrow::fs::FileSystem> fs = std::make_shared<arrow::fs::internal::MockFileSystem>(std::chrono::system_clock::now());
+  arrow::Result<std::shared_ptr<arrow::io::InputStream>> inputResult = fs->OpenInputStream(fileName);
+    
+  if (!inputResult.ok()) {
+    std::cout << "Cannot open input stream " << fileName << std::endl;
+    return EXIT_SUCCESS;
+  }
+  std::shared_ptr<arrow::io::InputStream> input = inputResult.ValueOrDie();
+
+  auto read_options = arrow::csv::ReadOptions::Defaults();
+  auto parse_options = arrow::csv::ParseOptions::Defaults();
+  auto convert_options = arrow::csv::ConvertOptions::Defaults();
+
+  // Instantiate TableReader from input stream and options
+  arrow::Result<std::shared_ptr<arrow::csv::TableReader>> readerResult
+    = arrow::csv::TableReader::Make(pool, input, read_options,
+                                    parse_options, convert_options);
+  if (!inputResult.ok()) {
+    std::cout << "Cannot read table " << fileName << std::endl;
+    return EXIT_SUCCESS;
+  }
+  std::shared_ptr<arrow::csv::TableReader> reader = readerResult.ValueOrDie();
+  
+  // Read table from CSV file
+  arrow::Result<std::shared_ptr<arrow::Table>> tableResult = reader->Read();
+  if (!tableResult.ok()) {
+    // Handle CSV read error
+    // (for example a CSV syntax error or failed type conversion)
+    std::cout << "Error: reading table" << std::endl;
+    return EXIT_SUCCESS;
+  }
+  std::shared_ptr<arrow::Table> table = tableResult.ValueOrDie();
+
+  //return (TestVectorAndColumnar());
   return EXIT_SUCCESS;
 }

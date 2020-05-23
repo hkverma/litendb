@@ -10,7 +10,7 @@ if(NOT DEFINED CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build.")
 endif()
 
-project(tendb VERSION "${ARROW_BASE_VERSION}")
+project(tendb VERSION "${TENDB_BASE_VERSION}")
 include(BuildUtils/BuildUtils.cmake)
 #
 # Subdirectories
