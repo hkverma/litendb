@@ -6,6 +6,7 @@
 #include <arrow/api.h>
 #include <arrow/csv/api.h>
 #include <arrow/filesystem/api.h>
+#include <arrow/io/api.h>
 
 using arrow::DoubleBuilder;
 using arrow::Int64Builder;
@@ -196,15 +197,22 @@ int main(int argc, char** argv) {
   // A default memory pool
   arrow::MemoryPool* pool = arrow::default_memory_pool();
 
-  // shared_ptr filesystem
-  std::shared_ptr<arrow::fs::FileSystem> fs = std::make_shared<arrow::fs::internal::MockFileSystem>(std::chrono::system_clock::now());
-  arrow::Result<std::shared_ptr<arrow::io::InputStream>> inputResult = fs->OpenInputStream(fileName);
-    
-  if (!inputResult.ok()) {
-    std::cout << "Cannot open input stream " << fileName << std::endl;
+  // Readable File
+  arrow::Result<std::shared_ptr<arrow::io::ReadableFile>> fpResult = arrow::io::ReadableFile::Open(fileName, pool);
+  if (!fpResult.ok()) {
+    std::cout << "Cannot open file " << fileName << std::endl;
     return EXIT_SUCCESS;
   }
-  std::shared_ptr<arrow::io::InputStream> input = inputResult.ValueOrDie();
+  std::shared_ptr<arrow::io::ReadableFile> fp = fpResult.ValueOrDie();
+  
+  arrow::Result<int64_t> fileSizeResult = fp->GetSize();
+  if (!fileSizeResult.ok()) {
+    std::cout << "Unknown filesize for file " << fileName << std::endl;
+    return EXIT_SUCCESS;
+  }
+  int64_t fileSize = fileSizeResult.ValueOrDie();
+  
+  std::shared_ptr<arrow::io::InputStream> inputStream = arrow::io::RandomAccessFile::GetStream(fp, 0, fileSize);
 
   auto read_options = arrow::csv::ReadOptions::Defaults();
   auto parse_options = arrow::csv::ParseOptions::Defaults();
@@ -212,9 +220,9 @@ int main(int argc, char** argv) {
 
   // Instantiate TableReader from input stream and options
   arrow::Result<std::shared_ptr<arrow::csv::TableReader>> readerResult
-    = arrow::csv::TableReader::Make(pool, input, read_options,
+    = arrow::csv::TableReader::Make(pool, inputStream, read_options,
                                     parse_options, convert_options);
-  if (!inputResult.ok()) {
+  if (!readerResult.ok()) {
     std::cout << "Cannot read table " << fileName << std::endl;
     return EXIT_SUCCESS;
   }
@@ -229,6 +237,17 @@ int main(int argc, char** argv) {
     return EXIT_SUCCESS;
   }
   std::shared_ptr<arrow::Table> table = tableResult.ValueOrDie();
+
+  // Print Table
+  const std::vector<std::shared_ptr<arrow::Field>>& tableSchemaFields = table->schema()->fields();
+  std::cout << "Schema=";
+  for (auto schemaField : tableSchemaFields) {
+    std::cout << "{" << schemaField->ToString() << "}," ;
+  }
+  std::cout << std::endl;
+  
+  std::cout << "NumCols=" << table->num_columns() << std::endl;
+  std::cout << "NumRows=" << table->num_rows() << std::endl;
 
   //return (TestVectorAndColumnar());
   return EXIT_SUCCESS;
