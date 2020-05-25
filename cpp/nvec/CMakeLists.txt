@@ -1,8 +1,8 @@
 # Top level CMake file
 cmake_minimum_required(VERSION 3.17)
 message(STATUS "Building using CMake version: ${CMAKE_VERSION}")
-set(NVECTOR_SRC ${TENDB_ROOT_DIR}/nvector/src)
-set(NVECTOR_INC ${TENDB_ROOT_DIR}/nvector/inc)
+set(NVECTOR_SRC ${TENDB_ROOT_DIR}/cpp/nvec/src)
+set(NVECTOR_INC ${TENDB_ROOT_DIR}/cpp/nvec/inc)
 #
 # Subdirectories
 #

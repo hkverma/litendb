@@ -241,8 +241,13 @@ int main(int argc, char** argv) {
   // Print Table
   const std::vector<std::shared_ptr<arrow::Field>>& tableSchemaFields = table->schema()->fields();
   std::cout << "Schema=";
+
   for (auto schemaField : tableSchemaFields) {
     std::cout << "{" << schemaField->ToString() << "}," ;
+    //std::string schemaName = schemaField->name();
+    //std::unique_ptr<arrow::ArrayBuilder> *arrayBuilder;
+    //arrow::MakeBuilder(pool, schemaField->type(), arrayBuilder);
+    //schemaBuilder.push_back(arrayBuilder);
   }
   std::cout << std::endl;
   
