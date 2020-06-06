@@ -4,3 +4,5 @@
 #link_directories(AFTER ${APACHE_ARROW_CPP}/release/release)
 #include_directories(${APACHE_ARROW_CPP}/src)
 
+# Common libraries
+set(DTENSOR_SRC ${TENDB_ROOT_DIR}/cpp/dtensor)

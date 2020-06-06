@@ -11,8 +11,8 @@ if(NOT DEFINED CMAKE_BUILD_TYPE)
 endif()
 
 project(tendb VERSION "${TENDB_BASE_VERSION}")
-include(BuildUtils/BuildUtils.cmake)
+include(build_utils/BuildUtils.cmake)
 #
 # Subdirectories
 #
-add_subdirectory(nvec)
+add_subdirectory(dtensor)
