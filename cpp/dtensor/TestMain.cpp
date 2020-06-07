@@ -8,6 +8,9 @@
 #include <arrow/filesystem/api.h>
 #include <arrow/io/api.h>
 
+#include "TColumnChunk.h"
+#include "TCatalog.h"
+
 using arrow::DoubleBuilder;
 using arrow::Int64Builder;
 using arrow::ListBuilder;

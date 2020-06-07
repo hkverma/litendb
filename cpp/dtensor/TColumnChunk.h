@@ -6,9 +6,11 @@
 // One column chunk stores numComponents of a single column of TenDB
 // Arrow in memory, persistent in parquet format
 //
+#pragma once
 
 #include <boost/uuid/uuid.hpp>
-
+#include <arrow/api.h>
+#include <vector>
 
 namespace tendb {
 

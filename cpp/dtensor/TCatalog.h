@@ -6,10 +6,16 @@
 //
 //
 // Catalog is represented by a vector of rows. It is a flat representation of Data Tensor.
+// TBD
 // Stored as a MySQL table for persistence. 
-//
 // TCatalog is prepared from MySQL database. Any updated in MySQL should be updated to TCatalog.
 //
+#pragma once
+
+#include <boost/uuid/uuid.hpp>
+#include <arrow/api.h>
+#include <vector>
+#include <map>
 
 namespace tendb {
 
@@ -22,9 +28,9 @@ namespace tendb {
   
   class TCatalog {
   public:
-    map<boost::uuids::uuid, shared_ptr<TColumnChunk>> toColumnChunks_;
+    std::map<boost::uuids::uuid, std::shared_ptr<TColumnChunk>> toColumnChunks_;
     arrow::Schema schema_;
-    vector<shared_ptr<TCatalogComponent>> allComponents_;
+    std::vector<std::shared_ptr<TCatalogComponent>> components_;
   };
   
 };
