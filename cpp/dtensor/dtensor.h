@@ -1,5 +1,6 @@
 #pragma once
 
-#include "TColumn.h"
+#include "TCache.h"
 #include "TColumnChunk.h"
-#include "TCatalog.h"
+#include "TColumn.h"
+#include "TTable.h"

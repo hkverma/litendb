@@ -14,12 +14,20 @@
 
 namespace tendb {
 
+  // UUID differentiates between ColumnChunks
   class TColumnChunk {
-  public:
-    arrow::Type::type type_;
-    uint32_t totalComponents_;
-    boost::uuids::uuid uuid_;
-    
-  };
 
+  public:
+
+    void Print();
+
+    int64_t sequenceNum_;
+    int64_t columnNum_;
+    int64_t startOffset_;
+    
+    arrow::Type::type type_;
+    int64_t totalComponents_;
+    boost::uuids::uuid uuid_;
+
+  };
 };

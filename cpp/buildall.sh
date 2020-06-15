@@ -1,5 +1,5 @@
 # buildall
-mkdir build_output
-cd build_output
+mkdir build
+cd build
 cmake ..
 make

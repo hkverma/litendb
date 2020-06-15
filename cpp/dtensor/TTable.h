@@ -19,19 +19,28 @@
 
 namespace tendb {
 
-  class TCatalogComponent {
+  
+  class TTableComponent {
     boost::uuids::uuid tColumnChunkUuid_;
     int tColumnChunkSequenceNum_;
     int tColumnNum_;
     int tStartOffset;
   };
   
-  class TCatalog {
+  // TTable holds table values
+  class TTable {
   public:
+
     void Init(std::shared_ptr<arrow::Table> table);
-    std::map<boost::uuids::uuid, std::shared_ptr<TColumnChunk>> toColumnChunks_;
+    void Print();
+
+    std::shared_ptr<TColumnChunk> GetColumnChunk(int64_t rowNum, int64_t colNum);
+
     std::shared_ptr<arrow::Schema> schema_;
-    std::vector<std::shared_ptr<TCatalogComponent>> components_;
+    int64_t numColumns_;
+    int64_t numRows_;
+    std::vector<std::shared_ptr<TColumn>> columns_;
+
   };
   
 };
