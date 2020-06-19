@@ -4,3 +4,6 @@
 [submodule "cpp/external_libs/poco/poco"]
 	path = cpp/external_libs/poco/poco
 	url = https://github.com/pocoproject/poco
+[submodule "cpp/external_libs/ray/ray"]
+	path = cpp/external_libs/ray/ray
+	url = https://github.com/ray-project/ray
