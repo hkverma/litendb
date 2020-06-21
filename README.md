@@ -125,8 +125,42 @@ $ git submodule init
 $ git submodule update
 Submodule path 'arrow': checked out '7194f94e0ed65d9429180eb96e35fcb4eca38848'
 ```
+#### Ray
 
-## TODO  - Add later
+Ray is an open source task scheduler. It is a submodule within external_libs.
+
+It requires that following are installed
+* python3
+* bazel - see https://docs.bazel.build/versions/master/install-ubuntu.html for installation
+
+Run the tutorial from https://github.com/ray-project/tutorial
+Follow the tutorial to install all the components and run ray.
+
+Follow the following steps to build it locally. 
+
+```
+$ cd ${TENDB_ROOT_DIR}/cpp/external_libs
+$ git submodule --update --recursive
+$ cd ray
+$ sudo ./build.sh
+```
+
+It was registered as a submodule using steps shown below. It is currently fixed as release  ray-0.8.5
+First submodule was added. It clones the data into the ray as shown below.
+```
+$ cd ${TENDB_ROOT_DIR}/cpp/external_libs/ray
+$ git submodule add https://github.com/apache/ray
+$ cd ray
+$ git checkout -b ray-0.8.5
+$ git submodule init
+$ git submodule update
+```
+
+### Development Guidelines
+To check status without submodules the following can be done.
+```
+git status --ignore-submodules=all
+```
 
 * Configuration
 * Dependencies
