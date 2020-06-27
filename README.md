@@ -145,13 +145,56 @@ $ cd ray
 $ sudo ./build.sh
 ```
 
-It was registered as a submodule using steps shown below. It is currently fixed as release  ray-0.8.5
+It was registered as a submodule using steps shown below. It is currently fixed as release ray-0.8.5 This is a branch with release 0.8.5
 First submodule was added. It clones the data into the ray as shown below.
 ```
 $ cd ${TENDB_ROOT_DIR}/cpp/external_libs/ray
 $ git submodule add https://github.com/apache/ray
 $ cd ray
 $ git checkout -b ray-0.8.5
+$ git submodule init
+$ git submodule update
+```
+
+#### Google glog
+
+Google glog is a C++ logging library. 
+Follow the following steps to build it.
+
+```
+$ cd ${TENDB_ROOT_DIR}/cpp/external_libs
+$ git submodule --update --recursive
+$ cd glog
+$ sudo ./build.sh
+```
+It was registered as a submodule using steps shown below. It is currently fixed as latest release commit 0a2e5931bd5ff22fd3bf8999eb8ce776f159cda6 May 12, 2020
+
+```
+$ cd ${TENDB_ROOT_DIR}/cpp/external_libs/glog
+$ git submodule add https://github.com/google/glog
+...
+$ cd glog
+$ git submodule init
+$ git submodule update
+```
+
+#### Googletest
+
+Googletest is a C++ unit test library. Follow the following steps to build it.
+
+```
+$ cd ${TENDB_ROOT_DIR}/cpp/external_libs
+$ git submodule --update --recursive
+$ cd googletest
+$ sudo ./build.sh
+```
+It was registered as a submodule using steps shown below. It is currently fixed as latest release commit as aee0f9d9b5b87796ee8a0ab26b7587ec30e8858e June 26, 2020
+
+```
+$ cd ${TENDB_ROOT_DIR}/cpp/external_libs/googletest
+$ git submodule add https://github.com/google/glog
+...
+$ cd glog
 $ git submodule init
 $ git submodule update
 ```

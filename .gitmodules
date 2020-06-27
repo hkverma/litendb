@@ -7,3 +7,9 @@
 [submodule "cpp/external_libs/ray/ray"]
 	path = cpp/external_libs/ray/ray
 	url = https://github.com/ray-project/ray
+[submodule "cpp/external_libs/glog/glog"]
+	path = cpp/external_libs/glog/glog
+	url = https://github.com/google/glog
+[submodule "cpp/external_libs/googletest/googletest"]
+	path = cpp/external_libs/googletest/googletest
+	url = https://github.com/google/googletest

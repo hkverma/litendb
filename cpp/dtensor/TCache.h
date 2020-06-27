@@ -1,18 +1,39 @@
 //
-// TenDB Columnar Storage Node
+// TenDB Columnar Cache Directory
 //
-// Columnar Data storage
+// Fetch from the cache and store here
+// For now all components are received from here and not stored locally
 //
-// One column chunk stores numComponents of a single column of TenDB
-// Arrow in memory, persistent in parquet format
+// TODO
+//  Cache mechanisms -
+//     LRU     - Least Recently Used
+//     LRU (T) - Least Recently Used with timeout
+//     TRU     - Timed recently used
+//
+//  Cache Async event broadcasts
+//    Before evicting a cache broadcast and sync with all the data components
+//    who have a copy. 
+//
+//  Columnar Data storage
+//
+//   One column chunk stores numComponents of a single column of TenDB
+//   Arrow in memory, persistent in parquet format
 //
 #pragma once
 
-#include <boost/uuid/uuid.hpp>
-#include <arrow/api.h>
 #include <unordered_map>
+#include <boost/uuid/uuid.hpp>
 #include <boost/functional/hash.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include <arrow/api.h>
+#include "TTable.h"
 
+//
+// Cache a ttable some
+//  remote storage, local storage, in-memory (that is cache hierarchy)
+//
+//
 // provide hash template with uuid
 namespace std
 {
@@ -33,13 +54,19 @@ namespace tendb {
   class TCache {
   public:
 
-    static std::shared_ptr<arrow::Array> GetArray(boost::uuids::uuid id);
-    
-    // For now the columnChunk should be present here. 
-    // In future it could not be here, in that case fetch it if not present here
-    static std::unordered_map<boost::uuids::uuid, std::shared_ptr<arrow::Array>> arrays_;
+    static std::shared_ptr<TCache> GetInstance();
+    static std::shared_ptr<TCache> tCache_;
 
-    static std::shared_ptr<arrow::Scalar> GetScalar(std::shared_ptr<arrow::Array> comp, int64_t rowNum);
+    std::shared_ptr<TTable> Read(std::string csvFileName);
+
+    std::shared_ptr<TTable> GetTable(boost::uuids::uuid id);
+    bool GetId(std::string csvFileName, boost::uuids::uuid& cacheId);
+
+    // map uuid to cache Table pointer
+    std::unordered_map<boost::uuids::uuid, std::shared_ptr<TTable>> tables_;
+    // map file name to an Id
+    std::unordered_map<std::string, boost::uuids::uuid> cacheIds_;
+    boost::uuids::random_generator idGenerator;
 
   };
 
