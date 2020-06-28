@@ -11,11 +11,12 @@
 //
 #pragma once
 
-#include <boost/uuid/uuid.hpp>
-#include <arrow/api.h>
 #include <vector>
 #include <map>
-#include "TColumnChunk.h"
+#include <boost/uuid/uuid.hpp>
+// Need scalar before arrow/api.h to access full class definitions
+#include <arrow/scalar.h>
+#include <arrow/api.h>
 
 namespace tendb {
   

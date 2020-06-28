@@ -9,6 +9,7 @@
 #include <arrow/io/api.h>
 
 #include "dtensor.h"
+using namespace tendb;
 
 using arrow::DoubleBuilder;
 using arrow::Int64Builder;
@@ -195,6 +196,11 @@ int main(int argc, char** argv) {
     return EXIT_SUCCESS;
   }
   std::string fileName = argv[1];
+
+  TCache tCache;
+  std::shared_ptr<TTable> ttable = tCache.Read(fileName);
+  ttable->Print();
+  
 
   // A default memory pool
   arrow::MemoryPool* pool = arrow::default_memory_pool();
