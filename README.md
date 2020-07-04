@@ -21,7 +21,7 @@ Download and setup Spark 3.0 https://spark.apache.org/news/spark-3.0.0-preview2.
 
 ### C++ Build Environment
 
-Use C++-17 standard. For compilation, g++/gcc verion 9 is used.
+Use C++-17 standard. For compilation, g++/gcc version 9 is used.
 
 Install cmake 3.17 minimum. Download source code & build. Or download the binary from cmake website.
 
@@ -41,6 +41,13 @@ Within cpp these directories exist.
 
 * external_libs - All external C++ libs. These include boost, Poco,Apache-arrow
 * Other directories in C++ are tendb specific code.
+
+
+For local machine setup, following environment is used.
+
+* Ubuntu Linux 18.04.04 LTS
+* C++-17 standards
+* g++-9, gcc-9 compiler
 
 ### Required packages
 SSL should be installed
@@ -204,12 +211,46 @@ To check status without submodules the following can be done.
 ```
 git status --ignore-submodules=all
 ```
-
 * Configuration
 * Dependencies
 * Database configuration
 * How to run tests
 * Deployment instructions
+
+### TPC-DS benchmarks
+TPC-DS queries will be used for measuring the performance against other systems for queries.
+
+If needed to generate get TPC-DS from git hub. You may use commands shown below to generate the data and queries. TPC-DS also has specification documents in the repo.
+```
+git clone https://github.com/gregrahn/tpcds-kit
+```
+run the follwing commands from tools subdirectory after building them.
+Generate query
+
+```
+./dsqgen -DIRECTORY ../query_templates -INPUT ../query_templates/templates.lst -VERBOSE Y -QUALIFY Y -SCALE 1 -DIALECT ansi -OUTPUT_DIR /mnt/c/Users/hkver/Documents/dbai/tpc-ds/queries/
+```
+
+Generate data
+
+```
+./dsdgen -DIR ../../data -VERBOSE Y -SCALE 1
+```
+#### Types and Queries
+These are the types of queries.
+
+Interactive (1-3 months of data scanned)  Simple star-join queries
+  19, 42, 52, 55
+ 
+Reporting (1 year of data scanned)  Simple star-join queries
+  3, 7, 53, 89
+ 
+Analytic (Multiple years, customer patterns)  Customer extracts, star joins
+  34, 34, 59
+ 
+Complex  Fact-to-fact joins, windows, extensive subqueries
+  23, 36, 64, 94
+
 
 ### Contribution guidelines ###
 

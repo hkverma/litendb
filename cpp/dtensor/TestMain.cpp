@@ -8,6 +8,7 @@
 #include <arrow/filesystem/api.h>
 #include <arrow/io/api.h>
 
+#include <glog/logging.h>
 #include "dtensor.h"
 using namespace tendb;
 
@@ -29,6 +30,9 @@ int main(int argc, char** argv) {
   }
   std::string fileName = argv[1];
 
+  // Initialize Google's logging library.
+  google::InitGoogleLogging("tcache");
+     
   TCache tCache;
   std::shared_ptr<TTable> ttable = tCache.Read(fileName);
   ttable->Print();
