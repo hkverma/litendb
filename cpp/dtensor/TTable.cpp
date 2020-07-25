@@ -55,40 +55,44 @@ namespace tendb {
     }
   }
 
-  // TODO status & log
-  bool TTable::Read(std::string csvFileName)
+  // status & log
+  bool TTable::ReadCsv(std::string csvFileName,
+                       const arrow::csv::ReadOptions& readOptions,
+                       const arrow::csv::ParseOptions& parseOptions,
+                       const arrow::csv::ConvertOptions& convertOptions)
   {
     // A default memory pool
+    // TODO define tendb memory pool
     arrow::MemoryPool* pool = arrow::default_memory_pool();
 
-    // Readable File
-    arrow::Result<std::shared_ptr<arrow::io::ReadableFile>> fpResult = arrow::io::ReadableFile::Open(csvFileName, pool);
+    // Readable File for the csvFile
+    arrow::Result<std::shared_ptr<arrow::io::ReadableFile>> fpResult =
+      arrow::io::ReadableFile::Open(csvFileName, pool);
     if (!fpResult.ok()) {
       std::cout << "Cannot open file " << csvFileName << std::endl;
       return false;
     }
     std::shared_ptr<arrow::io::ReadableFile> fp = fpResult.ValueOrDie();
-  
+
+    // Get fileSizeResult
     arrow::Result<int64_t> fileSizeResult = fp->GetSize();
     if (!fileSizeResult.ok()) {
       std::cout << "Unknown filesize for file " << csvFileName << std::endl;
       return false;
     }
     int64_t fileSize = fileSizeResult.ValueOrDie();
-  
-    std::shared_ptr<arrow::io::InputStream> inputStream = arrow::io::RandomAccessFile::GetStream(fp, 0, fileSize);
 
-    auto read_options = arrow::csv::ReadOptions::Defaults();
-    auto parse_options = arrow::csv::ParseOptions::Defaults();
-    auto convert_options = arrow::csv::ConvertOptions::Defaults();
-
+    // Random access file reader
+    std::shared_ptr<arrow::io::InputStream> inputStream =
+      arrow::io::RandomAccessFile::GetStream(fp, 0, fileSize);
+    
     // Instantiate TableReader from input stream and options
     arrow::Result<std::shared_ptr<arrow::csv::TableReader>> readerResult
-      = arrow::csv::TableReader::Make(pool, inputStream, read_options,
-                                    parse_options, convert_options);
+      = arrow::csv::TableReader::Make(pool, inputStream, readOptions,
+                                      parseOptions, convertOptions);
     if (!readerResult.ok()) {
       std::cout << "Cannot read table " << csvFileName << std::endl;
-      return EXIT_SUCCESS;
+      return false;
     }
     std::shared_ptr<arrow::csv::TableReader> reader = readerResult.ValueOrDie();
   
@@ -98,8 +102,9 @@ namespace tendb {
       // Handle CSV read error
       // (for example a CSV syntax error or failed type conversion)
       std::cout << "Error: reading table" << std::endl;
-      return EXIT_SUCCESS;
+      return false;
     }
+    
     table_ = tableResult.ValueOrDie();
     schema_ = table_->schema();
     return true;

@@ -74,19 +74,19 @@ namespace tendb {
     SerializationError=10
   };
 
-  /// \brief An opaque class that allows subsystems to retain
-  /// additional information inside the Status.
+  /// \brief An abstract class that allows subsystems to add 
+  /// additional information inside the Status
   class StatusDetail {
   public:
     virtual ~StatusDetail() = default;
     /// \brief Return a unique id for the type of the StatusDetail
-    /// (effectively a poor man's substitute for RTTI).
-    virtual const char* type_id() const = 0;
-    /// \brief Produce a human-readable description of this status.
+    virtual const char* TypeId() const = 0;
+    /// \brief Produce a human-readable description of this status
     virtual std::string ToString() const = 0;
-
-    bool operator==(const StatusDetail& other) const noexcept {
-      return std::string(type_id()) == other.type_id() && ToString() == other.ToString();
+    /// Same status if same Id and error string
+    bool operator==(const StatusDetail& other) const noexcept
+    {
+      return std::string(TypeId()) == other.TypeId() && ToString() == other.ToString();
     }
   };
 

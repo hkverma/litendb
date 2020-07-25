@@ -7,8 +7,10 @@ namespace tendb {
   // For now the columnChunk should be present here. 
   // TODO In future it could not be here, in that case fetch it if not present here
 
-  std::shared_ptr<TCache> TCache::tCache_;
-  
+  /// Singleton cache instance
+  std::shared_ptr<TCache> TCache::tCache_ = nullptr;
+
+  /// Get a singleton instance, if not present create one
   std::shared_ptr<TCache> TCache::GetInstance()
   {
     if (tCache_ == nullptr)
@@ -16,33 +18,40 @@ namespace tendb {
     return tCache_;
   }
 
-  // Use status here
-  std::shared_ptr<TTable> TCache::Read(std::string csvFileName)
+  /// Read csv file in a new table tableName. tableName should be unique
+  std::shared_ptr<TTable> TCache::ReadCsv
+    (std::string tableName,
+     std::string csvFileName,
+     const arrow::csv::ReadOptions& readOptions,
+     const arrow::csv::ParseOptions& parseOptions,
+     const arrow::csv::ConvertOptions& convertOptions)
   {
-    std::shared_ptr<TTable> table = nullptr;
-    boost::uuids::uuid cacheId;
-    if ( !GetId(csvFileName, cacheId))
+    // If found one, return it
+    std::shared_ptr<TTable> table = GetTable(tableName);
+    if (nullptr != table)
     {
-      table = std::make_shared<TTable>();
-      if (table->Read(csvFileName))
-      {
-        boost::uuids::uuid cacheId = idGenerator();
-        tables_[cacheId] = table;
-        cacheIds_[csvFileName] = cacheId;
-      }
-      else
-      {
-        table = nullptr;
-      }
+      // TODO log here or add csv to the same table
+      return table;
+    }
+
+    // Create one table with tableName
+    boost::uuids::uuid cacheId;
+    table = std::make_shared<TTable>(tableName);
+    if (table->ReadCsv(csvFileName, readOptions, parseOptions, convertOptions))
+    {
+      boost::uuids::uuid cacheId = idGenerator();
+      tables_[cacheId] = table;
+      cacheIds_[tableName] = cacheId;
     }
     else
     {
-      table = GetTable(cacheId);
+      table = nullptr;
     }
+
     return table;
   }
   
-  // TODO GetArray should fetch
+  /// Get Table from the cache
   std::shared_ptr<TTable> TCache::GetTable(boost::uuids::uuid id)
   {
     auto itr = tables_.find(id);
@@ -51,11 +60,22 @@ namespace tendb {
     return itr->second;
   }
 
+  /// GetTable from table name
+  std::shared_ptr<TTable> TCache::GetTable(std::string tableName)
+  {
+    boost::uuids::uuid cacheId;    
+    if (GetId(tableName, cacheId))
+    {
+      return GetTable(cacheId);
+    }
+    return nullptr;
+  }
+  
   // TODO use arrow::Result type object here
   // use std::move for all pass by value
-  bool TCache::GetId(std::string csvFileName, boost::uuids::uuid& cacheId) 
+  bool TCache::GetId(std::string tableName, boost::uuids::uuid& cacheId) 
   {
-    auto itr = cacheIds_.find(csvFileName);
+    auto itr = cacheIds_.find(tableName);
     if (itr ==  cacheIds_.end())
       return false;
     cacheId = itr->second;

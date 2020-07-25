@@ -9,14 +9,15 @@
 // Stored as a Redis table for persistence. 
 // TCatalog is prepared from MySQL database. Any updated in MySQL should be updated to TCatalog.
 //
-#pragma once
-
 #include <vector>
 #include <map>
 #include <boost/uuid/uuid.hpp>
 // Need scalar before arrow/api.h to access full class definitions
 #include <arrow/scalar.h>
 #include <arrow/api.h>
+#include <arrow/csv/api.h>
+
+#pragma once
 
 namespace tendb {
   
@@ -24,19 +25,25 @@ namespace tendb {
   class TTable {
   public:
 
-    TTable() : table_(nullptr), schema_(nullptr) { }  
+    TTable(std::string& tableName) : name_(tableName), table_(nullptr), schema_(nullptr) { }  
     TTable(std::shared_ptr<arrow::Table> table);
     
     void Print();
-    bool Read(std::string csvFileName);
+    /// read csv File csvFileName and add it to table_
+    bool ReadCsv(std::string csvFileName,
+                 const arrow::csv::ReadOptions& readOptions,
+                 const arrow::csv::ParseOptions& parseOptions,
+                 const arrow::csv::ConvertOptions& convertOptions);
     
     std::shared_ptr<arrow::Array> GetArray(int64_t rowNum, int64_t colNum);
 
     int64_t NumColumns() { return table_->num_columns(); }
     int64_t NumRows() { return table_->num_rows(); }
-    
+
+  private:
     std::shared_ptr<arrow::Schema> schema_;
-    std::shared_ptr<arrow::Table> table_;    
+    std::shared_ptr<arrow::Table> table_;
+    std::string name_;
     
   };
   
