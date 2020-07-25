@@ -40,9 +40,9 @@ namespace tendb {
     int64_t NumColumns() { return table_->num_columns(); }
     int64_t NumRows() { return table_->num_rows(); }
 
+    std::shared_ptr<arrow::Table> table_;
   private:
     std::shared_ptr<arrow::Schema> schema_;
-    std::shared_ptr<arrow::Table> table_;
     std::string name_;
     
   };

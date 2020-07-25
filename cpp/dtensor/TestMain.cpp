@@ -37,6 +37,45 @@ using namespace tendb;
     }                                              \
   } while (0);
 
+/*
+select
+	sum(l_extendedprice * l_discount) as revenue
+from
+	lineitem
+where
+	l_shipdate >= date '1997-01-01'
+	and l_shipdate < date '1997-01-01' + interval '1' year
+	and l_discount between 0.07 - 0.01 and 0.07 + 0.01
+	and l_quantity < 25;
+*/
+
+double Query6(std::shared_ptr<TTable> ttable)
+{
+  
+  int l_shipdate=10, l_discount=6, l_quantity=4, l_extendedprice=5;
+  
+  std::shared_ptr<arrow::ChunkedArray> shipdate = ttable->table_->column(l_shipdate);
+  std::shared_ptr<arrow::ChunkedArray> discount = ttable->table_->column(l_discount);
+  std::shared_ptr<arrow::ChunkedArray> quantity = ttable->table_->column(l_quantity);
+  std::shared_ptr<arrow::ChunkedArray> extendedprice = ttable->table_->column(l_extendedprice);
+
+  double revenue = 0;
+  int64_t length = shipdate->length();
+  if (length != discount->length() ||
+      length != quantity->length() ||
+      length != extendedprice->length())
+  {
+    std::cout << "Length should be the same" << std::endl;
+    return 0;
+  }
+  
+  // for now do a full table scan need to build filtering metadata per column chunk
+  for (int64_t rowId=0; rowId<length; rowId++)
+  {
+    // Convert all to data types & do the query 
+  }
+  return revenue;
+}
 
 int main(int argc, char** argv) {
 
@@ -61,6 +100,8 @@ int main(int argc, char** argv) {
                                                   readOptions, parseOptions, convertOptions);
   ttable->Print();
 
+  double result = Query6(ttable);
+  
   return EXIT_SUCCESS;
   
 }
