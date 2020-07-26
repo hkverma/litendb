@@ -57,7 +57,7 @@ public:
     if (rowId >= chunkedArray_->length())
       return false;
 
-    while (currentArrayRowId_ < array_->length())
+    while (currentArrayRowId_ >= array_->length())
     {
       if (!nextArray())
       {
@@ -139,13 +139,15 @@ double Query6(std::shared_ptr<TTable> ttable)
     if (!discountIter.next(discountValue)) break;
     if (!quantityIter.next(quantityValue)) break;
     if (!extendedpriceIter.next(extendedpriceValue)) break;
-    if (shipdateValue < date19970101Val || shipdateValue > date19971231Val)
-      break;
+    //if (shipdateValue < date19970101Val || shipdateValue > date19971231Val)
+    //break;
     if (quantityValue < 25)
-      break;
-    if (discountValue < 0.06 || discountValue > 0.08)
-      break;
-    revenue += discountValue * extendedpriceValue;
+    {
+      if (discountValue >= 0.06 || discountValue <= 0.08)
+      {
+        revenue += discountValue * extendedpriceValue;
+      }
+    }
   }
   return revenue;
 }
