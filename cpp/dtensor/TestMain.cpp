@@ -37,6 +37,59 @@ using namespace tendb;
     }                                              \
   } while (0);
 
+
+template <class Type, class TypeArray>
+class ColumnValueIterator
+{
+public:
+  ColumnValueIterator(std::shared_ptr<arrow::ChunkedArray> chary) :
+    currentArrayRowId_(0), lastArrayRowId_(0), chunkNum_(0)
+  {
+    chunkedArray_ = chary;
+    array_ =
+      std::static_pointer_cast<TypeArray>(chunkedArray_->chunk(chunkNum_));
+    chunkNum_++;
+  }
+
+  bool next(Type& data)
+  {
+    int64_t rowId = currentArrayRowId_+lastArrayRowId_;
+    if (rowId >= chunkedArray_->length())
+      return false;
+
+    while (currentArrayRowId_ < array_->length())
+    {
+      if (!nextArray())
+      {
+        return false;
+      }
+      lastArrayRowId_ += currentArrayRowId_;
+      currentArrayRowId_ = 0;
+    }
+    data = array_->Value(currentArrayRowId_);
+    currentArrayRowId_++;
+    return true;
+  }
+
+  bool nextArray()
+  {
+    chunkNum_++;
+    if (chunkNum_ >= chunkedArray_->num_chunks())
+    {
+      return false;
+    }
+    array_ =
+      std::static_pointer_cast<TypeArray>(chunkedArray_->chunk(chunkNum_));
+    return true;
+  }
+
+  int64_t currentArrayRowId_;
+  int64_t lastArrayRowId_;
+  int64_t chunkNum_;
+  std::shared_ptr<TypeArray> array_;
+  std::shared_ptr<arrow::ChunkedArray> chunkedArray_;
+};
+
 /*
 select
 	sum(l_extendedprice * l_discount) as revenue
@@ -48,18 +101,22 @@ where
 	and l_discount between 0.07 - 0.01 and 0.07 + 0.01
 	and l_quantity < 25;
 */
-
 double Query6(std::shared_ptr<TTable> ttable)
 {
-  
+
   int l_shipdate=10, l_discount=6, l_quantity=4, l_extendedprice=5;
-  
+
   std::shared_ptr<arrow::ChunkedArray> shipdate = ttable->table_->column(l_shipdate);
   std::shared_ptr<arrow::ChunkedArray> discount = ttable->table_->column(l_discount);
   std::shared_ptr<arrow::ChunkedArray> quantity = ttable->table_->column(l_quantity);
   std::shared_ptr<arrow::ChunkedArray> extendedprice = ttable->table_->column(l_extendedprice);
 
-  double revenue = 0;
+  int shipdateChunkNum=0, discountChunkNum=0, quantityChunkNum=0, extendedpriceChunkNum=0;
+  ColumnValueIterator<int64_t, arrow::Int64Array> shipdateIter(shipdate);
+  ColumnValueIterator<double, arrow::DoubleArray> discountIter(discount);
+  ColumnValueIterator<int64_t, arrow::Int64Array> quantityIter(quantity);
+  ColumnValueIterator<double, arrow::DoubleArray> extendedpriceIter(extendedprice);
+
   int64_t length = shipdate->length();
   if (length != discount->length() ||
       length != quantity->length() ||
@@ -68,11 +125,27 @@ double Query6(std::shared_ptr<TTable> ttable)
     std::cout << "Length should be the same" << std::endl;
     return 0;
   }
-  
+
+  double revenue = 0;
+  int64_t shipdateValue, quantityValue;
+  double discountValue, extendedpriceValue;
+  int64_t date19970101Val = 19970101;
+  int64_t date19971231Val = 19971231;
+
   // for now do a full table scan need to build filtering metadata per column chunk
   for (int64_t rowId=0; rowId<length; rowId++)
   {
-    // Convert all to data types & do the query 
+    if (!shipdateIter.next(shipdateValue)) break;
+    if (!discountIter.next(discountValue)) break;
+    if (!quantityIter.next(quantityValue)) break;
+    if (!extendedpriceIter.next(extendedpriceValue)) break;
+    if (shipdateValue < date19970101Val || shipdateValue > date19971231Val)
+      break;
+    if (quantityValue < 25)
+      break;
+    if (discountValue < 0.06 || discountValue > 0.08)
+      break;
+    revenue += discountValue * extendedpriceValue;
   }
   return revenue;
 }
@@ -87,21 +160,22 @@ int main(int argc, char** argv) {
 
   // Initialize Google's logging library.
   google::InitGoogleLogging("tcache");
-     
+
   TCache tCache;
-  
+
   arrow::csv::ReadOptions readOptions = arrow::csv::ReadOptions::Defaults();
   arrow::csv::ParseOptions parseOptions = arrow::csv::ParseOptions::Defaults();
   parseOptions.delimiter = '|';
   arrow::csv::ConvertOptions convertOptions = arrow::csv::ConvertOptions::Defaults();
   std::string tableName = "LINEITEM";
-  
+
   std::shared_ptr<TTable> ttable = tCache.ReadCsv(tableName, fileName,
                                                   readOptions, parseOptions, convertOptions);
   ttable->Print();
 
   double result = Query6(ttable);
-  
+  std::cout << "Revenue=" << result << std::endl;
+
   return EXIT_SUCCESS;
-  
+
 }
