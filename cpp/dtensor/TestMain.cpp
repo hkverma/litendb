@@ -10,6 +10,9 @@
 
 #include <glog/logging.h>
 #include "dtensor.h"
+
+#include <boost/date_time/posix_time/posix_time.hpp>
+
 using namespace tendb;
 
 //
@@ -27,6 +30,11 @@ using namespace tendb;
 //
 // Use arrow::Result to return Status along with the value
 //
+// TODO
+// Put zone-map for column chunks
+// Do pre-join to create the tables
+//
+
 
 #define EXIT_ON_FAILURE(expr)                      \
   do {                                             \
@@ -90,6 +98,28 @@ public:
   std::shared_ptr<arrow::ChunkedArray> chunkedArray_;
 };
 
+// using namespace boost::posix_time;
+// Use time_point calendars in C++-20 standards
+int64_t SecondsSinceEpoch(boost::gregorian::date d, boost::posix_time::time_duration td)
+{
+  boost::posix_time::ptime t(d, td);
+  boost::posix_time::ptime start(boost::gregorian::date(1970,1,1));
+  boost::posix_time::time_duration dur = t - start;
+  time_t epoch = dur.total_seconds();
+  return (int64_t)epoch;
+}
+
+
+// ISO 86101 string "2002-01-20 23:59:59"
+int64_t SecondsSinceEpoch(std::string& ts)
+{
+  boost::posix_time::ptime t(boost::posix_time::time_from_string(ts));
+  boost::posix_time::ptime start(boost::gregorian::date(1970,1,1));
+  boost::posix_time::time_duration dur = t - start;
+  time_t epoch = dur.total_seconds();
+  return (int64_t)epoch;
+}
+
 /*
 select
 	sum(l_extendedprice * l_discount) as revenue
@@ -129,8 +159,11 @@ double Query6(std::shared_ptr<TTable> ttable)
   double revenue = 0;
   int64_t shipdateValue, quantityValue;
   double discountValue, extendedpriceValue;
-  int64_t date19970101Val = 19970101;
-  int64_t date19971231Val = 19971231;
+
+  int64_t date19970101Value =
+    SecondsSinceEpoch(boost::gregorian::date(1997, 1, 1), boost::posix_time::seconds(0));
+  int64_t date19971231Value =
+    SecondsSinceEpoch(boost::gregorian::date(1997, 12, 31), boost::posix_time::seconds(0));
 
   // for now do a full table scan need to build filtering metadata per column chunk
   for (int64_t rowId=0; rowId<length; rowId++)
@@ -139,15 +172,13 @@ double Query6(std::shared_ptr<TTable> ttable)
     if (!discountIter.next(discountValue)) break;
     if (!quantityIter.next(quantityValue)) break;
     if (!extendedpriceIter.next(extendedpriceValue)) break;
-    //if (shipdateValue < date19970101Val || shipdateValue > date19971231Val)
-    //break;
-    if (quantityValue < 25)
-    {
-      if (discountValue >= 0.06 || discountValue <= 0.08)
-      {
-        revenue += discountValue * extendedpriceValue;
-      }
-    }
+    if (shipdateValue < date19970101Value || shipdateValue > date19971231Value)
+      continue;
+    if (quantityValue >= 25)
+      continue;
+    if (discountValue < 0.06 || discountValue > 0.08)
+      continue;
+    revenue += discountValue * extendedpriceValue;
   }
   return revenue;
 }
