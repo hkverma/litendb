@@ -20,21 +20,20 @@ using namespace tendb;
 //
 // Read TPCH data and print table
 // Run Query 6
-// Compare Query 6 against Spark on VM
-// Write join tables
+// Compare Query 6 against Spark on VM 
+// Do pre-join to create the tables
+// Put zone-map for column chunks
+// 
 // Run Query 5
 // Compare Query 5 against Spark on VM
+//
+//
 // Write DSLs - groupby scan filter etc.
 // Write Query 6 & Query 5 using DSL
 // Do TPCH queries using the DSL using jupyter
 //
 // Use arrow::Result to return Status along with the value
 //
-// TODO
-// Put zone-map for column chunks
-// Do pre-join to create the tables
-//
-
 
 #define EXIT_ON_FAILURE(expr)                      \
   do {                                             \
