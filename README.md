@@ -6,6 +6,8 @@ Tenalytics DB data structure
 * [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
 
 ## How do I get set up?
+### Clone this repo
+git clone https://hkv@bitbucket.org/hkv/dbaistuff.git
 
 ### Build Structure Setup
 
@@ -70,9 +72,9 @@ Download 1.73.0 from https://www.boost.org/users/download to the following direc
  
  ```
  $ cd ${TENDB_ROOT_DIR}/cpp/external_libs/boost
- $ gunzip gunzip boost_1_73_0.tar.gz
+ $ gunzip boost_1_73_0.tar.gz
  $ tar xvf gunzip boost_1_73_0.tar
- $ sudo ./build.sh
+ $ sudo ./build.sh [debug|release]
  ```
 
 #### POCO
@@ -83,7 +85,7 @@ It is built as a submodule in tendb. Follow these steps to build
 
 ```
 $ cd ${TENDB_ROOT_DIR}/cpp/external_libs
-$ git submodule --update --recursive
+$ git submodule update --init --recursive
 $ cd poco
 $ ./build.sh
 ```
