@@ -3,16 +3,17 @@
 #pragma once
 namespace tendb
 {
-  class TStopWatch
+  class StopWatch
   {
   public:
+    using clock_resolution = std::chrono::high_resolution_clock;
     void Start()
     {
-      start_ = std::chrono::high_resolution_clock::now();
+      start_ = clock_resolution::now();
     }
     void Stop()
     {
-      stop_ = std::chrono::high_resolution_clock::now();
+      stop_ = clock_resolution::now();
     }
 
     int64_t ElapsedInMicroseconds()
@@ -22,7 +23,7 @@ namespace tendb
     }
       
   private:
-    std::chrono::time_point start_;
-    std::chrono::time_point finish_;
+    std::chrono::time_point<clock_resolution> start_;
+    std::chrono::time_point<clock_resolution> stop_;
   };
 };

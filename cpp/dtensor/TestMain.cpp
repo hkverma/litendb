@@ -2,17 +2,10 @@
 #include <cstdint>
 #include <iostream>
 #include <vector>
-#include <chrono>
 
-#include <arrow/api.h>
-#include <arrow/csv/api.h>
-#include <arrow/filesystem/api.h>
-#include <arrow/io/api.h>
-
-#include <glog/logging.h>
+#include "common.h"
 #include "dtensor.h"
 
-#include <boost/date_time/posix_time/posix_time.hpp>
 
 using namespace tendb;
 
@@ -36,89 +29,6 @@ using namespace tendb;
 // Use arrow::Result to return Status along with the value
 //
 
-#define EXIT_ON_FAILURE(expr)                      \
-  do {                                             \
-    arrow::Status status_ = (expr);                \
-    if (!status_.ok()) {                           \
-      std::cerr << status_.message() << std::endl; \
-      return EXIT_FAILURE;                         \
-    }                                              \
-  } while (0);
-
-
-template <class Type, class TypeArray>
-class ColumnValueIterator
-{
-public:
-  ColumnValueIterator(std::shared_ptr<arrow::ChunkedArray> chary) :
-    currentArrayRowId_(0), lastArrayRowId_(0), chunkNum_(0)
-  {
-    chunkedArray_ = chary;
-    array_ =
-      std::static_pointer_cast<TypeArray>(chunkedArray_->chunk(chunkNum_));
-    chunkNum_++;
-  }
-
-  bool next(Type& data)
-  {
-    int64_t rowId = currentArrayRowId_+lastArrayRowId_;
-    if (rowId >= chunkedArray_->length())
-      return false;
-
-    while (currentArrayRowId_ >= array_->length())
-    {
-      if (!nextArray())
-      {
-        return false;
-      }
-      lastArrayRowId_ += currentArrayRowId_;
-      currentArrayRowId_ = 0;
-    }
-    data = array_->Value(currentArrayRowId_);
-    currentArrayRowId_++;
-    return true;
-  }
-
-  bool nextArray()
-  {
-    chunkNum_++;
-    if (chunkNum_ >= chunkedArray_->num_chunks())
-    {
-      return false;
-    }
-    array_ =
-      std::static_pointer_cast<TypeArray>(chunkedArray_->chunk(chunkNum_));
-    return true;
-  }
-
-  int64_t currentArrayRowId_;
-  int64_t lastArrayRowId_;
-  int64_t chunkNum_;
-  std::shared_ptr<TypeArray> array_;
-  std::shared_ptr<arrow::ChunkedArray> chunkedArray_;
-};
-
-// using namespace boost::posix_time;
-// Use time_point calendars in C++-20 standards
-int64_t SecondsSinceEpoch(boost::gregorian::date d, boost::posix_time::time_duration td)
-{
-  boost::posix_time::ptime t(d, td);
-  boost::posix_time::ptime start(boost::gregorian::date(1970,1,1));
-  boost::posix_time::time_duration dur = t - start;
-  time_t epoch = dur.total_seconds();
-  return (int64_t)epoch;
-}
-
-
-// ISO 86101 string "2002-01-20 23:59:59"
-int64_t SecondsSinceEpoch(std::string& ts)
-{
-  boost::posix_time::ptime t(boost::posix_time::time_from_string(ts));
-  boost::posix_time::ptime start(boost::gregorian::date(1970,1,1));
-  boost::posix_time::time_duration dur = t - start;
-  time_t epoch = dur.total_seconds();
-  return (int64_t)epoch;
-}
 
 /*
 select
@@ -142,10 +52,10 @@ double Query6(std::shared_ptr<TTable> ttable)
   std::shared_ptr<arrow::ChunkedArray> extendedprice = ttable->table_->column(l_extendedprice);
 
   int shipdateChunkNum=0, discountChunkNum=0, quantityChunkNum=0, extendedpriceChunkNum=0;
-  ColumnValueIterator<int64_t, arrow::Int64Array> shipdateIter(shipdate);
-  ColumnValueIterator<double, arrow::DoubleArray> discountIter(discount);
-  ColumnValueIterator<int64_t, arrow::Int64Array> quantityIter(quantity);
-  ColumnValueIterator<double, arrow::DoubleArray> extendedpriceIter(extendedprice);
+  TColumnIterator<int64_t, arrow::Int64Array> shipdateIter(shipdate);
+  TColumnIterator<double, arrow::DoubleArray> discountIter(discount);
+  TColumnIterator<int64_t, arrow::Int64Array> quantityIter(quantity);
+  TColumnIterator<double, arrow::DoubleArray> extendedpriceIter(extendedprice);
 
   int64_t length = shipdate->length();
   if (length != discount->length() ||
@@ -205,12 +115,12 @@ int main(int argc, char** argv) {
   std::shared_ptr<TTable> ttable = tCache.ReadCsv(tableName, fileName,
                                                   readOptions, parseOptions, convertOptions);
   //ttable->Print();
-  auto start = std::chrono::high_resolution_clock::now();
+  StopWatch stopWatch;
+  stopWatch.Start();
   double result = Query6(ttable);
-  auto finish = std::chrono::high_resolution_clock::now();
-  auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(finish-start);
+  stopWatch.Stop();
   std::cout << "Revenue=" << result << std::endl;
-  std::cout << microseconds.count() << "us" << std::endl;
+  std::cout << stopWatch.ElapsedInMicroseconds() << "us" << std::endl;
 
   return EXIT_SUCCESS;
 

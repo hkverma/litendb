@@ -15,3 +15,12 @@
 #define TENDB_PREFETCH(addr)
 #endif
 
+#define EXIT_ON_FAILURE(expr)                      \
+  do {                                             \
+    arrow::Status status_ = (expr);                \
+    if (!status_.ok()) {                           \
+      std::cerr << status_.message() << std::endl; \
+      return EXIT_FAILURE;                         \
+    }                                              \
+  } while (0);
+

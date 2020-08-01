@@ -5,8 +5,8 @@ message(STATUS "Building using CMake version: ${CMAKE_VERSION}")
 # Subdirectories
 #
 add_executable(dtensor TCache.cpp TColumnChunk.cpp TColumn.cpp TTable.cpp TestUtils.cpp TestMain.cpp)
-target_include_directories(dtensor PUBLIC ${DTENSOR_SRC})
-target_include_directories(dtensor PUBLIC ${COMMON_SRC})
+#target_include_directories(dtensor PUBLIC ${COMMON_SRC} ${DTENSOR_SRC})
+target_include_directories(dtensor PUBLIC ${COMMON_SRC}  ${DTENSOR_SRC})
 target_link_libraries(dtensor general common arrow)
 target_link_libraries(dtensor debug glogd)
 target_link_libraries(dtensor optimized glog)
