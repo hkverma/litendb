@@ -29,6 +29,34 @@ using namespace tendb;
 // Use arrow::Result to return Status along with the value
 //
 
+// TPCH table enums
+enum {
+  lineitem=0,
+  customer=2,
+  orders=2,
+  supplier=3,
+  nation=4,
+  region=5,
+  numTables=6
+};
+  
+std::vector<std::string> tableNames =
+  {
+    "lineitem",
+    "customer",
+    "orders",
+    "supplier",
+    "nation",
+    "region"
+  };
+
+// Table entries
+int32_t c_custkey=0, c_nationkey=3;
+int32_t o_custkey=1, o_orderkey=0, o_orderdate=4;
+int32_t l_orderkey=0, l_suppkey=2, l_shipdate=10, l_discount=6, l_quantity=4, l_extendedprice=5;
+int32_t s_suppkey=0, s_nationkey=3;
+int32_t n_nationkey=0, n_regionkey=2, n_name=1;
+int32_t r_regionkey=0, r_name=1;
 
 /*
 select
@@ -43,9 +71,6 @@ where
 */
 double Query6(std::shared_ptr<TTable> ttable)
 {
-
-  int l_shipdate=10, l_discount=6, l_quantity=4, l_extendedprice=5;
-
   std::shared_ptr<arrow::ChunkedArray> shipdate = ttable->table_->column(l_shipdate);
   std::shared_ptr<arrow::ChunkedArray> discount = ttable->table_->column(l_discount);
   std::shared_ptr<arrow::ChunkedArray> quantity = ttable->table_->column(l_quantity);
@@ -93,13 +118,47 @@ double Query6(std::shared_ptr<TTable> ttable)
   return revenue;
 }
 
+/*
+select
+	n_name,
+	sum(l_extendedprice * (1 - l_discount)) as revenue
+from
+	customer,
+	orders,
+	lineitem,
+	supplier,
+	nation,
+	region
+where
+	c_custkey = o_custkey
+	and l_orderkey = o_orderkey
+	and l_suppkey = s_suppkey
+	and c_nationkey = s_nationkey
+	and s_nationkey = n_nationkey
+	and n_regionkey = r_regionkey
+	and r_name = 'EUROPE'
+	and o_orderdate >= date '1995-01-01'
+	and o_orderdate < date '1995-01-01' + interval '1' year
+group by
+	n_name
+order by
+	revenue desc;
+limit -1;
+*/
+
+double Query5(std::vector<std::shared_ptr<TTable>>& tpchTables)
+{
+
+  return 0;
+}
+
 int main(int argc, char** argv) {
 
   if (argc < 2) {
     std::cout << "Usage: nvec file_name" << std::endl;
     return EXIT_SUCCESS;
   }
-  std::string fileName = argv[1];
+  std::string tpchDataDir = argv[1];
 
   // Initialize Google's logging library.
   google::InitGoogleLogging("tcache");
@@ -110,17 +169,31 @@ int main(int argc, char** argv) {
   arrow::csv::ParseOptions parseOptions = arrow::csv::ParseOptions::Defaults();
   parseOptions.delimiter = '|';
   arrow::csv::ConvertOptions convertOptions = arrow::csv::ConvertOptions::Defaults();
-  std::string tableName = "LINEITEM";
 
-  std::shared_ptr<TTable> ttable = tCache.ReadCsv(tableName, fileName,
-                                                  readOptions, parseOptions, convertOptions);
-  //ttable->Print();
+  std::vector<std::shared_ptr<TTable>> tables;
+  tables.resize(numTables);
+  
+  for (int32_t i=0; i<numTables; i++)
+  {
+    std::string fileName = tpchDataDir+tableNames[i]+".tbl";
+    tables[i] = tCache.ReadCsv(tableNames[i], fileName,
+                               readOptions, parseOptions, convertOptions);
+    //tables[i]->Print();
+  }
+
   StopWatch stopWatch;
   stopWatch.Start();
-  double result = Query6(ttable);
+  double result = Query6(tables[lineitem]);
   stopWatch.Stop();
   std::cout << "Revenue=" << result << std::endl;
   std::cout << stopWatch.ElapsedInMicroseconds() << "us" << std::endl;
+
+  stopWatch.Start();
+  result = Query5(tables);
+  stopWatch.Stop();
+  std::cout << "Revenue=" << result << std::endl;
+  std::cout << stopWatch.ElapsedInMicroseconds() << "us" << std::endl;
+
 
   return EXIT_SUCCESS;
 
