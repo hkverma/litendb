@@ -18,6 +18,13 @@ For local machine setup, following environment is used.
 ### Spark 3.0
 
 Download and setup Spark 3.0 https://spark.apache.org/news/spark-3.0.0-preview2.html
+Use jupyter with pyspark set the following variables & run pyspark. jupyter should be installed as well
+```
+sudo apt-get install jupyter
+export PYSPARK_DRIVER_PYTHON=jupyter
+export PYSPARK_DRIVER_PYTHON_OPTS='notebook'
+py
+```
 
 ### C++ Build Environment
 

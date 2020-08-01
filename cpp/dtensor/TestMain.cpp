@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <iostream>
 #include <vector>
+#include <chrono>
 
 #include <arrow/api.h>
 #include <arrow/csv/api.h>
@@ -203,10 +204,13 @@ int main(int argc, char** argv) {
 
   std::shared_ptr<TTable> ttable = tCache.ReadCsv(tableName, fileName,
                                                   readOptions, parseOptions, convertOptions);
-  ttable->Print();
-
+  //ttable->Print();
+  auto start = std::chrono::high_resolution_clock::now();
   double result = Query6(ttable);
+  auto finish = std::chrono::high_resolution_clock::now();
+  auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(finish-start);
   std::cout << "Revenue=" << result << std::endl;
+  std::cout << microseconds.count() << "us" << std::endl;
 
   return EXIT_SUCCESS;
 
