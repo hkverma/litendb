@@ -15,4 +15,5 @@ include(build_utils/BuildUtils.cmake)
 #
 # Subdirectories
 #
+add_subdirectory(common)
 add_subdirectory(dtensor)

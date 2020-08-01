@@ -5,4 +5,5 @@
 #include_directories(${APACHE_ARROW_CPP}/src)
 
 # Common libraries
+set(COMMON_SRC  ${TENDB_ROOT_DIR}/cpp/common)
 set(DTENSOR_SRC ${TENDB_ROOT_DIR}/cpp/dtensor)
