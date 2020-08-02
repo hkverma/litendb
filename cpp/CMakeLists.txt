@@ -1,4 +1,5 @@
 # Top level CMake file
+# TODO create debug/release directory
 cmake_minimum_required(VERSION 3.17)
 message(STATUS "Building using CMake version: ${CMAKE_VERSION}")
 
@@ -17,3 +18,4 @@ include(build_utils/BuildUtils.cmake)
 #
 add_subdirectory(common)
 add_subdirectory(dtensor)
+add_subdirectory(dtensor_test)
