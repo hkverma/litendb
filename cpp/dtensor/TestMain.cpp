@@ -148,7 +148,7 @@ limit -1;
 
 double Query5(std::vector<std::shared_ptr<TTable>>& tpchTables)
 {
-
+  
   return 0;
 }
 
