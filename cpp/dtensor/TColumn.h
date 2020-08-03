@@ -14,7 +14,10 @@
 
 namespace tendb {
 
-  template <class Type, class TypeArray>
+  // TODO Use Status to return value wrapped with a message
+
+  // arrow::ChunkedArray Iterator
+  template <class Type, class ArrayType>
   class TColumnIterator
   {
   public:
@@ -23,7 +26,17 @@ namespace tendb {
     {
       chunkedArray_ = chary;
       array_ =
-        std::static_pointer_cast<TypeArray>(chunkedArray_->chunk(chunkNum_));
+        std::static_pointer_cast<ArrayType>(chunkedArray_->chunk(chunkNum_));
+      chunkNum_++;
+    }
+
+    void reset()
+    {
+      currentArrayRowId_=0;
+      lastArrayRowId_=0;
+      chunkNum_=0;
+      array_ =
+        std::static_pointer_cast<ArrayType>(chunkedArray_->chunk(chunkNum_));
       chunkNum_++;
     }
 
@@ -55,30 +68,67 @@ namespace tendb {
         return false;
       }
       array_ =
-        std::static_pointer_cast<TypeArray>(chunkedArray_->chunk(chunkNum_));
+        std::static_pointer_cast<ArrayType>(chunkedArray_->chunk(chunkNum_));
       return true;
     }
 
     int64_t currentArrayRowId_;
     int64_t lastArrayRowId_;
     int64_t chunkNum_;
-    std::shared_ptr<TypeArray> array_;
+    std::shared_ptr<ArrayType> array_;
     std::shared_ptr<arrow::ChunkedArray> chunkedArray_;
   };
+
+  template<class Type, class ArrayType>
+  bool GetRowId(int64_t& rowId, Type& value, std::shared_ptr<arrow::ChunkedArray> chunkedArray)
+  {
+    TColumnIterator<Type, ArrayType> columnIterator(chunkedArray);
+    Type currentValue;
+    rowId = 0;
+    while (columnIterator.next(currentValue))
+    {
+      if (currentValue == value)
+      {
+        return true;
+      }
+      rowId++;
+    }
+    return false;
+  };
+
+  template<class Type, class ArrayType>
+  bool GetValue(int64_t& rowId, Type& value, std::shared_ptr<arrow::ChunkedArray> chunkedArray)
+  {
+    TColumnIterator<Type, ArrayType> columnIterator(chunkedArray);
+
+    int64_t chunkRowId=0;
+    for (int64_t chunkNum=0; chunkNum<=chunkedArray->num_chunks(); chunkNum++)
+    {
+      std::shared_ptr<ArrayType> array =
+        std::static_pointer_cast<ArrayType>(chunkedArray->chunk(chunkNum));
+      int64_t length = array->length();
+      if (chunkRowId+length < rowId)
+      {
+        chunkRowId += length;
+      }
+      else
+      {
+        int64_t offset = rowId-chunkRowId;
+        value = array->Value(offset);
+        return true;
+      }
+    }
+    return false;
+  }
   
+  // TColumns can be a transformation of arrow::ChunkedArray
+  template <class Type, class ArrayType>  
   class TColumn {
   public:
+    TColumn(std::shared_ptr<arrow::ChunkedArray> chary) :
+      chunkedArray_(chary) { }
 
-    std::shared_ptr<TColumnChunk> GetColumnChunk(int64_t rowNum);
-    uint32_t columnNum_;
-    uint32_t startOffset;
-
-    arrow::Type::type type_;
-    uint32_t totalChunks_;
-    uint32_t totalComponents_;
-
-    std::vector<int64_t> startOffsets_;
-    std::vector<std::shared_ptr<TColumnChunk>> columnChunks_;
-
+    std::shared_ptr<arrow::ChunkedArray> chunkedArray_;
+    std::shared_ptr<arrow::ChunkedArray> transformedChunkedArray_;
   };
 };

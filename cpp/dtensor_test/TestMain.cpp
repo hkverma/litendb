@@ -14,10 +14,10 @@ using namespace tendb;
 //
 // Read TPCH data and print table
 // Run Query 6
-// Compare Query 6 against Spark on VM 
+// Compare Query 6 against Spark on VM
 // Do pre-join to create the tables
 // Put zone-map for column chunks
-// 
+//
 // Run Query 5
 // Compare Query 5 against Spark on VM
 //
@@ -39,7 +39,7 @@ enum {
   region=5,
   numTables=6
 };
-  
+
 std::vector<std::string> tableNames =
   {
     "lineitem",
@@ -148,8 +148,96 @@ limit -1;
 
 double Query5(std::vector<std::shared_ptr<TTable>>& tpchTables)
 {
-  
-  return 0;
+
+  std::shared_ptr<arrow::ChunkedArray> lDiscount =
+    tpchTables[lineitem]->table_->column(l_discount);
+  std::shared_ptr<arrow::ChunkedArray> lExtendedprice =
+    tpchTables[lineitem]->table_->column(l_extendedprice);
+  std::shared_ptr<arrow::ChunkedArray> lOrderkey =
+    tpchTables[lineitem]->table_->column(l_orderkey);
+  std::shared_ptr<arrow::ChunkedArray> lSuppkey =
+    tpchTables[lineitem]->table_->column(l_suppkey);
+
+
+  std::shared_ptr<arrow::ChunkedArray> oOrderkey =
+    tpchTables[orders]->table_->column(o_orderkey);
+  std::shared_ptr<arrow::ChunkedArray> oOrderdate =
+    tpchTables[orders]->table_->column(o_orderdate);
+
+  std::shared_ptr<arrow::ChunkedArray> sSuppkey =
+    tpchTables[supplier]->table_->column(s_suppkey);
+  std::shared_ptr<arrow::ChunkedArray>  sNationkey =
+    tpchTables[supplier]->table_->column(s_nationkey);
+
+  std::shared_ptr<arrow::ChunkedArray>  rRegionkey =
+    tpchTables[region]->table_->column(r_regionkey);
+  std::shared_ptr<arrow::ChunkedArray>  rName =
+    tpchTables[region]->table_->column(r_name);
+
+  TColumnIterator<double, arrow::DoubleArray> lDiscountIter(lDiscount);
+  TColumnIterator<double, arrow::DoubleArray> lExtendedpriceIter(lExtendedprice);
+  TColumnIterator<int64_t, arrow::Int64Array> lOrderkeyIter(lOrderkey);
+  TColumnIterator<int64_t, arrow::Int64Array> lSuppkeyIter(lSuppkey);
+
+  int64_t length = lDiscount->length();
+  if (length != lExtendedprice->length())
+  {
+    std::cout << "Length should be the same" << std::endl;
+    return 0;
+  }
+
+  int64_t oOrderRowId, oOrderdateValue;
+  int64_t sSuppkeyId, sNationkeyValue;
+  int64_t rRegionkeyId;
+  int64_t lOrderkeyValue, lSuppkeyValue;
+  double lDiscountValue, lExtendedpriceValue;
+
+  double revenue = 0;
+
+  int64_t date19950101Value =
+    SecondsSinceEpoch(boost::gregorian::date(1995, 1, 1), boost::posix_time::seconds(0));
+  int64_t date19951231Value =
+    SecondsSinceEpoch(boost::gregorian::date(1995, 12, 31), boost::posix_time::seconds(0));
+  std::string europe("EUROPE");
+  std::string rNationValue;
+
+  // for now do a full table scan need to build filtering metadata per column chunk
+  for (int64_t rowId=0; rowId<length; rowId++)
+  {
+    // Get all values for the row first
+    if (!lOrderkeyIter.next(lOrderkeyValue)) break;
+    if (!lSuppkeyIter.next(lSuppkeyValue)) break;
+    if (!lExtendedpriceIter.next(lExtendedpriceValue)) break;
+    if (!lDiscountIter.next(lDiscountValue)) break;
+
+    // Filter on orderdata
+    if (!GetRowId<int64_t, arrow::Int64Array>(oOrderRowId, lOrderkeyValue, oOrderkey)) break;
+    if (!GetValue<int64_t, arrow::Int64Array>(oOrderRowId, oOrderdateValue, oOrderdate)) break;
+    if (oOrderdateValue < date19950101Value || oOrderdateValue > date19951231Value)
+      continue;
+
+    // Filter on r_name
+    // l_suppkey = s_suppkey, s_nationkey = n_nationkey, n_regionkey = r_regionkey
+    //   r_name = 'EUROPE'
+    if (!GetRowId<int64_t, arrow::Int64Array>(sSuppkeyId, lSuppkeyValue, sSuppkey)) break;
+    if (!GetValue<int64_t, arrow::Int64Array>(sSuppkeyId, sNationkeyValue, sNationkey)) break;
+    if (!GetRowId<int64_t, arrow::Int64Array>(rRegionkeyId, sNationkeyValue, rRegionkey)) break;
+    // TODO string builder here...
+    /*
+    if (!GetValue<int64_t, arrow::Int64Array>(rRegionkeyId, rNationValue, rNation)) break;
+
+    bool ifEurope = std::equal(europe.begin(), europe.end(), rNationValue.begin(), rNationValue.end(),
+                               [] (const char& a, const char& b)
+                               {
+                                 return (std::tolower(a) == std::tolower(b));
+                               });
+    if (!ifEurope)
+    break ;*/
+
+    // add to revenue
+    revenue += (1-lDiscountValue)*lExtendedpriceValue;
+  }
+  return revenue;
 }
 
 int main(int argc, char** argv) {
@@ -172,7 +260,7 @@ int main(int argc, char** argv) {
 
   std::vector<std::shared_ptr<TTable>> tables;
   tables.resize(numTables);
-  
+
   for (int32_t i=0; i<numTables; i++)
   {
     std::string fileName = tpchDataDir+tableNames[i]+".tbl";
@@ -185,13 +273,13 @@ int main(int argc, char** argv) {
   stopWatch.Start();
   double result = Query6(tables[lineitem]);
   stopWatch.Stop();
-  std::cout << "Revenue=" << result << std::endl;
+  std::cout << "Query6 Revenue=" << result << std::endl;
   std::cout << stopWatch.ElapsedInMicroseconds() << "us" << std::endl;
 
   stopWatch.Start();
   result = Query5(tables);
   stopWatch.Stop();
-  std::cout << "Revenue=" << result << std::endl;
+  std::cout << "Query5 Revenue=" << result << std::endl;
   std::cout << stopWatch.ElapsedInMicroseconds() << "us" << std::endl;
 
 
