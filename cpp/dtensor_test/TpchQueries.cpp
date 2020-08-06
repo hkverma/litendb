@@ -136,8 +136,12 @@ double TpchQueries::Query5()
 
   std::shared_ptr<arrow::ChunkedArray> sSuppkey =
     tables_[supplier]->table_->column(s_suppkey);
+
   std::shared_ptr<arrow::ChunkedArray>  sNationkey =
     tables_[supplier]->table_->column(s_nationkey);
+  
+  std::shared_ptr<arrow::ChunkedArray>  nNationkey =
+    tables_[supplier]->table_->column(n_nationkey);
 
   std::shared_ptr<arrow::ChunkedArray>  nRegionkey =
     tables_[region]->table_->column(n_regionkey);
@@ -157,9 +161,9 @@ double TpchQueries::Query5()
     return 0;
   }
 
-  int64_t oOrderRowId, oOrderdateValue;
-  int64_t sSuppkeyId, sNationkeyValue;
-  int64_t nRegionkeyId;
+  int64_t orderRowId, oOrderdateValue;
+  int64_t suppRowId, sNationkeyValue;
+  int64_t nationRowId;
   int64_t lOrderkeyValue, lSuppkeyValue;
   double lDiscountValue, lExtendedpriceValue;
 
@@ -182,17 +186,19 @@ double TpchQueries::Query5()
     if (!lDiscountIter.next(lDiscountValue)) break;
 
     // Filter on orderdata
-    if (!GetRowId<int64_t, arrow::Int64Array>(oOrderRowId, lOrderkeyValue, oOrderkey)) break;
-    if (!GetValue<int64_t, arrow::Int64Array>(oOrderRowId, oOrderdateValue, oOrderdate)) break;
+    if (!GetRowId<int64_t, arrow::Int64Array>(orderRowId, lOrderkeyValue, oOrderkey)) continue;
+    if (!GetValue<int64_t, arrow::Int64Array>(orderRowId, oOrderdateValue, oOrderdate)) continue;
     if (oOrderdateValue < date19950101Value || oOrderdateValue > date19951231Value)
       continue;
 
     // Filter on r_name
     // l_suppkey = s_suppkey, s_nationkey = n_nationkey, n_regionkey = r_regionkey
     //   r_name = 'EUROPE'
-    if (!GetRowId<int64_t, arrow::Int64Array>(sSuppkeyId, lSuppkeyValue, sSuppkey)) break;
-    if (!GetValue<int64_t, arrow::Int64Array>(sSuppkeyId, sNationkeyValue, sNationkey)) break;
-    if (!GetRowId<int64_t, arrow::Int64Array>(nRegionkeyId, sNationkeyValue, nRegionkey)) break;
+    if (!GetRowId<int64_t, arrow::Int64Array>(suppRowId, lSuppkeyValue, sSuppkey)) continue;
+    if (!GetValue<int64_t, arrow::Int64Array>(suppRowId, sNationkeyValue, sNationkey)) continue;
+    if (!(GetRowId<int64_t, arrow::Int64Array>(nationRowId, sNationkeyValue, nNationkey)))
+      continue;
+    
     // TODO string builder here...
     /*
     if (!GetValue<int64_t, arrow::Int64Array>(rRegionkeyId, rNationValue, rNation)) break;

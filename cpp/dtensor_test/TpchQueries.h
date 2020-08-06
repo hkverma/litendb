@@ -1,5 +1,13 @@
 #include "dtensor.h"
 
+#define CHECKFUNC(FUNC, MSG)       \
+  do {                             \
+    if (!FUNC)                     \
+  {                                \
+    std::cout << MSG << std::endl; \
+    break;                         \
+  }                                \
+  } while (0)
 namespace tendb
 {
 
