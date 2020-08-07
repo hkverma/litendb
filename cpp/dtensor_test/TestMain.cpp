@@ -9,31 +9,6 @@
 
 using namespace tendb;
 
-//
-// TODO
-//
-// Async multi-tasking using Ray - explore
-// CMakefile changes to put binarues in bin
-// DSL - which ML algorithm to encode & which app
-//
-// Read TPCH data and print table
-// Run Query 6
-// Compare Query 6 against Spark on VM
-// Do pre-join to create the tables
-// Put zone-map for column chunks
-//
-// Run Query 5
-// Compare Query 5 against Spark on VM
-//
-//
-// Write DSLs - groupby scan filter etc.
-// Write Query 6 & Query 5 using DSL
-// Do TPCH queries using the DSL using jupyter
-//
-// Use arrow::Result to return Status along with the value
-//
-
-
 int main(int argc, char** argv) {
 
   if (argc < 2) {

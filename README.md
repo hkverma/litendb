@@ -260,6 +260,40 @@ Analytic (Multiple years, customer patterns)  Customer extracts, star joins
 Complex  Fact-to-fact joins, windows, extensive subqueries
   23, 36, 64, 94
 
+### Under Development
+
+#### Concepts -
+* map       - like zone-map
+* transform - like data-tensor
+* hierarchy - for hierarchical data
+* aggregates- for feaures & aggregates
+* distributed - for distributes data
+* incremental - build incrementally
+* cache       - keep LRU or LRU (T) type of tensor
+
+* index - multi-dimensional, hierarchical access to a single point
+
+* DSLs on DAGs - lazy evaluation
+
+#### Tasks
+* Async multi-tasking using Ray - explore
+* CMakefile changes to put binarues in bin
+* DSL - which ML algorithm to encode & which app
+
+*  Read TPCH data and print table
+* Run Query 6
+* Compare Query 6 against Spark on VM
+*  Do pre-join to create the tables
+*  Put zone-map for column chunks
+
+* Run Query 5
+* Compare Query 5 against Spark on VM
+
+* Write DSLs - groupby scan filter etc.
+* Write Query 6 & Query 5 using DSL
+* Do TPCH queries using the DSL using jupyter
+
+* Use arrow::Result to return Status along with the value
 
 ### Contribution guidelines ###
 
