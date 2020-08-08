@@ -114,7 +114,18 @@ namespace tendb {
       else
       {
         int64_t offset = rowId-chunkRowId;
-        value = array->Value(offset);
+        if constexpr(std::is_same_v<Type, arrow::util::string_view>)
+        {
+          value = array->GetView(offset);
+        }
+        else if constexpr(std::is_same_v<Type, std::string>)
+        {
+          value = array->GetString(offset);
+        }
+        else
+        {
+          value = array->Value(offset);
+        }
         return true;
       }
     }

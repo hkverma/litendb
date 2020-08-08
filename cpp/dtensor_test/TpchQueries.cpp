@@ -138,7 +138,7 @@ double TpchQueries::Query5()
     tables_[supplier]->table_->column(s_suppkey);
   std::shared_ptr<arrow::ChunkedArray>  sNationkey =
     tables_[supplier]->table_->column(s_nationkey);
-  
+
   std::shared_ptr<arrow::ChunkedArray>  nNationkey =
     tables_[nation]->table_->column(n_nationkey);
   std::shared_ptr<arrow::ChunkedArray>  nRegionkey =
@@ -166,6 +166,7 @@ double TpchQueries::Query5()
   int64_t nationRowId;
   int64_t nRegionkeyValue;
   int64_t regionRowId;
+  //arrow::util::string_view rNameValue;
   std::string rNameValue;
   int64_t lOrderkeyValue, lSuppkeyValue;
   double lDiscountValue, lExtendedpriceValue;
@@ -199,23 +200,21 @@ double TpchQueries::Query5()
     //   r_name = 'EUROPE'
     if (!GetRowId<int64_t, arrow::Int64Array>(suppRowId, lSuppkeyValue, sSuppkey)) continue;
     if (!GetValue<int64_t, arrow::Int64Array>(suppRowId, sNationkeyValue, sNationkey)) continue;
-    
+
     if (!(GetRowId<int64_t, arrow::Int64Array>(nationRowId, sNationkeyValue, nNationkey))) continue;
     if (!(GetValue<int64_t, arrow::Int64Array>(nationRowId, nRegionkeyValue, nRegionkey))) continue;
-    
-    if (!(GetRowId<int64_t, arrow::Int64Array>(regionRowId, nRegionkeyValue, rRegionkey))) continue;
-    
-    // TODO string builder here...
-    /*
-    if (!(GetValue<int64_t, arrow::Int64Array>(regionRowId, rNameValue, rName))) continue;
 
-    bool ifEurope = std::equal(europe.begin(), europe.end(), rNameValue.begin(), rNationValue.end(),
+    if (!(GetRowId<int64_t, arrow::Int64Array>(regionRowId, nRegionkeyValue, rRegionkey))) continue;
+    //if (!(GetValue<arrow::util::string_view, arrow::StringArray>(regionRowId, rNameValue, rName))) continue;
+    if (!(GetValue<std::string, arrow::StringArray>(regionRowId, rNameValue, rName))) continue;
+
+    bool ifEurope = std::equal(europe.begin(), europe.end(), rNameValue.begin(),
                                [] (const char& a, const char& b)
                                {
                                  return (std::tolower(a) == std::tolower(b));
                                });
     if (!ifEurope)
-    break ;*/
+      continue;
 
     // add to revenue
     revenue += (1-lDiscountValue)*lExtendedpriceValue;

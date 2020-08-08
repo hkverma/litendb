@@ -4,6 +4,7 @@
 #include <arrow/csv/api.h>
 #include <arrow/filesystem/api.h>
 #include <arrow/io/api.h>
+#include <arrow/util/string_view.h>
 
 #include <glog/logging.h>
 
