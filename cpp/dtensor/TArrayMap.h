@@ -21,11 +21,28 @@ namespace tendb {
     arrow::Type type_;
   };
 
-  // min max for integer, float, double date, tiemstamp time32
+  // zone maps for integral
   template<class T>
-  class TNumberArrayMap : public TArrayMap {
+  class TIntegralArrayMap : public TArrayMap {
   public:
     T min;
     T max;
   };
+  
+  // zone maps for float
+  template<class T>
+  class TFloatArrayMap : public TArrayMap {
+  public:
+    T min;
+    T max;
+  };
+  
+  // zone maps for date
+  template<class T>
+  class TDateArrayMap : public TArrayMap {
+  public:
+    T min;
+    T max;
+  };
+  
 };

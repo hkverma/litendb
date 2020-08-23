@@ -43,10 +43,10 @@ namespace tendb {
     int64_t NumRows() { return table_->num_rows(); }
 
     std::shared_ptr<arrow::Table> table_;
+    
   private:
     std::shared_ptr<arrow::Schema> schema_;
     std::string name_;
-    std::unordered_map<std::shared_ptr<arrow::Array>, std::shared_ptr<TArrayMap>> arrayMaps_;
     
   };
   

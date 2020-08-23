@@ -133,15 +133,40 @@ namespace tendb {
     }
     return false;
   }
-  
+
   // TColumns can be a transformation of arrow::ChunkedArray
-  template <class Type, class ArrayType>  
   class TColumn {
   public:
-    TColumn(std::shared_ptr<arrow::ChunkedArray> chary) :
-      chunkedArray_(chary) { }
+    TColumn(std::shared_ptr<arrow::ChunkedArray> chary);
 
+    static std::shared_ptr<TColumn> Make(std::shared_ptr<arrow::ChunkedArray> chunkedArray);
+    
     std::shared_ptr<arrow::ChunkedArray> chunkedArray_;
-    std::shared_ptr<arrow::ChunkedArray> transformedChunkedArray_;
+
+    // TODO explore to use arrow::DataType
+    enum {Integral=0, Float, Date} mapType_;
+
   };
+
+  template<class Type>
+  class TIntegralColumn : public TColumn {
+  public:
+    TIntegralColumn(std::shared_ptr<arrow::ChunkedArray> chary) : TColumn(chary) { }
+    std::unordered_map<std::shared_ptr<arrow::Array>, std::shared_ptr<TIntegralArrayMap<Type>>> arrayMaps_;
+  };
+
+  template<class Type>
+  class TFloatColumn : public TColumn {
+  public:
+    TFloatColumn(std::shared_ptr<arrow::ChunkedArray> chary) : TColumn(chary) { }
+    std::unordered_map<std::shared_ptr<arrow::Array>, std::shared_ptr<TFloatArrayMap<Type>>> arrayMaps_;
+  };
+
+  template<class Type>
+  class TDateColumn : public TColumn {
+  public:
+    TDateColumn(std::shared_ptr<arrow::ChunkedArray> chary) : TColumn(chary) { }
+    std::unordered_map<std::shared_ptr<arrow::Array>, std::shared_ptr<TDateArrayMap<Type>>> arrayMaps_;
+  };
+  
 };
