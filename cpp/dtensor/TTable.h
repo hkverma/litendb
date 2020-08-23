@@ -17,6 +17,8 @@
 #include <arrow/api.h>
 #include <arrow/csv/api.h>
 
+#include <TArrayMap.h>
+
 #pragma once
 
 namespace tendb {
@@ -44,6 +46,7 @@ namespace tendb {
   private:
     std::shared_ptr<arrow::Schema> schema_;
     std::string name_;
+    std::unordered_map<std::shared_ptr<arrow::Array>, std::shared_ptr<TArrayMap>> arrayMaps_;
     
   };
   

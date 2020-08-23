@@ -14,20 +14,18 @@
 
 namespace tendb {
 
-  // UUID differentiates between ColumnChunks
-  class TColumnChunk {
+  // Use UUID for each array
+  // Abstract Base Array Map
+  class TArrayMap {
+    TArrayMap() { }
+    arrow::Type type_;
+  };
 
+  // min max for integer, float, double date, tiemstamp time32
+  template<class T>
+  class TNumberArrayMap : public TArrayMap {
   public:
-
-    void Print();
-
-    int64_t sequenceNum_;
-    int64_t columnNum_;
-    int64_t startOffset_;
-    
-    arrow::Type::type type_;
-    int64_t totalComponents_;
-    boost::uuids::uuid uuid_;
-
+    T min;
+    T max;
   };
 };

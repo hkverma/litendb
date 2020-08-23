@@ -79,6 +79,7 @@ namespace tendb {
     std::shared_ptr<arrow::ChunkedArray> chunkedArray_;
   };
 
+  // first rowId for a given value in chunkedArray
   template<class Type, class ArrayType>
   bool GetRowId(int64_t& rowId, Type& value, std::shared_ptr<arrow::ChunkedArray> chunkedArray)
   {
@@ -96,6 +97,7 @@ namespace tendb {
     return false;
   };
 
+  // Get value from a rowId for a given chunkedArray
   template<class Type, class ArrayType>
   bool GetValue(int64_t& rowId, Type& value, std::shared_ptr<arrow::ChunkedArray> chunkedArray)
   {
