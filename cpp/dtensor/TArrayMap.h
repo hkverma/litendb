@@ -14,35 +14,27 @@
 
 namespace tendb {
 
-  // Use UUID for each array
   // Abstract Base Array Map
   class TArrayMap {
-    TArrayMap() { }
-    arrow::Type type_;
+  public:
+    TArrayMap(std::shared_ptr<arrow::ChunkedArray> chunkedArray) : chunkedArray_(chunkedArray) { }
+    ~TArrayMap() { }
+
+    static std::shared_ptr<TArrayMap> Make(std::shared_ptr<arrow::ChunkedArray> chunkedArray);
+
+    std::shared_ptr<arrow::ChunkedArray> chunkedArray_;
+    arrow::MemoryPool* pool_;
+    arrow::Status status_;
+    
   };
 
-  // zone maps for integral
-  template<class T>
-  class TIntegralArrayMap : public TArrayMap {
+  // zone maps for comparable types currently only range type  
+  class TInt64ArrayMap : public TArrayMap
+  {
   public:
-    T min;
-    T max;
+    TInt64ArrayMap(std::shared_ptr<arrow::ChunkedArray> chunkedArray) : TArrayMap(chunkedArray) { }
+    int64_t min_;
+    int64_t max_;
   };
-  
-  // zone maps for float
-  template<class T>
-  class TFloatArrayMap : public TArrayMap {
-  public:
-    T min;
-    T max;
-  };
-  
-  // zone maps for date
-  template<class T>
-  class TDateArrayMap : public TArrayMap {
-  public:
-    T min;
-    T max;
-  };
-  
+
 };

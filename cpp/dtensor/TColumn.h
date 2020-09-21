@@ -143,30 +143,10 @@ namespace tendb {
     
     std::shared_ptr<arrow::ChunkedArray> chunkedArray_;
 
-    // TODO explore to use arrow::DataType
-    enum {Integral=0, Float, Date} mapType_;
+    // arrow::DataType is chunkedArray_->type() arrow::Type::type is DataType::id()
+    
+    std::shared_ptr<TArrayMap> map_;
 
-  };
-
-  template<class Type>
-  class TIntegralColumn : public TColumn {
-  public:
-    TIntegralColumn(std::shared_ptr<arrow::ChunkedArray> chary) : TColumn(chary) { }
-    std::unordered_map<std::shared_ptr<arrow::Array>, std::shared_ptr<TIntegralArrayMap<Type>>> arrayMaps_;
-  };
-
-  template<class Type>
-  class TFloatColumn : public TColumn {
-  public:
-    TFloatColumn(std::shared_ptr<arrow::ChunkedArray> chary) : TColumn(chary) { }
-    std::unordered_map<std::shared_ptr<arrow::Array>, std::shared_ptr<TFloatArrayMap<Type>>> arrayMaps_;
-  };
-
-  template<class Type>
-  class TDateColumn : public TColumn {
-  public:
-    TDateColumn(std::shared_ptr<arrow::ChunkedArray> chary) : TColumn(chary) { }
-    std::unordered_map<std::shared_ptr<arrow::Array>, std::shared_ptr<TDateArrayMap<Type>>> arrayMaps_;
   };
   
 };
