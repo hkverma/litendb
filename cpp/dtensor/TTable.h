@@ -17,7 +17,7 @@
 #include <arrow/api.h>
 #include <arrow/csv/api.h>
 
-#include <TArrayMap.h>
+#include <TColumnMap.h>
 
 #pragma once
 
@@ -36,6 +36,8 @@ namespace tendb {
                  const arrow::csv::ReadOptions& readOptions,
                  const arrow::csv::ParseOptions& parseOptions,
                  const arrow::csv::ConvertOptions& convertOptions);
+
+    bool MakeMaps();
     
     std::shared_ptr<arrow::Array> GetArray(int64_t rowNum, int64_t colNum);
 
@@ -43,6 +45,7 @@ namespace tendb {
     int64_t NumRows() { return table_->num_rows(); }
 
     std::shared_ptr<arrow::Table> table_;
+    std::vector<std::shared_ptr<TColumnMap>> maps_;
     
   private:
     std::shared_ptr<arrow::Schema> schema_;

@@ -110,4 +110,19 @@ namespace tendb {
     return true;
   }
 
+  bool TTable::MakeMaps()
+  {
+    if (nullptr == table_)
+    {
+      return false;
+    }
+    
+    for (int64_t cnum=0; cnum<table_->num_columns(); cnum++)
+    {
+      auto colMap = TColumnMap::Make(table_->column(cnum));
+      maps_.push_back(colMap);
+    }
+    return true;
+  }
+
 }

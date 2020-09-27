@@ -39,14 +39,14 @@ namespace tendb {
   // TODO Use Memory Pool to create an arrow memory pool liks  arrow::MemoryPool* pool_
   //      Use pool to store all the values
   //
-  class TChunkedArrayMap {
+  class TColumnMap {
   public:
-    TChunkedArrayMap(std::shared_ptr<arrow::ChunkedArray> chunkedArray) :
+    TColumnMap(std::shared_ptr<arrow::ChunkedArray> chunkedArray) :
       chunkedArray_(chunkedArray)
     {  }
-    ~TChunkedArrayMap() { }
+    ~TColumnMap() { }
 
-    static std::shared_ptr<TChunkedArrayMap> Make(std::shared_ptr<arrow::ChunkedArray> chunkedArray);
+    static std::shared_ptr<TColumnMap> Make(std::shared_ptr<arrow::ChunkedArray> chunkedArray);
 
     std::shared_ptr<arrow::ChunkedArray> chunkedArray_;
     std::vector<std::shared_ptr<TArrayMap>> arrayMap_;

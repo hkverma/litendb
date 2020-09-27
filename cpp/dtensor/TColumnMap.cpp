@@ -75,9 +75,9 @@ namespace tendb {
     }
   }
 
-  std::shared_ptr<TChunkedArrayMap> TChunkedArrayMap::Make(std::shared_ptr<arrow::ChunkedArray> chunkedArray)
+  std::shared_ptr<TColumnMap> TColumnMap::Make(std::shared_ptr<arrow::ChunkedArray> chunkedArray)
   {
-    std::shared_ptr<TChunkedArrayMap> chunkArrMap = std::make_shared<TChunkedArrayMap>(chunkedArray);
+    std::shared_ptr<TColumnMap> chunkArrMap = std::make_shared<TColumnMap>(chunkedArray);
     for (int64_t cnum=0; cnum<chunkedArray->length(); cnum++)
     {
       std::shared_ptr<TArrayMap> arrMap = TArrayMap::Make(chunkedArray->chunk(cnum));

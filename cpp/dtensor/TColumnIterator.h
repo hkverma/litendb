@@ -133,20 +133,5 @@ namespace tendb {
     }
     return false;
   }
-
-  // TColumns can be a transformation of arrow::ChunkedArray
-  class TColumn {
-  public:
-    TColumn(std::shared_ptr<arrow::ChunkedArray> chary);
-
-    static std::shared_ptr<TColumn> Make(std::shared_ptr<arrow::ChunkedArray> chunkedArray);
-    
-    std::shared_ptr<arrow::ChunkedArray> chunkedArray_;
-
-    // arrow::DataType is chunkedArray_->type() arrow::Type::type is DataType::id()
-    
-    std::shared_ptr<TChunkedArrayMap> map_;
-
-  };
   
 };
