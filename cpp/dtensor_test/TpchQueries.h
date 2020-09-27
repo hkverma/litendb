@@ -8,6 +8,7 @@
     break;                         \
   }                                \
   } while (0)
+
 namespace tendb
 {
 

@@ -6,6 +6,8 @@
 // One column chunk stores numComponents of a single column of TenDB
 // Arrow in memory, persistent in parquet format
 //
+// TODO Use Status to return value wrapped with a message
+//
 #pragma once
 
 #include <boost/uuid/uuid.hpp>
@@ -13,8 +15,6 @@
 #include <vector>
 
 namespace tendb {
-
-  // TODO Use Status to return value wrapped with a message
 
   // arrow::ChunkedArray Iterator
   template <class Type, class ArrayType>
@@ -145,7 +145,7 @@ namespace tendb {
 
     // arrow::DataType is chunkedArray_->type() arrow::Type::type is DataType::id()
     
-    std::shared_ptr<TArrayMap> map_;
+    std::shared_ptr<TChunkedArrayMap> map_;
 
   };
   
