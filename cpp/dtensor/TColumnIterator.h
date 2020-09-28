@@ -14,6 +14,8 @@
 #include <arrow/api.h>
 #include <vector>
 
+#include <TTable.h>
+
 namespace tendb {
 
   // arrow::ChunkedArray Iterator
@@ -81,8 +83,9 @@ namespace tendb {
 
   // first rowId for a given value in chunkedArray
   template<class Type, class ArrayType>
-  bool GetRowId(int64_t& rowId, Type& value, std::shared_ptr<arrow::ChunkedArray> chunkedArray)
+  bool GetRowId(int64_t& rowId, Type& value, std::shared_ptr<TTable> table, int64_t colNum)
   {
+    std::shared_ptr<arrow::ChunkedArray> chunkedArray = table->table_->column(colNum);
     TColumnIterator<Type, ArrayType> columnIterator(chunkedArray);
     Type currentValue;
     rowId = 0;
