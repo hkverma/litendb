@@ -31,6 +31,8 @@ namespace tendb {
   {
   public:
     TInt64ArrayMap(std::shared_ptr<arrow::Array> arr);
+    static std::shared_ptr<TInt64ArrayMap> Make(std::shared_ptr<arrow::Array> arr);
+
     int64_t min_;
     int64_t max_;
   };

@@ -116,7 +116,7 @@ order by
 limit -1;
 */
 
-double TpchQueries::Query5()
+double TpchQueries::Query5ColIter()
 {
 
   std::shared_ptr<arrow::ChunkedArray> lDiscount =
@@ -221,3 +221,17 @@ double TpchQueries::Query5()
   }
   return revenue;
 }
+
+
+bool TpchQueries::MakeMaps()
+{
+  bool result = true;
+  for (int32_t i=0; i<numTables; i++)
+  {
+    result &= tables_[i]->MakeMaps();
+  }
+  return result;
+}
+
+
+double TpchQueriesQuery5();

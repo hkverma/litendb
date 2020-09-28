@@ -119,7 +119,8 @@ namespace tendb {
     
     for (int64_t cnum=0; cnum<table_->num_columns(); cnum++)
     {
-      auto colMap = TColumnMap::Make(table_->column(cnum));
+      std::shared_ptr<arrow::ChunkedArray> chArr = table_->column(cnum);
+      auto colMap = TColumnMap::Make(chArr);
       maps_.push_back(colMap);
     }
     return true;

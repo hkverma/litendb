@@ -51,8 +51,11 @@ namespace tendb
 
     void ReadTables();
     double Query6();
-    double Query5();
+    double Query5ColIter();
 
+    bool MakeMaps();
+    double Query5();
+    
     std::vector<std::shared_ptr<TTable>> tables_;
     std::shared_ptr<TCache> tCache_;
     std::string tpchDir_;

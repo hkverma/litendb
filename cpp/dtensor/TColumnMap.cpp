@@ -23,7 +23,8 @@ namespace tendb {
       */
     case arrow::Int64Type::type_id:
     {
-      arrayMap_ = std::make_shared<TInt64ArrayMap>(arr);
+      arrayMap_ = TInt64ArrayMap::Make(arr);
+      break;
     }
     /* TODO
        case Date32:
@@ -58,29 +59,38 @@ namespace tendb {
   {
     min_ = std::numeric_limits<int64_t>::min();
     max_ = std::numeric_limits<int64_t>::max();
+  }
+
+  std::shared_ptr<TInt64ArrayMap> TInt64ArrayMap::Make(std::shared_ptr<arrow::Array> arr)
+  {
+    std::shared_ptr<TInt64ArrayMap> mapArr = std::make_shared<TInt64ArrayMap>(arr);
+    int64_t& minVal = mapArr->max_;
+    int64_t& maxVal = mapArr->min_;
+    
     std::shared_ptr<arrow::Int64Array> numArr = std::static_pointer_cast<arrow::Int64Array>(arr);
-    if (arr != nullptr)
+    if (numArr != nullptr)
     {
       int64_t length = numArr->length();
-      const int64_t *pv = numArr->raw_values();
+      
       for (int64_t i=0 ; i<length; i++)
       {
-        const int64_t cv = *pv;
-        if (cv < min_)
-          min_ = cv;
-        if (cv > max_)
-          max_ = cv;      
-        pv += sizeof(int64_t);
+        const int64_t cv = numArr->Value(i);
+        if (cv < minVal)
+          minVal = cv;
+        if (cv > maxVal)
+          maxVal = cv;
       }
     }
+    return mapArr;
   }
 
   std::shared_ptr<TColumnMap> TColumnMap::Make(std::shared_ptr<arrow::ChunkedArray> chunkedArray)
   {
     std::shared_ptr<TColumnMap> chunkArrMap = std::make_shared<TColumnMap>(chunkedArray);
-    for (int64_t cnum=0; cnum<chunkedArray->length(); cnum++)
+    for (int64_t cnum=0; cnum<chunkedArray->num_chunks(); cnum++)
     {
-      std::shared_ptr<TArrayMap> arrMap = TArrayMap::Make(chunkedArray->chunk(cnum));
+      std::shared_ptr<arrow::Array> arr = chunkedArray->chunk(cnum);
+      std::shared_ptr<TArrayMap> arrMap = TArrayMap::Make(arr);
       chunkArrMap->arrayMap_.push_back(arrMap);
     }
     return chunkArrMap;
