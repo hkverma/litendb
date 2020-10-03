@@ -24,14 +24,38 @@ namespace tendb {
 
     std::shared_ptr<arrow::Array> array_;
 
+    // TODO needs to be templated
+    virtual bool GetMin(int64_t& minVal)
+    {
+      return false;
+    }
+
+    virtual bool GetMax(int64_t& maxVal)
+    {
+      return false;
+    }
+    
+    
   };
 
   // zone maps for comparable types currently only range type
+  // Create a MinMax template class here
   class TInt64ArrayMap : public TArrayMap
   {
   public:
     TInt64ArrayMap(std::shared_ptr<arrow::Array> arr);
     static std::shared_ptr<TInt64ArrayMap> Make(std::shared_ptr<arrow::Array> arr);
+    virtual bool GetMin(int64_t& minVal)
+    {
+      minVal = min_;
+      return true;
+    }
+
+    virtual bool GetMax(int64_t& maxVal)
+    {
+      maxVal = max_;
+      return true;
+    }
 
     int64_t min_;
     int64_t max_;

@@ -33,7 +33,7 @@ int main(int argc, char** argv) {
   std::cout << stopWatch.ElapsedInMicroseconds() << "us" << std::endl;
 
   stopWatch.Start();
-  result = tpchQueries.Query5ColIter();
+  result = tpchQueries.Query5();
   stopWatch.Stop();
   std::cout << "Query5 Revenue=" << result << std::endl;
   std::cout << stopWatch.ElapsedInMicroseconds() << "us" << std::endl;
@@ -44,6 +44,12 @@ int main(int argc, char** argv) {
   std::cout << (mapResult?"Success":"Failed ") << " Column maps." << std::endl;
   std::cout << stopWatch.ElapsedInMicroseconds() << "us" << std::endl;
 
+  stopWatch.Start();
+  result = tpchQueries.Query5();
+  stopWatch.Stop();
+  std::cout << "Query5 Revenue=" << result << std::endl;
+  std::cout << stopWatch.ElapsedInMicroseconds() << "us" << std::endl;
+  
   return EXIT_SUCCESS;
 
 }

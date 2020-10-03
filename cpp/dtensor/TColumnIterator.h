@@ -82,21 +82,58 @@ namespace tendb {
   };
 
   // first rowId for a given value in chunkedArray
+  // TODO under progress needs to define Table such that we can skip the columns in the table
+  // It leads to issues currently
+  //
   template<class Type, class ArrayType>
   bool GetRowId(int64_t& rowId, Type& value, std::shared_ptr<TTable> table, int64_t colNum)
   {
     std::shared_ptr<arrow::ChunkedArray> chunkedArray = table->table_->column(colNum);
-    TColumnIterator<Type, ArrayType> columnIterator(chunkedArray);
-    Type currentValue;
-    rowId = 0;
-    while (columnIterator.next(currentValue))
+
+    bool mapExists = false;
+    Type minVal, maxVal;
+    if (std::is_same<Type, int64_t>::value && table->maps_.size() != 0)
     {
-      if (currentValue == value)
+      auto colMap = table->maps_[colNum];
+      if (colMap->arrayMap_.size() != 0)
       {
-        return true;
+        mapExists = colMap->arrayMap_[0]->GetMin(minVal);
       }
-      rowId++;
     }
+
+    int64_t chunkNum = 0;
+    rowId = 0;
+    while (true)
+    {
+
+      std::shared_ptr<ArrayType> arr = std::static_pointer_cast<ArrayType>(chunkedArray->chunk(chunkNum));
+      if (mapExists)
+      {
+        auto arrMap = table->maps_[colNum]->arrayMap_[chunkNum];
+        arrMap->GetMax(maxVal);
+        arrMap->GetMin(minVal);
+        if (value < minVal && value > maxVal)
+        {
+          rowId += arr->length();
+          continue;
+        }
+      }
+      // TODO currently assumes return first match it can be a set
+      for (int64_t idx=0; idx<arr->length(); idx++)
+      {
+        if (value == arr->Value(idx))
+        {
+          return true;
+        }
+        rowId++;
+      }
+
+      // chunkNum
+      chunkNum++;
+      if (chunkNum >= chunkedArray->num_chunks())
+        break;
+    }
+
     return false;
   };
 
@@ -136,5 +173,5 @@ namespace tendb {
     }
     return false;
   }
-  
+
 };
