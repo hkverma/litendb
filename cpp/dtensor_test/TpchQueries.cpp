@@ -190,7 +190,7 @@ double TpchQueries::Query5()
     if (!lDiscountIter.next(lDiscountValue)) break;
 
     // Filter on orderdata
-    if (!GetRowId<int64_t, arrow::Int64Array>(orderRowId, lOrderkeyValue, oOrderkey)) continue;
+    if (!GetRowId<int64_t, arrow::Int64Array>(orderRowId, lOrderkeyValue, tables_[orders], o_orderkey)) continue;
     if (!GetValue<int64_t, arrow::Int64Array>(orderRowId, oOrderdateValue, oOrderdate)) continue;
     if (oOrderdateValue < date19950101Value || oOrderdateValue > date19951231Value)
       continue;
@@ -198,13 +198,13 @@ double TpchQueries::Query5()
     // Filter on r_name
     // l_suppkey = s_suppkey, s_nationkey = n_nationkey, n_regionkey = r_regionkey
     //   r_name = 'EUROPE'
-    if (!GetRowId<int64_t, arrow::Int64Array>(suppRowId, lSuppkeyValue, sSuppkey)) continue;
+    if (!GetRowId<int64_t, arrow::Int64Array>(suppRowId, lSuppkeyValue, tables_[supplier], s_suppkey)) continue;
     if (!GetValue<int64_t, arrow::Int64Array>(suppRowId, sNationkeyValue, sNationkey)) continue;
 
-    if (!(GetRowId<int64_t, arrow::Int64Array>(nationRowId, sNationkeyValue, nNationkey))) continue;
+    if (!(GetRowId<int64_t, arrow::Int64Array>(nationRowId, sNationkeyValue, tables_[nation], n_nationkey))) continue;
     if (!(GetValue<int64_t, arrow::Int64Array>(nationRowId, nRegionkeyValue, nRegionkey))) continue;
 
-    if (!(GetRowId<int64_t, arrow::Int64Array>(regionRowId, nRegionkeyValue, rRegionkey))) continue;
+    if (!(GetRowId<int64_t, arrow::Int64Array>(regionRowId, nRegionkeyValue, tables_[region], r_regionkey))) continue;
     //if (!(GetValue<arrow::util::string_view, arrow::StringArray>(regionRowId, rNameValue, rName))) continue;
     if (!(GetValue<std::string, arrow::StringArray>(regionRowId, rNameValue, rName))) continue;
 
@@ -220,4 +220,43 @@ double TpchQueries::Query5()
     revenue += (1-lDiscountValue)*lExtendedpriceValue;
   }
   return revenue;
+}
+
+
+bool TpchQueries::MakeMaps()
+{
+  bool result = true;
+  for (int32_t i=0; i<numTables; i++)
+  {
+    bool curResult = tables_[i]->MakeMaps();
+    if (curResult)
+    {
+      std::cout << "Success " << tableNames[i] << std::endl;
+      tables_[i]->PrintMaps();
+    }
+    else
+    {
+      std::cout << "Fail " << tableNames[i] << std::endl;      
+    }
+    result = result && curResult;
+  }
+  return result;
+}
+
+void TpchQueries::PrintSchemas()
+{
+  for (int32_t i=0; i<numTables; i++)
+  {
+    std::cout << "Table " << tableNames[i] << std::endl;
+    tables_[i]->PrintSchema();
+  }
+}
+
+void TpchQueries::PrintMaps()
+{
+  for (int32_t i=0; i<numTables; i++)
+  {
+    std::cout << "Table " << tableNames[i] << std::endl;
+    tables_[i]->PrintMaps();
+  }
 }

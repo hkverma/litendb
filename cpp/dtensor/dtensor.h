@@ -1,6 +1,7 @@
 #pragma once
 
+#include "TColumnIterator.h"
+#include "TColumnMap.h"
 #include "TCache.h"
-#include "TColumnChunk.h"
-#include "TColumn.h"
 #include "TTable.h"
+

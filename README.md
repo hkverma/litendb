@@ -290,7 +290,7 @@ Complex  Fact-to-fact joins, windows, extensive subqueries
 * DSL - which ML algorithm to encode & which app
 
 *  Read TPCH data and print table
-* Run Query 6
+*  Run Query 6
 * Compare Query 6 against Spark on VM
 *  Do pre-join to create the tables
 *  Put zone-map for column chunks

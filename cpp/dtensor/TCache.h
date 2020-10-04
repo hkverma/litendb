@@ -1,8 +1,10 @@
 //
 // TenDB Columnar Cache Directory
 //
-// Fetch from the cache and store here
-// For now all components are received from here and not stored locally
+// All tables are held in TCache.
+// Each table when read in cached with a unique UUID.
+//
+// For now all components are received from here and not stored locally.
 //
 // TODO
 //  Cache mechanisms -
@@ -36,6 +38,7 @@
 //
 //
 // provide hash template with uuid
+//
 namespace std
 {
   template<>
@@ -49,7 +52,7 @@ namespace std
   
 };
 
-// TCache with hash templates
+// TCache with tables
 namespace tendb {
 
   class TCache {

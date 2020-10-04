@@ -7,7 +7,7 @@
 
 namespace tendb {
 
-  void TTable::Print()
+  void TTable::PrintSchema()
   {
     // Print Table for now
     const std::vector<std::shared_ptr<arrow::Field>>& tableSchemaFields = schema_->fields();
@@ -18,7 +18,10 @@ namespace tendb {
       std::cout << "{" << schemaField->ToString() << "}," ;
     }
     std::cout << std::endl;
-  
+  }
+
+  void TTable::PrintTable()
+  {
     std::cout << "NumCols=" << NumColumns() << std::endl;
     std::cout << "NumRows=" << NumRows() << std::endl;
 
@@ -110,4 +113,39 @@ namespace tendb {
     return true;
   }
 
+  bool TTable::MakeMaps()
+  {
+    if (nullptr == table_)
+    {
+      return false;
+    }
+    
+    for (int64_t cnum=0; cnum<table_->num_columns(); cnum++)
+    {
+      std::shared_ptr<arrow::ChunkedArray> chArr = table_->column(cnum);
+      auto colMap = TColumnMap::Make(chArr);
+      maps_.push_back(colMap);
+    }
+    return true;
+  }
+
+  void TTable::PrintMaps()
+  {
+    for (int colNum = 0; colNum < maps_.size(); colNum++) {
+      auto colMap = maps_[colNum];
+      std::cout << "Col " << colNum << std::endl;
+      for (int arrNum = 0; arrNum< colMap->arrayMap_.size(); arrNum++)
+      {
+        auto arrMap = colMap->arrayMap_[arrNum];
+        int64_t minVal, maxVal;
+        std::cout << "Arr " << arrNum << " Size=" << arrMap->array_->length();
+        std::cout << " Type= " << arrMap->array_->type()->ToString() ;
+        std::cout << " Min=";
+        arrMap->GetMin(minVal)?(std::cout << minVal):(std::cout << "None");
+        std::cout << " Max=";
+        arrMap->GetMax(maxVal)?(std::cout << maxVal):(std::cout << "None");        
+        std::cout << std::endl;
+      }
+    }
+  }
 }

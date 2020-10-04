@@ -8,6 +8,7 @@
     break;                         \
   }                                \
   } while (0)
+
 namespace tendb
 {
 
@@ -21,7 +22,7 @@ namespace tendb
     // TPCH table enums
     enum {
       lineitem=0,
-      customer=2,
+      customer=1,
       orders=2,
       supplier=3,
       nation=4,
@@ -52,6 +53,11 @@ namespace tendb
     double Query6();
     double Query5();
 
+    bool MakeMaps();
+    
+    void PrintSchemas();
+    void PrintMaps();
+    
     std::vector<std::shared_ptr<TTable>> tables_;
     std::shared_ptr<TCache> tCache_;
     std::string tpchDir_;
