@@ -25,8 +25,17 @@ Use jupyter with pyspark set the following variables & run pyspark. jupyter shou
 sudo apt-get install jupyter
 export PYSPARK_DRIVER_PYTHON=jupyter
 export PYSPARK_DRIVER_PYTHON_OPTS='notebook'
-py
 ```
+You can now run pyspark from spark bin directory
+```
+./pyspark
+```
+To see the directory, go to port 8888
+http://127.0.0.1/8888
+
+To see run time visit -
+http://127.0.0.1:4040
+
 
 ### C++ Build Environment
 
