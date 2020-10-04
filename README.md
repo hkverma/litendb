@@ -295,7 +295,14 @@ Complex  Fact-to-fact joins, windows, extensive subqueries
 * Join time taken - with min-max maps (~50% reduction)
   Rows = 50000 Elapsed ms=13625
   Rows = 100000 Elapsed ms=30746
-  
+
+* Join time taken - with min-max maps (~50% reduction)
+  Rows = 50000 Elapsed ms=7535
+  Rows = 100000 Elapsed ms=16887
+  Rows = 200000 Elapsed ms=33534
+
+* Add event IDs in the message. Also add context for each user.
+
 * Inverse map - get the arrays where zones exist instead of traversing
 
 * Hash look up into the values

@@ -4,7 +4,7 @@
   do {                             \
     if (!FUNC)                     \
   {                                \
-    std::cout << MSG << std::endl; \
+    LOG(INFO) << MSG ;             \
     break;                         \
   }                                \
   } while (0)

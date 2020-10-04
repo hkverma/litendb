@@ -1,8 +1,11 @@
 #include <iostream>
-#include "TTable.h"
+#include <sstream>
 #include <arrow/csv/api.h>
 #include <arrow/filesystem/api.h>
 #include <arrow/io/api.h>
+
+#include <common.h>
+#include "TTable.h"
 
 
 namespace tendb {
@@ -11,19 +14,21 @@ namespace tendb {
   {
     // Print Table for now
     const std::vector<std::shared_ptr<arrow::Field>>& tableSchemaFields = schema_->fields();
-    std::cout << "Schema=";
+    std::stringstream ss;
+    ss << "Schema=";
 
     for (auto schemaField : tableSchemaFields) 
     {
-      std::cout << "{" << schemaField->ToString() << "}," ;
+      ss << "{" << schemaField->ToString() << "}," ;
     }
-    std::cout << std::endl;
+    LOG(INFO) << ss.str();
   }
 
   void TTable::PrintTable()
   {
-    std::cout << "NumCols=" << NumColumns() << std::endl;
-    std::cout << "NumRows=" << NumRows() << std::endl;
+    std::stringstream ss;
+    ss << "NumCols=" << NumColumns();
+    ss << " NumRows=" << NumRows() << " Data=";
 
     // Print the table
     for (int64_t i=0; i<NumColumns(); i++)
@@ -40,22 +45,22 @@ namespace tendb {
           arrow::Result<std::shared_ptr<arrow::Scalar>> dataResult = aray->GetScalar(k);
           if ( !dataResult.ok() )
           {
-            std::cout << ",";
+            ss << ",";
           }
           else
           {
             std::shared_ptr<arrow::Scalar> data = dataResult.ValueOrDie();
             // todo
             //auto typeData = static_cast<decltype(colFieldType.get())>(data.get());
-            //std::cout << typeData?typeData->ToString():"" << ",";
+            //ss << typeData?typeData->ToString():"" << ",";
             if (data->is_valid)
-              std::cout << data->ToString();
-            std::cout << ",";
+              ss << data->ToString();
+            ss << ",";
           }
         }
-        std::cout << std::endl;
       }
     }
+    LOG(INFO) << ss.str();
   }
 
   // status & log
@@ -72,7 +77,7 @@ namespace tendb {
     arrow::Result<std::shared_ptr<arrow::io::ReadableFile>> fpResult =
       arrow::io::ReadableFile::Open(csvFileName, pool);
     if (!fpResult.ok()) {
-      std::cout << "Cannot open file " << csvFileName << std::endl;
+      LOG(ERROR) << "Cannot open file " << csvFileName;
       return false;
     }
     std::shared_ptr<arrow::io::ReadableFile> fp = fpResult.ValueOrDie();
@@ -80,7 +85,7 @@ namespace tendb {
     // Get fileSizeResult
     arrow::Result<int64_t> fileSizeResult = fp->GetSize();
     if (!fileSizeResult.ok()) {
-      std::cout << "Unknown filesize for file " << csvFileName << std::endl;
+      LOG(ERROR) << "Unknown filesize for file " << csvFileName;
       return false;
     }
     int64_t fileSize = fileSizeResult.ValueOrDie();
@@ -94,7 +99,7 @@ namespace tendb {
       = arrow::csv::TableReader::Make(pool, inputStream, readOptions,
                                       parseOptions, convertOptions);
     if (!readerResult.ok()) {
-      std::cout << "Cannot read table " << csvFileName << std::endl;
+      LOG(ERROR) << "Cannot read table " << csvFileName;
       return false;
     }
     std::shared_ptr<arrow::csv::TableReader> reader = readerResult.ValueOrDie();
@@ -104,7 +109,7 @@ namespace tendb {
     if (!tableResult.ok()) {
       // Handle CSV read error
       // (for example a CSV syntax error or failed type conversion)
-      std::cout << "Error: reading table" << std::endl;
+      LOG(ERROR) << "Reading csv table";
       return false;
     }
     
@@ -131,21 +136,22 @@ namespace tendb {
 
   void TTable::PrintMaps()
   {
+    std::stringstream ss;
     for (int colNum = 0; colNum < maps_.size(); colNum++) {
       auto colMap = maps_[colNum];
-      std::cout << "Col " << colNum << std::endl;
+      ss << "Col " << colNum;
       for (int arrNum = 0; arrNum< colMap->arrayMap_.size(); arrNum++)
       {
         auto arrMap = colMap->arrayMap_[arrNum];
         int64_t minVal, maxVal;
-        std::cout << "Arr " << arrNum << " Size=" << arrMap->array_->length();
-        std::cout << " Type=" << arrMap->array_->type()->ToString() ;
-        std::cout << " Min=";
-        arrMap->GetMin(minVal)?(std::cout << minVal):(std::cout << "None");
-        std::cout << " Max=";
-        arrMap->GetMax(maxVal)?(std::cout << maxVal):(std::cout << "None");        
-        std::cout << std::endl;
+        ss << " Arr " << arrNum << " Size=" << arrMap->array_->length();
+        ss << " Type=" << arrMap->array_->type()->ToString() ;
+        ss << " Min=";
+        arrMap->GetMin(minVal)?(ss << minVal):(ss << "None");
+        ss << " Max=";
+        arrMap->GetMax(maxVal)?(ss << maxVal):(ss << "None");
       }
     }
+    LOG(INFO) << ss.str();
   }
 }

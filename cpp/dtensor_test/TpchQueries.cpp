@@ -57,7 +57,7 @@ double TpchQueries::Query6()
       length != quantity->length() ||
       length != extendedprice->length())
   {
-    std::cout << "Length should be the same" << std::endl;
+    LOG(ERROR) << "Length should be the same";
     return 0;
   }
 
@@ -77,7 +77,7 @@ double TpchQueries::Query6()
   {
     if (rowId%10000 == 0) {
       timer.Stop();
-      std::cout << "Rows = " << rowId << " Elapsed ms=" << timer.ElapsedInMilliseconds() << std::endl;
+      LOG(INFO) << "Rows = " << rowId << " Elapsed ms=" << timer.ElapsedInMilliseconds();
     }
     
     if (!shipdateIter.next(shipdateValue)) break;
@@ -164,7 +164,7 @@ double TpchQueries::Query5()
   int64_t length = lDiscount->length();
   if (length != lExtendedprice->length())
   {
-    std::cout << "Length should be the same" << std::endl;
+    LOG(ERROR) << "Length should be the same";
     return 0;
   }
 
@@ -194,7 +194,7 @@ double TpchQueries::Query5()
   {
     if (rowId%10000 == 0) {
       timer.Stop();
-      std::cout << "Rows = " << rowId << " Elapsed ms=" << timer.ElapsedInMilliseconds() << std::endl;
+      LOG(INFO) << "Rows = " << rowId << " Elapsed ms=" << timer.ElapsedInMilliseconds();
     }
     // Get all values for the row first
     if (!lOrderkeyIter.next(lOrderkeyValue)) break;
@@ -244,12 +244,12 @@ bool TpchQueries::MakeMaps()
     bool curResult = tables_[i]->MakeMaps();
     if (curResult)
     {
-      std::cout << "Success " << tableNames[i] << std::endl;
+      LOG(INFO) << "Success " << tableNames[i];
       tables_[i]->PrintMaps();
     }
     else
     {
-      std::cout << "Fail " << tableNames[i] << std::endl;      
+      LOG(INFO) << "Fail " << tableNames[i];
     }
     result = result && curResult;
   }
@@ -260,7 +260,7 @@ void TpchQueries::PrintSchemas()
 {
   for (int32_t i=0; i<numTables; i++)
   {
-    std::cout << "Table " << tableNames[i] << std::endl;
+    LOG(INFO) << "Table " << tableNames[i];
     tables_[i]->PrintSchema();
   }
 }
@@ -269,7 +269,7 @@ void TpchQueries::PrintMaps()
 {
   for (int32_t i=0; i<numTables; i++)
   {
-    std::cout << "Table " << tableNames[i] << std::endl;
+    LOG(INFO) << "Table " << tableNames[i];
     tables_[i]->PrintMaps();
   }
 }
