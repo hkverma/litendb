@@ -304,6 +304,8 @@ Complex  Fact-to-fact joins, windows, extensive subqueries
 
 * Add logging and clean up code
 
+* Multi-threaded and thread-pool implementation analysis
+
 * Use Ray & Dask type clusters with Python bindings for a single VM node 
 
 * Async multi-tasking using Ray - explore
