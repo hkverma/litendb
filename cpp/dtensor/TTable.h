@@ -30,14 +30,16 @@ namespace tendb {
     TTable(std::string& tableName) : name_(tableName), table_(nullptr), schema_(nullptr) { }  
     TTable(std::shared_ptr<arrow::Table> table);
     
-    void Print();
     /// read csv File csvFileName and add it to table_
     bool ReadCsv(std::string csvFileName,
                  const arrow::csv::ReadOptions& readOptions,
                  const arrow::csv::ParseOptions& parseOptions,
                  const arrow::csv::ConvertOptions& convertOptions);
+    void PrintSchema();
+    void PrintTable();
 
     bool MakeMaps();
+    void PrintMaps();
     
     std::shared_ptr<arrow::Array> GetArray(int64_t rowNum, int64_t colNum);
 

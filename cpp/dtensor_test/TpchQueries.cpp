@@ -228,7 +228,35 @@ bool TpchQueries::MakeMaps()
   bool result = true;
   for (int32_t i=0; i<numTables; i++)
   {
-    result &= tables_[i]->MakeMaps();
+    bool curResult = tables_[i]->MakeMaps();
+    if (curResult)
+    {
+      std::cout << "Success " << tableNames[i] << std::endl;
+      tables_[i]->PrintMaps();
+    }
+    else
+    {
+      std::cout << "Fail " << tableNames[i] << std::endl;      
+    }
+    result = result && curResult;
   }
   return result;
+}
+
+void TpchQueries::PrintSchemas()
+{
+  for (int32_t i=0; i<numTables; i++)
+  {
+    std::cout << "Table " << tableNames[i] << std::endl;
+    tables_[i]->PrintSchema();
+  }
+}
+
+void TpchQueries::PrintMaps()
+{
+  for (int32_t i=0; i<numTables; i++)
+  {
+    std::cout << "Table " << tableNames[i] << std::endl;
+    tables_[i]->PrintMaps();
+  }
 }

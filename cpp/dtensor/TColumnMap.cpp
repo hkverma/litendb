@@ -64,15 +64,19 @@ namespace tendb {
   std::shared_ptr<TInt64ArrayMap> TInt64ArrayMap::Make(std::shared_ptr<arrow::Array> arr)
   {
     std::shared_ptr<TInt64ArrayMap> mapArr = std::make_shared<TInt64ArrayMap>(arr);
-    int64_t& minVal = mapArr->max_;
-    int64_t& maxVal = mapArr->min_;
+    int64_t& minVal = mapArr->min_;
+    int64_t& maxVal = mapArr->max_;
     
     std::shared_ptr<arrow::Int64Array> numArr = std::static_pointer_cast<arrow::Int64Array>(arr);
     if (numArr != nullptr)
     {
       int64_t length = numArr->length();
-      
-      for (int64_t i=0 ; i<length; i++)
+      if (length >= 1)
+      {
+        minVal = numArr->Value(0);
+        maxVal = numArr->Value(0);
+      }
+      for (int64_t i=1 ; i<length; i++)
       {
         const int64_t cv = numArr->Value(i);
         if (cv < minVal)
