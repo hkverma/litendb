@@ -35,12 +35,11 @@ int main(int argc, char** argv) {
 
   /*
   stopWatch.Start();
-  //result = tpchQueries.Query5();
+  result = tpchQueries.Query5();
   stopWatch.Stop();
   std::cout << "Query5 Revenue=" << result << std::endl;
   std::cout << stopWatch.ElapsedInMicroseconds() << "us" << std::endl;
   */
-  
   stopWatch.Start();
   bool mapResult = tpchQueries.MakeMaps();
   stopWatch.Stop();

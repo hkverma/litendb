@@ -13,6 +13,7 @@
 #include <boost/uuid/uuid.hpp>
 #include <arrow/api.h>
 #include <vector>
+#include <iostream>
 
 #include <TTable.h>
 
@@ -84,6 +85,7 @@ namespace tendb {
   // first rowId for a given value in chunkedArray
   // TODO under progress needs to define Table such that we can skip the columns in the table
   // It leads to issues currently
+  // TODO currently assumes return first match it can be a set
   //
   template<class Type, class ArrayType>
   bool GetRowId(int64_t& rowId, Type& value, std::shared_ptr<TTable> table, int64_t colNum)
@@ -107,28 +109,42 @@ namespace tendb {
     {
 
       std::shared_ptr<ArrayType> arr = std::static_pointer_cast<ArrayType>(chunkedArray->chunk(chunkNum));
+
+      auto scanArray = [&]() -> bool
+      {
+        for (int64_t idx=0; idx<arr->length(); idx++)
+        {
+          if (value == arr->Value(idx))
+          {
+            return true;
+          }
+          rowId++;
+        }
+        return false;
+      };
+        
       if (mapExists)
       {
         auto arrMap = table->maps_[colNum]->arrayMap_[chunkNum];
         arrMap->GetMax(maxVal);
         arrMap->GetMin(minVal);
-        if (value < minVal && value > maxVal)
+        if (value < minVal || value > maxVal)
         {
           rowId += arr->length();
-          continue;
         }
-      }
-      // TODO currently assumes return first match it can be a set
-      for (int64_t idx=0; idx<arr->length(); idx++)
-      {
-        if (value == arr->Value(idx))
+        else
         {
-          return true;
+          if (scanArray())
+            return true;
         }
-        rowId++;
       }
-
-      // chunkNum
+      else
+      {
+        if (scanArray())
+          return true;
+      }
+      
+      // Increase chunkNum
       chunkNum++;
       if (chunkNum >= chunkedArray->num_chunks())
         break;

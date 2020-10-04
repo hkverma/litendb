@@ -139,7 +139,7 @@ namespace tendb {
         auto arrMap = colMap->arrayMap_[arrNum];
         int64_t minVal, maxVal;
         std::cout << "Arr " << arrNum << " Size=" << arrMap->array_->length();
-        std::cout << " Type= " << arrMap->array_->type()->ToString() ;
+        std::cout << " Type=" << arrMap->array_->type()->ToString() ;
         std::cout << " Min=";
         arrMap->GetMin(minVal)?(std::cout << minVal):(std::cout << "None");
         std::cout << " Max=";

@@ -284,7 +284,28 @@ Complex  Fact-to-fact joins, windows, extensive subqueries
 
 * DSLs on DAGs - lazy evaluation
 
-#### Tasks
+#### Tasks - TODO
+
+* Query 5 Analysis
+* Join time taken - all rows processed
+ Rows = 50000 Elapsed ms=15636
+ Rows = 100000 Elapsed ms=59247
+ Rows = 300000 Elapsed ms=91408 
+
+* Join time taken - with min-max maps (~50% reduction)
+  Rows = 50000 Elapsed ms=13625
+  Rows = 100000 Elapsed ms=30746
+  
+* Inverse map - get the arrays where zones exist instead of traversing
+
+* Hash look up into the values
+
+* Query6 and Query5 comparisons with Spark
+
+* Add logging and clean up code
+
+* Use Ray & Dask type clusters with Python bindings for a single VM node 
+
 * Async multi-tasking using Ray - explore
 * CMakefile changes to put binarues in bin
 * DSL - which ML algorithm to encode & which app

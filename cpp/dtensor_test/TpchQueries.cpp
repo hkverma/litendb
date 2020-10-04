@@ -70,9 +70,16 @@ double TpchQueries::Query6()
   int64_t date19971231Value =
     SecondsSinceEpoch(boost::gregorian::date(1997, 12, 31), boost::posix_time::seconds(0));
 
+  StopWatch timer;
+  timer.Start();
   // for now do a full table scan need to build filtering metadata per column chunk
   for (int64_t rowId=0; rowId<length; rowId++)
   {
+    if (rowId%10000 == 0) {
+      timer.Stop();
+      std::cout << "Rows = " << rowId << " Elapsed ms=" << timer.ElapsedInMilliseconds() << std::endl;
+    }
+    
     if (!shipdateIter.next(shipdateValue)) break;
     if (!discountIter.next(discountValue)) break;
     if (!quantityIter.next(quantityValue)) break;
@@ -181,8 +188,14 @@ double TpchQueries::Query5()
   std::string rNationValue;
 
   // for now do a full table scan need to build filtering metadata per column chunk
+  StopWatch timer;
+  timer.Start();
   for (int64_t rowId=0; rowId<length; rowId++)
   {
+    if (rowId%10000 == 0) {
+      timer.Stop();
+      std::cout << "Rows = " << rowId << " Elapsed ms=" << timer.ElapsedInMilliseconds() << std::endl;
+    }
     // Get all values for the row first
     if (!lOrderkeyIter.next(lOrderkeyValue)) break;
     if (!lSuppkeyIter.next(lSuppkeyValue)) break;
@@ -214,7 +227,7 @@ double TpchQueries::Query5()
                                  return (std::tolower(a) == std::tolower(b));
                                });
     if (!ifEurope)
-      continue;
+    continue;
 
     // add to revenue
     revenue += (1-lDiscountValue)*lExtendedpriceValue;
