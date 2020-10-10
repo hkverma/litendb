@@ -238,7 +238,7 @@ bool TpchQueries::MakeMaps()
     if (curResult)
     {
       LOG(INFO) << "Success " << tableNames[i];
-      tables_[i]->PrintMaps();
+      //tables_[i]->PrintMaps();
     }
     else
     {

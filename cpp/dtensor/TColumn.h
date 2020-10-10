@@ -138,12 +138,17 @@ namespace tendb {
         }
         else
         {
-          if (scanArray())
+          int64_t tmpRowId;
+          if (arrMap->GetRowId(tmpRowId, value))
+          {
+            rowId = tmpRowId;
             return true;
+          }
         }
       }
       else
       {
+        LOG(ERROR) << "No map here." ;
         if (scanArray())
           return true;
       }

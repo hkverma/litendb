@@ -150,6 +150,9 @@ namespace tendb {
         arrMap->GetMin(minVal)?(ss << minVal):(ss << "None");
         ss << " Max=";
         arrMap->GetMax(maxVal)?(ss << maxVal):(ss << "None");
+        ss << ";" ;
+        // arrMap->GetReverseMap(ss);
+        // ss << "; ";
       }
     }
     LOG(INFO) << ss.str();

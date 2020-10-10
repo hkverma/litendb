@@ -63,6 +63,7 @@ namespace tendb {
 
   std::shared_ptr<TInt64ArrayMap> TInt64ArrayMap::Make(std::shared_ptr<arrow::Array> arr)
   {
+    // create a new map object
     std::shared_ptr<TInt64ArrayMap> mapArr = std::make_shared<TInt64ArrayMap>(arr);
     int64_t& minVal = mapArr->min_;
     int64_t& maxVal = mapArr->max_;
@@ -76,13 +77,14 @@ namespace tendb {
         minVal = numArr->Value(0);
         maxVal = numArr->Value(0);
       }
-      for (int64_t i=1 ; i<length; i++)
+      for (int64_t rowId=0 ; rowId<length; rowId++)
       {
-        const int64_t cv = numArr->Value(i);
-        if (cv < minVal)
-          minVal = cv;
-        if (cv > maxVal)
-          maxVal = cv;
+        int64_t rowVal = numArr->Value(rowId);
+        mapArr->rowIds_.insert(std::make_pair(rowVal, rowId));
+        if (rowVal < minVal)
+          minVal = rowVal;
+        if (rowVal > maxVal)
+          maxVal = rowVal;
       }
     }
     return mapArr;
@@ -98,6 +100,27 @@ namespace tendb {
       chunkArrMap->arrayMap_.push_back(arrMap);
     }
     return chunkArrMap;
+  }
+  
+  bool TInt64ArrayMap::GetRowId(int64_t& rowId, int64_t& rowVal)
+  {
+    auto rowItr = rowIds_.find(rowVal);
+    if (rowItr == rowIds_.end())
+    {
+      return false;
+    }
+    // For now return only one
+    // TODO Use equal_range in future to return a vector of matched rowIds
+    rowId = rowItr->second;
+    return true;
+  }
+
+  void TInt64ArrayMap::GetReverseMap(std::stringstream& ss)
+  {
+    for (auto it = rowIds_.begin(); it != rowIds_.end(); it++)
+    {
+      ss << it->first << ":" << it->second << "," ;
+    }
   }
   
 }

@@ -62,7 +62,7 @@ namespace tendb
     std::shared_ptr<TCache> tCache_;
     std::string tpchDir_;
 
-    const int64_t rowIncrementsForTimeLog = 10000;
+    const int64_t rowIncrementsForTimeLog = 100000;
 
   };
 

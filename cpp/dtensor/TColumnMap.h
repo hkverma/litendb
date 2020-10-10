@@ -8,9 +8,11 @@
 //
 #pragma once
 
+#include <vector>
+#include <map>
+
 #include <boost/uuid/uuid.hpp>
 #include <arrow/api.h>
-#include <vector>
 
 namespace tendb {
 
@@ -34,12 +36,21 @@ namespace tendb {
     {
       return false;
     }
-    
-    
+
+    virtual bool GetRowId(int64_t& rowId, int64_t& rowVal)
+    {
+      return false;
+    }
+
+    virtual void GetReverseMap(std::stringstream& ss)
+    {
+      return ;
+    }
   };
 
   // zone maps for comparable types currently only range type
   // Create a MinMax template class here
+  // TODO For now add a hash here, separate it later
   class TInt64ArrayMap : public TArrayMap
   {
   public:
@@ -57,8 +68,15 @@ namespace tendb {
       return true;
     }
 
+    virtual bool GetRowId(int64_t& rowId, int64_t& rowVal);
+
+    virtual void GetReverseMap(std::stringstream& ss);
+    
     int64_t min_;
     int64_t max_;
+    
+    std::map<int64_t, int64_t> rowIds_;
+    
   };
 
   //
