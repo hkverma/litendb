@@ -10,6 +10,7 @@
 
 using namespace tendb;
 
+
 void TpchQueries::ReadTables()
 {
   arrow::csv::ReadOptions readOptions = arrow::csv::ReadOptions::Defaults();
@@ -135,27 +136,6 @@ double TpchQueries::Query5()
   std::shared_ptr<arrow::ChunkedArray> lSuppkey =
     tables_[lineitem]->table_->column(l_suppkey);
 
-
-  std::shared_ptr<arrow::ChunkedArray> oOrderkey =
-    tables_[orders]->table_->column(o_orderkey);
-  std::shared_ptr<arrow::ChunkedArray> oOrderdate =
-    tables_[orders]->table_->column(o_orderdate);
-
-  std::shared_ptr<arrow::ChunkedArray> sSuppkey =
-    tables_[supplier]->table_->column(s_suppkey);
-  std::shared_ptr<arrow::ChunkedArray>  sNationkey =
-    tables_[supplier]->table_->column(s_nationkey);
-
-  std::shared_ptr<arrow::ChunkedArray>  nNationkey =
-    tables_[nation]->table_->column(n_nationkey);
-  std::shared_ptr<arrow::ChunkedArray>  nRegionkey =
-    tables_[nation]->table_->column(n_regionkey);
-
-  std::shared_ptr<arrow::ChunkedArray>  rRegionkey =
-    tables_[region]->table_->column(r_regionkey);
-  std::shared_ptr<arrow::ChunkedArray>  rName =
-    tables_[region]->table_->column(r_name);
-
   TColumnIterator<double, arrow::DoubleArray> lDiscountIter(lDiscount);
   TColumnIterator<double, arrow::DoubleArray> lExtendedpriceIter(lExtendedprice);
   TColumnIterator<int64_t, arrow::Int64Array> lOrderkeyIter(lOrderkey);
@@ -190,11 +170,14 @@ double TpchQueries::Query5()
   // for now do a full table scan need to build filtering metadata per column chunk
   StopWatch timer;
   timer.Start();
+  int64_t getRowIdTime=0, getValTime=0;
   for (int64_t rowId=0; rowId<length; rowId++)
   {
-    if (rowId%10000 == 0) {
+    if (rowId%rowIncrementsForTimeLog == 0) {
       timer.Stop();
       LOG(INFO) << "Rows = " << rowId << " Elapsed ms=" << timer.ElapsedInMilliseconds();
+      LOG(INFO) << "RowId Time us= " << getRowIdTime;
+      LOG(INFO) << "ValId Time us= " << getValTime;
     }
     // Get all values for the row first
     if (!lOrderkeyIter.next(lOrderkeyValue)) break;
@@ -202,25 +185,35 @@ double TpchQueries::Query5()
     if (!lExtendedpriceIter.next(lExtendedpriceValue)) break;
     if (!lDiscountIter.next(lDiscountValue)) break;
 
-    // Filter on orderdata
-    if (!GetRowId<int64_t, arrow::Int64Array>(orderRowId, lOrderkeyValue, tables_[orders], o_orderkey)) continue;
-    if (!GetValue<int64_t, arrow::Int64Array>(orderRowId, oOrderdateValue, oOrderdate)) continue;
+    // l_orderkey = o_orderkey
+    // and o_orderdate >= date '1995-01-01'
+    // and o_orderdate < date '1995-01-01' + interval '1' year 
+    if (!JoinInner<int64_t, arrow::Int64Array>
+        (lOrderkeyValue, tables_[orders], o_orderkey, getRowIdTime,
+         oOrderdateValue, tables_[orders], o_orderdate, getValTime))
+      continue;
     if (oOrderdateValue < date19950101Value || oOrderdateValue > date19951231Value)
       continue;
 
     // Filter on r_name
-    // l_suppkey = s_suppkey, s_nationkey = n_nationkey, n_regionkey = r_regionkey
-    //   r_name = 'EUROPE'
-    if (!GetRowId<int64_t, arrow::Int64Array>(suppRowId, lSuppkeyValue, tables_[supplier], s_suppkey)) continue;
-    if (!GetValue<int64_t, arrow::Int64Array>(suppRowId, sNationkeyValue, sNationkey)) continue;
-
-    if (!(GetRowId<int64_t, arrow::Int64Array>(nationRowId, sNationkeyValue, tables_[nation], n_nationkey))) continue;
-    if (!(GetValue<int64_t, arrow::Int64Array>(nationRowId, nRegionkeyValue, nRegionkey))) continue;
-
+    // l_suppkey = s_suppkey,
+    if ( !JoinInner<int64_t, arrow::Int64Array>
+         (lSuppkeyValue, tables_[supplier], s_suppkey, getRowIdTime,
+          sNationkeyValue, tables_[supplier], s_nationkey, getValTime))
+      continue;
+    
+    // s_nationkey = n_nationkey
+    if ( !JoinInner<int64_t, arrow::Int64Array>
+         (sNationkeyValue, tables_[nation], n_nationkey, getRowIdTime,
+          nRegionkeyValue, tables_[nation], s_nationkey, getValTime))
+      continue;
+    
+    //n_regionkey = r_regionkey
     if (!(GetRowId<int64_t, arrow::Int64Array>(regionRowId, nRegionkeyValue, tables_[region], r_regionkey))) continue;
     //if (!(GetValue<arrow::util::string_view, arrow::StringArray>(regionRowId, rNameValue, rName))) continue;
-    if (!(GetValue<std::string, arrow::StringArray>(regionRowId, rNameValue, rName))) continue;
-
+    if (!(GetValue<std::string, arrow::StringArray>(regionRowId, rNameValue, tables_[region], r_name))) continue;
+    
+    //   r_name = 'EUROPE'
     bool ifEurope = std::equal(europe.begin(), europe.end(), rNameValue.begin(),
                                [] (const char& a, const char& b)
                                {

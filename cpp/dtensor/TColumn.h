@@ -16,6 +16,7 @@
 #include <iostream>
 
 #include <TTable.h>
+#include <common.h>
 
 namespace tendb {
 
@@ -88,7 +89,10 @@ namespace tendb {
   // TODO currently assumes return first match it can be a set
   //
   template<class Type, class ArrayType>
-  bool GetRowId(int64_t& rowId, Type& value, std::shared_ptr<TTable> table, int64_t colNum)
+  bool GetRowId(int64_t& rowId,               // Row Id
+                Type& value,                   // Output Value
+                std::shared_ptr<TTable> table, // TTable
+                int64_t colNum)                // Column Number
   {
     std::shared_ptr<arrow::ChunkedArray> chunkedArray = table->table_->column(colNum);
 
@@ -122,7 +126,7 @@ namespace tendb {
         }
         return false;
       };
-        
+
       if (mapExists)
       {
         auto arrMap = table->maps_[colNum]->arrayMap_[chunkNum];
@@ -143,7 +147,7 @@ namespace tendb {
         if (scanArray())
           return true;
       }
-      
+
       // Increase chunkNum
       chunkNum++;
       if (chunkNum >= chunkedArray->num_chunks())
@@ -155,8 +159,12 @@ namespace tendb {
 
   // Get value from a rowId for a given chunkedArray
   template<class Type, class ArrayType>
-  bool GetValue(int64_t& rowId, Type& value, std::shared_ptr<arrow::ChunkedArray> chunkedArray)
+  bool GetValue(int64_t& rowId,  // rowId input
+                Type& value,      // output value
+                std::shared_ptr<TTable> table, // table
+                int64_t colNum)   // column number
   {
+    std::shared_ptr<arrow::ChunkedArray> chunkedArray = table->table_->column(colNum);
     TColumnIterator<Type, ArrayType> columnIterator(chunkedArray);
 
     int64_t chunkRowId=0;
@@ -189,5 +197,39 @@ namespace tendb {
     }
     return false;
   }
+
+// This performs the following operation
+// 1. Find rowId where leftTable[leftColNum][rowId] == leftValue
+// 2. Return rightValue equal to rightTable[rightColNum][rowId]
+//
+template<class Type, class ArrayType>
+bool JoinInner(Type& leftValue,      // leftValue Input
+               std::shared_ptr<TTable> leftTable, // leftTable
+               int64_t leftColNum,      // leftColNum
+               int64_t& leftRowIdInMicroseconds,   // time taken to look for leftValue
+               Type& rightValue,    // rightValue Result
+               std::shared_ptr<TTable> rightTable, // right Table
+               int64_t rightColNum,     // right Col Num
+               int64_t& rightValueInMicroseconds)  // time taken to look for rightValue
+{
+
+  int64_t rowId;
+  StopWatch timer;
+  timer.Start();
+  bool result = GetRowId<Type, ArrayType>(rowId, leftValue, leftTable, leftColNum);
+  timer.Stop();
+  leftRowIdInMicroseconds += timer.ElapsedInMicroseconds();
+  if (!result)
+  {
+    return result;
+  }
+
+  timer.Start();
+  result = GetValue<Type, ArrayType>(rowId, rightValue, rightTable, rightColNum);
+  timer.Stop();
+  rightValueInMicroseconds += timer.ElapsedInMicroseconds();
+
+  return result;
+}
 
 };
