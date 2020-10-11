@@ -76,7 +76,7 @@ double TpchQueries::Query6()
   // for now do a full table scan need to build filtering metadata per column chunk
   for (int64_t rowId=0; rowId<length; rowId++)
   {
-    if (rowId%10000 == 0) {
+    if (rowId%rowIncrementsForTimeLog == 0) {
       timer.Stop();
       LOG(INFO) << "Rows = " << rowId << " Elapsed ms=" << timer.ElapsedInMilliseconds();
     }
@@ -205,7 +205,7 @@ double TpchQueries::Query5()
     // s_nationkey = n_nationkey
     if ( !JoinInner<int64_t, arrow::Int64Array>
          (sNationkeyValue, tables_[nation], n_nationkey, getRowIdTime,
-          nRegionkeyValue, tables_[nation], s_nationkey, getValTime))
+          nRegionkeyValue, tables_[nation], n_regionkey, getValTime))
       continue;
     
     //n_regionkey = r_regionkey

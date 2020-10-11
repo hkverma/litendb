@@ -304,7 +304,11 @@ Complex  Fact-to-fact joins, windows, extensive subqueries
 * Join time taken - with min-max maps (~50% reduction) rest time taken in serial lookup for rowId
   Rows = 50000 Elapsed ms=9079 RowId Time ms= 8959 ValId Time ms= 14
   Rows = 100000 Elapsed ms=20772 RowId Time ms= 20517 ValId Time ms= 57
-  Rows = 200000 Elapsed ms=41176 RowId Time us= 40616 ValId Time us= 170
+  Rows = 200000 Elapsed ms=41176 RowId Time ms= 40616 ValId Time ms= 170
+
+* Join time taken - with inverse-index for the data ~100x reduction
+  Rows = 100000 Elapsed ms=261 RowId Time us= 60 ValId Time ms= 2
+  Rows = 200000 Elapsed ms=578 RowId Time ms= 170 ValId Time ms= 3
 
 * Add event IDs in the message. Also add context for each user.
 
