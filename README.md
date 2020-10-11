@@ -286,7 +286,7 @@ Complex  Fact-to-fact joins, windows, extensive subqueries
 
 #### Tasks - TODO
 
-* Query 5 Analysis
+* Query 5 Analysis on debug build
 * Join time taken - all rows processed
  Rows = 50000 Elapsed ms=15636
  Rows = 100000 Elapsed ms=59247
@@ -310,6 +310,23 @@ Complex  Fact-to-fact joins, windows, extensive subqueries
   Rows = 100000 Elapsed ms=261 RowId Time us= 60 ValId Time ms= 2
   Rows = 200000 Elapsed ms=578 RowId Time ms= 170 ValId Time ms= 3
 
+* Query Analysis - 10/10/2020 Release build VM 8 core 8GB  (3x reduction from debug build)
+  Single thread implementaion
+  TenDB - single thread
+    Query 6 -  Revenue=1.56378e+08 Time = 176848us = 177ms
+    Query 5 -  Revenue=6.33263e+09 Time = 32016802us = 32s
+    Rows = 100000 Elapsed ms=76 Rows = 200000 Elapsed ms=167
+  Spark3.0 - single worker
+    Query 6 - |1.5659409560959977E8| Time = 11-13 sec
+    Query 5 - 31s to 40s
+    n_name|             revenue|
++--------------+--------------------+
+|        RUSSIA| 5.606302283899996E7|
+|       ROMANIA|5.4994648594799995E7|
+|UNITED KINGDOM| 5.468614748900003E7|
+|        FRANCE| 5.194113723339999E7|
+|       GERMANY| 5.153649818379998E7|
++--------------+--------------------+
 * Add event IDs in the message. Also add context for each user.
 
 * Inverse map - get the arrays where zones exist instead of traversing
