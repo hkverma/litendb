@@ -50,7 +50,7 @@ namespace tendb {
     std::vector<std::shared_ptr<TColumnMap>> maps_;
     
     // Options TODO create an options class
-    static const bool EnableMinMaxReverseMap = false;
+    static const bool EnableColumnReverseMap = false;
     
   private:
     std::shared_ptr<arrow::Schema> schema_;

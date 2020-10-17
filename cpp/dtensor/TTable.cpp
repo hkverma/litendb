@@ -154,9 +154,8 @@ namespace tendb {
         // arrMap->GetReverseMap(ss);
         // ss << "; ";
       }
-      ss << " MinMax ReverseMap: " ;
-      colMap->GetMinMaxReverseMap(ss);
-      LOG(INFO) << ss.str();
     }
+    LOG(INFO) << ss.str();
   }
+  
 }

@@ -112,30 +112,6 @@ namespace tendb {
     int64_t chunkNum = 0;
     rowId = 0;
     
-    if (mapExists && TTable::EnableMinMaxReverseMap)
-    {
-      std::set<int64_t> minArrays;
-      for (auto it = colMap->minArrays_.lower_bound(value); it != colMap->minArrays_.end(); it++)
-      {
-        minArrays.insert(it->second);
-      }
-
-      for (auto it = colMap->minArrays_.begin(); it != colMap->minArrays_.upper_bound(value); it++)
-      {
-        if (minArrays.find(it->second) != minArrays.end())
-        {
-          auto arrMap = table->maps_[colNum]->arrayMap_[it->second];
-          int64_t tmpRowId;
-          if (arrMap->GetRowId(tmpRowId, value))
-          {
-            rowId = tmpRowId;
-            return true;
-          }          
-        }
-      }
-      return false;
-    }
-
     // Do this if not map found
     while (true)
     {
@@ -155,7 +131,7 @@ namespace tendb {
         return false;
       };
 
-      if (mapExists && !TTable::EnableMinMaxReverseMap)
+      if (mapExists)
       {
         auto arrMap = table->maps_[colNum]->arrayMap_[chunkNum];
         arrMap->GetMax(maxVal);
@@ -174,8 +150,11 @@ namespace tendb {
           }
         }
       }
-      if (scanArray())
-        return true;
+      else
+      {
+        if (scanArray())
+          return true;
+      }
 
       // Increase chunkNum
       chunkNum++;

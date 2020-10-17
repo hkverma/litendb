@@ -356,17 +356,7 @@ Complex  Fact-to-fact joins, windows, extensive subqueries
  Restart Time ms= 51
   Query5 Revenue=6.33263e+09 Time = 133047690us
 
-* Reverse map for min-max is not efficient. It ends up scanning lot more data and makes it worse.
-Rows = 100000 Elapsed ms=9217
-Orders RowId Time ms= 9102
-Rows = 200000 Elapsed ms=18300
-Orders RowId Time ms= 18080
-Rows = 300000 Elapsed ms=26969
-Orders RowId Time ms= 26639
-Rows = 400000 Elapsed ms=35083
-Orders RowId Time ms= 34656
-Rows = 500000 Elapsed ms=43202
-Orders RowId Time ms= 42674
+* Reverse map for min-max is not efficient. It ends up scanning lot more data and perf does not imrpove.
 
 * TODO do reverse map for all column in one shot
 
