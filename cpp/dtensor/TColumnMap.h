@@ -46,6 +46,7 @@ namespace tendb {
     {
       return ;
     }
+    
   };
 
   // zone maps for comparable types currently only range type
@@ -92,9 +93,18 @@ namespace tendb {
 
     static std::shared_ptr<TColumnMap> Make(std::shared_ptr<arrow::ChunkedArray> chunkedArray);
 
+    void GetMinMaxReverseMap(std::stringstream& ss);
+
     std::shared_ptr<arrow::ChunkedArray> chunkedArray_;
     std::vector<std::shared_ptr<TArrayMap>> arrayMap_;
 
+    // TODO - Remove this
+    // This map does not work well. A better index is to create a map for each <min-max> pair
+    // All array indices with mininum 
+    std::map<int64_t, int64_t> minArrays_;
+    // All array indices with maximum
+    std::map<int64_t, int64_t> maxArrays_;
+    
     arrow::Status status_;
   };
 

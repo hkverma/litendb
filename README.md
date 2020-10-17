@@ -327,6 +327,49 @@ Complex  Fact-to-fact joins, windows, extensive subqueries
 |        FRANCE| 5.194113723339999E7|
 |       GERMANY| 5.153649818379998E7|
 +--------------+--------------------+
+
+* Query Analysis - 10/12/2020 (Most of work spent in going through orders list
+   Creating reverse map for min-max values.
+ Rows = 200000 Elapsed ms=712
+ Orders RowId Time ms= 218
+ Orders ValId Time ms= 2
+ Supplier RowId Time ms= 28
+ Supplier ValId Time ms= 0
+ Nation RowId Time ms= 0
+ Nation ValId Time ms= 0
+ Restart Time ms= 25
+ Rows = 300000 Elapsed ms=1162
+ Orders RowId Time ms= 427
+ Orders ValId Time ms= 4
+ Supplier RowId Time ms= 43
+ Supplier ValId Time ms= 0
+ Nation RowId Time ms= 0
+ Nation ValId Time ms= 0
+ Restart Time ms= 38
+ Rows = 400000 Elapsed ms=1672
+ Orders RowId Time ms= 706
+ Orders ValId Time ms= 5
+ Supplier RowId Time ms= 56
+ Supplier ValId Time ms= 0
+ Nation RowId Time ms= 1
+ Nation ValId Time ms= 0
+ Restart Time ms= 51
+  Query5 Revenue=6.33263e+09 Time = 133047690us
+
+* Reverse map for min-max is not efficient. It ends up scanning lot more data and makes it worse.
+Rows = 100000 Elapsed ms=9217
+Orders RowId Time ms= 9102
+Rows = 200000 Elapsed ms=18300
+Orders RowId Time ms= 18080
+Rows = 300000 Elapsed ms=26969
+Orders RowId Time ms= 26639
+Rows = 400000 Elapsed ms=35083
+Orders RowId Time ms= 34656
+Rows = 500000 Elapsed ms=43202
+Orders RowId Time ms= 42674
+
+* TODO do reverse map for all column in one shot
+
 * Add event IDs in the message. Also add context for each user.
 
 * Inverse map - get the arrays where zones exist instead of traversing

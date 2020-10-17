@@ -10,10 +10,12 @@
 //
 #pragma once
 
-#include <boost/uuid/uuid.hpp>
-#include <arrow/api.h>
 #include <vector>
 #include <iostream>
+#include <set>
+
+#include <boost/uuid/uuid.hpp>
+#include <arrow/api.h>
 
 #include <TTable.h>
 #include <common.h>
@@ -88,19 +90,19 @@ namespace tendb {
   // It leads to issues currently
   // TODO currently assumes return first match it can be a set
   //
-  template<class Type, class ArrayType>
+  template<class Type, class ArrayType> 
   bool GetRowId(int64_t& rowId,               // Row Id
                 Type& value,                   // Output Value
                 std::shared_ptr<TTable> table, // TTable
                 int64_t colNum)                // Column Number
   {
     std::shared_ptr<arrow::ChunkedArray> chunkedArray = table->table_->column(colNum);
+    auto colMap = table->maps_[colNum];
 
     bool mapExists = false;
     Type minVal, maxVal;
     if (std::is_same<Type, int64_t>::value && table->maps_.size() != 0)
     {
-      auto colMap = table->maps_[colNum];
       if (colMap->arrayMap_.size() != 0)
       {
         mapExists = colMap->arrayMap_[0]->GetMin(minVal);
@@ -109,6 +111,32 @@ namespace tendb {
 
     int64_t chunkNum = 0;
     rowId = 0;
+    
+    if (mapExists && TTable::EnableMinMaxReverseMap)
+    {
+      std::set<int64_t> minArrays;
+      for (auto it = colMap->minArrays_.lower_bound(value); it != colMap->minArrays_.end(); it++)
+      {
+        minArrays.insert(it->second);
+      }
+
+      for (auto it = colMap->minArrays_.begin(); it != colMap->minArrays_.upper_bound(value); it++)
+      {
+        if (minArrays.find(it->second) != minArrays.end())
+        {
+          auto arrMap = table->maps_[colNum]->arrayMap_[it->second];
+          int64_t tmpRowId;
+          if (arrMap->GetRowId(tmpRowId, value))
+          {
+            rowId = tmpRowId;
+            return true;
+          }          
+        }
+      }
+      return false;
+    }
+
+    // Do this if not map found
     while (true)
     {
 
@@ -127,7 +155,7 @@ namespace tendb {
         return false;
       };
 
-      if (mapExists)
+      if (mapExists && !TTable::EnableMinMaxReverseMap)
       {
         auto arrMap = table->maps_[colNum]->arrayMap_[chunkNum];
         arrMap->GetMax(maxVal);
@@ -146,12 +174,8 @@ namespace tendb {
           }
         }
       }
-      else
-      {
-        LOG(ERROR) << "No map here." ;
-        if (scanArray())
-          return true;
-      }
+      if (scanArray())
+        return true;
 
       // Increase chunkNum
       chunkNum++;
@@ -207,7 +231,7 @@ namespace tendb {
 // 1. Find rowId where leftTable[leftColNum][rowId] == leftValue
 // 2. Return rightValue equal to rightTable[rightColNum][rowId]
 //
-template<class Type, class ArrayType>
+template<class Type, class ArrayType> inline
 bool JoinInner(Type& leftValue,      // leftValue Input
                std::shared_ptr<TTable> leftTable, // leftTable
                int64_t leftColNum,      // leftColNum

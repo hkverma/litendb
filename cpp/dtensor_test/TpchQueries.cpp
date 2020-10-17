@@ -170,14 +170,30 @@ double TpchQueries::Query5()
   // for now do a full table scan need to build filtering metadata per column chunk
   StopWatch timer;
   timer.Start();
-  int64_t getRowIdTime=0, getValTime=0;
+  StopWatch tempTimer;
+  tempTimer.Start();
+  int64_t ordersGetRowIdTime=0, ordersGetValTime=0, extraTime=0;
+  int64_t supplierGetRowIdTime=0, supplierGetValTime=0;
+  int64_t nationGetRowIdTime=0, nationGetValTime=0;
+  bool reachedTemp = true;
   for (int64_t rowId=0; rowId<length; rowId++)
   {
+    if (reachedTemp)
+    {
+      tempTimer.Stop();
+      extraTime += tempTimer.ElapsedInMicroseconds();
+    }
+    reachedTemp = false;
     if (rowId%rowIncrementsForTimeLog == 0) {
       timer.Stop();
       LOG(INFO) << "Rows = " << rowId << " Elapsed ms=" << timer.ElapsedInMilliseconds();
-      LOG(INFO) << "RowId Time us= " << getRowIdTime;
-      LOG(INFO) << "ValId Time us= " << getValTime;
+      LOG(INFO) << "Orders RowId Time ms= " << ordersGetRowIdTime/1000;
+      LOG(INFO) << "Orders ValId Time ms= " << ordersGetValTime/1000;
+      LOG(INFO) << "Supplier RowId Time ms= " << supplierGetRowIdTime/1000;
+      LOG(INFO) << "Supplier ValId Time ms= " << supplierGetValTime/1000;
+      LOG(INFO) << "Nation RowId Time ms= " << nationGetRowIdTime/1000;
+      LOG(INFO) << "Nation ValId Time ms= " << nationGetValTime/1000;
+      LOG(INFO) << "Restart Time ms= " << extraTime/1000;
     }
     // Get all values for the row first
     if (!lOrderkeyIter.next(lOrderkeyValue)) break;
@@ -189,8 +205,8 @@ double TpchQueries::Query5()
     // and o_orderdate >= date '1995-01-01'
     // and o_orderdate < date '1995-01-01' + interval '1' year 
     if (!JoinInner<int64_t, arrow::Int64Array>
-        (lOrderkeyValue, tables_[orders], o_orderkey, getRowIdTime,
-         oOrderdateValue, tables_[orders], o_orderdate, getValTime))
+        (lOrderkeyValue, tables_[orders], o_orderkey, ordersGetRowIdTime,
+         oOrderdateValue, tables_[orders], o_orderdate, ordersGetValTime))
       continue;
     if (oOrderdateValue < date19950101Value || oOrderdateValue > date19951231Value)
       continue;
@@ -198,31 +214,34 @@ double TpchQueries::Query5()
     // Filter on r_name
     // l_suppkey = s_suppkey,
     if ( !JoinInner<int64_t, arrow::Int64Array>
-         (lSuppkeyValue, tables_[supplier], s_suppkey, getRowIdTime,
-          sNationkeyValue, tables_[supplier], s_nationkey, getValTime))
+         (lSuppkeyValue, tables_[supplier], s_suppkey, supplierGetRowIdTime,
+          sNationkeyValue, tables_[supplier], s_nationkey, supplierGetValTime))
       continue;
     
     // s_nationkey = n_nationkey
     if ( !JoinInner<int64_t, arrow::Int64Array>
-         (sNationkeyValue, tables_[nation], n_nationkey, getRowIdTime,
-          nRegionkeyValue, tables_[nation], n_regionkey, getValTime))
+         (sNationkeyValue, tables_[nation], n_nationkey, nationGetRowIdTime,
+          nRegionkeyValue, tables_[nation], n_regionkey, nationGetValTime))
       continue;
+    reachedTemp = true;
+    tempTimer.Start();
     
     //n_regionkey = r_regionkey
     if (!(GetRowId<int64_t, arrow::Int64Array>(regionRowId, nRegionkeyValue, tables_[region], r_regionkey))) continue;
-    //if (!(GetValue<arrow::util::string_view, arrow::StringArray>(regionRowId, rNameValue, rName))) continue;
+    // if (!(GetValue<arrow::util::string_view, arrow::StringArray>(regionRowId, rNameValue, rName))) continue;
     if (!(GetValue<std::string, arrow::StringArray>(regionRowId, rNameValue, tables_[region], r_name))) continue;
     
-    //   r_name = 'EUROPE'
+    // r_name = 'EUROPE';
     bool ifEurope = std::equal(europe.begin(), europe.end(), rNameValue.begin(),
-                               [] (const char& a, const char& b)
-                               {
-                                 return (std::tolower(a) == std::tolower(b));
-                               });
+                                 [] (const char& a, const char& b)
+                                 {
+                                   return (std::tolower(a) == std::tolower(b));
+                                 });
     if (!ifEurope)
-    continue;
+      continue;
 
     // add to revenue
+    // TODO add groupby and total should be 2.5E8 Some calc is wrong
     revenue += (1-lDiscountValue)*lExtendedpriceValue;
   }
   return revenue;

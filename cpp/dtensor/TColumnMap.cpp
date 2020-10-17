@@ -90,15 +90,32 @@ namespace tendb {
     return mapArr;
   }
 
+  // Create maps for a given chunkedArray
   std::shared_ptr<TColumnMap> TColumnMap::Make(std::shared_ptr<arrow::ChunkedArray> chunkedArray)
   {
     std::shared_ptr<TColumnMap> chunkArrMap = std::make_shared<TColumnMap>(chunkedArray);
-    for (int64_t cnum=0; cnum<chunkedArray->num_chunks(); cnum++)
+
+    // For each array create the maps
+    for (int64_t arrNum=0; arrNum<chunkedArray->num_chunks(); arrNum++)
     {
-      std::shared_ptr<arrow::Array> arr = chunkedArray->chunk(cnum);
+      std::shared_ptr<arrow::Array> arr = chunkedArray->chunk(arrNum);
       std::shared_ptr<TArrayMap> arrMap = TArrayMap::Make(arr);
       chunkArrMap->arrayMap_.push_back(arrMap);
+      
+      // If received min or max value, add to min-max reverse map
+      if (TTable::EnableMinMaxReverseMap)
+      {
+        int64_t minVal, maxVal;
+        if (arrMap->GetMin(minVal))
+        {
+          arrMap->GetMax(maxVal);
+          chunkArrMap->minArrays_.insert(std::make_pair(minVal, arrNum));
+          chunkArrMap->maxArrays_.insert(std::make_pair(maxVal, arrNum));
+        }
+      }
+      
     }
+    
     return chunkArrMap;
   }
   
@@ -121,6 +138,21 @@ namespace tendb {
     {
       ss << it->first << ":" << it->second << "," ;
     }
+  }
+
+  void TColumnMap::GetMinMaxReverseMap(std::stringstream& ss)
+  {
+    ss << " Min=" ;
+    for (auto it = minArrays_.begin(); it != minArrays_.end(); it++)
+    {
+      ss << it->first << ":" << it->second << "," ;
+    }
+    ss << "; Max=" ;
+    for (auto it = maxArrays_.begin(); it != maxArrays_.end(); it++)
+    {
+      ss << it->first << ":" << it->second << "," ;
+    }
+    ss << ";" ;
   }
   
 }

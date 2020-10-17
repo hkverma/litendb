@@ -127,8 +127,8 @@ namespace tendb {
     
     for (int64_t cnum=0; cnum<table_->num_columns(); cnum++)
     {
-      std::shared_ptr<arrow::ChunkedArray> chArr = table_->column(cnum);
-      auto colMap = TColumnMap::Make(chArr);
+      std::shared_ptr<arrow::ChunkedArray> chunkedArray = table_->column(cnum);
+      auto colMap = TColumnMap::Make(chunkedArray);
       maps_.push_back(colMap);
     }
     return true;
@@ -154,7 +154,9 @@ namespace tendb {
         // arrMap->GetReverseMap(ss);
         // ss << "; ";
       }
+      ss << " MinMax ReverseMap: " ;
+      colMap->GetMinMaxReverseMap(ss);
+      LOG(INFO) << ss.str();
     }
-    LOG(INFO) << ss.str();
   }
 }
