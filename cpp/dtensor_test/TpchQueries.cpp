@@ -167,40 +167,77 @@ double TpchQueries::Query5()
   std::string europe("EUROPE");
   std::string rNationValue;
 
-  // for now do a full table scan need to build filtering metadata per column chunk
   StopWatch timer;
   timer.Start();
-  StopWatch tempTimer;
-  tempTimer.Start();
-  int64_t ordersGetRowIdTime=0, ordersGetValTime=0, extraTime=0;
+  
+  // for now do a full table scan need to build filtering metadata per column chunk
+  StopWatch totalTimer;
+  totalTimer.Start();
+  StopWatch extraTimer;
+  extraTimer.Start();
+  StopWatch scanTimer;
+  scanTimer.Start();
+  
+  int64_t ordersGetRowIdTime=0, ordersGetValTime=0, extraTime=0, scanTime=0, totalTime=0;
+  
   int64_t supplierGetRowIdTime=0, supplierGetValTime=0;
   int64_t nationGetRowIdTime=0, nationGetValTime=0;
-  bool reachedTemp = true;
+  
+  bool countExtraTime = true;
   for (int64_t rowId=0; rowId<length; rowId++)
   {
-    if (reachedTemp)
+    if (countExtraTime)
     {
-      tempTimer.Stop();
-      extraTime += tempTimer.ElapsedInMicroseconds();
+      extraTimer.Stop();
+      extraTime += extraTimer.ElapsedInMicroseconds();
+      countExtraTime = false;
     }
-    reachedTemp = false;
-    if (rowId%rowIncrementsForTimeLog == 0) {
-      timer.Stop();
-      LOG(INFO) << "Rows = " << rowId << " Elapsed ms=" << timer.ElapsedInMilliseconds();
+    
+    scanTimer.Stop();    
+    scanTime += scanTimer.ElapsedInMicroseconds();
+    
+    if (rowId%rowIncrementsForTimeLog == 0)
+    {
+      totalTimer.Stop();
+      totalTime += totalTimer.ElapsedInMicroseconds();
+      totalTimer.Start();
+      LOG(INFO) << "Rows = " << rowId << " Elapsed ms=" << totalTime/1000;
       LOG(INFO) << "Orders RowId Time ms= " << ordersGetRowIdTime/1000;
       LOG(INFO) << "Orders ValId Time ms= " << ordersGetValTime/1000;
       LOG(INFO) << "Supplier RowId Time ms= " << supplierGetRowIdTime/1000;
       LOG(INFO) << "Supplier ValId Time ms= " << supplierGetValTime/1000;
       LOG(INFO) << "Nation RowId Time ms= " << nationGetRowIdTime/1000;
       LOG(INFO) << "Nation ValId Time ms= " << nationGetValTime/1000;
-      LOG(INFO) << "Restart Time ms= " << extraTime/1000;
+      LOG(INFO) << "Scan Time ms= " << scanTime/1000;
+      LOG(INFO) << "Extra Time ms= " << extraTime/1000;
     }
+    
+    scanTimer.Start();
     // Get all values for the row first
-    if (!lOrderkeyIter.next(lOrderkeyValue)) break;
-    if (!lSuppkeyIter.next(lSuppkeyValue)) break;
-    if (!lExtendedpriceIter.next(lExtendedpriceValue)) break;
-    if (!lDiscountIter.next(lDiscountValue)) break;
+    if (!lOrderkeyIter.next(lOrderkeyValue))
+    {
+      LOG(ERROR) << "Missing order key" ;
+      break;
+    }
+    if (!lSuppkeyIter.next(lSuppkeyValue))
+    {
+      LOG(ERROR) << "Missing supply key" ;
+      break;
+    }
+    if (!lExtendedpriceIter.next(lExtendedpriceValue))
+    {
+      LOG(ERROR) << "Missing extended price key" ;
+      break;
+    }
+    if (!lDiscountIter.next(lDiscountValue))
+    {
+      LOG(ERROR) << "Missing discount Value" ;
+      break;
+    }      
+    scanTimer.Stop();
 
+    countExtraTime = true;
+    extraTimer.Start();
     // l_orderkey = o_orderkey
     // and o_orderdate >= date '1995-01-01'
     // and o_orderdate < date '1995-01-01' + interval '1' year 
@@ -223,8 +260,6 @@ double TpchQueries::Query5()
          (sNationkeyValue, tables_[nation], n_nationkey, nationGetRowIdTime,
           nRegionkeyValue, tables_[nation], n_regionkey, nationGetValTime))
       continue;
-    reachedTemp = true;
-    tempTimer.Start();
     
     //n_regionkey = r_regionkey
     if (!(GetRowId<int64_t, arrow::Int64Array>(regionRowId, nRegionkeyValue, tables_[region], r_regionkey))) continue;
@@ -244,6 +279,10 @@ double TpchQueries::Query5()
     // TODO add groupby and total should be 2.5E8 Some calc is wrong
     revenue += (1-lDiscountValue)*lExtendedpriceValue;
   }
+
+  timer.Stop();
+  LOG(INFO) << "Query 5 Elapsed ms=" << timer.ElapsedInMicroseconds()/1000;
+  
   return revenue;
 }
 

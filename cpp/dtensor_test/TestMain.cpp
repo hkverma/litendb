@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
 
   /*
   stopWatch.Start();
-  result = tpchQueries.Query5();
+  result = tpchQueries.Query5);
   stopWatch.Stop();
   LOG(INFO) << "Query5 Revenue=" << result;
   LOG(INFO) << stopWatch.ElapsedInMicroseconds() << "us";

@@ -1,6 +1,9 @@
 #include <chrono>
 
 #pragma once
+
+// TODO make it thread safe
+
 namespace tendb
 {
   class StopWatch
@@ -10,10 +13,13 @@ namespace tendb
     void Start()
     {
       start_ = clock_resolution::now();
+      running_= true;
     }
     void Stop()
     {
-      stop_ = clock_resolution::now();
+      if (running_)
+	stop_ = clock_resolution::now();
+      running_ = false;
     }
 
     int64_t ElapsedInMicroseconds()
@@ -31,5 +37,6 @@ namespace tendb
   private:
     std::chrono::time_point<clock_resolution> start_;
     std::chrono::time_point<clock_resolution> stop_;
+    bool running_;
   };
 };
