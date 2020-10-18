@@ -111,11 +111,31 @@ namespace tendb {
 
     int64_t chunkNum = 0;
     rowId = 0;
+
+    if (mapExists)
+    {
+      int64_t arrId;
+      if (!colMap->GetArrId(arrId, value))
+        return false;
+      auto arrMap = colMap->arrayMap_[arrId];
+      arrMap->GetMax(maxVal);
+      arrMap->GetMin(minVal);
+      if (value < minVal || value > maxVal)
+      {
+        return false;
+      }
+      int64_t tmpRowId;
+      if (arrMap->GetRowId(tmpRowId, value))
+      {
+        rowId = tmpRowId;
+        return true;
+      }
+      return false;
+    }
     
     // Do this if not map found
     while (true)
     {
-
       std::shared_ptr<ArrayType> arr = std::static_pointer_cast<ArrayType>(chunkedArray->chunk(chunkNum));
 
       auto scanArray = [&]() -> bool
@@ -131,30 +151,8 @@ namespace tendb {
         return false;
       };
 
-      if (mapExists)
-      {
-        auto arrMap = table->maps_[colNum]->arrayMap_[chunkNum];
-        arrMap->GetMax(maxVal);
-        arrMap->GetMin(minVal);
-        if (value < minVal || value > maxVal)
-        {
-          rowId += arr->length();
-        }
-        else
-        {
-          int64_t tmpRowId;
-          if (arrMap->GetRowId(tmpRowId, value))
-          {
-            rowId = tmpRowId;
-            return true;
-          }
-        }
-      }
-      else
-      {
-        if (scanArray())
-          return true;
-      }
+      if (scanArray())
+        return true;
 
       // Increase chunkNum
       chunkNum++;

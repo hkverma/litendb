@@ -16,13 +16,16 @@
 
 namespace tendb {
 
+  class TColumnMap;
+
   // Base Array Map
   class TArrayMap {
   public:
     TArrayMap(std::shared_ptr<arrow::Array> arr) : array_(arr) { }
     ~TArrayMap() { }
 
-    static std::shared_ptr<TArrayMap> Make(std::shared_ptr<arrow::Array> arr);
+    static std::shared_ptr<TArrayMap> Make(std::shared_ptr<TColumnMap> chunkArrMap,
+                                           int64_t arrNum);
 
     std::shared_ptr<arrow::Array> array_;
 
@@ -56,7 +59,8 @@ namespace tendb {
   {
   public:
     TInt64ArrayMap(std::shared_ptr<arrow::Array> arr);
-    static std::shared_ptr<TInt64ArrayMap> Make(std::shared_ptr<arrow::Array> arr);
+    static std::shared_ptr<TInt64ArrayMap> Make(std::shared_ptr<TColumnMap> chunkArrMap,
+                                                int64_t arrNum);
     virtual bool GetMin(int64_t& minVal)
     {
       minVal = min_;
@@ -94,6 +98,10 @@ namespace tendb {
 
     std::shared_ptr<arrow::ChunkedArray> chunkedArray_;
     std::vector<std::shared_ptr<TArrayMap>> arrayMap_;
+
+    // TODO Currently make it only for int64_t, enhance it later with other types
+    bool GetArrId(int64_t& arrId, int64_t& val);
+    std::map<int64_t, int64_t> arrayIds_;
     
     arrow::Status status_;
   };

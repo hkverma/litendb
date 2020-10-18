@@ -10,8 +10,12 @@ namespace tendb {
   //
   // arrow::builder.cc check L22 for the types shown below
   //
-  std::shared_ptr<TArrayMap> TArrayMap::Make(std::shared_ptr<arrow::Array> arr)
+  std::shared_ptr<TArrayMap> TArrayMap::Make(std::shared_ptr<TColumnMap> chunkArrMap,
+                                             int64_t arrNum)
   {
+
+    std::shared_ptr<arrow::Array> arr = chunkArrMap->chunkedArray_->chunk(arrNum);
+    
     std::shared_ptr<TArrayMap> arrayMap_;
     switch (arr->type()->id())
     {
@@ -23,7 +27,7 @@ namespace tendb {
       */
     case arrow::Int64Type::type_id:
     {
-      arrayMap_ = TInt64ArrayMap::Make(arr);
+      arrayMap_ = TInt64ArrayMap::Make(chunkArrMap, arrNum);
       break;
     }
     /* TODO
@@ -61,8 +65,10 @@ namespace tendb {
     max_ = std::numeric_limits<int64_t>::max();
   }
 
-  std::shared_ptr<TInt64ArrayMap> TInt64ArrayMap::Make(std::shared_ptr<arrow::Array> arr)
+  std::shared_ptr<TInt64ArrayMap> TInt64ArrayMap::Make(std::shared_ptr<TColumnMap> chunkArrMap,
+                                                       int64_t arrNum)
   {
+    std::shared_ptr<arrow::Array> arr = chunkArrMap->chunkedArray_->chunk(arrNum);
     // create a new map object
     std::shared_ptr<TInt64ArrayMap> mapArr = std::make_shared<TInt64ArrayMap>(arr);
     int64_t& minVal = mapArr->min_;
@@ -81,6 +87,7 @@ namespace tendb {
       {
         int64_t rowVal = numArr->Value(rowId);
         mapArr->rowIds_.insert(std::make_pair(rowVal, rowId));
+        chunkArrMap->arrayIds_.insert(std::make_pair(rowVal, arrNum));
         if (rowVal < minVal)
           minVal = rowVal;
         if (rowVal > maxVal)
@@ -99,7 +106,7 @@ namespace tendb {
     for (int64_t arrNum=0; arrNum<chunkedArray->num_chunks(); arrNum++)
     {
       std::shared_ptr<arrow::Array> arr = chunkedArray->chunk(arrNum);
-      std::shared_ptr<TArrayMap> arrMap = TArrayMap::Make(arr);
+      std::shared_ptr<TArrayMap> arrMap = TArrayMap::Make(chunkArrMap, arrNum);
       chunkArrMap->arrayMap_.push_back(arrMap);
     }
     
@@ -119,6 +126,19 @@ namespace tendb {
     return true;
   }
 
+  bool TColumnMap::GetArrId(int64_t& arrId, int64_t& val)
+  {
+    auto arrItr = arrayIds_.find(val);
+    if (arrItr == arrayIds_.end())
+    {
+      return false;
+    }
+    // For now return only one
+    // TODO Use equal_range in future to return a vector of matched rowIds
+    arrId = arrItr->second;
+    return true;
+  }
+  
   void TInt64ArrayMap::GetReverseMap(std::stringstream& ss)
   {
     for (auto it = rowIds_.begin(); it != rowIds_.end(); it++)

@@ -354,11 +354,46 @@ Complex  Fact-to-fact joins, windows, extensive subqueries
  Nation RowId Time ms= 1
  Nation ValId Time ms= 0
  Restart Time ms= 51
-  Query5 Revenue=6.33263e+09 Time = 133047690us
+  Query5 Revenue=6.33263e+09 Time = 133047690us = 133 sec
 
 * Reverse map for min-max is not efficient. It ends up scanning lot more data and perf does not imrpove.
 
-* TODO do reverse map for all column in one shot
+* Reverse map for all column in one shot - >6x improvement
+I20201017 17:06:13.388578  2307 TpchQueries.cpp:189] Rows = 200000 Elapsed ms=669
+I20201017 17:06:13.388593  2307 TpchQueries.cpp:190] Orders RowId Time ms= 204
+I20201017 17:06:13.388595  2307 TpchQueries.cpp:191] Orders ValId Time ms= 2
+I20201017 17:06:13.388597  2307 TpchQueries.cpp:192] Supplier RowId Time ms= 30
+I20201017 17:06:13.388599  2307 TpchQueries.cpp:193] Supplier ValId Time ms= 0
+I20201017 17:06:13.388602  2307 TpchQueries.cpp:194] Nation RowId Time ms= 0
+I20201017 17:06:13.388602  2307 TpchQueries.cpp:195] Nation ValId Time ms= 0
+I20201017 17:06:13.388604  2307 TpchQueries.cpp:196] Restart Time ms= 25
+I20201017 17:06:13.733212  2307 TpchQueries.cpp:189] Rows = 300000 Elapsed ms=1014
+I20201017 17:06:13.733227  2307 TpchQueries.cpp:190] Orders RowId Time ms= 308
+I20201017 17:06:13.733229  2307 TpchQueries.cpp:191] Orders ValId Time ms= 5
+I20201017 17:06:13.733232  2307 TpchQueries.cpp:192] Supplier RowId Time ms= 46
+I20201017 17:06:13.733233  2307 TpchQueries.cpp:193] Supplier ValId Time ms= 0
+I20201017 17:06:13.733235  2307 TpchQueries.cpp:194] Nation RowId Time ms= 1
+I20201017 17:06:13.733237  2307 TpchQueries.cpp:195] Nation ValId Time ms= 0
+I20201017 17:06:13.733238  2307 TpchQueries.cpp:196] Restart Time ms= 38
+I20201017 17:06:14.078064  2307 TpchQueries.cpp:189] Rows = 400000 Elapsed ms=1358
+I20201017 17:06:14.078078  2307 TpchQueries.cpp:190] Orders RowId Time ms= 411
+I20201017 17:06:14.078109  2307 TpchQueries.cpp:191] Orders ValId Time ms= 6
+I20201017 17:06:14.078110  2307 TpchQueries.cpp:192] Supplier RowId Time ms= 61
+I20201017 17:06:14.078112  2307 TpchQueries.cpp:193] Supplier ValId Time ms= 1
+I20201017 17:06:14.078114  2307 TpchQueries.cpp:194] Nation RowId Time ms= 2
+I20201017 17:06:14.078115  2307 TpchQueries.cpp:195] Nation ValId Time ms= 0
+I20201017 17:06:14.078117  2307 TpchQueries.cpp:196] Restart Time ms= 50
+I20201017 17:06:14.411913  2307 TpchQueries.cpp:189] Rows = 500000 Elapsed ms=1692
+I20201017 17:06:14.411928  2307 TpchQueries.cpp:190] Orders RowId Time ms= 513
+I20201017 17:06:14.411931  2307 TpchQueries.cpp:191] Orders ValId Time ms= 7
+I20201017 17:06:14.411932  2307 TpchQueries.cpp:192] Supplier RowId Time ms= 76
+I20201017 17:06:14.411934  2307 TpchQueries.cpp:193] Supplier ValId Time ms= 1
+I20201017 17:06:14.411936  2307 TpchQueries.cpp:194] Nation RowId Time ms= 2
+I20201017 17:06:14.411937  2307 TpchQueries.cpp:195] Nation ValId Time ms= 0
+I20201017 17:06:14.411939  2307 TpchQueries.cpp:196] Restart Time ms= 63
+
+Query5 Revenue=6.33263e+09
+Time =  20259536us = 20 sec
 
 * Add event IDs in the message. Also add context for each user.
 
