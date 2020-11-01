@@ -51,7 +51,7 @@ namespace tendb
 
     void ReadTables();
     double Query6();
-    double Query5();
+    void Query5(double revenue[]);
 
     bool MakeMaps();
     

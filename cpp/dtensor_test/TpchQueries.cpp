@@ -124,7 +124,7 @@ order by
 limit -1;
 */
 
-double TpchQueries::Query5()
+void TpchQueries::Query5(double revenue[])
 {
 
   std::shared_ptr<arrow::ChunkedArray> lDiscount =
@@ -145,7 +145,7 @@ double TpchQueries::Query5()
   if (length != lExtendedprice->length())
   {
     LOG(ERROR) << "Length should be the same";
-    return 0;
+    return;
   }
 
   int64_t orderRowId, oOrderdateValue;
@@ -157,8 +157,6 @@ double TpchQueries::Query5()
   std::string rNameValue;
   int64_t lOrderkeyValue, lSuppkeyValue;
   double lDiscountValue, lExtendedpriceValue;
-
-  double revenue = 0;
 
   int64_t date19950101Value =
     SecondsSinceEpoch(boost::gregorian::date(1995, 1, 1), boost::posix_time::seconds(0));
@@ -255,13 +253,17 @@ double TpchQueries::Query5()
           sNationkeyValue, tables_[supplier], s_nationkey, supplierGetValTime))
       continue;
     
-    // s_nationkey = n_nationkey
+    // s_nationkey = n_nationkey also get nation name
     if ( !JoinInner<int64_t, arrow::Int64Array>
          (sNationkeyValue, tables_[nation], n_nationkey, nationGetRowIdTime,
           nRegionkeyValue, tables_[nation], n_regionkey, nationGetValTime))
       continue;
     
-    //n_regionkey = r_regionkey
+    // n_regionkey = r_regionkey
+    if (nRegionkeyValue != 3)
+      continue;
+    
+    /* Comparing of the names are not needed
     if (!(GetRowId<int64_t, arrow::Int64Array>(regionRowId, nRegionkeyValue, tables_[region], r_regionkey))) continue;
     // if (!(GetValue<arrow::util::string_view, arrow::StringArray>(regionRowId, rNameValue, rName))) continue;
     if (!(GetValue<std::string, arrow::StringArray>(regionRowId, rNameValue, tables_[region], r_name))) continue;
@@ -274,16 +276,14 @@ double TpchQueries::Query5()
                                  });
     if (!ifEurope)
       continue;
-
-    // add to revenue
-    // TODO add groupby and total should be 2.5E8 Some calc is wrong
-    revenue += (1-lDiscountValue)*lExtendedpriceValue;
+    */
+    
+    // add to revenue by nation key
+    revenue[sNationkeyValue] += (1-lDiscountValue)*lExtendedpriceValue;
   }
 
   timer.Stop();
   LOG(INFO) << "Query 5 Elapsed ms=" << timer.ElapsedInMicroseconds()/1000;
-  
-  return revenue;
 }
 
 
