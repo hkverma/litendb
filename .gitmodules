@@ -13,3 +13,6 @@
 [submodule "cpp/external_libs/googletest/googletest"]
 	path = cpp/external_libs/googletest/googletest
 	url = https://github.com/google/googletest
+[submodule "cpp/external_libs/tbb/tbb"]
+	path = cpp/external_libs/tbb/tbb
+	url = https://github.com/intel/tbb
