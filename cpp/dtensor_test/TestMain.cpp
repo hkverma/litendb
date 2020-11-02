@@ -7,10 +7,20 @@
 #include "dtensor.h"
 #include "TpchQueries.h"
 
+#include <tbb/tbb.h>
+
 using namespace tendb;
 
 int main(int argc, char** argv) {
 
+  /*
+  tbb::parallel_invoke
+    ([]() { std::cout << "Hello " << std::endl; },
+     []() { std::cout << "Hello " << std::endl; }
+     );
+  return 0;
+  */
+  
   if (argc < 2) {
     std::cout << "Usage: exec file_name" << std::endl;
     return EXIT_SUCCESS;
