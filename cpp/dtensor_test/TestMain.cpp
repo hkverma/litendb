@@ -38,11 +38,17 @@ int main(int argc, char** argv) {
   
   StopWatch stopWatch;
   stopWatch.Start();
-  double result = tpchQueries.Query6();
+  double result = tpchQueries.Query6Serial();
   stopWatch.Stop();
   LOG(INFO) << "Query6 Revenue=" << result;
   LOG(INFO) << stopWatch.ElapsedInMicroseconds() << "us";
 
+  stopWatch.Start();
+  result = tpchQueries.Query6Parallel();
+  stopWatch.Stop();
+  LOG(INFO) << "Query6 Revenue=" << result;
+  LOG(INFO) << stopWatch.ElapsedInMicroseconds() << "us";
+  
   stopWatch.Start();
   bool mapResult = tpchQueries.MakeMaps();
   stopWatch.Stop();

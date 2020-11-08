@@ -6,7 +6,7 @@
 #include "dtensor.h"
 
 #include "TpchQueries.h"
-
+#include <tbb/tbb.h>
 
 using namespace tendb;
 
@@ -27,6 +27,19 @@ void TpchQueries::ReadTables()
                                   readOptions, parseOptions, convertOptions);
     //tables_[i]->Print();
   }
+
+  // Populate tables
+  lShipdate = tables_[lineitem]->table_->column(l_shipdate);
+  lDiscount = tables_[lineitem]->table_->column(l_discount);
+  lQuantity = tables_[lineitem]->table_->column(l_quantity);
+  lExtendedprice = tables_[lineitem]->table_->column(l_extendedprice);
+
+  // constants
+  date19970101Value =
+    SecondsSinceEpoch(boost::gregorian::date(1997, 1, 1), boost::posix_time::seconds(0));
+  date19971231Value =
+    SecondsSinceEpoch(boost::gregorian::date(1997, 12, 31), boost::posix_time::seconds(0));
+  
 }
 
 /*
@@ -40,23 +53,18 @@ where
 	and l_discount between 0.07 - 0.01 and 0.07 + 0.01
 	and l_quantity < 25;
 */
-double TpchQueries::Query6()
+double TpchQueries::Query6Serial()
 {
-  std::shared_ptr<arrow::ChunkedArray> shipdate = tables_[lineitem]->table_->column(l_shipdate);
-  std::shared_ptr<arrow::ChunkedArray> discount = tables_[lineitem]->table_->column(l_discount);
-  std::shared_ptr<arrow::ChunkedArray> quantity = tables_[lineitem]->table_->column(l_quantity);
-  std::shared_ptr<arrow::ChunkedArray> extendedprice = tables_[lineitem]->table_->column(l_extendedprice);
-
   int shipdateChunkNum=0, discountChunkNum=0, quantityChunkNum=0, extendedpriceChunkNum=0;
-  TColumnIterator<int64_t, arrow::Int64Array> shipdateIter(shipdate);
-  TColumnIterator<double, arrow::DoubleArray> discountIter(discount);
-  TColumnIterator<int64_t, arrow::Int64Array> quantityIter(quantity);
-  TColumnIterator<double, arrow::DoubleArray> extendedpriceIter(extendedprice);
+  TColumnIterator<int64_t, arrow::Int64Array> shipdateIter(lShipdate);
+  TColumnIterator<double, arrow::DoubleArray> discountIter(lDiscount);
+  TColumnIterator<int64_t, arrow::Int64Array> quantityIter(lQuantity);
+  TColumnIterator<double, arrow::DoubleArray> extendedpriceIter(lExtendedprice);
 
-  int64_t length = shipdate->length();
-  if (length != discount->length() ||
-      length != quantity->length() ||
-      length != extendedprice->length())
+  int64_t length = lShipdate->length();
+  if (length != lDiscount->length() ||
+      length != lQuantity->length() ||
+      length != lExtendedprice->length())
   {
     LOG(ERROR) << "Length should be the same";
     return 0;
@@ -65,11 +73,6 @@ double TpchQueries::Query6()
   double revenue = 0;
   int64_t shipdateValue, quantityValue;
   double discountValue, extendedpriceValue;
-
-  int64_t date19970101Value =
-    SecondsSinceEpoch(boost::gregorian::date(1997, 1, 1), boost::posix_time::seconds(0));
-  int64_t date19971231Value =
-    SecondsSinceEpoch(boost::gregorian::date(1997, 12, 31), boost::posix_time::seconds(0));
 
   StopWatch timer;
   timer.Start();
@@ -92,6 +95,60 @@ double TpchQueries::Query6()
     if (discountValue < 0.06 || discountValue > 0.08)
       continue;
     revenue += discountValue * extendedpriceValue;
+  }
+  return revenue;
+}
+
+void TpchQueries::GetQuery6Revenue(int64_t chunkNum, double& revenue)
+{
+  auto shipdate = std::static_pointer_cast<arrow::Int64Array>(lShipdate->chunk(chunkNum));
+  auto discount = std::static_pointer_cast<arrow::DoubleArray>(lDiscount->chunk(chunkNum));
+  auto quantity = std::static_pointer_cast<arrow::Int64Array>(lQuantity->chunk(chunkNum));
+  auto extendedprice = std::static_pointer_cast<arrow::DoubleArray>(lExtendedprice->chunk(chunkNum));
+  revenue = 0;
+  
+  for (int64_t rowNum=0; rowNum<extendedprice->length(); rowNum++)
+  {
+    auto shipdateValue = shipdate->Value(rowNum);
+    if (shipdateValue < date19970101Value || shipdateValue > date19971231Value)
+      continue;
+    auto quantityValue = quantity->Value(rowNum);
+    if (quantityValue >= 25)
+      continue;
+    auto discountValue = discount->Value(rowNum);    
+    if (discountValue < 0.06 || discountValue > 0.08)
+      continue;
+    auto extendedpriceValue = extendedprice->Value(rowNum);    
+    revenue += discountValue * extendedpriceValue;
+  }
+  
+};
+
+double TpchQueries::Query6Parallel()
+{
+
+  int64_t shipdateValue, quantityValue;
+  double discountValue, extendedpriceValue;
+
+
+  tbb::task_group tg;
+
+  StopWatch timer;
+  timer.Start();
+
+  // for now do a full table scan need to build filtering metadata per column chunk
+  std::vector<double> revenues(lExtendedprice->num_chunks());
+  for (int64_t chunkNum=0; chunkNum<lExtendedprice->num_chunks(); chunkNum++)
+  {
+    auto tf = std::bind(&TpchQueries::GetQuery6Revenue, this, chunkNum, std::ref(revenues[chunkNum]));
+    tg.run(tf);
+  }
+  tg.wait();
+  
+  double revenue = 0;
+  for (auto rev: revenues)
+  {
+    revenue += rev;
   }
   return revenue;
 }

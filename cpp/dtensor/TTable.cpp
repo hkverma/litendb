@@ -115,6 +115,22 @@ namespace tendb {
     
     table_ = tableResult.ValueOrDie();
     schema_ = table_->schema();
+    std::vector<std::shared_ptr<arrow::ChunkedArray>> cols = table_->columns();
+    LOG(INFO) << "Total columns=" << cols.size();
+    int64_t numChunks = cols[0]->num_chunks();
+    for (int i=0; i<cols.size(); i++) {
+      if (cols[i]->num_chunks() != numChunks) {
+        LOG(ERROR) << "Chunks " << cols[i]->num_chunks() << " != " << numChunks;
+      }
+    }
+    for (auto i=0; i<cols.size(); i++) {
+      for (auto j=0; j<numChunks; j++) {
+        if (cols[i]->chunk(j)->length() != cols[0]->chunk(j)->length()) {
+          LOG(ERROR) << "Col " << i << " Chunk " << j ;
+          LOG(ERROR) << "Chunk length " << cols[i]->chunk(j)->length() << "!=" << cols[0]->chunk(j)->length() ;
+        }
+      }
+    }
     return true;
   }
 

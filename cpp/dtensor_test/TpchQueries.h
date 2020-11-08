@@ -49,10 +49,16 @@ namespace tendb
     const static int32_t n_nationkey=0, n_regionkey=2, n_name=1;
     const static int32_t r_regionkey=0, r_name=1;
 
-    void ReadTables();
-    double Query6();
-    void Query5(double revenue[]);
+    // lineitem tables
+    std::shared_ptr<arrow::ChunkedArray> lShipdate, lDiscount, lQuantity, lExtendedprice;
 
+    void ReadTables();
+    double Query6Serial();
+    double Query6Parallel();
+    void GetQuery6Revenue(int64_t chunkNum, double& revenue);
+    
+    void Query5(double revenue[]);
+    
     bool MakeMaps();
     
     void PrintSchemas();
@@ -63,6 +69,9 @@ namespace tendb
     std::string tpchDir_;
 
     const int64_t rowIncrementsForTimeLog = 100000;
+    int64_t date19970101Value;
+    int64_t date19971231Value;
+    
 
   };
 
