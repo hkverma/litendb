@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
      );
   return 0;
   */
-  
+
   if (argc < 2) {
     std::cout << "Usage: exec file_name" << std::endl;
     return EXIT_SUCCESS;
@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
   TpchQueries tpchQueries(tCache, tpchDataDir);
   tpchQueries.ReadTables();
   tpchQueries.PrintSchemas();
-  
+
   StopWatch stopWatch;
   stopWatch.Start();
   double result = tpchQueries.Query6Serial();
@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
   stopWatch.Stop();
   LOG(INFO) << "Query6 Revenue=" << result;
   LOG(INFO) << stopWatch.ElapsedInMicroseconds() << "us";
-  
+
   stopWatch.Start();
   bool mapResult = tpchQueries.MakeMaps();
   stopWatch.Stop();
@@ -93,7 +93,7 @@ int main(int argc, char** argv) {
     LOG(INFO) << nations[france] << "=" << revenue[france];
     LOG(INFO) << nations[germany] << "=" << revenue[germany];
 
-    LOG(INFO) << "All nations Revenue=";  
+    LOG(INFO) << "All nations Revenue=";
     for (int i=0 ; i< 25; i++) {
       LOG(INFO) << nations[i] << "=" << revenue[i];
     }
@@ -104,7 +104,15 @@ int main(int argc, char** argv) {
   stopWatch.Stop();
   printRevenue();
   LOG(INFO) << stopWatch.ElapsedInMicroseconds() << "us";
-  
+  /* TODO
+  for (int i=0; i<25; i++)
+    revenue[i] = 0;
+  stopWatch.Start();
+  tpchQueries.Query5Parallel(revenue);
+  stopWatch.Stop();
+  printRevenue();
+  LOG(INFO) << stopWatch.ElapsedInMicroseconds() << "us";
+  */
   return EXIT_SUCCESS;
 
 }

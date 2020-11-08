@@ -57,14 +57,16 @@ namespace tendb
     double Query6Serial();
     double Query6Parallel();
     void GetQuery6Revenue(int64_t chunkNum, double& revenue);
-    
+
     void Query5Serial(double revenue[]);
-    
+    void Query5Parallel(double revenue[]);
+    void GetQuery5Revenue(int64_t chunkNum, double revenue[]);
+
     bool MakeMaps();
-    
+
     void PrintSchemas();
     void PrintMaps();
-    
+
     std::vector<std::shared_ptr<TTable>> tables_;
     std::shared_ptr<TCache> tCache_;
     std::string tpchDir_;

@@ -46,7 +46,7 @@ void TpchQueries::ReadTables()
     SecondsSinceEpoch(boost::gregorian::date(1995, 1, 1), boost::posix_time::seconds(0));
   date19951231Value =
     SecondsSinceEpoch(boost::gregorian::date(1995, 12, 31), boost::posix_time::seconds(0));
-  
+
 }
 
 /*
@@ -83,7 +83,7 @@ double TpchQueries::Query6Serial()
 
   // for now do a full table scan need to build filtering metadata per column chunk
   for (int64_t rowId=0; rowId<length; rowId++)
-  {    
+  {
     if (!shipdateIter.next(shipdateValue)) break;
     if (!discountIter.next(discountValue)) break;
     if (!quantityIter.next(quantityValue)) break;
@@ -106,7 +106,7 @@ void TpchQueries::GetQuery6Revenue(int64_t chunkNum, double& revenue)
   auto quantity = std::static_pointer_cast<arrow::Int64Array>(lQuantity->chunk(chunkNum));
   auto extendedprice = std::static_pointer_cast<arrow::DoubleArray>(lExtendedprice->chunk(chunkNum));
   revenue = 0;
-  
+
   for (int64_t rowNum=0; rowNum<extendedprice->length(); rowNum++)
   {
     auto shipdateValue = shipdate->Value(rowNum);
@@ -115,13 +115,13 @@ void TpchQueries::GetQuery6Revenue(int64_t chunkNum, double& revenue)
     auto quantityValue = quantity->Value(rowNum);
     if (quantityValue >= 25)
       continue;
-    auto discountValue = discount->Value(rowNum);    
+    auto discountValue = discount->Value(rowNum);
     if (discountValue < 0.06 || discountValue > 0.08)
       continue;
-    auto extendedpriceValue = extendedprice->Value(rowNum);    
+    auto extendedpriceValue = extendedprice->Value(rowNum);
     revenue += discountValue * extendedpriceValue;
   }
-  
+
 };
 
 double TpchQueries::Query6Parallel()
@@ -137,10 +137,10 @@ double TpchQueries::Query6Parallel()
   timer.Start();
 
   // for now do a full table scan need to build filtering metadata per column chunk
-  int64_t numChunks = lExtendedprice->num_chunks();  
+  int64_t numChunks = lExtendedprice->num_chunks();
   int64_t numParallels = 8;
   std::vector<double> revenues(lExtendedprice->num_chunks());
-  
+
   int64_t pnum=0;
   for (int64_t chunkNum = 0; chunkNum < numChunks; chunkNum++)
   {
@@ -155,7 +155,7 @@ double TpchQueries::Query6Parallel()
   }
   if (pnum > 0)
     tg.wait();
-  
+
   double revenue = 0;
   for (auto rev: revenues)
   {
@@ -222,7 +222,7 @@ void TpchQueries::Query5Serial(double revenue[])
 
   StopWatch timer;
   timer.Start();
-  
+
   // for now do a full table scan need to build filtering metadata per column chunk
   StopWatch totalTimer;
   totalTimer.Start();
@@ -230,12 +230,12 @@ void TpchQueries::Query5Serial(double revenue[])
   extraTimer.Start();
   StopWatch scanTimer;
   scanTimer.Start();
-  
+
   int64_t ordersGetRowIdTime=0, ordersGetValTime=0, extraTime=0, scanTime=0, totalTime=0;
-  
+
   int64_t supplierGetRowIdTime=0, supplierGetValTime=0;
   int64_t nationGetRowIdTime=0, nationGetValTime=0;
-  
+
   bool countExtraTime = true;
   for (int64_t rowId=0; rowId<length; rowId++)
   {
@@ -245,10 +245,10 @@ void TpchQueries::Query5Serial(double revenue[])
       extraTime += extraTimer.ElapsedInMicroseconds();
       countExtraTime = false;
     }
-    
-    scanTimer.Stop();    
+
+    scanTimer.Stop();
     scanTime += scanTimer.ElapsedInMicroseconds();
-    
+
     if (rowId%rowIncrementsForTimeLog == 0)
     {
       totalTimer.Stop();
@@ -264,7 +264,7 @@ void TpchQueries::Query5Serial(double revenue[])
       LOG(INFO) << "Scan Time ms= " << scanTime/1000;
       LOG(INFO) << "Extra Time ms= " << extraTime/1000;
     }
-    
+
     scanTimer.Start();
     // Get all values for the row first
     if (!lOrderkeyIter.next(lOrderkeyValue))
@@ -286,14 +286,14 @@ void TpchQueries::Query5Serial(double revenue[])
     {
       LOG(ERROR) << "Missing discount Value" ;
       break;
-    }      
+    }
     scanTimer.Stop();
 
     countExtraTime = true;
     extraTimer.Start();
     // l_orderkey = o_orderkey
     // and o_orderdate >= date '1995-01-01'
-    // and o_orderdate < date '1995-01-01' + interval '1' year 
+    // and o_orderdate < date '1995-01-01' + interval '1' year
     if (!JoinInner<int64_t, arrow::Int64Array>
         (lOrderkeyValue, tables_[orders], o_orderkey, ordersGetRowIdTime,
          oOrderdateValue, tables_[orders], o_orderdate, ordersGetValTime))
@@ -307,22 +307,22 @@ void TpchQueries::Query5Serial(double revenue[])
          (lSuppkeyValue, tables_[supplier], s_suppkey, supplierGetRowIdTime,
           sNationkeyValue, tables_[supplier], s_nationkey, supplierGetValTime))
       continue;
-    
+
     // s_nationkey = n_nationkey also get nation name
     if ( !JoinInner<int64_t, arrow::Int64Array>
          (sNationkeyValue, tables_[nation], n_nationkey, nationGetRowIdTime,
           nRegionkeyValue, tables_[nation], n_regionkey, nationGetValTime))
       continue;
-    
+
     // n_regionkey = r_regionkey
     if (nRegionkeyValue != 3)
       continue;
-    
+
     /* Comparing of the names are not needed
     if (!(GetRowId<int64_t, arrow::Int64Array>(regionRowId, nRegionkeyValue, tables_[region], r_regionkey))) continue;
     // if (!(GetValue<arrow::util::string_view, arrow::StringArray>(regionRowId, rNameValue, rName))) continue;
     if (!(GetValue<std::string, arrow::StringArray>(regionRowId, rNameValue, tables_[region], r_name))) continue;
-    
+
     // r_name = 'EUROPE';
     bool ifEurope = std::equal(europe.begin(), europe.end(), rNameValue.begin(),
                                  [] (const char& a, const char& b)
@@ -332,13 +332,127 @@ void TpchQueries::Query5Serial(double revenue[])
     if (!ifEurope)
       continue;
     */
-    
+
     // add to revenue by nation key
     revenue[sNationkeyValue] += (1-lDiscountValue)*lExtendedpriceValue;
   }
 
   timer.Stop();
   LOG(INFO) << "Query 5 Elapsed ms=" << timer.ElapsedInMicroseconds()/1000;
+}
+
+void TpchQueries::GetQuery5Revenue(int64_t chunkNum, double revenue[])
+{
+  auto orderkey = std::static_pointer_cast<arrow::Int64Array>(lOrderkey->chunk(chunkNum));
+  auto suppkey = std::static_pointer_cast<arrow::Int64Array>(lSuppkey->chunk(chunkNum));
+  auto discount = std::static_pointer_cast<arrow::DoubleArray>(lDiscount->chunk(chunkNum));
+  auto quantity = std::static_pointer_cast<arrow::Int64Array>(lQuantity->chunk(chunkNum));
+  auto extendedprice = std::static_pointer_cast<arrow::DoubleArray>(lExtendedprice->chunk(chunkNum));
+  StopWatch timer;
+  timer.Start();
+
+  int64_t ordersGetRowIdTime=0, ordersGetValTime=0, extraTime=0, scanTime=0, totalTime=0;
+  int64_t supplierGetRowIdTime=0, supplierGetValTime=0;
+  int64_t nationGetRowIdTime=0, nationGetValTime=0;
+
+  int64_t oOrderdateValue, sNationkeyValue, nRegionkeyValue;
+  int64_t rowId;
+  for (rowId=0; rowId<extendedprice->length(); rowId++)
+  {
+    // Get all values for the row first
+    auto lOrderkeyValue = orderkey->Value(rowId);
+    auto lSuppkeyValue = suppkey->Value(rowId);
+    auto lExtendedpriceValue = extendedprice->Value(rowId);
+    auto lDiscountValue = discount->Value(rowId);
+
+    // l_orderkey = o_orderkey
+    // and o_orderdate >= date '1995-01-01'
+    // and o_orderdate < date '1995-01-01' + interval '1' year
+    if (!JoinInner<int64_t, arrow::Int64Array>
+        (lOrderkeyValue, tables_[orders], o_orderkey, ordersGetRowIdTime,
+         oOrderdateValue, tables_[orders], o_orderdate, ordersGetValTime))
+      continue;
+    if (oOrderdateValue < date19950101Value || oOrderdateValue > date19951231Value)
+      continue;
+
+    // Filter on r_name
+    // l_suppkey = s_suppkey,
+    if ( !JoinInner<int64_t, arrow::Int64Array>
+         (lSuppkeyValue, tables_[supplier], s_suppkey, supplierGetRowIdTime,
+          sNationkeyValue, tables_[supplier], s_nationkey, supplierGetValTime))
+      continue;
+
+    // s_nationkey = n_nationkey also get nation name
+    if ( !JoinInner<int64_t, arrow::Int64Array>
+         (sNationkeyValue, tables_[nation], n_nationkey, nationGetRowIdTime,
+          nRegionkeyValue, tables_[nation], n_regionkey, nationGetValTime))
+      continue;
+
+    // n_regionkey = r_regionkey
+    if (nRegionkeyValue != 3)
+      continue;
+
+    // add to revenue by nation key
+    revenue[sNationkeyValue] += (1-lDiscountValue)*lExtendedpriceValue;
+  }
+
+  timer.Stop();
+  LOG(INFO) << "Query 5 Chunk " << chunkNum ;
+  LOG(INFO) << "Rows = " << rowId << " Elapsed ms=" << timer.ElapsedInMicroseconds()/1000;
+  LOG(INFO) << "Orders RowId Time ms= " << ordersGetRowIdTime/1000;
+  LOG(INFO) << "Orders ValId Time ms= " << ordersGetValTime/1000;
+  LOG(INFO) << "Supplier RowId Time ms= " << supplierGetRowIdTime/1000;
+  LOG(INFO) << "Supplier ValId Time ms= " << supplierGetValTime/1000;
+  LOG(INFO) << "Nation RowId Time ms= " << nationGetRowIdTime/1000;
+  LOG(INFO) << "Nation ValId Time ms= " << nationGetValTime/1000;
+
+}
+
+void TpchQueries::Query5Parallel(double revenue[])
+{
+
+  int64_t numChunks = lExtendedprice->num_chunks();
+  int64_t numParallels = 8;
+
+  // revenue for each chunk
+  double **revenues;
+  revenues = new double* [numChunks];
+  for (int i=0; i<numChunks; i++)
+  {
+    revenues[i] = new double[25];
+    revenues[i] = {0};
+  }
+
+  tbb::task_group tg;
+
+  StopWatch timer;
+  timer.Start();
+  int64_t pnum=0;
+  for (int64_t chunkNum = 0; chunkNum < numChunks; chunkNum++)
+  {
+    auto tf = std::bind(&TpchQueries::GetQuery5Revenue, this, chunkNum, std::ref(revenues[chunkNum]));
+    tg.run(tf);
+    pnum++;
+    if (pnum == numParallels)
+    {
+      tg.wait();
+      pnum = 0;
+    }
+  }
+  if (pnum > 0)
+    tg.wait();
+
+  for (int i=0; i<numChunks; i++)
+  {
+    for (int j=0; j<25; i++)
+    {
+      revenue[j] += revenues[i][j];
+    }
+  }
+
+  timer.Stop();
+  LOG(INFO) << "Query 5 Elapsed ms=" << timer.ElapsedInMicroseconds()/1000;
+
 }
 
 
