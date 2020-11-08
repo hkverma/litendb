@@ -51,13 +51,14 @@ namespace tendb
 
     // lineitem tables
     std::shared_ptr<arrow::ChunkedArray> lShipdate, lDiscount, lQuantity, lExtendedprice;
+    std::shared_ptr<arrow::ChunkedArray> lOrderkey, lSuppkey;
 
     void ReadTables();
     double Query6Serial();
     double Query6Parallel();
     void GetQuery6Revenue(int64_t chunkNum, double& revenue);
     
-    void Query5(double revenue[]);
+    void Query5Serial(double revenue[]);
     
     bool MakeMaps();
     
@@ -68,10 +69,11 @@ namespace tendb
     std::shared_ptr<TCache> tCache_;
     std::string tpchDir_;
 
-    const int64_t rowIncrementsForTimeLog = 100000;
+    const int64_t rowIncrementsForTimeLog = 500000;
     int64_t date19970101Value;
     int64_t date19971231Value;
-    
+    int64_t date19950101Value;
+    int64_t date19951231Value;
 
   };
 

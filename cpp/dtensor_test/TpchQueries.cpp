@@ -14,6 +14,7 @@ using namespace tendb;
 void TpchQueries::ReadTables()
 {
   arrow::csv::ReadOptions readOptions = arrow::csv::ReadOptions::Defaults();
+  readOptions.block_size = 1 << 20; // 1MB
   arrow::csv::ParseOptions parseOptions = arrow::csv::ParseOptions::Defaults();
   parseOptions.delimiter = '|';
   arrow::csv::ConvertOptions convertOptions = arrow::csv::ConvertOptions::Defaults();
@@ -33,12 +34,18 @@ void TpchQueries::ReadTables()
   lDiscount = tables_[lineitem]->table_->column(l_discount);
   lQuantity = tables_[lineitem]->table_->column(l_quantity);
   lExtendedprice = tables_[lineitem]->table_->column(l_extendedprice);
+  lOrderkey = tables_[lineitem]->table_->column(l_orderkey);
+  lSuppkey = tables_[lineitem]->table_->column(l_suppkey);
 
   // constants
   date19970101Value =
     SecondsSinceEpoch(boost::gregorian::date(1997, 1, 1), boost::posix_time::seconds(0));
   date19971231Value =
     SecondsSinceEpoch(boost::gregorian::date(1997, 12, 31), boost::posix_time::seconds(0));
+  date19950101Value =
+    SecondsSinceEpoch(boost::gregorian::date(1995, 1, 1), boost::posix_time::seconds(0));
+  date19951231Value =
+    SecondsSinceEpoch(boost::gregorian::date(1995, 12, 31), boost::posix_time::seconds(0));
   
 }
 
@@ -74,16 +81,9 @@ double TpchQueries::Query6Serial()
   int64_t shipdateValue, quantityValue;
   double discountValue, extendedpriceValue;
 
-  StopWatch timer;
-  timer.Start();
   // for now do a full table scan need to build filtering metadata per column chunk
   for (int64_t rowId=0; rowId<length; rowId++)
-  {
-    if (rowId%rowIncrementsForTimeLog == 0) {
-      timer.Stop();
-      LOG(INFO) << "Rows = " << rowId << " Elapsed ms=" << timer.ElapsedInMilliseconds();
-    }
-    
+  {    
     if (!shipdateIter.next(shipdateValue)) break;
     if (!discountIter.next(discountValue)) break;
     if (!quantityIter.next(quantityValue)) break;
@@ -137,13 +137,24 @@ double TpchQueries::Query6Parallel()
   timer.Start();
 
   // for now do a full table scan need to build filtering metadata per column chunk
+  int64_t numChunks = lExtendedprice->num_chunks();  
+  int64_t numParallels = 8;
   std::vector<double> revenues(lExtendedprice->num_chunks());
-  for (int64_t chunkNum=0; chunkNum<lExtendedprice->num_chunks(); chunkNum++)
+  
+  int64_t pnum=0;
+  for (int64_t chunkNum = 0; chunkNum < numChunks; chunkNum++)
   {
     auto tf = std::bind(&TpchQueries::GetQuery6Revenue, this, chunkNum, std::ref(revenues[chunkNum]));
     tg.run(tf);
+    pnum++;
+    if (pnum == numParallels)
+    {
+      tg.wait();
+      pnum = 0;
+    }
   }
-  tg.wait();
+  if (pnum > 0)
+    tg.wait();
   
   double revenue = 0;
   for (auto rev: revenues)
@@ -181,17 +192,8 @@ order by
 limit -1;
 */
 
-void TpchQueries::Query5(double revenue[])
+void TpchQueries::Query5Serial(double revenue[])
 {
-
-  std::shared_ptr<arrow::ChunkedArray> lDiscount =
-    tables_[lineitem]->table_->column(l_discount);
-  std::shared_ptr<arrow::ChunkedArray> lExtendedprice =
-    tables_[lineitem]->table_->column(l_extendedprice);
-  std::shared_ptr<arrow::ChunkedArray> lOrderkey =
-    tables_[lineitem]->table_->column(l_orderkey);
-  std::shared_ptr<arrow::ChunkedArray> lSuppkey =
-    tables_[lineitem]->table_->column(l_suppkey);
 
   TColumnIterator<double, arrow::DoubleArray> lDiscountIter(lDiscount);
   TColumnIterator<double, arrow::DoubleArray> lExtendedpriceIter(lExtendedprice);
@@ -215,10 +217,6 @@ void TpchQueries::Query5(double revenue[])
   int64_t lOrderkeyValue, lSuppkeyValue;
   double lDiscountValue, lExtendedpriceValue;
 
-  int64_t date19950101Value =
-    SecondsSinceEpoch(boost::gregorian::date(1995, 1, 1), boost::posix_time::seconds(0));
-  int64_t date19951231Value =
-    SecondsSinceEpoch(boost::gregorian::date(1995, 12, 31), boost::posix_time::seconds(0));
   std::string europe("EUROPE");
   std::string rNationValue;
 

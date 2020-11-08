@@ -56,51 +56,53 @@ int main(int argc, char** argv) {
   LOG(INFO) << "TenDB Tensor Creation Time (us)=" << stopWatch.ElapsedInMicroseconds();
   tpchQueries.PrintMaps();
 
-  stopWatch.Start();
   double revenue[25] = {0};
-  tpchQueries.Query5(revenue);
-  stopWatch.Stop();
+  auto printRevenue = [&]() -> void {
+    const char* nations[25] = {
+      "ALGERIA",
+      "ARGENTINA",
+      "BRAZIL",
+      "CANADA",
+      "EGYPT",
+      "ETHIOPIA",
+      "FRANCE",
+      "GERMANY",
+      "INDIA",
+      "INDONESIA",
+      "IRAN",
+      "IRAQ",
+      "JAPAN",
+      "JORDAN",
+      "KENYA",
+      "MOROCCO",
+      "MOZAMBIQUE",
+      "PERU",
+      "CHINA",
+      "ROMANIA",
+      "SAUDI ARABIA",
+      "VIETNAM",
+      "RUSSIA",
+      "UNITED KINGDOM",
+      "UNITED STATES"
+    };
+    int64_t russia=22, romania=19, uk=23, france=6, germany=7;
+    LOG(INFO) << "Query5 Revenue=";
+    LOG(INFO) << nations[russia] << "=" << revenue[russia];
+    LOG(INFO) << nations[romania] << "=" << revenue[romania];
+    LOG(INFO) << nations[uk] << "=" << revenue[uk];
+    LOG(INFO) << nations[france] << "=" << revenue[france];
+    LOG(INFO) << nations[germany] << "=" << revenue[germany];
 
-  const char* nations[25] = {
-    "ALGERIA",
-    "ARGENTINA",
-    "BRAZIL",
-    "CANADA",
-    "EGYPT",
-    "ETHIOPIA",
-    "FRANCE",
-    "GERMANY",
-    "INDIA",
-    "INDONESIA",
-    "IRAN",
-    "IRAQ",
-    "JAPAN",
-    "JORDAN",
-    "KENYA",
-    "MOROCCO",
-    "MOZAMBIQUE",
-    "PERU",
-    "CHINA",
-    "ROMANIA",
-    "SAUDI ARABIA",
-    "VIETNAM",
-    "RUSSIA",
-    "UNITED KINGDOM",
-    "UNITED STATES"
+    LOG(INFO) << "All nations Revenue=";  
+    for (int i=0 ; i< 25; i++) {
+      LOG(INFO) << nations[i] << "=" << revenue[i];
+    }
   };
-  int64_t russia=22, romania=19, uk=23, france=6, germany=7;
-  LOG(INFO) << "Query5 Revenue=";
-  LOG(INFO) << nations[russia] << "=" << revenue[russia];
-  LOG(INFO) << nations[romania] << "=" << revenue[romania];
-  LOG(INFO) << nations[uk] << "=" << revenue[uk];
-  LOG(INFO) << nations[france] << "=" << revenue[france];
-  LOG(INFO) << nations[germany] << "=" << revenue[germany];
 
-  LOG(INFO) << "All nations Revenue=";  
-  for (int i=0 ; i< 25; i++) {
-    LOG(INFO) << nations[i] << "=" << revenue[i];
-  }
-  
+  stopWatch.Start();
+  tpchQueries.Query5Serial(revenue);
+  stopWatch.Stop();
+  printRevenue();
   LOG(INFO) << stopWatch.ElapsedInMicroseconds() << "us";
   
   return EXIT_SUCCESS;
