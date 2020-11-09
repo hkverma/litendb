@@ -130,7 +130,7 @@ Follow the following steps to build it.
 
 ```
 $ cd ${TENDB_ROOT_DIR}/cpp/external_libs
-$ git submodule --update --recursive
+$ git submodule update --recursive
 $ cd arrow
 $ sudo ./build.sh
 ```
@@ -165,7 +165,7 @@ Follow the following steps to build it locally.
 
 ```
 $ cd ${TENDB_ROOT_DIR}/cpp/external_libs
-$ git submodule --update --recursive
+$ git submodule update --recursive
 $ cd ray
 $ sudo ./build.sh
 ```
@@ -188,7 +188,7 @@ Follow the following steps to build it.
 
 ```
 $ cd ${TENDB_ROOT_DIR}/cpp/external_libs
-$ git submodule --update --recursive
+$ git submodule update --recursive
 $ cd glog
 $ sudo ./build.sh
 ```
@@ -209,7 +209,7 @@ Googletest is a C++ unit test library. Follow the following steps to build it.
 
 ```
 $ cd ${TENDB_ROOT_DIR}/cpp/external_libs
-$ git submodule --update --recursive
+$ git submodule update --recursive
 $ cd googletest
 $ sudo ./build.sh
 ```
@@ -222,6 +222,31 @@ $ git submodule add https://github.com/google/glog
 $ cd glog
 $ git submodule init
 $ git submodule update
+```
+
+#### TBB - Intel Thread Building Blocks
+
+TBB provides task manager and various other parallel algorithms to build parallel applications. 
+
+TBB is a submodule within external_libs.
+
+Follow the following steps to build it.
+
+```
+$ cd ${TENDB_ROOT_DIR}/cpp/external_libs/tbb
+$ git submodule update --init
+$ ./build.sh [debug|release]
+```
+It was registered as a submodule using steps shown below.
+```
+$ cd ${TENDB_ROOT_DIR}/cpp/external_libs/tbb
+$ git submodule add https://github.com/apache/arrow
+remote: Enumerating objects: 100065, done.        
+remote: Total 100065 (delta 0), reused 0 (delta 0), pack-reused 100065        
+Receiving objects: 100% (100065/100065), 53.00 MiB | 10.23 MiB/s, done.
+Resolving deltas: 100% (68755/68755), done.
+$ cd tbb
+$ git submodule add
 ```
 
 ### Development Guidelines
@@ -436,6 +461,25 @@ Revenue=6.33263e+09 Time = 5516979us = 5.5s
 |       GERMANY| 5.153649818379998E7|
 +--------------+--------------------+
 
+11/08/2020
+Added TBB - 8 workers with parallel job distribution VM 8 node, 8GB SF=1
+Query 6 - 
+Serial Query6 Revenue=1.56378e+08  Time= 82841us = 82ms
+Parallel Query6 Revenue=1.56594e+08 Time= 23161us = 23ms
+Query 5
+Serial
+ Query 5 Elapsed ms=5599
+ Query5 Revenue=
+ RUSSIA=1.28826e+09
+ ROMANIA=1.1785e+09
+ UNITED KINGDOM=1.2382e+09
+ FRANCE=1.30446e+09
+ GERMANY=1.31384e+09
+Parallel Elapsed ms=3428
+ Result same as Serial
+
+* Run spark in cluster mode
+* Do broadcast of inverse maps
 
 * Add event IDs in the message. Also add context for each user.
 
