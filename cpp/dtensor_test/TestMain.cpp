@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
   stopWatch.Stop();
   LOG(INFO) << "Query6 Revenue=" << result;
   LOG(INFO) << stopWatch.ElapsedInMicroseconds() << "us";
-
+  
   stopWatch.Start();
   bool mapResult = tpchQueries.MakeMaps();
   stopWatch.Stop();
@@ -104,7 +104,7 @@ int main(int argc, char** argv) {
   stopWatch.Stop();
   printRevenue();
   LOG(INFO) << stopWatch.ElapsedInMicroseconds() << "us";
-  /* TODO
+
   for (int i=0; i<25; i++)
     revenue[i] = 0;
   stopWatch.Start();
@@ -112,7 +112,7 @@ int main(int argc, char** argv) {
   stopWatch.Stop();
   printRevenue();
   LOG(INFO) << stopWatch.ElapsedInMicroseconds() << "us";
-  */
+
   return EXIT_SUCCESS;
 
 }

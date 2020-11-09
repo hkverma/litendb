@@ -397,14 +397,18 @@ void TpchQueries::GetQuery5Revenue(int64_t chunkNum, double revenue[])
   }
 
   timer.Stop();
-  LOG(INFO) << "Query 5 Chunk " << chunkNum ;
-  LOG(INFO) << "Rows = " << rowId << " Elapsed ms=" << timer.ElapsedInMicroseconds()/1000;
-  LOG(INFO) << "Orders RowId Time ms= " << ordersGetRowIdTime/1000;
-  LOG(INFO) << "Orders ValId Time ms= " << ordersGetValTime/1000;
-  LOG(INFO) << "Supplier RowId Time ms= " << supplierGetRowIdTime/1000;
-  LOG(INFO) << "Supplier ValId Time ms= " << supplierGetValTime/1000;
-  LOG(INFO) << "Nation RowId Time ms= " << nationGetRowIdTime/1000;
-  LOG(INFO) << "Nation ValId Time ms= " << nationGetValTime/1000;
+  std::stringstream ss;
+  ss << " " << "Query 5 Chunk " << chunkNum ;
+  ss << " " << "Rows = " << rowId << " Elapsed ms=" << timer.ElapsedInMicroseconds()/1000;
+  ss << " " << "Orders RowId Time ms= " << ordersGetRowIdTime/1000;
+  ss << " " << "Orders ValId Time ms= " << ordersGetValTime/1000;
+  ss << " " << "Supplier RowId Time ms= " << supplierGetRowIdTime/1000;
+  ss << " " << "Supplier ValId Time ms= " << supplierGetValTime/1000;
+  ss << " " << "Nation RowId Time ms= " << nationGetRowIdTime/1000;
+  ss << " " << "Nation ValId Time ms= " << nationGetValTime/1000;
+
+  LOG(INFO) << ss.str() ;
+  
 
 }
 
@@ -414,13 +418,15 @@ void TpchQueries::Query5Parallel(double revenue[])
   int64_t numChunks = lExtendedprice->num_chunks();
   int64_t numParallels = 8;
 
-  // revenue for each chunk
+  // revenue for each chunk initialize
   double **revenues;
   revenues = new double* [numChunks];
   for (int i=0; i<numChunks; i++)
   {
     revenues[i] = new double[25];
-    revenues[i] = {0};
+    for (int j=0; j<25; j++) {
+      revenues[i][j] = 0;
+    }
   }
 
   tbb::task_group tg;
@@ -444,7 +450,7 @@ void TpchQueries::Query5Parallel(double revenue[])
 
   for (int i=0; i<numChunks; i++)
   {
-    for (int j=0; j<25; i++)
+    for (int j=0; j<25; j++)
     {
       revenue[j] += revenues[i][j];
     }
