@@ -335,7 +335,7 @@ Complex  Fact-to-fact joins, windows, extensive subqueries
 
 * DSLs on DAGs - lazy evaluation
 
-#### Tasks - TODO
+#### Results
 
 * Query 5 Analysis on debug build
 * Join time taken - all rows processed
@@ -517,9 +517,9 @@ TenDB 6 Thread results -
 Query 6 - 42ms
 Query 5 - 3.2s
 
+#### Tasks TODO
 
-* Run spark in cluster mode
-* Do broadcast of inverse maps
+* Do broadcast of inverse maps (can we reduce 3.2 sec further for 6 parallel threads)
 
 * Add event IDs in the message. Also add context for each user.
 
