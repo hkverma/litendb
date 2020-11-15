@@ -510,9 +510,12 @@ Single node Spark Cluster Setup
 Spark Cluster Setup 0 1 Master 1 Slave with 6 cores and 6 GB RAM.
 Query 6
 Time = 10 sec
-
 Query 5
 Time = 26 sec (scan, broadcast, join, hash-aggregate)
+
+TenDB 6 Thread results -
+Query 6 - 42ms
+Query 5 - 3.2s
 
 
 * Run spark in cluster mode
