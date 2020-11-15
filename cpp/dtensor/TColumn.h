@@ -91,7 +91,8 @@ namespace tendb {
   // TODO currently assumes return first match it can be a set
   //
   template<class Type, class ArrayType> 
-  bool GetRowId(int64_t& rowId,               // Row Id
+  bool GetRowId(int64_t& arrId,            //arr Id
+                int64_t& rowId,               // Row Id
                 Type& value,                   // Output Value
                 std::shared_ptr<TTable> table, // TTable
                 int64_t colNum)                // Column Number
@@ -99,65 +100,31 @@ namespace tendb {
     std::shared_ptr<arrow::ChunkedArray> chunkedArray = table->table_->column(colNum);
     auto colMap = table->maps_[colNum];
 
-    bool mapExists = false;
+    bool mapExists = colMap->IfValidMap();
     Type minVal, maxVal;
-    if (std::is_same<Type, int64_t>::value && table->maps_.size() != 0)
-    {
-      if (colMap->arrayMap_.size() != 0)
-      {
-        mapExists = colMap->arrayMap_[0]->GetMin(minVal);
-      }
-    }
 
     int64_t chunkNum = 0;
     rowId = 0;
 
     if (mapExists)
     {
-      int64_t arrId;
-      if (!colMap->GetArrId(arrId, value))
-        return false;
-      auto arrMap = colMap->arrayMap_[arrId];
-      arrMap->GetMax(maxVal);
-      arrMap->GetMin(minVal);
-      if (value < minVal || value > maxVal)
-      {
-        return false;
-      }
-      int64_t tmpRowId;
-      if (arrMap->GetRowId(tmpRowId, value))
-      {
-        rowId = tmpRowId;
-        return true;
-      }
-      return false;
+      bool found = colMap->GetReverseMap(value, arrId, rowId);
+      return found;
     }
+
+    // TODO Use min-max here diferentiate using what has been built
     
-    // Do this if not map found
-    while (true)
+    // Do this if reverse map not found
+    for (arrId=0; arrId <chunkedArray->num_chunks(); arrId++)
     {
       std::shared_ptr<ArrayType> arr = std::static_pointer_cast<ArrayType>(chunkedArray->chunk(chunkNum));
-
-      auto scanArray = [&]() -> bool
+      for (rowId=0; rowId<arr->length(); rowId++)
       {
-        for (int64_t idx=0; idx<arr->length(); idx++)
+        if (value == arr->Value(rowId))
         {
-          if (value == arr->Value(idx))
-          {
-            return true;
-          }
-          rowId++;
+          return true;
         }
-        return false;
-      };
-
-      if (scanArray())
-        return true;
-
-      // Increase chunkNum
-      chunkNum++;
-      if (chunkNum >= chunkedArray->num_chunks())
-        break;
+      }
     }
 
     return false;
@@ -204,38 +171,69 @@ namespace tendb {
     return false;
   }
 
+  // Get value from a rowId for a given chunkedArray
+  template<class Type, class ArrayType>
+  bool GetValue(int64_t& arrId,  // array Id
+                int64_t& rowId,  // rowId input                
+                Type& value,      // output value
+                std::shared_ptr<TTable> table, // table
+                int64_t colNum)   // column number
+  {
+    std::shared_ptr<arrow::ChunkedArray> chunkedArray = table->table_->column(colNum);
+    if (arrId >= chunkedArray->length())
+      return false;
+    std::shared_ptr<ArrayType> array =
+      std::static_pointer_cast<ArrayType>(chunkedArray->chunk(arrId));
+    if (rowId >= array->length())
+      return false;
+    
+    if constexpr(std::is_same_v<Type, arrow::util::string_view>)
+    {
+      value = array->GetView(rowId);
+    }
+    else if constexpr(std::is_same_v<Type, std::string>)
+    {
+      value = array->GetString(rowId);
+    }
+    else
+    {
+      value = array->Value(rowId);
+    }
+    return true;
+  }
+  
 // This performs the following operation
 // 1. Find rowId where leftTable[leftColNum][rowId] == leftValue
 // 2. Return rightValue equal to rightTable[rightColNum][rowId]
 //
-template<class Type, class ArrayType> inline
-bool JoinInner(Type& leftValue,      // leftValue Input
-               std::shared_ptr<TTable> leftTable, // leftTable
-               int64_t leftColNum,      // leftColNum
-               int64_t& leftRowIdInMicroseconds,   // time taken to look for leftValue
-               Type& rightValue,    // rightValue Result
-               std::shared_ptr<TTable> rightTable, // right Table
-               int64_t rightColNum,     // right Col Num
-               int64_t& rightValueInMicroseconds)  // time taken to look for rightValue
-{
-
-  int64_t rowId;
-  StopWatch timer;
-  timer.Start();
-  bool result = GetRowId<Type, ArrayType>(rowId, leftValue, leftTable, leftColNum);
-  timer.Stop();
-  leftRowIdInMicroseconds += timer.ElapsedInMicroseconds();
-  if (!result)
+  template<class Type, class ArrayType> inline
+  bool JoinInner(Type& leftValue,      // leftValue Input
+                 std::shared_ptr<TTable> leftTable, // leftTable
+                 int64_t leftColNum,      // leftColNum
+                 int64_t& leftRowIdInMicroseconds,   // time taken to look for leftValue
+                 Type& rightValue,    // rightValue Result
+                 std::shared_ptr<TTable> rightTable, // right Table
+                 int64_t rightColNum,     // right Col Num
+                 int64_t& rightValueInMicroseconds)  // time taken to look for rightValue
   {
+
+    int64_t rowId, arrId;
+    StopWatch timer;
+    timer.Start();
+    bool result = GetRowId<Type, ArrayType>(arrId, rowId, leftValue, leftTable, leftColNum);
+    timer.Stop();
+    leftRowIdInMicroseconds += timer.ElapsedInMicroseconds();
+    if (!result)
+    {
+      return result;
+    }
+
+    timer.Start();
+    result = GetValue<Type, ArrayType>(arrId, rowId, rightValue, rightTable, rightColNum);
+    timer.Stop();
+    rightValueInMicroseconds += timer.ElapsedInMicroseconds();
+
     return result;
   }
-
-  timer.Start();
-  result = GetValue<Type, ArrayType>(rowId, rightValue, rightTable, rightColNum);
-  timer.Stop();
-  rightValueInMicroseconds += timer.ElapsedInMicroseconds();
-
-  return result;
-}
 
 };

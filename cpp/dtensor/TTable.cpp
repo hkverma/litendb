@@ -156,20 +156,21 @@ namespace tendb {
     for (int colNum = 0; colNum < maps_.size(); colNum++) {
       auto colMap = maps_[colNum];
       ss << "Col " << colNum;
-      for (int arrNum = 0; arrNum< colMap->arrayMap_.size(); arrNum++)
+      auto chArr = colMap->chunkedArray_;
+      for (int arrNum = 0; arrNum<chArr->num_chunks(); arrNum++)
       {
-        auto arrMap = colMap->arrayMap_[arrNum];
         int64_t minVal, maxVal;
-        ss << " Arr " << arrNum << " Size=" << arrMap->array_->length();
-        ss << " Type=" << arrMap->array_->type()->ToString() ;
+        auto arr = chArr->chunk(arrNum);
+        ss << " Arr " << arrNum << " Size=" << arr->length();
+        ss << " Type=" << arr->type()->ToString() ;
         ss << " Min=";
-        arrMap->GetMin(minVal)?(ss << minVal):(ss << "None");
+        colMap->GetMin(arrNum,minVal)?(ss << minVal):(ss << "None");
         ss << " Max=";
-        arrMap->GetMax(maxVal)?(ss << maxVal):(ss << "None");
+        colMap->GetMax(arrNum,maxVal)?(ss << maxVal):(ss << "None");
         ss << ";" ;
-        // arrMap->GetReverseMap(ss);
-        // ss << "; ";
       }
+      colMap->GetReverseMap(ss);
+      ss << "; ";
     }
     LOG(INFO) << ss.str();
   }
