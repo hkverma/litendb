@@ -55,7 +55,13 @@ $ more ~/spark/spark-3.0.0-bin-hadoop2.7/logs/spark-azureuser-org.apache.spark.d
 $  sbin/start-slave.sh spark://dev.udukqz5jp4je5ng1bvoq2ijmdd.xx.internal.cloudapp.net:7077
 $  vi ~/spark/spark-3.0.0-bin-hadoop2.7/logs/spark-azureuser-org.apache.spark.deploy.worker.Worker-1-dev.out
 $  ~/spark/spark-3.0.0-bin-hadoop2.7/bin/pyspark --master spark://dev.udukqz5jp4je5ng1bvoq2ijmdd.xx.internal.cloudapp.net:7077
+#once all done kill jupyter notebook
+$ sbin/stop-slave.sh
+$ sbin/stop-master.sh
 ```
+Use the following web lcations
+localhost:8080 for spark master and slave informations
+localhost:4040 for job and stages status
 
 ### C++ Build Environment
 

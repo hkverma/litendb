@@ -408,7 +408,6 @@ void TpchQueries::GetQuery5Revenue(int64_t chunkNum, double revenue[])
   ss << " " << "Nation ValId Time ms= " << nationGetValTime/1000;
 
   LOG(INFO) << ss.str() ;
-  
 
 }
 
