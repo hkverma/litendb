@@ -138,7 +138,7 @@ double TpchQueries::Query6Parallel()
 
   // for now do a full table scan need to build filtering metadata per column chunk
   int64_t numChunks = lExtendedprice->num_chunks();
-  int64_t numParallels = 8;
+  int64_t numParallels = 6;
   std::vector<double> revenues(lExtendedprice->num_chunks());
 
   int64_t pnum=0;

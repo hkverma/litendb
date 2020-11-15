@@ -36,6 +36,26 @@ http://127.0.0.1/8888
 To see run time visit -
 http://127.0.0.1:4040
 
+Starting Spark in a standalone cluster mode on a single node. More information can be found here -
+   https://spark.apache.org/docs/3.0.1/spark-standalone.html
+First start the master. Log file of master gives out the web address for starting a slave. Do that using the slave.
+Change conf/spark-env.sh with correct cores & python version
+# - SPARK_WORKER_CORES, to set the number of cores to use on this machine
+SPARK_WORKER_CORES=6
+# - SPARK_WORKER_MEMORY, to set how much total memory workers have to give executors (e.g. 1000m, 2g)
+SPARK_WORKER_MEMORY=6g
+PYSPARK_PYTHON=python3
+PYSPARK_DRIVER_PYTHON=python3
+
+Once master and slaves are running, start pyspark notebook with master node. The code is shown below.
+
+```
+$ sbin/start-master.sh 
+$ more ~/spark/spark-3.0.0-bin-hadoop2.7/logs/spark-azureuser-org.apache.spark.deploy.master.Master-1-dev.out
+$  sbin/start-slave.sh spark://dev.udukqz5jp4je5ng1bvoq2ijmdd.xx.internal.cloudapp.net:7077
+$  vi ~/spark/spark-3.0.0-bin-hadoop2.7/logs/spark-azureuser-org.apache.spark.deploy.worker.Worker-1-dev.out
+$  ~/spark/spark-3.0.0-bin-hadoop2.7/bin/pyspark --master spark://dev.udukqz5jp4je5ng1bvoq2ijmdd.xx.internal.cloudapp.net:7077
+```
 
 ### C++ Build Environment
 
@@ -409,7 +429,7 @@ Time =  20259536us = 20 sec
     Query 6 -  Revenue=1.56378e+08 Time = 176848us = 177ms
     Query 5 -  Revenue=6.33263e+09 Time = 32016802us = 32s
     Rows = 100000 Elapsed ms=76 Rows = 200000 Elapsed ms=167
-  Spark3.0 - single worker
+  Spark3.0 - single worker multiple cores
     Query 6 - |1.5659409560959977E8| Time = 11-13 sec
     Query 5 - 31s to 40s
     n_name|             revenue|
@@ -477,6 +497,17 @@ Serial
  GERMANY=1.31384e+09
 Parallel Elapsed ms=3428
  Result same as Serial
+
+11/14/2020
+Spark setup 8 core Azure Standard DS2 v3 ( 8 GiB memory) - 4 core on one CPU socket
+Single node Spark Cluster Setup
+Spark Cluster Setup 0 1 Master 1 Slave with 6 cores and 6 GB RAM.
+Query 6
+Time = 10 sec
+
+Query 5
+Time = 26 sec (scan, broadcast, join, hash-aggregate)
+
 
 * Run spark in cluster mode
 * Do broadcast of inverse maps
