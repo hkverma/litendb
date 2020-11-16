@@ -60,7 +60,7 @@ namespace tendb
 
     void Query5Serial(double revenue[]);
     void Query5Parallel(double revenue[]);
-    void GetQuery5Revenue(int64_t chunkNum, double revenue[]);
+    void GetQuery5Revenue(int64_t chunkNum, double revenue[], int32_t mapNum);
 
     bool MakeMaps();
 
@@ -79,6 +79,7 @@ namespace tendb
 
     // Num threads
     static const int64_t numParallels_ = 6;
+    static const int64_t numMaps_ = 6;
     
 
   };

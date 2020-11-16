@@ -146,17 +146,20 @@ namespace tendb {
     }
     numMapCopies_ = numCopies;
     maps_.resize(numCopies);
+    for (auto nc = 0; nc < numCopies; nc++)
+    {
+      maps_[nc].resize(table_->num_columns());
+    }    
     for (int64_t cnum=0; cnum<table_->num_columns(); cnum++)
     {
       std::shared_ptr<arrow::ChunkedArray> chunkedArray = table_->column(cnum);
-      auto colMap = TColumnMap::Make(chunkedArray);
-      maps_[0].push_back(colMap);
+      maps_[0][cnum] = TColumnMap::Make(chunkedArray);
     }
     for (auto nc = 1; nc<numCopies; nc++)
     {
       for (auto cnum=0; cnum<table_->num_columns(); cnum++)
       {
-        maps_[nc].push_back(maps_[0][cnum]->Copy());
+        maps_[nc][cnum] = maps_[0][cnum]->Copy();
       }
     }
     return true;
@@ -165,7 +168,7 @@ namespace tendb {
   void TTable::PrintMaps()
   {
     std::stringstream ss;
-    for (int colNum = 0; colNum < maps_[0].size(); colNum++) {
+    for (int colNum = 0; colNum < table_->num_columns(); colNum++) {
       auto colMap = maps_[0][colNum];
       ss << "Col " << colNum;
       auto chArr = colMap->chunkedArray_;
@@ -181,8 +184,8 @@ namespace tendb {
         colMap->GetMax(arrNum,maxVal)?(ss << maxVal):(ss << "None");
         ss << ";" ;
       }
-      colMap->GetReverseMap(ss);
-      ss << "; ";
+      //colMap->GetReverseMap(ss);
+      //ss << "; ";
     }
     LOG(INFO) << ss.str();
   }

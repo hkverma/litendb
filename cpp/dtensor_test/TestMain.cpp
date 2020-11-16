@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
   stopWatch.Stop();
   LOG(INFO) << "Query6 Revenue=" << result;
   LOG(INFO) << stopWatch.ElapsedInMicroseconds() << "us";
-  
+
   stopWatch.Start();
   bool mapResult = tpchQueries.MakeMaps();
   stopWatch.Stop();

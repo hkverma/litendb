@@ -96,16 +96,17 @@ namespace tendb {
                 int64_t& rowId,               // output Row Id
                 Type& value,                   // Input Value
                 std::shared_ptr<TTable> table, // TTable
-                int64_t colNum)                // Column Number
+                int64_t colNum,                // Column Number
+                int32_t mapNum)            // worker number
   {
     std::shared_ptr<arrow::ChunkedArray> chunkedArray = table->table_->column(colNum);
-    auto colMap = table->maps_[colNum];
+    auto colMap = table->maps_[mapNum][colNum];
 
-    bool mapExists = colMap[0]->IfValidMap();
+    bool mapExists = colMap->IfValidMap();
 
     if (mapExists)
     {
-      bool found = colMap[0]->GetReverseMap(value, arrId, rowId);
+      bool found = colMap->GetReverseMap(value, arrId, rowId);
       return found;
     }
 
@@ -211,13 +212,14 @@ namespace tendb {
                  int64_t& leftRowIdInMicroseconds,   // time taken to look for leftValue
                  Type& rightValue,    // rightValue output
                  int64_t rightColNum,     // right Col Num
-                 int64_t& rightValueInMicroseconds)  // time taken to look for rightValue
+                 int64_t& rightValueInMicroseconds,  // time taken to look for rightValue
+                 int32_t mapNum)               // worker Number
   {
 
     int64_t rowId, arrId;
     StopWatch timer;
     timer.Start();
-    bool result = GetRowId<Type, ArrayType>(arrId, rowId, leftValue, table, leftColNum);
+    bool result = GetRowId<Type, ArrayType>(arrId, rowId, leftValue, table, leftColNum, mapNum);
     timer.Stop();
     leftRowIdInMicroseconds += timer.ElapsedInMicroseconds();
     if (!result)
