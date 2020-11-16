@@ -470,7 +470,7 @@ bool TpchQueries::MakeMaps()
   bool result = true;
   for (int32_t i=0; i<numTables; i++)
   {
-    bool curResult = tables_[i]->MakeMaps();
+    bool curResult = tables_[i]->MakeMaps(1);
     if (curResult)
     {
       LOG(INFO) << "Success " << tableNames[i];

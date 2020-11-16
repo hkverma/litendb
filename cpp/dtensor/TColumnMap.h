@@ -29,7 +29,7 @@ namespace tendb {
     // Column Map from Arrow Chunked Array
     static std::shared_ptr<TColumnMap> Make(std::shared_ptr<arrow::ChunkedArray> chunkedArray);
     // Copy into another map structure
-    virtual std::shared_ptr<TColumnMap> Copy(std::shared_ptr<TColumnMap> cm);
+    virtual std::shared_ptr<TColumnMap> Copy();
 
     // TODO needs to be templated for min-max types
     virtual bool GetMin(int64_t arrNum, int64_t& minVal)
@@ -74,7 +74,7 @@ namespace tendb {
     
     static std::shared_ptr<TInt64ColumnMap> Make(std::shared_ptr<arrow::ChunkedArray> chunkedArray);
 
-    virtual std::shared_ptr<TColumnMap> Copy(std::shared_ptr<TColumnMap> cm);
+    virtual std::shared_ptr<TColumnMap> Copy();
     
     virtual bool GetMin(int64_t arrNum, int64_t& minVal)
     {

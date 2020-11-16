@@ -38,7 +38,7 @@ namespace tendb {
     void PrintSchema();
     void PrintTable();
 
-    bool MakeMaps();
+    bool MakeMaps(int32_t numCopies);
     void PrintMaps();
     
     std::shared_ptr<arrow::Array> GetArray(int64_t rowNum, int64_t colNum);
@@ -47,7 +47,8 @@ namespace tendb {
     int64_t NumRows() { return table_->num_rows(); }
 
     std::shared_ptr<arrow::Table> table_;
-    std::vector<std::shared_ptr<TColumnMap>> maps_;
+    int32_t numMapCopies_ = 0;
+    std::vector<std::vector<std::shared_ptr<TColumnMap>>> maps_;
     
     // Options TODO create an options class
     static const bool EnableColumnReverseMap = false;

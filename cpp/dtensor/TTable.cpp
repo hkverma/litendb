@@ -134,18 +134,30 @@ namespace tendb {
     return true;
   }
 
-  bool TTable::MakeMaps()
+  bool TTable::MakeMaps(int32_t numCopies)
   {
     if (nullptr == table_)
     {
       return false;
     }
-    
+    if (numCopies < 1)
+    {
+      return false;
+    }
+    numMapCopies_ = numCopies;
+    maps_.resize(numCopies);
     for (int64_t cnum=0; cnum<table_->num_columns(); cnum++)
     {
       std::shared_ptr<arrow::ChunkedArray> chunkedArray = table_->column(cnum);
       auto colMap = TColumnMap::Make(chunkedArray);
-      maps_.push_back(colMap);
+      maps_[0].push_back(colMap);
+    }
+    for (auto nc = 1; nc<numCopies; nc++)
+    {
+      for (auto cnum=0; cnum<table_->num_columns(); cnum++)
+      {
+        maps_[nc].push_back(maps_[0][cnum]->Copy());
+      }
     }
     return true;
   }
@@ -153,8 +165,8 @@ namespace tendb {
   void TTable::PrintMaps()
   {
     std::stringstream ss;
-    for (int colNum = 0; colNum < maps_.size(); colNum++) {
-      auto colMap = maps_[colNum];
+    for (int colNum = 0; colNum < maps_[0].size(); colNum++) {
+      auto colMap = maps_[0][colNum];
       ss << "Col " << colNum;
       auto chArr = colMap->chunkedArray_;
       for (int arrNum = 0; arrNum<chArr->num_chunks(); arrNum++)

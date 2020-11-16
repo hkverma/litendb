@@ -101,11 +101,11 @@ namespace tendb {
     std::shared_ptr<arrow::ChunkedArray> chunkedArray = table->table_->column(colNum);
     auto colMap = table->maps_[colNum];
 
-    bool mapExists = colMap->IfValidMap();
+    bool mapExists = colMap[0]->IfValidMap();
 
     if (mapExists)
     {
-      bool found = colMap->GetReverseMap(value, arrId, rowId);
+      bool found = colMap[0]->GetReverseMap(value, arrId, rowId);
       return found;
     }
 

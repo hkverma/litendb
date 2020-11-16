@@ -57,9 +57,9 @@ namespace tendb {
     return chunkArrMap;
   }
 
-  std::shared_ptr<TColumnMap> TColumnMap::Copy(std::shared_ptr<TColumnMap> cm)
+  std::shared_ptr<TColumnMap> TColumnMap::Copy()
   {
-    auto colMap = std::make_shared<TColumnMap>(cm->chunkedArray_);
+    auto colMap = std::make_shared<TColumnMap>(chunkedArray_);
     return colMap;
   }
   
@@ -106,13 +106,12 @@ namespace tendb {
     return mapArr;
   }
 
-  std::shared_ptr<TColumnMap> TInt64ColumnMap::Copy(std::shared_ptr<TColumnMap> cm)
+  std::shared_ptr<TColumnMap> TInt64ColumnMap::Copy()
   {
-    std::shared_ptr<TInt64ColumnMap> colMap = std::make_shared<TInt64ColumnMap>(cm->chunkedArray_);
-    auto icm = std::static_pointer_cast<TInt64ColumnMap>(cm);
-    colMap->min_ = icm->min_;
-    colMap->max_ = icm->max_;
-    colMap->reverseMap_ = icm->reverseMap_;
+    std::shared_ptr<TInt64ColumnMap> colMap = std::make_shared<TInt64ColumnMap>(chunkedArray_);
+    colMap->min_ = min_;
+    colMap->max_ = max_;
+    colMap->reverseMap_ = reverseMap_;
     return colMap;
   }
   
