@@ -514,8 +514,12 @@ Query 5
 Time = 26 sec (scan, broadcast, join, hash-aggregate)
 
 TenDB 6 Thread results -
-Query 6 - 42ms
-Query 5 - 3.2s
+Query 6 - 32ms
+Query 5 - 2.4s (numMaps = 6 or 3 or 1)
+
+11/15/2020 6 worker results
+Query 6
+Query 5
 
 #### Tasks TODO
 

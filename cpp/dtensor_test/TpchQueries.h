@@ -79,7 +79,7 @@ namespace tendb
 
     // Num threads
     static const int64_t numParallels_ = 6;
-    static const int64_t numMaps_ = 6;
+    static const int64_t numMaps_ = 1;
     
 
   };

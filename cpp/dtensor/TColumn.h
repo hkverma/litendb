@@ -97,7 +97,7 @@ namespace tendb {
                 Type& value,                   // Input Value
                 std::shared_ptr<TTable> table, // TTable
                 int64_t colNum,                // Column Number
-                int32_t mapNum)            // worker number
+                int32_t mapNum)                 // worker number
   {
     std::shared_ptr<arrow::ChunkedArray> chunkedArray = table->table_->column(colNum);
     auto colMap = table->maps_[mapNum][colNum];
