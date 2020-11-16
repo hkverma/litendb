@@ -3,12 +3,12 @@
 
 namespace tendb {
 
+  // TODO - Split zone maps from inverted index
+  //
   // Create maps for a given chunkedArray
   //
   // Need builder for each type
   // go through the list and collect min & max
-  // Use buffer and append routines from arrow builders
-  //
   // arrow::builder.cc check L22 for the types shown below
   //  
   std::shared_ptr<TColumnMap> TColumnMap::Make(std::shared_ptr<arrow::ChunkedArray> chunkedArray)
@@ -57,6 +57,12 @@ namespace tendb {
     return chunkArrMap;
   }
 
+  std::shared_ptr<TColumnMap> TColumnMap::Copy(std::shared_ptr<TColumnMap> cm)
+  {
+    auto colMap = std::make_shared<TColumnMap>(cm->chunkedArray_);
+    return colMap;
+  }
+  
   TInt64ColumnMap::TInt64ColumnMap(std::shared_ptr<arrow::ChunkedArray> chunkedArray)
     : TColumnMap(chunkedArray)
   {
@@ -66,10 +72,7 @@ namespace tendb {
 
   std::shared_ptr<TInt64ColumnMap> TInt64ColumnMap::Make(std::shared_ptr<arrow::ChunkedArray> chunkedArray)
   {
-    
-    // create a new map object
     std::shared_ptr<TInt64ColumnMap> mapArr = std::make_shared<TInt64ColumnMap>(chunkedArray);
-
     for (int64_t arrNum=0; arrNum<chunkedArray->num_chunks(); arrNum++)
     {
       int64_t& minVal = mapArr->min_[arrNum];
@@ -103,6 +106,16 @@ namespace tendb {
     return mapArr;
   }
 
+  std::shared_ptr<TColumnMap> TInt64ColumnMap::Copy(std::shared_ptr<TColumnMap> cm)
+  {
+    std::shared_ptr<TInt64ColumnMap> colMap = std::make_shared<TInt64ColumnMap>(cm->chunkedArray_);
+    auto icm = std::static_pointer_cast<TInt64ColumnMap>(cm);
+    colMap->min_ = icm->min_;
+    colMap->max_ = icm->max_;
+    colMap->reverseMap_ = icm->reverseMap_;
+    return colMap;
+  }
+  
   bool TInt64ColumnMap::GetReverseMap(int64_t& rowVal, int64_t& arrId, int64_t& rowId)
   {
     auto revMapItr = reverseMap_.find(rowVal);

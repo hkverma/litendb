@@ -77,6 +77,10 @@ namespace tendb
     int64_t date19950101Value;
     int64_t date19951231Value;
 
+    // Num threads
+    static const int64_t numParallels_ = 6;
+    
+
   };
 
 };

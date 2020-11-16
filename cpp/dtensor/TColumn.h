@@ -7,6 +7,7 @@
 // Arrow in memory, persistent in parquet format
 //
 // TODO Use Status to return value wrapped with a message
+// TODO Use input__ and output__ empty macros to indicate ins and out
 //
 #pragma once
 
@@ -91,9 +92,9 @@ namespace tendb {
   // TODO currently assumes return first match it can be a set
   //
   template<class Type, class ArrayType> 
-  bool GetRowId(int64_t& arrId,            //arr Id
-                int64_t& rowId,               // Row Id
-                Type& value,                   // Output Value
+  bool GetRowId(int64_t& arrId,            // Output array Id
+                int64_t& rowId,               // output Row Id
+                Type& value,                   // Input Value
                 std::shared_ptr<TTable> table, // TTable
                 int64_t colNum)                // Column Number
   {
@@ -101,10 +102,6 @@ namespace tendb {
     auto colMap = table->maps_[colNum];
 
     bool mapExists = colMap->IfValidMap();
-    Type minVal, maxVal;
-
-    int64_t chunkNum = 0;
-    rowId = 0;
 
     if (mapExists)
     {
@@ -112,9 +109,10 @@ namespace tendb {
       return found;
     }
 
-    // TODO Use min-max here diferentiate using what has been built
+    // TODO Use zone map here min-max here diferentiate using what has been built
     
-    // Do this if reverse map not found
+    // Do this if no map found
+    int64_t chunkNum = 0;
     for (arrId=0; arrId <chunkedArray->num_chunks(); arrId++)
     {
       std::shared_ptr<ArrayType> arr = std::static_pointer_cast<ArrayType>(chunkedArray->chunk(chunkNum));
@@ -126,8 +124,8 @@ namespace tendb {
         }
       }
     }
-
     return false;
+    
   };
 
   // Get value from a rowId for a given chunkedArray
@@ -173,8 +171,8 @@ namespace tendb {
 
   // Get value from a rowId for a given chunkedArray
   template<class Type, class ArrayType>
-  bool GetValue(int64_t& arrId,  // array Id
-                int64_t& rowId,  // rowId input                
+  bool GetValue(int64_t arrId,  // array Id
+                int64_t rowId,  // rowId input                
                 Type& value,      // output value
                 std::shared_ptr<TTable> table, // table
                 int64_t colNum)   // column number
@@ -202,17 +200,16 @@ namespace tendb {
     return true;
   }
   
-// This performs the following operation
-// 1. Find rowId where leftTable[leftColNum][rowId] == leftValue
-// 2. Return rightValue equal to rightTable[rightColNum][rowId]
-//
+  // This performs the following operation
+  // 1. Find arrId, rowId where leftTable[leftColNum][rowId] == leftValue
+  // 2. Return rightValue equal to rightTable[rightColNum][rowId]
+  //
   template<class Type, class ArrayType> inline
-  bool JoinInner(Type& leftValue,      // leftValue Input
-                 std::shared_ptr<TTable> leftTable, // leftTable
+  bool JoinInner(std::shared_ptr<TTable> table, // Table
+                 Type& leftValue,      // leftValue Input
                  int64_t leftColNum,      // leftColNum
                  int64_t& leftRowIdInMicroseconds,   // time taken to look for leftValue
-                 Type& rightValue,    // rightValue Result
-                 std::shared_ptr<TTable> rightTable, // right Table
+                 Type& rightValue,    // rightValue output
                  int64_t rightColNum,     // right Col Num
                  int64_t& rightValueInMicroseconds)  // time taken to look for rightValue
   {
@@ -220,7 +217,7 @@ namespace tendb {
     int64_t rowId, arrId;
     StopWatch timer;
     timer.Start();
-    bool result = GetRowId<Type, ArrayType>(arrId, rowId, leftValue, leftTable, leftColNum);
+    bool result = GetRowId<Type, ArrayType>(arrId, rowId, leftValue, table, leftColNum);
     timer.Stop();
     leftRowIdInMicroseconds += timer.ElapsedInMicroseconds();
     if (!result)
@@ -229,7 +226,7 @@ namespace tendb {
     }
 
     timer.Start();
-    result = GetValue<Type, ArrayType>(arrId, rowId, rightValue, rightTable, rightColNum);
+    result = GetValue<Type, ArrayType>(arrId, rowId, rightValue, table, rightColNum);
     timer.Stop();
     rightValueInMicroseconds += timer.ElapsedInMicroseconds();
 

@@ -29,7 +29,7 @@ namespace tendb {
     // Column Map from Arrow Chunked Array
     static std::shared_ptr<TColumnMap> Make(std::shared_ptr<arrow::ChunkedArray> chunkedArray);
     // Copy into another map structure
-    //virtual std::shared_ptr<TColumnMap> Copy(std::shared_ptr<TColumnMap> arrMap);
+    virtual std::shared_ptr<TColumnMap> Copy(std::shared_ptr<TColumnMap> cm);
 
     // TODO needs to be templated for min-max types
     virtual bool GetMin(int64_t arrNum, int64_t& minVal)
@@ -58,25 +58,23 @@ namespace tendb {
     {
       return false;
     }
-    
-    std::shared_ptr<arrow::ChunkedArray> chunkedArray_;
 
-    // TODO Currently make it only for int64_t, enhance it later with other types
-    bool GetArrId(int64_t& arrId, int64_t& val);
-    std::map<int64_t, int64_t> arrayIds_;
-    
-    arrow::Status status_;
+    // arrow chunked array for which map is built
+    std::shared_ptr<arrow::ChunkedArray> chunkedArray_;
+    //TODO arrow::Status status_;
   };
 
   // zone maps for comparable types currently only range type
   // Create a MinMax template class here
-  // TODO For now add a hash here, separate it later
+  // TODO Currently make it only for int64_t, enhance it later with other types
   class TInt64ColumnMap : public TColumnMap
   {
   public:
     TInt64ColumnMap(std::shared_ptr<arrow::ChunkedArray> chunkedArray);
     
     static std::shared_ptr<TInt64ColumnMap> Make(std::shared_ptr<arrow::ChunkedArray> chunkedArray);
+
+    virtual std::shared_ptr<TColumnMap> Copy(std::shared_ptr<TColumnMap> cm);
     
     virtual bool GetMin(int64_t arrNum, int64_t& minVal)
     {

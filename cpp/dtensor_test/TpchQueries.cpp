@@ -138,7 +138,6 @@ double TpchQueries::Query6Parallel()
 
   // for now do a full table scan need to build filtering metadata per column chunk
   int64_t numChunks = lExtendedprice->num_chunks();
-  int64_t numParallels = 6;
   std::vector<double> revenues(lExtendedprice->num_chunks());
 
   int64_t pnum=0;
@@ -147,7 +146,7 @@ double TpchQueries::Query6Parallel()
     auto tf = std::bind(&TpchQueries::GetQuery6Revenue, this, chunkNum, std::ref(revenues[chunkNum]));
     tg.run(tf);
     pnum++;
-    if (pnum == numParallels)
+    if (pnum == numParallels_)
     {
       tg.wait();
       pnum = 0;
@@ -295,8 +294,9 @@ void TpchQueries::Query5Serial(double revenue[])
     // and o_orderdate >= date '1995-01-01'
     // and o_orderdate < date '1995-01-01' + interval '1' year
     if (!JoinInner<int64_t, arrow::Int64Array>
-        (lOrderkeyValue, tables_[orders], o_orderkey, ordersGetRowIdTime,
-         oOrderdateValue, tables_[orders], o_orderdate, ordersGetValTime))
+        (tables_[orders],
+         lOrderkeyValue, o_orderkey, ordersGetRowIdTime,
+         oOrderdateValue, o_orderdate, ordersGetValTime))
       continue;
     if (oOrderdateValue < date19950101Value || oOrderdateValue > date19951231Value)
       continue;
@@ -304,14 +304,16 @@ void TpchQueries::Query5Serial(double revenue[])
     // Filter on r_name
     // l_suppkey = s_suppkey,
     if ( !JoinInner<int64_t, arrow::Int64Array>
-         (lSuppkeyValue, tables_[supplier], s_suppkey, supplierGetRowIdTime,
-          sNationkeyValue, tables_[supplier], s_nationkey, supplierGetValTime))
+         (tables_[supplier],
+          lSuppkeyValue, s_suppkey, supplierGetRowIdTime,
+          sNationkeyValue, s_nationkey, supplierGetValTime))
       continue;
 
     // s_nationkey = n_nationkey also get nation name
     if ( !JoinInner<int64_t, arrow::Int64Array>
-         (sNationkeyValue, tables_[nation], n_nationkey, nationGetRowIdTime,
-          nRegionkeyValue, tables_[nation], n_regionkey, nationGetValTime))
+         (tables_[nation],
+          sNationkeyValue, n_nationkey, nationGetRowIdTime,
+          nRegionkeyValue, n_regionkey, nationGetValTime))
       continue;
 
     // n_regionkey = r_regionkey
@@ -369,8 +371,9 @@ void TpchQueries::GetQuery5Revenue(int64_t chunkNum, double revenue[])
     // and o_orderdate >= date '1995-01-01'
     // and o_orderdate < date '1995-01-01' + interval '1' year
     if (!JoinInner<int64_t, arrow::Int64Array>
-        (lOrderkeyValue, tables_[orders], o_orderkey, ordersGetRowIdTime,
-         oOrderdateValue, tables_[orders], o_orderdate, ordersGetValTime))
+        (tables_[orders],
+         lOrderkeyValue, o_orderkey, ordersGetRowIdTime,
+         oOrderdateValue, o_orderdate, ordersGetValTime))
       continue;
     if (oOrderdateValue < date19950101Value || oOrderdateValue > date19951231Value)
       continue;
@@ -378,14 +381,16 @@ void TpchQueries::GetQuery5Revenue(int64_t chunkNum, double revenue[])
     // Filter on r_name
     // l_suppkey = s_suppkey,
     if ( !JoinInner<int64_t, arrow::Int64Array>
-         (lSuppkeyValue, tables_[supplier], s_suppkey, supplierGetRowIdTime,
-          sNationkeyValue, tables_[supplier], s_nationkey, supplierGetValTime))
+         (tables_[supplier],
+          lSuppkeyValue, s_suppkey, supplierGetRowIdTime,
+          sNationkeyValue, s_nationkey, supplierGetValTime))
       continue;
 
     // s_nationkey = n_nationkey also get nation name
     if ( !JoinInner<int64_t, arrow::Int64Array>
-         (sNationkeyValue, tables_[nation], n_nationkey, nationGetRowIdTime,
-          nRegionkeyValue, tables_[nation], n_regionkey, nationGetValTime))
+         (tables_[nation],
+          sNationkeyValue, n_nationkey, nationGetRowIdTime,
+          nRegionkeyValue, n_regionkey, nationGetValTime))
       continue;
 
     // n_regionkey = r_regionkey
@@ -415,7 +420,6 @@ void TpchQueries::Query5Parallel(double revenue[])
 {
 
   int64_t numChunks = lExtendedprice->num_chunks();
-  int64_t numParallels = 8;
 
   // revenue for each chunk initialize
   double **revenues;
@@ -438,7 +442,7 @@ void TpchQueries::Query5Parallel(double revenue[])
     auto tf = std::bind(&TpchQueries::GetQuery5Revenue, this, chunkNum, std::ref(revenues[chunkNum]));
     tg.run(tf);
     pnum++;
-    if (pnum == numParallels)
+    if (pnum == numParallels_)
     {
       tg.wait();
       pnum = 0;
