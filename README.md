@@ -158,7 +158,7 @@ Follow the following steps to build it.
 $ cd ${TENDB_ROOT_DIR}/cpp/external_libs
 $ git submodule update --recursive
 $ cd arrow
-$ sudo ./build.sh
+$ sudo ./build.sh [Debug|Release]
 ```
 It was registered as a submodule using steps shown below. 
 
@@ -225,7 +225,7 @@ $ git submodule update --recursive
 $ cd glog
 $ sudo ./build.sh
 ```
-It was registered as a submodule using steps shown below. It is currently fixed as latest release commit 0a2e5931bd5ff22fd3bf8999eb8ce776f159cda6 May 12, 2020
+It was registered as a submodule using steps shown below. It is currently fixed as latest release commit from Oct 3
 
 ```
 $ cd ${TENDB_ROOT_DIR}/cpp/external_libs/glog
