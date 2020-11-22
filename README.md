@@ -258,6 +258,19 @@ $ cd ${TENDB_ROOT_DIR}/cpp/external_libs/googletest
 $ git submodule add https://github.com/google/glog
 ```
 
+#### gperftools
+
+gperftools is google perftool library. This can be used in conjunction with valgrind.
+
+```
+$ cd ${TENDB_ROOT_DIR}/cpp/external_libs
+$ git submodule add https://github.com/gperftools/gperftools
+```
+For profiling following tools can be used
+* gprof - old gnu profiler.
+* valgrind - callgrind does call checks. Use kcahcegrind to view call stacks
+* gperfools - can be used to profile code sections. Use kcachegrind to see call stacks and costs.
+
 #### TBB - Intel Thread Building Blocks
 
 TBB provides task manager and various other parallel algorithms to build parallel applications. 
