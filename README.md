@@ -223,15 +223,20 @@ Follow the following steps to build it.
 $ cd ${TENDB_ROOT_DIR}/cpp/external_libs
 $ git submodule update --recursive
 $ cd glog
-$ sudo ./build.sh
+$ sudo ./build.sh [Debug|Release]
 ```
-It was registered as a submodule using steps shown below. It is currently fixed as latest release commit from Oct 3
+It was registered as a submodule using steps shown below. It is currently fixed as latest release commit from Oct 3, 2020. It can be updated and new submodule version checked in if needed.
 
 ```
 $ cd ${TENDB_ROOT_DIR}/cpp/external_libs/glog
 $ git submodule add https://github.com/google/glog
-...
 $ cd glog
+$ git pull
+$ git commit -a -m "Updated to latest glog version"
+```
+
+Following will also get the latest commit glog in an empty submodule
+```
 $ git submodule init
 $ git submodule update
 ```
@@ -251,10 +256,6 @@ It was registered as a submodule using steps shown below. It is currently fixed 
 ```
 $ cd ${TENDB_ROOT_DIR}/cpp/external_libs/googletest
 $ git submodule add https://github.com/google/glog
-...
-$ cd glog
-$ git submodule init
-$ git submodule update
 ```
 
 #### TBB - Intel Thread Building Blocks
