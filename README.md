@@ -160,9 +160,11 @@ $ git submodule update --recursive
 $ cd arrow
 $ sudo ./build.sh
 ```
-It was registered as a submodule using steps shown below. It is currently fixed as release  3cbcb7b62c2f2d02851bff837758637eb592a64b arrow (apache-arrow-0.17.0)
+It was registered as a submodule using steps shown below. 
 
 First submodule was added. It clones the data into the arrow subdir.
+It is currently fixed as to release 2.0.0. You can get it by first updating the git and then checkout the tag
+
 ```
 $ cd ${TENDB_ROOT_DIR}/cpp/external_libs/arrow
 $ git submodule add https://github.com/apache/arrow
@@ -171,10 +173,15 @@ remote: Total 100065 (delta 0), reused 0 (delta 0), pack-reused 100065
 Receiving objects: 100% (100065/100065), 53.00 MiB | 10.23 MiB/s, done.
 Resolving deltas: 100% (68755/68755), done.
 $ cd arrow
-$ git checkout 3cbcb7b62c2f2d02851bff837758637eb592a64b
+$ git pull
+$ git pull
+$ git checkout tags/apache-arrow-2.0.0
+$ git commit -a -m "Updated to arrow 2.0.0"
+```
+When cloning these can be done from the arrow submodule directory to get arrow files.
+```
 $ git submodule init
 $ git submodule update
-Submodule path 'arrow': checked out '7194f94e0ed65d9429180eb96e35fcb4eca38848'
 ```
 #### Ray
 
@@ -514,12 +521,12 @@ Query 5
 Time = 26 sec (scan, broadcast, join, hash-aggregate)
 
 TenDB 6 Thread results -
-Query 6 - 32ms
-Query 5 - 2.4s (numMaps = 6 or 3 or 1)
+Query 6 - 42ms
+Query 5 - 3.2s (numMaps = 6 or 3 or 1)
 
 11/15/2020 6 worker results
-Query 6
-Query 5
+Query 6 - 32ms
+Query 5 - 2.4s (numMaps = 6 or 3 or 1)
 
 #### Tasks TODO
 
