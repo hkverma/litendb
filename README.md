@@ -40,9 +40,9 @@ Starting Spark in a standalone cluster mode on a single node. More information c
    https://spark.apache.org/docs/3.0.1/spark-standalone.html
 First start the master. Log file of master gives out the web address for starting a slave. Do that using the slave.
 Change conf/spark-env.sh with correct cores & python version
-# - SPARK_WORKER_CORES, to set the number of cores to use on this machine
+SPARK_WORKER_CORES, to set the number of cores to use on this machine
 SPARK_WORKER_CORES=6
-# - SPARK_WORKER_MEMORY, to set how much total memory workers have to give executors (e.g. 1000m, 2g)
+SPARK_WORKER_MEMORY, to set how much total memory workers have to give executors (e.g. 1000m, 2g)
 SPARK_WORKER_MEMORY=6g
 PYSPARK_PYTHON=python3
 PYSPARK_DRIVER_PYTHON=python3
@@ -55,13 +55,18 @@ $ more ~/spark/spark-3.0.0-bin-hadoop2.7/logs/spark-azureuser-org.apache.spark.d
 $  sbin/start-slave.sh spark://dev.udukqz5jp4je5ng1bvoq2ijmdd.xx.internal.cloudapp.net:7077
 $  vi ~/spark/spark-3.0.0-bin-hadoop2.7/logs/spark-azureuser-org.apache.spark.deploy.worker.Worker-1-dev.out
 $  ~/spark/spark-3.0.0-bin-hadoop2.7/bin/pyspark --master spark://dev.udukqz5jp4je5ng1bvoq2ijmdd.xx.internal.cloudapp.net:7077
-#once all done kill jupyter notebook
-$ sbin/stop-slave.sh
-$ sbin/stop-master.sh
 ```
 Use the following web lcations
 localhost:8080 for spark master and slave informations
 localhost:4040 for job and stages status
+Once all done kill jupyter notebook. Stop slave and master after that.
+```
+$ sbin/stop-slave.sh
+$ sbin/stop-master.sh
+```
+
+### Jupyter Notebook
+I use conda and create a new env tendb. Use this env and install new environment. 
 
 ### C++ Build Environment
 
@@ -544,7 +549,9 @@ Query 5 - 2.4s (numMaps = 6 or 3 or 1)
 
 #### Tasks TODO
 
-* Do broadcast of inverse maps (can we reduce 3.2 sec further for 6 parallel threads)
+* Do broadcast of inverse maps (Can we reduce 3.2 sec further for 6 parallel threads). Broadcast on same VM should have no impact. It is only across nodes that this matters.
+
+* Add python bindings to work with Jupyter notebook. Tie it with Arrow and Pandas.
 
 * Add event IDs in the message. Also add context for each user.
 
