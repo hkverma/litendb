@@ -1,4 +1,8 @@
 #
+# Set global compile options
+#
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+#
 # Bin directories
 #
 set(TENDB_BIN $ENV{TENDB_ROOT_DIR}/build/bin)

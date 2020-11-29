@@ -1,3 +1,13 @@
+from ctypes import cdll
+lib = cdll.LoadLibrary('/mnt/c/Users/hkver/Documents/dbai/dbaistuff/cpp/build/libtendb.so')
+
+class Foo(object):
+    def __init__(self):
+        self.obj = lib.Foo_new()
+
+    def bar(self):
+        lib.Foo_bar(self.obj)
+        
 def init():
     """
     Initialize TenDB Stack
@@ -22,3 +32,9 @@ def query5():
     """
     return "Query5"
 
+def test():
+    """
+    Test
+    """
+    f = Foo()
+    return f.bar()

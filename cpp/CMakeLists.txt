@@ -23,3 +23,12 @@ include(build_utils/BuildUtils.cmake)
 add_subdirectory(common)
 add_subdirectory(dtensor)
 add_subdirectory(dtensor_test)
+
+# 
+# tendb dynamic library - .so
+#
+add_library(tendb SHARED $<TARGET_OBJECTS:dtensor_objects>)
+target_include_directories(tendb PUBLIC dtensor)
+target_link_libraries(tendb general common arrow)
+target_link_libraries(tendb debug glogd)
+target_link_libraries(tendb optimized glog)
