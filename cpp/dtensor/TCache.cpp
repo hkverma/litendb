@@ -13,10 +13,15 @@ using namespace tendb;
 std::shared_ptr<TCache> TCache::tCache_ = nullptr;
 
 /// Get a singleton instance, if not present create one
-std::shared_ptr<TCache> TCache::GetInstance()
+// TODO Use status code to return back instance
+std::shared_ptr<TCache> TCache::GetInstance(bool& newInst)
 {
+  newInst = false;
   if (tCache_ == nullptr)
+  {
     tCache_ = std::make_shared<TCache>();
+    newInst = true;
+  }
   return tCache_;
 }
 
@@ -109,7 +114,13 @@ int TCache::AddTable(std::shared_ptr<TTable> ttable)
 
 // These functions are exposed for external python like bindings
 TCache* TCache_GetInstance() {
-  auto tcache =  TCache::GetInstance();
+  bool newInst;
+  auto tcache =  TCache::GetInstance(newInst);
+  if (newInst)
+  {
+    google::InitGoogleLogging("tendb");
+  }
+  LOG(INFO) << "Created a new TCache";
   return tcache.get();
 }
 

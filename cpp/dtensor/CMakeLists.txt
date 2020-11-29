@@ -4,7 +4,7 @@ message(STATUS "Building using CMake version: ${CMAKE_VERSION}")
 #
 # Create all object files
 #
-add_library(dtensor_objects OBJECT TCache.cpp TColumnMap.cpp TTable.cpp dtensor_capi.cpp)
+add_library(dtensor_objects OBJECT TCache.cpp TColumnMap.cpp TTable.cpp)
 target_include_directories(dtensor_objects PUBLIC ${COMMON_SRC}  ${DTENSOR_SRC})
 #
 # dtensor static library for executables

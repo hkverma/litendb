@@ -59,7 +59,7 @@ namespace tendb {
   public:
 
     /// Get a singleton instance, if not present create one
-    static std::shared_ptr<TCache> GetInstance();
+    static std::shared_ptr<TCache> GetInstance(bool& newInst);
 
     /// Read csv file for now
     std::shared_ptr<TTable> ReadCsv
