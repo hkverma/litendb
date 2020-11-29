@@ -99,8 +99,8 @@ namespace tendb {
                 int64_t colNum,                // Column Number
                 int32_t mapNum)                 // worker number
   {
-    std::shared_ptr<arrow::ChunkedArray> chunkedArray = table->table_->column(colNum);
-    auto colMap = table->maps_[mapNum][colNum];
+    std::shared_ptr<arrow::ChunkedArray> chunkedArray = table->GetTable()->column(colNum);
+    auto colMap = table->GetColMap(mapNum, colNum);
 
     bool mapExists = colMap->IfValidMap();
 
@@ -136,7 +136,7 @@ namespace tendb {
                 std::shared_ptr<TTable> table, // table
                 int64_t colNum)   // column number
   {
-    std::shared_ptr<arrow::ChunkedArray> chunkedArray = table->table_->column(colNum);
+    std::shared_ptr<arrow::ChunkedArray> chunkedArray = table->GetTable()->column(colNum);
     TColumnIterator<Type, ArrayType> columnIterator(chunkedArray);
 
     int64_t chunkRowId=0;
@@ -178,7 +178,7 @@ namespace tendb {
                 std::shared_ptr<TTable> table, // table
                 int64_t colNum)   // column number
   {
-    std::shared_ptr<arrow::ChunkedArray> chunkedArray = table->table_->column(colNum);
+    std::shared_ptr<arrow::ChunkedArray> chunkedArray = table->GetTable()->column(colNum);
     if (arrId >= chunkedArray->length())
       return false;
     std::shared_ptr<ArrayType> array =

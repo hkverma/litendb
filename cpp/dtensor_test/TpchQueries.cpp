@@ -30,12 +30,12 @@ void TpchQueries::ReadTables()
   }
 
   // Populate tables
-  lShipdate = tables_[lineitem]->table_->column(l_shipdate);
-  lDiscount = tables_[lineitem]->table_->column(l_discount);
-  lQuantity = tables_[lineitem]->table_->column(l_quantity);
-  lExtendedprice = tables_[lineitem]->table_->column(l_extendedprice);
-  lOrderkey = tables_[lineitem]->table_->column(l_orderkey);
-  lSuppkey = tables_[lineitem]->table_->column(l_suppkey);
+  lShipdate = tables_[lineitem]->GetTable()->column(l_shipdate);
+  lDiscount = tables_[lineitem]->GetTable()->column(l_discount);
+  lQuantity = tables_[lineitem]->GetTable()->column(l_quantity);
+  lExtendedprice = tables_[lineitem]->GetTable()->column(l_extendedprice);
+  lOrderkey = tables_[lineitem]->GetTable()->column(l_orderkey);
+  lSuppkey = tables_[lineitem]->GetTable()->column(l_suppkey);
 
   // constants
   date19970101Value =

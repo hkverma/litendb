@@ -15,3 +15,4 @@ set(DTENSOR_SRC $ENV{TENDB_ROOT_DIR}/cpp/dtensor)
 set(DTENSOR_TEST_SRC $ENV{TENDB_ROOT_DIR}/cpp/dtensor_test)
 #
 #
+include_directories(/usr/include/python3.6)

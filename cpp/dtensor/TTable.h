@@ -28,7 +28,7 @@ namespace tendb {
   public:
 
     TTable(std::string& tableName) : name_(tableName), table_(nullptr), schema_(nullptr) { }  
-    TTable(std::shared_ptr<arrow::Table> table);
+    TTable(std::string name, std::shared_ptr<arrow::Table> table);
     
     // read csv File csvFileName and add it to table_
     bool ReadCsv(std::string csvFileName,
@@ -38,25 +38,43 @@ namespace tendb {
     void PrintSchema();
     void PrintTable();
 
+    // Inverted maps and min-max zones
     bool MakeMaps(int32_t numCopies);
     void PrintMaps();
+    std::shared_ptr<TColumnMap> GetColMap(int mapNum, int colNum);
+
+    std::shared_ptr<arrow::Table> GetTable();
     
     std::shared_ptr<arrow::Array> GetArray(int64_t rowNum, int64_t colNum);
 
     int64_t NumColumns() { return table_->num_columns(); }
     int64_t NumRows() { return table_->num_rows(); }
 
-    std::shared_ptr<arrow::Table> table_;
-    int32_t numMapCopies_ = 0;
-    std::vector<std::vector<std::shared_ptr<TColumnMap>>> maps_;
     
     // Options TODO create an options class
     static const bool EnableColumnReverseMap = false;
     
   private:
-    std::shared_ptr<arrow::Schema> schema_;
+    // Arrow table information
     std::string name_;
+    std::shared_ptr<arrow::Schema> schema_;
+    std::shared_ptr<arrow::Table> table_;
+    // Table Maps
+    // TODO One copy should be sufficient, multiple copies will not make it faster
+    int32_t numMapCopies_ = 0;
+    std::vector<std::vector<std::shared_ptr<TColumnMap>>> maps_;
     
   };
-  
+
+  // Header functions
+  inline std::shared_ptr<arrow::Table> TTable::GetTable()
+  {
+    return table_;
+  }
+
+  inline std::shared_ptr<TColumnMap> TTable::GetColMap(int mapNum, int colNum)
+  {
+    return maps_[mapNum][colNum];
+  }
+
 };

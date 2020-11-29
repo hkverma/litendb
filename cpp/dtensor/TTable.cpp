@@ -10,6 +10,12 @@
 
 namespace tendb {
 
+  TTable::TTable(std::string name, std::shared_ptr<arrow::Table> table) : table_(table)
+  {
+    schema_ = table_->schema();
+    name_ = move(name);
+  }
+  
   void TTable::PrintSchema()
   {
     // Print Table for now
