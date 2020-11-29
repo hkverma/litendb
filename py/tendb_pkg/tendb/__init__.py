@@ -1,40 +1,29 @@
 from ctypes import cdll
 lib = cdll.LoadLibrary('/mnt/c/Users/hkver/Documents/dbai/dbaistuff/cpp/build/libtendb.so')
-
-class Foo(object):
-    def __init__(self):
-        self.obj = lib.Foo_new()
-
-    def bar(self):
-        lib.Foo_bar(self.obj)
         
-def init():
+def new_cache():
     """
-    Initialize TenDB Stack
+    TenDB Cache
     """
-    return "Init"
+    tcache = lib.TCache_GetInstance()
+    return tcache
 
-def add_table():
+def add_table(tcache, name, table):
     """
     Add Arrow table to ten
     """
-    return "AddTable"
+    status = lib.TCache_AddTable(tcache, name, table)
+    return status
 
-def query6():
+def query6(tcache):
     """
     Run Query6
     """
-    return "Query6"
+    revenue = lib.Tpch_Query6(tcache)
+    return revenue
 
 def query5():
     """
     Run Query5
     """
-    return "Query5"
-
-def test():
-    """
-    Test
-    """
-    f = Foo()
-    return f.bar()
+    return 1.87

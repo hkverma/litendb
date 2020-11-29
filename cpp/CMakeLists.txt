@@ -27,8 +27,8 @@ add_subdirectory(dtensor_test)
 # 
 # tendb dynamic library - .so
 #
-add_library(tendb SHARED $<TARGET_OBJECTS:dtensor_objects>)
-target_include_directories(tendb PUBLIC dtensor)
+add_library(tendb SHARED $<TARGET_OBJECTS:dtensor_objects> $<TARGET_OBJECTS:dtensor_test_objects>)
+target_include_directories(tendb PUBLIC dtensor dtensor_test)
 target_link_libraries(tendb general common arrow)
-target_link_libraries(tendb debug glogd)
-target_link_libraries(tendb optimized glog)
+target_link_libraries(tendb debug glogd debug tbb_debug)
+target_link_libraries(tendb optimized glog optimized tbb)

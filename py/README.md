@@ -39,7 +39,10 @@ class Foo(object):
 
 Here is an example run in python
 ```bash
-(tendb) hkverma@HK-PC$ python
+$ 
+$ conda activate tendb
+$ pip install /mnt/c/Users/hkver/Documents/dbai/dbaistuff/py/tendb_pkg/
+(tendb) $ python3
 Python 3.9.0 | packaged by conda-forge | (default, Oct 14 2020, 22:59:50)
 [GCC 7.5.0] on linux
 Type "help", "copyright", "credits" or "license" for more information.
@@ -49,4 +52,8 @@ Type "help", "copyright", "credits" or "license" for more information.
 Hello
 >>>
 ```
-
+TODO 
+How to run on jupyter notebook locally.
+```bash
+$ pip install /mnt/c/Users/hkver/Documents/dbai/dbaistuff/py/tendb_pkg/
+```

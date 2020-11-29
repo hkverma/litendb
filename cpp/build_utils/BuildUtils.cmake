@@ -18,5 +18,8 @@ set(COMMON_SRC  $ENV{TENDB_ROOT_DIR}/cpp/common)
 set(DTENSOR_SRC $ENV{TENDB_ROOT_DIR}/cpp/dtensor)
 set(DTENSOR_TEST_SRC $ENV{TENDB_ROOT_DIR}/cpp/dtensor_test)
 #
+# Global include and link directories
+# TODO expand include directories
 #
 include_directories(/usr/include/python3.6)
+link_directories(${TBB_LIB_DIR})
