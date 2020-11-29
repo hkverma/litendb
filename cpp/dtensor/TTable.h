@@ -42,10 +42,9 @@ namespace tendb {
     bool MakeMaps(int32_t numCopies);
     void PrintMaps();
     std::shared_ptr<TColumnMap> GetColMap(int mapNum, int colNum);
-
     std::shared_ptr<arrow::Table> GetTable();
-    
     std::shared_ptr<arrow::Array> GetArray(int64_t rowNum, int64_t colNum);
+    std::string GetName();
 
     int64_t NumColumns() { return table_->num_columns(); }
     int64_t NumRows() { return table_->num_rows(); }
@@ -77,4 +76,8 @@ namespace tendb {
     return maps_[mapNum][colNum];
   }
 
+  inline std::string TTable::GetName()
+  {
+    return name_;
+  }
 };

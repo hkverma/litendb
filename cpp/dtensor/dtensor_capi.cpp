@@ -1,16 +1,6 @@
 // These C API can be packaged by python
 #include <iostream>
+#include <dtensor_capi.h>
 
-class Foo{
-public:
-  void bar()
-  {
-    std::cout << "Hello" << std::endl;
-  }
-};
+using namespace tendb;
 
-extern "C"
-{
-  Foo* Foo_new(){ return new Foo(); }
-  void Foo_bar(Foo* foo){ foo->bar(); }
-}

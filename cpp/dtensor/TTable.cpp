@@ -8,192 +8,190 @@
 #include "TTable.h"
 
 
-namespace tendb {
+using namespace tendb;
 
-  TTable::TTable(std::string name, std::shared_ptr<arrow::Table> table) : table_(table)
-  {
-    schema_ = table_->schema();
-    name_ = move(name);
-  }
+TTable::TTable(std::string name, std::shared_ptr<arrow::Table> table) : table_(table)
+{
+  schema_ = table_->schema();
+  name_ = move(name);
+}
   
-  void TTable::PrintSchema()
-  {
-    // Print Table for now
-    const std::vector<std::shared_ptr<arrow::Field>>& tableSchemaFields = schema_->fields();
-    std::stringstream ss;
-    ss << "Schema=";
+void TTable::PrintSchema()
+{
+  // Print Table for now
+  const std::vector<std::shared_ptr<arrow::Field>>& tableSchemaFields = schema_->fields();
+  std::stringstream ss;
+  ss << "Schema=";
 
-    for (auto schemaField : tableSchemaFields) 
-    {
-      ss << "{" << schemaField->ToString() << "}," ;
-    }
-    LOG(INFO) << ss.str();
+  for (auto schemaField : tableSchemaFields) 
+  {
+    ss << "{" << schemaField->ToString() << "}," ;
   }
+  LOG(INFO) << ss.str();
+}
 
-  void TTable::PrintTable()
+void TTable::PrintTable()
+{
+  std::stringstream ss;
+  ss << "NumCols=" << NumColumns();
+  ss << " NumRows=" << NumRows() << " Data=";
+
+  // Print the table
+  for (int64_t i=0; i<NumColumns(); i++)
   {
-    std::stringstream ss;
-    ss << "NumCols=" << NumColumns();
-    ss << " NumRows=" << NumRows() << " Data=";
-
-    // Print the table
-    for (int64_t i=0; i<NumColumns(); i++)
-    {
-      auto chunkedArray = table_->column(i);
-      //const std::shared_ptr<arrow::Field>& colField = schema_->field(i);
-      //const std::shared_ptr<arrow::DataType>& colFieldType = colField->type();
+    auto chunkedArray = table_->column(i);
+    //const std::shared_ptr<arrow::Field>& colField = schema_->field(i);
+    //const std::shared_ptr<arrow::DataType>& colFieldType = colField->type();
        
-      for (int64_t j=0; j<chunkedArray->num_chunks(); j++)
+    for (int64_t j=0; j<chunkedArray->num_chunks(); j++)
+    {
+      auto aray = chunkedArray->chunk(j);
+      for (int64_t k=0; k<aray->length(); k++)
       {
-        auto aray = chunkedArray->chunk(j);
-        for (int64_t k=0; k<aray->length(); k++)
+        arrow::Result<std::shared_ptr<arrow::Scalar>> dataResult = aray->GetScalar(k);
+        if ( !dataResult.ok() )
         {
-          arrow::Result<std::shared_ptr<arrow::Scalar>> dataResult = aray->GetScalar(k);
-          if ( !dataResult.ok() )
-          {
-            ss << ",";
-          }
-          else
-          {
-            std::shared_ptr<arrow::Scalar> data = dataResult.ValueOrDie();
-            // todo
-            //auto typeData = static_cast<decltype(colFieldType.get())>(data.get());
-            //ss << typeData?typeData->ToString():"" << ",";
-            if (data->is_valid)
-              ss << data->ToString();
-            ss << ",";
-          }
+          ss << ",";
+        }
+        else
+        {
+          std::shared_ptr<arrow::Scalar> data = dataResult.ValueOrDie();
+          // todo
+          //auto typeData = static_cast<decltype(colFieldType.get())>(data.get());
+          //ss << typeData?typeData->ToString():"" << ",";
+          if (data->is_valid)
+            ss << data->ToString();
+          ss << ",";
         }
       }
     }
-    LOG(INFO) << ss.str();
   }
+  LOG(INFO) << ss.str();
+}
 
-  // status & log
-  bool TTable::ReadCsv(std::string csvFileName,
-                       const arrow::csv::ReadOptions& readOptions,
-                       const arrow::csv::ParseOptions& parseOptions,
-                       const arrow::csv::ConvertOptions& convertOptions)
-  {
-    // A default memory pool
-    // TODO define tendb memory pool
-    arrow::MemoryPool* pool = arrow::default_memory_pool();
+// status & log
+bool TTable::ReadCsv(std::string csvFileName,
+                     const arrow::csv::ReadOptions& readOptions,
+                     const arrow::csv::ParseOptions& parseOptions,
+                     const arrow::csv::ConvertOptions& convertOptions)
+{
+  // A default memory pool
+  // TODO define tendb memory pool
+  arrow::MemoryPool* pool = arrow::default_memory_pool();
 
-    // Readable File for the csvFile
-    arrow::Result<std::shared_ptr<arrow::io::ReadableFile>> fpResult =
-      arrow::io::ReadableFile::Open(csvFileName, pool);
-    if (!fpResult.ok()) {
-      LOG(ERROR) << "Cannot open file " << csvFileName;
-      return false;
-    }
-    std::shared_ptr<arrow::io::ReadableFile> fp = fpResult.ValueOrDie();
+  // Readable File for the csvFile
+  arrow::Result<std::shared_ptr<arrow::io::ReadableFile>> fpResult =
+    arrow::io::ReadableFile::Open(csvFileName, pool);
+  if (!fpResult.ok()) {
+    LOG(ERROR) << "Cannot open file " << csvFileName;
+    return false;
+  }
+  std::shared_ptr<arrow::io::ReadableFile> fp = fpResult.ValueOrDie();
 
-    // Get fileSizeResult
-    arrow::Result<int64_t> fileSizeResult = fp->GetSize();
-    if (!fileSizeResult.ok()) {
-      LOG(ERROR) << "Unknown filesize for file " << csvFileName;
-      return false;
-    }
-    int64_t fileSize = fileSizeResult.ValueOrDie();
+  // Get fileSizeResult
+  arrow::Result<int64_t> fileSizeResult = fp->GetSize();
+  if (!fileSizeResult.ok()) {
+    LOG(ERROR) << "Unknown filesize for file " << csvFileName;
+    return false;
+  }
+  int64_t fileSize = fileSizeResult.ValueOrDie();
 
-    // Random access file reader
-    std::shared_ptr<arrow::io::InputStream> inputStream =
-      arrow::io::RandomAccessFile::GetStream(fp, 0, fileSize);
+  // Random access file reader
+  std::shared_ptr<arrow::io::InputStream> inputStream =
+    arrow::io::RandomAccessFile::GetStream(fp, 0, fileSize);
     
-    // Instantiate TableReader from input stream and options
-    arrow::Result<std::shared_ptr<arrow::csv::TableReader>> readerResult
-      = arrow::csv::TableReader::Make(pool, inputStream, readOptions,
-                                      parseOptions, convertOptions);
-    if (!readerResult.ok()) {
-      LOG(ERROR) << "Cannot read table " << csvFileName;
-      return false;
-    }
-    std::shared_ptr<arrow::csv::TableReader> reader = readerResult.ValueOrDie();
+  // Instantiate TableReader from input stream and options
+  arrow::Result<std::shared_ptr<arrow::csv::TableReader>> readerResult
+    = arrow::csv::TableReader::Make(pool, inputStream, readOptions,
+                                    parseOptions, convertOptions);
+  if (!readerResult.ok()) {
+    LOG(ERROR) << "Cannot read table " << csvFileName;
+    return false;
+  }
+  std::shared_ptr<arrow::csv::TableReader> reader = readerResult.ValueOrDie();
   
-    // Read table from CSV file
-    arrow::Result<std::shared_ptr<arrow::Table>> tableResult = reader->Read();
-    if (!tableResult.ok()) {
-      // Handle CSV read error
-      // (for example a CSV syntax error or failed type conversion)
-      LOG(ERROR) << "Reading csv table";
-      return false;
-    }
+  // Read table from CSV file
+  arrow::Result<std::shared_ptr<arrow::Table>> tableResult = reader->Read();
+  if (!tableResult.ok()) {
+    // Handle CSV read error
+    // (for example a CSV syntax error or failed type conversion)
+    LOG(ERROR) << "Reading csv table";
+    return false;
+  }
     
-    table_ = tableResult.ValueOrDie();
-    schema_ = table_->schema();
-    std::vector<std::shared_ptr<arrow::ChunkedArray>> cols = table_->columns();
-    LOG(INFO) << "Total columns=" << cols.size();
-    int64_t numChunks = cols[0]->num_chunks();
-    for (int i=0; i<cols.size(); i++) {
-      if (cols[i]->num_chunks() != numChunks) {
-        LOG(ERROR) << "Chunks " << cols[i]->num_chunks() << " != " << numChunks;
-      }
+  table_ = tableResult.ValueOrDie();
+  schema_ = table_->schema();
+  std::vector<std::shared_ptr<arrow::ChunkedArray>> cols = table_->columns();
+  LOG(INFO) << "Total columns=" << cols.size();
+  int64_t numChunks = cols[0]->num_chunks();
+  for (int i=0; i<cols.size(); i++) {
+    if (cols[i]->num_chunks() != numChunks) {
+      LOG(ERROR) << "Chunks " << cols[i]->num_chunks() << " != " << numChunks;
     }
-    for (auto i=0; i<cols.size(); i++) {
-      for (auto j=0; j<numChunks; j++) {
-        if (cols[i]->chunk(j)->length() != cols[0]->chunk(j)->length()) {
-          LOG(ERROR) << "Col " << i << " Chunk " << j ;
-          LOG(ERROR) << "Chunk length " << cols[i]->chunk(j)->length() << "!=" << cols[0]->chunk(j)->length() ;
-        }
-      }
-    }
-    return true;
   }
+  for (auto i=0; i<cols.size(); i++) {
+    for (auto j=0; j<numChunks; j++) {
+      if (cols[i]->chunk(j)->length() != cols[0]->chunk(j)->length()) {
+        LOG(ERROR) << "Col " << i << " Chunk " << j ;
+        LOG(ERROR) << "Chunk length " << cols[i]->chunk(j)->length() << "!=" << cols[0]->chunk(j)->length() ;
+      }
+    }
+  }
+  return true;
+}
 
-  bool TTable::MakeMaps(int32_t numCopies)
+bool TTable::MakeMaps(int32_t numCopies)
+{
+  if (nullptr == table_)
   {
-    if (nullptr == table_)
-    {
-      return false;
-    }
-    if (numCopies < 1)
-    {
-      return false;
-    }
-    numMapCopies_ = numCopies;
-    maps_.resize(numCopies);
-    for (auto nc = 0; nc < numCopies; nc++)
-    {
-      maps_[nc].resize(table_->num_columns());
-    }    
-    for (int64_t cnum=0; cnum<table_->num_columns(); cnum++)
-    {
-      std::shared_ptr<arrow::ChunkedArray> chunkedArray = table_->column(cnum);
-      maps_[0][cnum] = TColumnMap::Make(chunkedArray);
-    }
-    for (auto nc = 1; nc<numCopies; nc++)
-    {
-      for (auto cnum=0; cnum<table_->num_columns(); cnum++)
-      {
-        maps_[nc][cnum] = maps_[0][cnum]->Copy();
-      }
-    }
-    return true;
+    return false;
   }
+  if (numCopies < 1)
+  {
+    return false;
+  }
+  numMapCopies_ = numCopies;
+  maps_.resize(numCopies);
+  for (auto nc = 0; nc < numCopies; nc++)
+  {
+    maps_[nc].resize(table_->num_columns());
+  }    
+  for (int64_t cnum=0; cnum<table_->num_columns(); cnum++)
+  {
+    std::shared_ptr<arrow::ChunkedArray> chunkedArray = table_->column(cnum);
+    maps_[0][cnum] = TColumnMap::Make(chunkedArray);
+  }
+  for (auto nc = 1; nc<numCopies; nc++)
+  {
+    for (auto cnum=0; cnum<table_->num_columns(); cnum++)
+    {
+      maps_[nc][cnum] = maps_[0][cnum]->Copy();
+    }
+  }
+  return true;
+}
 
-  void TTable::PrintMaps()
-  {
-    std::stringstream ss;
-    for (int colNum = 0; colNum < table_->num_columns(); colNum++) {
-      auto colMap = maps_[0][colNum];
-      ss << "Col " << colNum;
-      auto chArr = colMap->chunkedArray_;
-      for (int arrNum = 0; arrNum<chArr->num_chunks(); arrNum++)
-      {
-        int64_t minVal, maxVal;
-        auto arr = chArr->chunk(arrNum);
-        ss << " Arr " << arrNum << " Size=" << arr->length();
-        ss << " Type=" << arr->type()->ToString() ;
-        ss << " Min=";
-        colMap->GetMin(arrNum,minVal)?(ss << minVal):(ss << "None");
-        ss << " Max=";
-        colMap->GetMax(arrNum,maxVal)?(ss << maxVal):(ss << "None");
-        ss << ";" ;
-      }
-      //colMap->GetReverseMap(ss);
-      //ss << "; ";
+void TTable::PrintMaps()
+{
+  std::stringstream ss;
+  for (int colNum = 0; colNum < table_->num_columns(); colNum++) {
+    auto colMap = maps_[0][colNum];
+    ss << "Col " << colNum;
+    auto chArr = colMap->chunkedArray_;
+    for (int arrNum = 0; arrNum<chArr->num_chunks(); arrNum++)
+    {
+      int64_t minVal, maxVal;
+      auto arr = chArr->chunk(arrNum);
+      ss << " Arr " << arrNum << " Size=" << arr->length();
+      ss << " Type=" << arr->type()->ToString() ;
+      ss << " Min=";
+      colMap->GetMin(arrNum,minVal)?(ss << minVal):(ss << "None");
+      ss << " Max=";
+      colMap->GetMax(arrNum,maxVal)?(ss << maxVal):(ss << "None");
+      ss << ";" ;
     }
-    LOG(INFO) << ss.str();
+    //colMap->GetReverseMap(ss);
+    //ss << "; ";
   }
-  
+  LOG(INFO) << ss.str();
 }

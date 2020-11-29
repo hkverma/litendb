@@ -74,6 +74,8 @@ namespace tendb {
     /// Get Table from tableName
     std::shared_ptr<TTable> GetTable(std::string tableName);
 
+    /// Add table to cache
+    int AddTable(std::shared_ptr<TTable> ttable);
 
   private:
 
@@ -93,3 +95,11 @@ namespace tendb {
   };
 
 };
+
+// These functions are exposed for external python like bindings
+extern "C"
+{
+  tendb::TCache* TCache_GetInstance();
+  int TCache_AddTable(tendb::TCache *tcache, char* name, arrow::Table* table);
+}
+

@@ -1,93 +1,123 @@
 #include "TCache.h"
 #include <iostream>
+#include <common.h>
+
 #include <boost/uuid/random_generator.hpp>
 
-namespace tendb {
+using namespace tendb;
 
-  // For now the columnChunk should be present here. 
-  // TODO In future it could not be here, in that case fetch it if not present here
+// For now the columnChunk should be present here.
+// TODO In future it could not be here, in that case fetch it if not present here
 
-  /// Singleton cache instance
-  std::shared_ptr<TCache> TCache::tCache_ = nullptr;
+/// Singleton cache instance
+std::shared_ptr<TCache> TCache::tCache_ = nullptr;
 
-  /// Get a singleton instance, if not present create one
-  std::shared_ptr<TCache> TCache::GetInstance()
+/// Get a singleton instance, if not present create one
+std::shared_ptr<TCache> TCache::GetInstance()
+{
+  if (tCache_ == nullptr)
+    tCache_ = std::make_shared<TCache>();
+  return tCache_;
+}
+
+/// Read csv file in a new table tableName. tableName should be unique
+std::shared_ptr<TTable> TCache::ReadCsv
+(std::string tableName,
+ std::string csvFileName,
+ const arrow::csv::ReadOptions& readOptions,
+ const arrow::csv::ParseOptions& parseOptions,
+ const arrow::csv::ConvertOptions& convertOptions)
+{
+  // If found one, return it
+  std::shared_ptr<TTable> table = GetTable(tableName);
+  if (nullptr != table)
   {
-    if (tCache_ == nullptr)
-      tCache_ = std::make_shared<TCache>();
-    return tCache_;
-  }
-
-  /// Read csv file in a new table tableName. tableName should be unique
-  std::shared_ptr<TTable> TCache::ReadCsv
-    (std::string tableName,
-     std::string csvFileName,
-     const arrow::csv::ReadOptions& readOptions,
-     const arrow::csv::ParseOptions& parseOptions,
-     const arrow::csv::ConvertOptions& convertOptions)
-  {
-    // If found one, return it
-    std::shared_ptr<TTable> table = GetTable(tableName);
-    if (nullptr != table)
-    {
-      // TODO log here or add csv to the same table
-      return table;
-    }
-
-    // Create one table with tableName
-    boost::uuids::uuid cacheId;
-    table = std::make_shared<TTable>(tableName);
-    if (table->ReadCsv(csvFileName, readOptions, parseOptions, convertOptions))
-    {
-      boost::uuids::uuid cacheId = idGenerator();
-      tables_[cacheId] = table;
-      cacheIds_[tableName] = cacheId;
-    }
-    else
-    {
-      table = nullptr;
-    }
-
+    // TODO log here or add csv to the same table
     return table;
   }
-  
-  /// Get Table from the cache
-  std::shared_ptr<TTable> TCache::GetTable(boost::uuids::uuid id)
+
+  // Create one table with tableName
+  boost::uuids::uuid cacheId;
+  table = std::make_shared<TTable>(tableName);
+  if (table->ReadCsv(csvFileName, readOptions, parseOptions, convertOptions))
   {
-    auto itr = tables_.find(id);
-    if (itr ==  tables_.end())
-      return nullptr;
-    return itr->second;
+    boost::uuids::uuid cacheId = idGenerator();
+    tables_[cacheId] = table;
+    cacheIds_[tableName] = cacheId;
+  }
+  else
+  {
+    table = nullptr;
   }
 
-  /// GetTable from table name
-  std::shared_ptr<TTable> TCache::GetTable(std::string tableName)
-  {
-    boost::uuids::uuid cacheId;    
-    if (GetId(tableName, cacheId))
-    {
-      return GetTable(cacheId);
-    }
+  return table;
+}
+
+/// Get Table from the cache
+std::shared_ptr<TTable> TCache::GetTable(boost::uuids::uuid id)
+{
+  auto itr = tables_.find(id);
+  if (itr ==  tables_.end())
     return nullptr;
-  }
-  
-  // TODO use arrow::Result type object here
-  // use std::move for all pass by value
-  bool TCache::GetId(std::string tableName, boost::uuids::uuid& cacheId) 
+  return itr->second;
+}
+
+/// GetTable from table name
+std::shared_ptr<TTable> TCache::GetTable(std::string tableName)
+{
+  boost::uuids::uuid cacheId;
+  if (GetId(tableName, cacheId))
   {
-    auto itr = cacheIds_.find(tableName);
-    if (itr ==  cacheIds_.end())
-      return false;
-    cacheId = itr->second;
-    return true;
+    return GetTable(cacheId);
   }
-  
-  /*  std::shared_ptr<arrow::Scalar> TCache::GetScalar(std::shared_ptr<arrow::Array> comp, int64_t rowNum)
-  {
+  return nullptr;
+}
+
+// TODO use arrow::Result type object here
+// use std::move for all pass by value
+bool TCache::GetId(std::string tableName, boost::uuids::uuid& cacheId)
+{
+  auto itr = cacheIds_.find(tableName);
+  if (itr ==  cacheIds_.end())
+    return false;
+  cacheId = itr->second;
+  return true;
+}
+
+/*  std::shared_ptr<arrow::Scalar> TCache::GetScalar(std::shared_ptr<arrow::Array> comp, int64_t rowNum)
+    {
     arrow::Result<std::shared_ptr<arrow::Scalar>> compValResult = comp->GetScalar(rowNum);
     assert(compValResult.ok());
     std::shared_ptr<arrow::Scalar> compVal = compValResult.ValueOrDie();
-    return compVal;    
+    return compVal;
     }*/
 
+int TCache::AddTable(std::shared_ptr<TTable> ttable)
+{
+  boost::uuids::uuid cacheId;
+  std::string tableName = move(ttable->GetName());
+  if (GetId(tableName, cacheId))
+  {
+    LOG(ERROR) << "Cannot add table " << tableName << ". It already exists";
+    return 1;
+  }
+  cacheId = idGenerator();
+  tables_[cacheId] = ttable;
+  cacheIds_[tableName] = cacheId;
+  return 0;
+}
+
+// These functions are exposed for external python like bindings
+TCache* TCache_GetInstance() {
+  auto tcache =  TCache::GetInstance();
+  return tcache.get();
+}
+
+// TODO how to send messages back to python notebook
+int TCache_AddTable(TCache *tcache, char* name, arrow::Table* table)
+{
+  std::shared_ptr<arrow::Table> tablePtr(table);
+  auto ttable = std::make_shared<TTable>(name, tablePtr);
+  int status = tcache->AddTable(ttable);
+  return status;
 }
