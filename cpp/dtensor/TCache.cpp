@@ -127,6 +127,9 @@ TCache* TCache_GetInstance() {
 // TODO how to send messages back to python notebook
 int TCache_AddTable(TCache *tcache, char* name, arrow::Table* table)
 {
+  LOG(INFO) << "Adding new table " << table << name;
+  LOG(INFO) << "Table name " << table->field(0)->ToString() ;
+    
   std::shared_ptr<arrow::Table> tablePtr(table);
   auto ttable = std::make_shared<TTable>(name, tablePtr);
   int status = tcache->AddTable(ttable);
