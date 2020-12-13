@@ -57,3 +57,8 @@ How to run on jupyter notebook locally.
 ```bash
 $ pip install /mnt/c/Users/hkver/Documents/dbai/dbaistuff/py/tendb_pkg/
 ```
+Follow these
+https://github.com/libdynd/dynd-python/blob/master/setup.py
+https://docs.python.org/3/distutils/setupscript.html
+https://packaging.python.org/guides/distributing-packages-using-setuptools/#package-data
+https://cython.readthedocs.io/en/latest/src/userguide/wrapping_CPlusPlus.html

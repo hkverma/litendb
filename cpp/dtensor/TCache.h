@@ -100,6 +100,6 @@ namespace tendb {
 extern "C"
 {
   tendb::TCache* TCache_GetInstance();
-  int TCache_AddTable(tendb::TCache *tcache, char* name, arrow::Table* table);
+  int TCache_AddTable(tendb::TCache *tcache, char* name, void* table);
 }
 
