@@ -43,7 +43,6 @@ class cmake_build_ext(_build_ext):
   user_options = [('extra-cmake-args=', None, 'extra arguments for CMake')]
 
   CYTHON_MODULE_NAMES = [
-    'lib',
     '_tendb']
 
 

@@ -15,7 +15,6 @@ find_package(Python3Alt)
 include(UseCython)
 
 set(CYTHON_EXTENSIONS,
-  'lib',
   '_tendb')
 
 set(LINK_LIBS arrow_shared tendb_shared)

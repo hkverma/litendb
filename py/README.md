@@ -1,6 +1,9 @@
-### Tendb packages into a wheel to be installed by pip or conda
+
+## Tendb packages into a wheel to be installed by pip or conda
 Directions are available at the following link -
 https://packaging.python.org/tutorials/packaging-projects/
+
+### ctype use to intgerate C++ code
 
 ##### Setup directory structure is shown below
 
@@ -53,7 +56,6 @@ Type "help", "copyright", "credits" or "license" for more information.
 Hello
 >>>
 ```
-TODO 
 How to run on jupyter notebook locally.
 ```bash
 $ pip install /mnt/c/Users/hkver/Documents/dbai/dbaistuff/py/tendb_pkg/
@@ -63,3 +65,15 @@ https://github.com/libdynd/dynd-python/blob/master/setup.py
 https://docs.python.org/3/distutils/setupscript.html
 https://packaging.python.org/guides/distributing-packages-using-setuptools/#package-data
 https://cython.readthedocs.io/en/latest/src/userguide/wrapping_CPlusPlus.html
+
+### Cython use case to integrate C++ code
+
+#### CMakefile build command
+TODO This is not generating the cython lib for tendb Needs to be debugged
+
+```
+cmake -DPYTHON_EXECUTABLE=/home/hkverma/miniconda3/envs/tendb/bin/python -DPython3_EXECUTABLE=/home/hkverma/miniconda3/envs/tendb/bin/python  -DCMAKE_BUILD_TYPE=debug /mnt/c/Users/hkver/Documents/dbai/dbaistuff/py/tendb
+cmake --build . --config _tendb
+```
+
+#### setup.py
