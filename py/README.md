@@ -16,8 +16,9 @@ tendb
 Use the following commands to package and upload.
 
 ```bash
-python3 setup.py sdist bdist_wheel
-python3 -m twine upload --repository testpypi dist/*
+python3 setup.py sdist
+python3 setup.py bdist_wheel
+python3 -m twine upload --repository dist/*
 ```
 This is pip install from index-url
 ```bash

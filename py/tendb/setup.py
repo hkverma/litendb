@@ -58,9 +58,8 @@ class cmake_build_ext(_build_ext):
   def get_ext_built(self, name):
     return pjoin(self.build_type, name + ext_suffix)
 
-  # TODO Disallow failure
   def _failure_permitted(self, name):
-    return True
+    return False
 
   def _run_cmake(self):
     # check if build_type is correctly passed / set
@@ -178,7 +177,7 @@ setup(
   long_description_content_type='text/markdown',
   url='https://github.com/tendb/',
   # pkg data
-    packages=['tendb'],
+  packages=['tendb'],
   zip_safe=False,
   package_data={'tendb': ['*.pxd','*.pyx','includes/*.pxd']},
   include_package_data=True,

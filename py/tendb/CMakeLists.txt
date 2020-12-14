@@ -14,7 +14,7 @@ include(BuildUtils)
 find_package(Python3Alt)
 include(UseCython)
 
-set(CYTHON_EXTENSION,
+set(CYTHON_EXTENSIONS,
   'lib',
   '_tendb')
 
