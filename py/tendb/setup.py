@@ -24,11 +24,20 @@ if Cython.__version__ < '0.29':
 
 setup_dir = os.path.abspath(os.path.dirname(__file__))
 
+try:
+    tendb_root_dir = os.environ.get('TENDB_ROOT_DIR')
+except KeyError:
+    print("Must set TENDB_ROOT_DIR")
+
 ext_suffix = sysconfig.get_config_var('EXT_SUFFIX')
 if ext_suffix is None:
     # https://bugs.python.org/issue19555
     ext_suffix = sysconfig.get_config_var('SO')
 
+class BinaryDistribution(Distribution):
+    def has_ext_modules(foo):
+        return True
+    
 @contextlib.contextmanager
 def changed_dir(dirname):
   oldcwd = os.getcwd()
@@ -60,6 +69,12 @@ class cmake_build_ext(_build_ext):
   def _failure_permitted(self, name):
     return False
 
+  def _bundle_tendb_cpp(self, build_prefix, build_lib):
+    tendb_lib = pjoin(tendb_root_dir,'cpp','build','libtendb.so')
+    if not tendb_lib:
+      raise Exception("Could not find " + tendb_lib)
+    shutil.copyfile(tendb_lib, pjoin(build_prefix, build_lib, 'libtendb.so'))
+                    
   def _run_cmake(self):
     # check if build_type is correctly passed / set
     if self.build_type.lower() not in ('release', 'debug'):
@@ -151,6 +166,8 @@ class cmake_build_ext(_build_ext):
               'to build path', ext_path)
         shutil.move(built_path, ext_path)
         self._found_names.append(name)
+        
+      self._bundle_tendb_cpp(build_prefix, build_lib)
 
 with open("README.md", "r") as fh:
   long_description = fh.read()
@@ -169,13 +186,13 @@ setup(
   zip_safe=False,
   package_data={'tendb': ['*.pxd','*.pyx','includes/*.pxd']},
   include_package_data=True,
-  #    distclass=BinaryDistribution,
+  distclass=BinaryDistribution,
   # build_ext is overridden to call cmake, the Extension is just
   # needed so things like bdist_wheel understand what's going on
   ext_modules=[Extension('tendb', sources=[])],
   # This includes both build and install requirements. Setuptools' setup_requires
   # option does not actually install things, so isn't actually helpful...
-    install_requires = ['cython'],
+  install_requires = ['cython'],
   cmdclass={
     'build_ext': cmake_build_ext
   },

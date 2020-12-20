@@ -5,7 +5,7 @@ https://packaging.python.org/tutorials/packaging-projects/
 
 ### ctype use to intgerate C++ code
 
-##### Setup directory structure is shown below
+##### Example setup directory structure is shown below
 
 tendb
  * LICENSE
@@ -69,7 +69,6 @@ https://cython.readthedocs.io/en/latest/src/userguide/wrapping_CPlusPlus.html
 ### Cython use case to integrate C++ code
 
 #### CMakefile build command
-TODO This is not generating the cython lib for tendb Needs to be debugged
 
 ```
 cmake -DPYTHON_EXECUTABLE=/home/hkverma/miniconda3/envs/tendb/bin/python -DPython3_EXECUTABLE=/home/hkverma/miniconda3/envs/tendb/bin/python  -DCMAKE_BUILD_TYPE=debug /mnt/c/Users/hkver/Documents/dbai/dbaistuff/py/tendb
@@ -77,3 +76,19 @@ cmake --build . --config _tendb
 ```
 
 #### setup.py
+Run setup.py to check for build
+```
+python setup.py build
+```
+To check for a dist do the following
+```
+python3 setup.py sdist
+```
+Create a wheel (zip file with all the install libs, files etc.) do the following.
+```
+python3 setup.py bdist_wheel
+```
+Upload it for pip install commands.
+```
+python3 -m twine upload --repository dist/*
+```
