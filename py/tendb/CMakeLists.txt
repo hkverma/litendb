@@ -13,19 +13,17 @@ include(BuildUtils)
 #include(BuildUtils)
 find_package(Python3Alt)
 include(UseCython)
+include(BuildUtils)
 
-set(CYTHON_EXTENSIONS,
-  '_tendb')
+set(module _tendb)
+set(module_name ${module})
+link_directories(${TENDB_ROOT_DIR}/cpp/build)
+set(LINK_LIBS tendb)
 
-set(LINK_LIBS arrow_shared tendb_shared)
+set(module_SRC tendb/${module}.pyx)
+set_source_files_properties(${module_SRC} PROPERTIES CYTHON_IS_CXX 1)
+cython_add_module(${module_name} ${module_name}_pyx ${module_name}_output ${module_SRC})
+target_link_libraries(${module_name} PRIVATE ${LINK_LIBS})
 
-foreach(module ${CYTHON_EXTENSIONS})
-  set(module_SRC tendb/${module}.pyx)
-  set_source_files_properties(${module_SRC} PROPERTIES CYTHON_IS_CXX 1)
+# Generated files will be moved to the right directory by setup.py.
 
-  cython_add_module(${module_name} ${module_name}_pyx ${module_name}_output ${module_SRC})
-
-  target_link_libraries(${module_name} PRIVATE ${LINK_LIBS})
-
-  # Generated files will be moved to the right directory by setup.py.
-endforeach(module)

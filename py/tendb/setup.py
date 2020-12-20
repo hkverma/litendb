@@ -55,7 +55,7 @@ class cmake_build_ext(_build_ext):
     _build_ext.run(self)
 
   def get_ext_built(self, name):
-    return pjoin(self.build_type, name + ext_suffix)
+    return pjoin(name + ext_suffix)
 
   def _failure_permitted(self, name):
     return False
@@ -126,11 +126,7 @@ class cmake_build_ext(_build_ext):
       except OSError:
         pass
 
-      if sys.platform == 'win32':
-        build_prefix = ''
-      else:
-        build_prefix = self.build_type
-
+      build_prefix = ''
 
       # Move the built C-extension to the place expected by the Python build
       self._found_names = []
@@ -146,22 +142,15 @@ class cmake_build_ext(_build_ext):
                              os.path.abspath(built_path))
 
         # The destination path to move the built C extension to
-        ext_path = pjoin(build_lib, self._get_cmake_ext_path(name))
+        ext_path = pjoin(build_lib, self.get_ext_built(name))
         if os.path.exists(ext_path):
           os.remove(ext_path)
         self.mkpath(os.path.dirname(ext_path))
-
-        if self.bundle_cython_cpp:
-          self._bundle_cython_cpp(name, build_lib)
 
         print('Moving built C-extension', built_path,
               'to build path', ext_path)
         shutil.move(built_path, ext_path)
         self._found_names.append(name)
-
-        if os.path.exists(self.get_ext_built_api_header(name)):
-          shutil.move(self.get_ext_built_api_header(name),
-                      pjoin(os.path.dirname(ext_path), name + '_api.h'))
 
 with open("README.md", "r") as fh:
   long_description = fh.read()
