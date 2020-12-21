@@ -1,5 +1,9 @@
 from ctypes import cdll
-lib = cdll.LoadLibrary('/mnt/c/Users/hkver/Documents/dbai/dbaistuff/cpp/build/libtendb.so')
+import os
+
+basedir = os.path.abspath(os.path.dirname(__file__))
+libpath = os.path.join(basedir, 'libtendb.so')
+lib = cdll.LoadLibrary(libpath)
         
 def new_cache():
     """

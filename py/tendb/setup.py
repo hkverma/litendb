@@ -73,7 +73,7 @@ class cmake_build_ext(_build_ext):
     tendb_lib = pjoin(tendb_root_dir,'cpp','build','libtendb.so')
     if not tendb_lib:
       raise Exception("Could not find " + tendb_lib)
-    shutil.copyfile(tendb_lib, pjoin(build_prefix, build_lib, 'libtendb.so'))
+    shutil.copyfile(tendb_lib, pjoin(build_prefix, build_lib, 'tendb','libtendb.so'))
                     
   def _run_cmake(self):
     # check if build_type is correctly passed / set
@@ -157,7 +157,7 @@ class cmake_build_ext(_build_ext):
                              os.path.abspath(built_path))
 
         # The destination path to move the built C extension to
-        ext_path = pjoin(build_lib, self.get_ext_built(name))
+        ext_path = pjoin(build_lib, 'tendb', self.get_ext_built(name))
         if os.path.exists(ext_path):
           os.remove(ext_path)
         self.mkpath(os.path.dirname(ext_path))
@@ -174,7 +174,7 @@ with open("README.md", "r") as fh:
 
 setup(
   name='tendb',
-  version='0.0.1',
+  version='0.0.2',
   author='HK Verma',
   author_email='hkverma@gmail.com',
   description='Big Data Analytics Toolset',
