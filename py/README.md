@@ -77,6 +77,7 @@ cmake --build . --config _tendb
 
 #### setup.py
 Run setup.py to check for build
+TODO - C compilation is failing. Fix this.
 ```
 python setup.py build
 ```

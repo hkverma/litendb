@@ -112,8 +112,8 @@ int TCache::AddTable(std::shared_ptr<TTable> ttable)
   return 0;
 }
 
-// These functions are exposed for external python like bindings
-TCache* TCache_GetInstance() {
+std::shared_ptr<TCache> TCache::GetInstance()
+{
   bool newInst;
   auto tcache =  TCache::GetInstance(newInst);
   if (newInst)
@@ -121,19 +121,33 @@ TCache* TCache_GetInstance() {
     google::InitGoogleLogging("tendb");
   }
   LOG(INFO) << "Created a new TCache";
+  return tcache;
+}
+
+// These functions are exposed for external python like bindings
+TCache* TCache_GetInstance() {
+  auto tcache = TCache::GetInstance();
   return tcache.get();
 }
 
-// TODO how to send messages back to python notebook
+int TCache::AddTable(std::string name, std::shared_ptr<arrow::Table> table)
+{
+  LOG(INFO) << "Adding new table " << name;
+  auto ttable = std::make_shared<TTable>(name, table);
+  int status = AddTable(ttable);
+  return status;
+}  
+
+// TODO how to send messages back to python notebook, using cython will make this redundant
 int TCache_AddTable(TCache *tcache, char* name, void* table)
 {
-  std::shared_ptr<arrow::Table> *tablePtr = (std::shared_ptr<arrow::Table> *)table;
+  std::shared_ptr<arrow::Table> tablePtr( (arrow::Table*) table);
   LOG(INFO) << "Adding new table " << name;
   LOG(INFO) << "Table ptr" << table;
   
-  LOG(INFO) << "Table name " << (*tablePtr)->field(0)->ToString() ;
+  LOG(INFO) << "Table name " << tablePtr->field(0)->ToString() ;
 
-  auto ttable = std::make_shared<TTable>(name, *tablePtr);
+  auto ttable = std::make_shared<TTable>(name, tablePtr);
   int status = tcache->AddTable(ttable);
   return status;
 

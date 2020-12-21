@@ -6,6 +6,7 @@ import re
 import shlex
 import shutil
 import sys
+import numpy
 
 from Cython.Distutils import build_ext as _build_ext
 import Cython
@@ -189,7 +190,7 @@ setup(
   distclass=BinaryDistribution,
   # build_ext is overridden to call cmake, the Extension is just
   # needed so things like bdist_wheel understand what's going on
-  ext_modules=[Extension('tendb', sources=[])],
+    ext_modules=[Extension('tendb', sources=[], include_dirs=[numpy.get_include()])],
   # This includes both build and install requirements. Setuptools' setup_requires
   # option does not actually install things, so isn't actually helpful...
   install_requires = ['cython'],
