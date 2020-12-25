@@ -14,16 +14,6 @@ std::shared_ptr<TCache> TCache::tCache_ = nullptr;
 
 /// Get a singleton instance, if not present create one
 // TODO Use status code to return back instance
-std::shared_ptr<TCache> TCache::GetInstance(bool& newInst)
-{
-  newInst = false;
-  if (tCache_ == nullptr)
-  {
-    tCache_ = std::make_shared<TCache>();
-    newInst = true;
-  }
-  return tCache_;
-}
 
 /// Read csv file in a new table tableName. tableName should be unique
 std::shared_ptr<TTable> TCache::ReadCsv
@@ -114,14 +104,13 @@ int TCache::AddTable(std::shared_ptr<TTable> ttable)
 
 std::shared_ptr<TCache> TCache::GetInstance()
 {
-  bool newInst;
-  auto tcache =  TCache::GetInstance(newInst);
-  if (newInst)
+  if (tCache_ == nullptr)
   {
+    tCache_ = std::make_shared<TCache>();
     google::InitGoogleLogging("tendb");
   }
   LOG(INFO) << "Created a new TCache";
-  return tcache;
+  return tCache_;
 }
 
 // These functions are exposed for external python like bindings
@@ -130,12 +119,21 @@ TCache* TCache_GetInstance() {
   return tcache.get();
 }
 
-int TCache::AddTable(std::string name, std::shared_ptr<arrow::Table> table)
+std::shared_ptr<TTable> TCache::AddTable(std::string name, std::shared_ptr<arrow::Table> table)
 {
+  boost::uuids::uuid cacheId;
+  if (GetId(name, cacheId))
+  {
+    LOG(ERROR) << "Cannot add table " << name << ". It already exists";
+    return nullptr;
+  }
+  
   LOG(INFO) << "Adding new table " << name;
   auto ttable = std::make_shared<TTable>(name, table);
-  int status = AddTable(ttable);
-  return status;
+  cacheId = idGenerator();
+  tables_[cacheId] = ttable;
+  cacheIds_[name] = cacheId;
+  return ttable;
 }  
 
 // TODO how to send messages back to python notebook, using cython will make this redundant

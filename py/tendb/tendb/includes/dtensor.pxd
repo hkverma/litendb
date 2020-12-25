@@ -14,7 +14,11 @@ from libcpp.unordered_set cimport unordered_set
 from pyarrow.includes.libarrow cimport *
 
 cdef extern from "dtensor.h" namespace "tendb" nogil:
-     cdef cppclass CTCache" tendb::TCache":
-         int AddTable(c_string name, shared_ptr[CTable]& table)
-         @staticmethod
-         shared_ptr[CTCache] GetInstance()
+
+   cdef cppclass CTTable" tendb::TTable":
+      c_string GetName()
+      
+   cdef cppclass CTCache" tendb::TCache":
+       shared_ptr[CTTable] AddTable(c_string name, shared_ptr[CTable] table)
+       @staticmethod
+       shared_ptr[CTCache] GetInstance()

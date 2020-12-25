@@ -19,5 +19,3 @@ cdef class CTenDB:
     cdef:
         shared_ptr[CTCache] sp_tcache
         CTCache* tcache
-
-    cdef add_table(self, c_string name, shared_ptr[CTable] table)

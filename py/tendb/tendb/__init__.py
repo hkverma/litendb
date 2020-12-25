@@ -1,6 +1,8 @@
 from ctypes import cdll
 import os
 
+import tendb._tendb as ctendb
+
 basedir = os.path.abspath(os.path.dirname(__file__))
 libpath = os.path.join(basedir, 'libtendb.so')
 lib = cdll.LoadLibrary(libpath)
@@ -12,7 +14,22 @@ def new_cache():
     tcache = lib.TCache_GetInstance()
     return tcache
 
-def add_table(tcache, name, table):
+def show_versions():
+    """
+    TenDB Version
+    """
+    ver = ctendb.show_versions()
+    print(ver)
+
+
+def add_table(name, table):
+    """
+    Add Arrow table to ten
+    """
+    status = ctendb.add_table(name,table)
+    return status
+
+def add_cache_table(tcache, name, table):
     """
     Add Arrow table to ten
     """

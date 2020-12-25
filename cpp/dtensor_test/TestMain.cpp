@@ -28,9 +28,7 @@ int main(int argc, char** argv) {
   std::string tpchDataDir = argv[1];
 
   // Initialize Google's logging library.
-  google::InitGoogleLogging("tendb");
-
-  std::shared_ptr<TCache>  tCache = std::make_shared<TCache>();
+  std::shared_ptr<TCache>  tCache = TCache::GetInstance();
 
   TpchQueries tpchQueries(tCache, tpchDataDir);
   tpchQueries.ReadTables();

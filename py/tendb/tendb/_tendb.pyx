@@ -5,6 +5,7 @@
 
 from cython.operator cimport dereference as deref
 from pyarrow.includes.libarrow cimport *
+from pyarrow.lib cimport *
 from tendb.includes.dtensor cimport *
 
 cdef class CTenDB:
@@ -12,10 +13,24 @@ cdef class CTenDB:
         self.tcache = NULL
 
     def __init__(self):
-        raise TypeError("Do not call CTenDB's constructor directly, use one of "
-                        "the `CTenDB.from_*` functions instead.")   
-        
-    cdef add_table(self, c_string name, shared_ptr[CTable] table):
+        self.tcache = NULL
         self.sp_tcache = CTCache.GetInstance()
         self.tcache = self.sp_tcache.get()
-        self.tcache.AddTable(name, table)
+        print("Added a new cache")
+
+    def show_versions(self):
+        return "0.0.2"
+
+    def add_table(self, name, table):
+        cdef:
+            shared_ptr[CTable] sp_table
+            shared_ptr[CTTable] sp_ttable
+            CTTable* p_ttable
+        sp_table = pyarrow_unwrap_table(table)
+        sp_ttable = self.tcache.AddTable(name, sp_table)
+        p_ttable = sp_ttable.get()
+        return p_ttable.GetName()
+
+    @property
+    def version(self):
+        return "0.0.2"
