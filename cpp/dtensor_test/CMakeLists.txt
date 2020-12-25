@@ -4,7 +4,7 @@ message(STATUS "Building using CMake version: ${CMAKE_VERSION}")
 #
 # Create object files
 #
-add_library(dtensor_test_objects OBJECT TpchQueries.cpp TpchQ6Q5.cpp TestUtils.cpp)
+add_library(dtensor_test_objects OBJECT TpchQueries.cpp TpchDemo.cpp TestUtils.cpp)
 target_include_directories(dtensor_test_objects PUBLIC ${TBB_INC_DIR} ${COMMON_SRC} ${DTENSOR_SRC} ${DTENSOR_TEST_SRC})
 #
 # Create Test executable

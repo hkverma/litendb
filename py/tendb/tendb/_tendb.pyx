@@ -31,6 +31,15 @@ cdef class CTenDB:
         p_ttable = sp_ttable.get()
         return p_ttable.GetName()
 
+    def query6(self):
+        cdef:
+            shared_ptr[CTpchDemo] sp_tpch_demo
+            CTpchDemo* p_tpch_demo
+        sp_tpch_demo = CTpchDemo.GetInstance(self.sp_tcache)
+        p_tpch_demo = sp_tpch_demo.get()
+        result = p_tpch_demo.Query6()
+        return result
+
     @property
     def version(self):
         return "0.0.2"

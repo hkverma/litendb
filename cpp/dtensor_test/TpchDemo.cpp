@@ -5,12 +5,21 @@
 #include "common.h"
 #include "dtensor.h"
 
-#include "TpchQ6Q5.h"
+#include "TpchDemo.h"
 #include <tbb/tbb.h>
 
 using namespace tendb;
 
-void TpchQ6Q5::Query6Chunk(int64_t chunkNum, double& revenue)
+std::shared_ptr<TpchDemo> TpchDemo::tpchDemo_ = nullptr;
+
+std::shared_ptr<TpchDemo> TpchDemo::GetInstance(std::shared_ptr<TCache> tCache) {
+  if (tpchDemo_ == nullptr) {
+    tpchDemo_ = std::make_shared<TpchDemo>(tCache);
+  }
+  return tpchDemo_;
+}
+
+void TpchDemo::Query6Chunk(int64_t chunkNum, double& revenue)
 {
   auto shipdate = std::static_pointer_cast<arrow::Int64Array>(lShipdate->chunk(chunkNum));
   auto discount = std::static_pointer_cast<arrow::DoubleArray>(lDiscount->chunk(chunkNum));
@@ -35,7 +44,7 @@ void TpchQ6Q5::Query6Chunk(int64_t chunkNum, double& revenue)
 
 }
 
-double TpchQ6Q5::Query6()
+double TpchDemo::Query6()
 {
 
   int64_t shipdateValue, quantityValue;
@@ -72,7 +81,7 @@ double TpchQ6Q5::Query6()
   int64_t pnum=0;
   for (int64_t chunkNum = 0; chunkNum < numChunks; chunkNum++)
   {
-    auto tf = std::bind(&TpchQ6Q5::Query6Chunk, this, chunkNum, std::ref(revenues[chunkNum]));
+    auto tf = std::bind(&TpchDemo::Query6Chunk, this, chunkNum, std::ref(revenues[chunkNum]));
     tg.run(tf);
     pnum++;
     if (pnum == numParallels_)
@@ -89,14 +98,5 @@ double TpchQ6Q5::Query6()
   {
     revenue += rev;
   }
-  return revenue;
-}
-
-double Tpch_Query6(TCache *tcache)
-{
-  // TODO Get rid of TpchQ6Q5 class
-  std::shared_ptr<TCache> tcachePtr(tcache);
-  auto tpchq6q5 = std::make_shared<TpchQ6Q5>(tcachePtr);
-  double revenue = tpchq6q5->Query6();
   return revenue;
 }

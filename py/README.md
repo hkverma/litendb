@@ -77,7 +77,7 @@ cmake --build . --config _tendb
 
 #### setup.py
 Run setup.py to check for build
-TODO - C compilation is failing. Fix this.
+TODO - Fix Query6 export. Name is getting mangled between cython and C++
 ```
 python setup.py build
 ```

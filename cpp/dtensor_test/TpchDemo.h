@@ -3,11 +3,13 @@
 namespace tendb
 {
 
-  class TpchQ6Q5
+  class TpchDemo
   {
   public:
 
-    TpchQ6Q5(std::shared_ptr<TCache> tCache) : tCache_(tCache) { }
+    static std::shared_ptr<TpchDemo> GetInstance(std::shared_ptr<TCache> tCache);
+    
+    TpchDemo(std::shared_ptr<TCache> tCache) : tCache_(tCache) { }
 
     // lineitem tables
     std::shared_ptr<arrow::ChunkedArray> lShipdate, lDiscount, lQuantity, lExtendedprice;    
@@ -17,6 +19,7 @@ namespace tendb
     double Query6();
     void Query6Chunk(int64_t chunkNum, double& revenue);
 
+    static std::shared_ptr<TpchDemo> tpchDemo_;
     std::shared_ptr<TCache> tCache_;
     std::shared_ptr<TTable> lineitem_;
 
@@ -29,8 +32,3 @@ namespace tendb
   };
 
 };
-// These functions are exposed for external python like bindings
-extern "C"
-{
-  double Tpch_Query6(tendb::TCache *tcache);
-}
