@@ -59,9 +59,20 @@ int main(int argc, char** argv) {
   LOG(INFO) << stopWatch.ElapsedInMicroseconds() << "us";
 
   stopWatch.Start();
-  bool mapResult = tpchDemo->MakeMaps();
+  // TODO lineitem map is not needed, check coredump
+  for (int32_t i=0; i<TpchDemo::tableNames.size(); i++)
+  {
+    int result = tCache->MakeMaps(TpchDemo::tableNames[i]);
+    if (result)
+    {
+      LOG(ERROR) << "Failed to create maps for " << TpchDemo::tableNames[i];
+    }
+    else
+    {
+      LOG(INFO) << "Success create maps for " << TpchDemo::tableNames[i];
+    }
+  }
   stopWatch.Stop();
-  LOG(INFO) << (mapResult?"Success":"Failed ") << " Column maps.";
   LOG(INFO) << "TenDB Tensor Creation Time (us)=" << stopWatch.ElapsedInMicroseconds();
   tpchDemo->PrintMaps();
 

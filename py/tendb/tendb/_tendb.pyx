@@ -41,6 +41,12 @@ cdef class CTenDB:
         print ("Added Table=", name)
         return name
 
+    def make_dtensor(self, name):
+        result = self.tcache.MakeMaps(name)
+        if (result):
+            print ("Failed to create data-tensor for ", name)
+        return result
+
     def query6(self):
         cdef:
             shared_ptr[CTpchDemo] sp_tpch_demo
@@ -101,7 +107,6 @@ ORDER BY
         if (NULL == p_result):
             print("Failed to run Query5")
             return q5result
-        print("Result Size=", p_result.size())
         cdef unordered_map[c_string, double].iterator it = p_result.begin()
         while (it != p_result.end()):
             key = deref(it).first

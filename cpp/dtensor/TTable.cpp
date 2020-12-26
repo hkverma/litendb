@@ -67,17 +67,19 @@ void TTable::PrintTable()
     }
   }
   LOG(INFO) << ss.str();
+  google::FlushLogFiles(google::INFO);
 }
 
-bool TTable::MakeMaps(int32_t numCopies)
+// Returns non-zero code if fails to make map
+int TTable::MakeMaps(int32_t numCopies)
 {
   if (nullptr == table_)
   {
-    return false;
+    return 1;
   }
   if (numCopies < 1)
   {
-    return false;
+    return 1;
   }
   numMapCopies_ = numCopies;
   maps_.resize(numCopies);
@@ -97,7 +99,7 @@ bool TTable::MakeMaps(int32_t numCopies)
       maps_[nc][cnum] = maps_[0][cnum]->Copy();
     }
   }
-  return true;
+  return 0;
 }
 
 void TTable::PrintMaps()

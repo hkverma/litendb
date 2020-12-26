@@ -10,7 +10,7 @@
 
 using namespace tendb;
 
-// Tables
+// Tables - lineitem (first entry is fact table), rest are dimensions
 const std::vector<std::string> TpchDemo::tableNames =
   {
     "lineitem",
@@ -222,6 +222,7 @@ double TpchDemo::Query6()
     revenue += rev;
   }
   LOG(INFO) << "Completed Query6 Revenue=" << revenue;
+  google::FlushLogFiles(google::INFO);
   return revenue;
 }
 
@@ -569,28 +570,9 @@ std::shared_ptr<std::unordered_map<std::string, double>> TpchDemo::Query5()
   timer.Stop();
   LOG(INFO) << "Query 5 Elapsed ms=" << timer.ElapsedInMicroseconds()/1000;
   auto result = GetAggrRevenues();
+  google::FlushLogFiles(google::INFO);
   return result;
 
-}
-
-bool TpchDemo::MakeMaps()
-{
-  bool result = true;
-  for (int32_t i=0; i<numTables; i++)
-  {
-    bool curResult = tables_[i]->MakeMaps(numMaps_);
-    if (curResult)
-    {
-      LOG(INFO) << "Success " << tableNames[i];
-      //tables_[i]->PrintMaps();
-    }
-    else
-    {
-      LOG(INFO) << "Fail " << tableNames[i];
-    }
-    result = result && curResult;
-  }
-  return result;
 }
 
 void TpchDemo::PrintSchemas()

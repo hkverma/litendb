@@ -84,6 +84,9 @@ namespace tendb {
     /// Get Table from tableName
     std::shared_ptr<TTable> GetTable(std::string tableName);
 
+    /// Make maps for each dimension table
+    int MakeMaps(std::string tableName);
+
     /// Add table to cache
     std::shared_ptr<TTable> AddTable(std::string name, std::shared_ptr<arrow::Table> table);
 

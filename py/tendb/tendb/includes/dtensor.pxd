@@ -23,6 +23,7 @@ cdef extern from "dtensor.h" namespace "tendb" nogil:
        @staticmethod
        shared_ptr[CTCache] GetInstance()
        c_string GetInfo()
+       int MakeMaps(c_string name)
 
 cdef extern from "TpchDemo.h" namespace "tendb" nogil:
    cdef cppclass CTpchDemo" tendb::TpchDemo":

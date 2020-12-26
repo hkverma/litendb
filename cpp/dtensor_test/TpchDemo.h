@@ -52,9 +52,6 @@ namespace tendb
     // Get Query5 revenue for chunk chunkNum
     void GetQuery5Revenue(int64_t chunkNum, double revenue[], int32_t mapNum);
 
-    // Create TenDB maps
-    bool MakeMaps();
-
     void PrintSchemas();
     void PrintMaps();
 

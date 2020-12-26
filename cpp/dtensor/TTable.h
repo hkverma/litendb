@@ -34,7 +34,7 @@ namespace tendb {
     void PrintTable();
 
     // Inverted maps and min-max zones
-    bool MakeMaps(int32_t numCopies);
+    int MakeMaps(int32_t numCopies);
     void PrintMaps();
     std::shared_ptr<TColumnMap> GetColMap(int mapNum, int colNum);
     std::shared_ptr<arrow::Table> GetTable();

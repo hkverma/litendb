@@ -30,10 +30,22 @@ std::string TCache::GetInfo()
 {
   std::stringstream ss;
   ss << "[";
-  for (auto tableId : cacheIds_) {
+  for (auto tableId : cacheIds_)
+  {
     ss << tableId.first << ",";
+    auto it = tables_.find(tableId.second);
+    if (it == tables_.end())
+    {
+      LOG(ERROR) << tableId.first << ": No TTable";
+      continue;
+    }
+    LOG(INFO) << "Found table=" << tableId.first;
+    auto ttable = it->second;
+    //ttable->PrintSchema();
+    //ttable->PrintTable();
   }
   ss << "]";
+  google::FlushLogFiles(google::INFO);  
   return ss.str();
 }
 
@@ -108,7 +120,23 @@ std::shared_ptr<TTable> TCache::AddTable(std::string tableName,
   tables_[cacheId] = ttable;
   cacheIds_[tableName] = cacheId;
   return ttable;
-}  
+}
+
+int TCache::MakeMaps(std::string tableName)
+{
+  auto ttable = GetTable(tableName);
+  if (nullptr == ttable)
+  {
+    LOG(ERROR) << "Failed to create data-tensor. Did not find in cache table " << tableName;
+    return 1;
+  }
+  int result = ttable->MakeMaps(1); // TODO are numCopies needed
+  if (result)
+  {
+    LOG(ERROR) << "Found table " << tableName << " but failed to create data tensor";
+  }
+  return result;
+}
 
 // Read CSV file into an arrow table
 std::shared_ptr<arrow::Table> TCache::ReadCsv
