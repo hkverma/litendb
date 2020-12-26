@@ -21,7 +21,9 @@
 //   One column chunk stores numComponents of a single column of TenDB
 //   Arrow in memory, persistent in parquet format
 //
-
+// TODO
+//   Add and remove tables, clear cache commands needed
+//
 #include <unordered_map>
 #include <boost/uuid/uuid.hpp>
 #include <boost/functional/hash.hpp>

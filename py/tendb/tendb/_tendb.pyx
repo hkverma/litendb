@@ -8,6 +8,74 @@ from pyarrow.includes.libarrow cimport *
 from pyarrow.lib cimport *
 from tendb.includes.dtensor cimport *
 
+from graphviz import Digraph
+from graphviz import Source
+
+def q6digraph():
+    q6 = Digraph(comment='Tpch Query6')
+    q6.graph_attr['rankdir'] = 'LR'
+    q6.graph_attr['bgcolor'] = 'whitesmoke'
+    q6.edge_attr.update(arrowhead='vee',arrowsize='1')
+    q6.node_attr.update(shape='rect',fontname='Arial', fontcolor='blue', fontsize='12')
+    q6.node('A','Scan\n(lineitem)')
+    q6.node('B','Filter\n(lineitem)')
+    q6.node('C','Aggregate\n(lineitem)')
+    q6.edges(['AB','BC'])
+    return q6
+
+def q5digraph():
+    q5 = Digraph(comment='Tpch Query5')
+    q5.graph_attr['rankdir'] = 'LR'
+    q5.graph_attr['bgcolor'] = 'whitesmoke'
+    q5.edge_attr.update(arrowhead='vee',arrowsize='1')
+    q5.node_attr.update(shape='rect',fontname='Arial', fontcolor='blue', fontsize='11')
+    q5.node('A','Scan\n(lineitem)')
+    q5.node('B','Join\n(lineitem,orders)')
+    q5.node('C','Filter\n(orders)')
+    q5.node('D','Join\n(lineitem,supplier)')
+    q5.node('E','Join\n(supplier,nation)')
+    q5.node('F','Join\n(nation,region)')
+    q5.node('G','GroupBy Aggr\n(lineitem)')
+    q5.edges(['AB','BC','CD','DE','EF','FG'])
+
+q6diggraphcmd = """
+digraph Q6{
+  rankdir=LR; bgcolor=whitesmoke;
+  {
+    edge [arrowhead=vee, arrowsize=1]
+    node [shape=rect, fontname=Arial, fontcolor=blue, fontsize=12]
+    0 [label="Scan\n(lineitem)"]
+    1 [label="Filter\n(lineitem)"]
+    2 [label="Aggregate\n(lineitem)"]
+    0 -> 1
+    1 -> 2
+  }
+}
+"""
+
+q5diggraphcmd = """
+digraph Q5{
+  rankdir=LR; bgcolor=whitesmoke;
+  {
+    edge [arrowhead=vee, arrowsize=1]
+    node [shape=rect, fontname=Arial, fontcolor=blue, fontsize=12]
+    0 [label="Scan\n(lineitem)"]
+    1 [label="Join\n(lineitem,orders)"]
+    2 [label="Filter\n(orders)"]
+    3 [label="Join\n(lineitem,supplier)"]
+    4 [label="Join\n(supplier,nation)"]
+    5 [label="Join\n(nation,region)"]
+    6 [label="GroupBy Aggr\n(lineitem)"]
+    0 -> 1
+    1 -> 2
+    2 -> 3
+    3 -> 4
+    4 -> 5
+    5 -> 6
+  }
+}
+"""
+
 cdef class CTenDB:
     def __cinit__(self):
         self.tcache = NULL
@@ -65,7 +133,10 @@ WHERE
   AND L_QUANTITY < 25;
 """)
         result = p_tpch_demo.Query6()
-        return result
+        print("Revenue=",result);
+        print("")
+        q6di = Source(q6diggraphcmd, filename="_temp.gv", format="png")
+        return q6di
 
     def query5(self):
         cdef:
@@ -114,7 +185,9 @@ ORDER BY
             q5result[key] = value
             print(key,"=",value)
             postincrement(it)
-        return q5result
+        print("")
+        q5di = Source(q5diggraphcmd, filename="_temp.gv", format="png")
+        return q5di
     
     @property
     def version(self):
