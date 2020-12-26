@@ -92,6 +92,7 @@ cdef class CTenDB:
     def info(self):
         cdef:
            c_string cache_info
+        print ("Workers=6")
         cache_info = self.tcache.GetInfo()
         return cache_info
     
