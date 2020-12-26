@@ -584,9 +584,9 @@ void TpchDemo::PrintSchemas()
   }
 }
 
-void TpchDemo::PrintMaps()
+void TpchDemo::PrintMaps(int startAt)
 {
-  for (int32_t i=0; i<numTables; i++)
+  for (int32_t i=startAt; i<numTables; i++)
   {
     LOG(INFO) << "Table " << tableNames[i];
     tables_[i]->PrintMaps();

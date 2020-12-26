@@ -2,10 +2,11 @@
 #include <cstdint>
 #include <iostream>
 #include <vector>
+#include <filesystem>
 
-#include "common.h"
-#include "dtensor.h"
-#include "TpchDemo.h"
+#include <common.h>
+#include <dtensor.h>
+#include <TpchDemo.h>
 
 #include <tbb/tbb.h>
 
@@ -29,9 +30,13 @@ int main(int argc, char** argv) {
   arrow::csv::ParseOptions parseOptions = arrow::csv::ParseOptions::Defaults();
   parseOptions.delimiter = '|';
   arrow::csv::ConvertOptions convertOptions = arrow::csv::ConvertOptions::Defaults();
+
+  // Check paths here
   for (int32_t i=0; i<TpchDemo::tableNames.size(); i++)
   {
-    std::string fileName = tpchDir + TpchDemo::tableNames[i] + ".tbl";
+    std::filesystem::path fileName = tpchDir;
+    std::string tableName = TpchDemo::tableNames[i] + ".tbl";
+    fileName /= tableName;
     auto ttable = tCache->ReadCsv(TpchDemo::tableNames[i], fileName,
                                   readOptions, parseOptions, convertOptions);
     //ttable->Print();
@@ -45,36 +50,49 @@ int main(int argc, char** argv) {
 
 
   // Run Query6
+  auto execQuery6 = [&]()
+  {
+    StopWatch stopWatch;
+    stopWatch.Start();
+    double result = tpchDemo->Query6Serial();
+    stopWatch.Stop();
+    LOG(INFO) << "Query6 Revenue=" << result;
+    LOG(INFO) << stopWatch.ElapsedInMicroseconds() << "us";
+
+    stopWatch.Start();
+    result = tpchDemo->Query6();
+    stopWatch.Stop();
+    LOG(INFO) << "Query6 Revenue=" << result;
+    LOG(INFO) << stopWatch.ElapsedInMicroseconds() << "us";
+  };
+  if (nullptr == tpchDemo->tables_[tpchDemo->lineitem])
+  {
+    LOG(ERROR) << "No lineitem table to run query 6";
+  }
+  else
+  {
+    execQuery6();
+  }
+
+  // Make Maps except for lineitem
   StopWatch stopWatch;
   stopWatch.Start();
-  double result = tpchDemo->Query6Serial();
-  stopWatch.Stop();
-  LOG(INFO) << "Query6 Revenue=" << result;
-  LOG(INFO) << stopWatch.ElapsedInMicroseconds() << "us";
-
-  stopWatch.Start();
-  result = tpchDemo->Query6();
-  stopWatch.Stop();
-  LOG(INFO) << "Query6 Revenue=" << result;
-  LOG(INFO) << stopWatch.ElapsedInMicroseconds() << "us";
-
-  stopWatch.Start();
-  // TODO lineitem map is not needed, check coredump
-  for (int32_t i=0; i<TpchDemo::tableNames.size(); i++)
+  for (int32_t i=1; i<TpchDemo::tableNames.size(); i++)
   {
-    int result = tCache->MakeMaps(TpchDemo::tableNames[i]);
+    auto tableName = TpchDemo::tableNames[i];
+    int result = tCache->MakeMaps(tableName);
     if (result)
     {
-      LOG(ERROR) << "Failed to create maps for " << TpchDemo::tableNames[i];
+      LOG(ERROR) << "Failed to create maps for " << tableName;
     }
     else
     {
-      LOG(INFO) << "Success create maps for " << TpchDemo::tableNames[i];
+      LOG(INFO) << "Success create maps for " << tableName;
     }
   }
   stopWatch.Stop();
   LOG(INFO) << "TenDB Tensor Creation Time (us)=" << stopWatch.ElapsedInMicroseconds();
-  tpchDemo->PrintMaps();
+  tpchDemo->PrintMaps(tpchDemo->customer);
 
   auto printRevenue = [&](std::shared_ptr<std::unordered_map<std::string, double>> q5revs) -> void {
     LOG(INFO) << "Query5 Revenue=";

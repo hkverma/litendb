@@ -53,7 +53,7 @@ namespace tendb
     void GetQuery5Revenue(int64_t chunkNum, double revenue[], int32_t mapNum);
 
     void PrintSchemas();
-    void PrintMaps();
+    void PrintMaps(int startAt=lineitem);
 
     std::vector<std::shared_ptr<TTable>> tables_;
     std::shared_ptr<TCache> tCache_;

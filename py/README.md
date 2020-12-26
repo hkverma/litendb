@@ -77,8 +77,7 @@ cmake --build . --config _tendb
 
 #### setup.py
 Run setup.py to check for build
-TODO - Do query5 debug using cython. It currently core dumps.
-       Clean notebooks. Reproduce on Azure web.
+TODO - Clean notebooks. Reproduce on Azure web.
        Draw query plan, print query and result for each query.
        
 ```
