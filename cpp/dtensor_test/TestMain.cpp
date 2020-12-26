@@ -37,7 +37,9 @@ int main(int argc, char** argv) {
     //ttable->Print();
   }
   // tpchDemo->PrintSchemas();
-
+  std::string cacheInfo = tCache->GetInfo();
+  LOG(INFO) << "Cache=" << cacheInfo;
+  
   // tpchDemo will probe cache to get all the tables
   shared_ptr<TpchDemo> tpchDemo = TpchDemo::GetInstance(tCache);
 
@@ -63,7 +65,7 @@ int main(int argc, char** argv) {
   LOG(INFO) << "TenDB Tensor Creation Time (us)=" << stopWatch.ElapsedInMicroseconds();
   tpchDemo->PrintMaps();
 
-  auto printRevenue = [&](std::map<std::string, double>& q5revs) -> void {
+  auto printRevenue = [&](std::unordered_map<std::string, double>& q5revs) -> void {
     LOG(INFO) << "Query5 Revenue=";
     for (auto nrev: q5revs) {
       LOG(INFO) << nrev.first << "=" << nrev.second;

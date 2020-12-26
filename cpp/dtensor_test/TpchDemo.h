@@ -47,8 +47,8 @@ namespace tendb
     void GetQuery6Revenue(int64_t chunkNum, double& revenue);
 
     // Run Query5
-    std::map<std::string, double> Query5();
-    std::map<std::string, double> Query5Serial();
+    std::unordered_map<std::string, double> Query5();
+    std::unordered_map<std::string, double> Query5Serial();
     // Get Query5 revenue for chunk chunkNum
     void GetQuery5Revenue(int64_t chunkNum, double revenue[], int32_t mapNum);
 
@@ -105,7 +105,7 @@ namespace tendb
     // Query5 revenues
     double q5revenues[25];
     void ClearQ5Revenues();
-    std::map<std::string, double> GetAggrRevenues();
+    std::unordered_map<std::string, double> GetAggrRevenues();
     // Utility functions
     void InitTpchTables();
   };

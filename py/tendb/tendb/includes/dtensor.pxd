@@ -22,9 +22,11 @@ cdef extern from "dtensor.h" namespace "tendb" nogil:
        shared_ptr[CTTable] AddTable(c_string name, shared_ptr[CTable] table)
        @staticmethod
        shared_ptr[CTCache] GetInstance()
+       c_string GetInfo()
 
 cdef extern from "TpchDemo.h" namespace "tendb" nogil:
    cdef cppclass CTpchDemo" tendb::TpchDemo":
        @staticmethod
        shared_ptr[CTpchDemo] GetInstance(shared_ptr[CTCache] tCache)
        double Query6()
+       unordered_map[c_string, double] Query5()

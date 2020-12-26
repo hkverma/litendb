@@ -26,6 +26,17 @@ std::shared_ptr<TCache> TCache::GetInstance()
   return tCache_;
 }
 
+std::string TCache::GetInfo()
+{
+  std::stringstream ss;
+  ss << "[";
+  for (auto tableId : cacheIds_) {
+    ss << tableId.first << ",";
+  }
+  ss << "]";
+  return ss.str();
+}
+
 /// Read csv file in a new table tableName. tableName should be unique
 std::shared_ptr<TTable> TCache::ReadCsv
 (std::string tableName,

@@ -233,9 +233,9 @@ inline void TpchDemo::ClearQ5Revenues()
   }
 }
 
-inline std::map<std::string, double> TpchDemo::GetAggrRevenues()
+inline std::unordered_map<std::string, double> TpchDemo::GetAggrRevenues()
 {
-  std::map<std::string, double> result;
+  std::unordered_map<std::string, double> result;
   for (int i=0;i<numNations;i++)
   {
     if (q5revenues[i]>0) {
@@ -272,14 +272,14 @@ order by
 	revenue desc;
 limit -1;
 */
-std::map<std::string, double> TpchDemo::Query5Serial()
+std::unordered_map<std::string, double> TpchDemo::Query5Serial()
 {
   if (nullptr == tables_[lineitem] || nullptr == tables_[supplier] ||
       nullptr == tables_[orders] || nullptr == tables_[customer] ||
       nullptr == tables_[nation] || nullptr == tables_[region])
   {
     LOG(ERROR) <<  "No valid table to run Query5" ;
-    return std::map<std::string, double>();
+    return std::unordered_map<std::string, double>();
   }
 
   TColumnIterator<double, arrow::DoubleArray> lDiscountIter(lDiscount);
@@ -287,7 +287,7 @@ std::map<std::string, double> TpchDemo::Query5Serial()
   TColumnIterator<int64_t, arrow::Int64Array> lOrderkeyIter(lOrderkey);
   TColumnIterator<int64_t, arrow::Int64Array> lSuppkeyIter(lSuppkey);
 
-  std::map<std::string, double> q5result;
+  std::unordered_map<std::string, double> q5result;
 
   int64_t length = lDiscount->length();
   if (length != lExtendedprice->length())
@@ -514,14 +514,14 @@ void TpchDemo::GetQuery5Revenue(int64_t chunkNum, double revenue[], int32_t mapN
 
 }
 
-std::map<std::string, double> TpchDemo::Query5()
+std::unordered_map<std::string, double> TpchDemo::Query5()
 {
   if (nullptr == tables_[lineitem] || nullptr == tables_[supplier] ||
       nullptr == tables_[orders] || nullptr == tables_[customer] ||
       nullptr == tables_[nation] || nullptr == tables_[region])
   {
     LOG(ERROR) <<  "No valid table to run Query5" ;
-    return std::map<std::string, double>();
+    return std::unordered_map<std::string, double>();
   }
 
   int64_t numChunks = lExtendedprice->num_chunks();
