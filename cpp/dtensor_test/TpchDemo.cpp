@@ -221,6 +221,7 @@ double TpchDemo::Query6()
   {
     revenue += rev;
   }
+  LOG(INFO) << "Completed Query6 Revenue=" << revenue;
   return revenue;
 }
 
@@ -556,7 +557,7 @@ std::shared_ptr<std::unordered_map<std::string, double>> TpchDemo::Query5()
   }
   if (pnum > 0)
     tg.wait();
-
+  
   for (int i=0; i<numChunks; i++)
   {
     for (int j=0; j<25; j++)
