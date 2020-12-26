@@ -65,10 +65,10 @@ int main(int argc, char** argv) {
   LOG(INFO) << "TenDB Tensor Creation Time (us)=" << stopWatch.ElapsedInMicroseconds();
   tpchDemo->PrintMaps();
 
-  auto printRevenue = [&](std::unordered_map<std::string, double>& q5revs) -> void {
+  auto printRevenue = [&](std::shared_ptr<std::unordered_map<std::string, double>> q5revs) -> void {
     LOG(INFO) << "Query5 Revenue=";
-    for (auto nrev: q5revs) {
-      LOG(INFO) << nrev.first << "=" << nrev.second;
+    for (auto it=q5revs->begin(); it!=q5revs->end(); it++) {
+      LOG(INFO) << it->first << "=" << it->second;
     }
   };
 

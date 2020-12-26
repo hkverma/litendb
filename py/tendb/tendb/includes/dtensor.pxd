@@ -29,4 +29,4 @@ cdef extern from "TpchDemo.h" namespace "tendb" nogil:
        @staticmethod
        shared_ptr[CTpchDemo] GetInstance(shared_ptr[CTCache] tCache)
        double Query6()
-       unordered_map[c_string, double] Query5()
+       shared_ptr[unordered_map[c_string, double]] Query5()

@@ -233,13 +233,14 @@ inline void TpchDemo::ClearQ5Revenues()
   }
 }
 
-inline std::unordered_map<std::string, double> TpchDemo::GetAggrRevenues()
+inline std::shared_ptr<std::unordered_map<std::string, double>> TpchDemo::GetAggrRevenues()
 {
-  std::unordered_map<std::string, double> result;
+  std::shared_ptr<std::unordered_map<std::string, double>> result =
+    std::make_shared<std::unordered_map<std::string, double>>();
   for (int i=0;i<numNations;i++)
   {
     if (q5revenues[i]>0) {
-      result[nations[i]] = q5revenues[i];
+      result->insert(std::make_pair(nations[i], q5revenues[i]));
     }
   }
   return (move(result));
@@ -272,14 +273,14 @@ order by
 	revenue desc;
 limit -1;
 */
-std::unordered_map<std::string, double> TpchDemo::Query5Serial()
+std::shared_ptr<std::unordered_map<std::string, double>> TpchDemo::Query5Serial()
 {
   if (nullptr == tables_[lineitem] || nullptr == tables_[supplier] ||
       nullptr == tables_[orders] || nullptr == tables_[customer] ||
       nullptr == tables_[nation] || nullptr == tables_[region])
   {
     LOG(ERROR) <<  "No valid table to run Query5" ;
-    return std::unordered_map<std::string, double>();
+    return nullptr;
   }
 
   TColumnIterator<double, arrow::DoubleArray> lDiscountIter(lDiscount);
@@ -287,13 +288,11 @@ std::unordered_map<std::string, double> TpchDemo::Query5Serial()
   TColumnIterator<int64_t, arrow::Int64Array> lOrderkeyIter(lOrderkey);
   TColumnIterator<int64_t, arrow::Int64Array> lSuppkeyIter(lSuppkey);
 
-  std::unordered_map<std::string, double> q5result;
-
   int64_t length = lDiscount->length();
   if (length != lExtendedprice->length())
   {
     LOG(ERROR) << "Length should be the same";
-    return q5result;
+    return nullptr;
   }
 
   ClearQ5Revenues();
@@ -434,8 +433,8 @@ std::unordered_map<std::string, double> TpchDemo::Query5Serial()
 
   timer.Stop();
   LOG(INFO) << "Query 5 Elapsed ms=" << timer.ElapsedInMicroseconds()/1000;
-  q5result = GetAggrRevenues();
-  return (move(q5result));
+  auto q5result = GetAggrRevenues();
+  return q5result;
 }
 
 void TpchDemo::GetQuery5Revenue(int64_t chunkNum, double revenue[], int32_t mapNum)
@@ -514,14 +513,14 @@ void TpchDemo::GetQuery5Revenue(int64_t chunkNum, double revenue[], int32_t mapN
 
 }
 
-std::unordered_map<std::string, double> TpchDemo::Query5()
+std::shared_ptr<std::unordered_map<std::string, double>> TpchDemo::Query5()
 {
   if (nullptr == tables_[lineitem] || nullptr == tables_[supplier] ||
       nullptr == tables_[orders] || nullptr == tables_[customer] ||
       nullptr == tables_[nation] || nullptr == tables_[region])
   {
     LOG(ERROR) <<  "No valid table to run Query5" ;
-    return std::unordered_map<std::string, double>();
+    return nullptr;
   }
 
   int64_t numChunks = lExtendedprice->num_chunks();
@@ -569,7 +568,7 @@ std::unordered_map<std::string, double> TpchDemo::Query5()
   timer.Stop();
   LOG(INFO) << "Query 5 Elapsed ms=" << timer.ElapsedInMicroseconds()/1000;
   auto result = GetAggrRevenues();
-  return (move(result));
+  return result;
 
 }
 

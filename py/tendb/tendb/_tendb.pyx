@@ -3,7 +3,7 @@
 # cython: embedsignature = True
 # cython: language_level = 3
 
-from cython.operator cimport dereference as deref
+from cython.operator cimport dereference as deref, postincrement
 from pyarrow.includes.libarrow cimport *
 from pyarrow.lib cimport *
 from tendb.includes.dtensor cimport *
@@ -65,7 +65,8 @@ WHERE
         cdef:
             shared_ptr[CTpchDemo] sp_tpch_demo
             CTpchDemo* p_tpch_demo
-            unordered_map[c_string, double] result
+            shared_ptr[unordered_map[c_string, double]] sp_result
+            unordered_map[c_string, double]* p_result
         sp_tpch_demo = CTpchDemo.GetInstance(self.sp_tcache)
         p_tpch_demo = sp_tpch_demo.get()
         print (""" 
@@ -94,14 +95,21 @@ GROUP BY
 ORDER BY
 	REVENUE DESC;
 """)
-        result = p_tpch_demo.Query5()
-        cdef int size = result.size()
-        print("Res",result,result.size())
-        q5rev = { }
-        for i in range(size):
-            print ("Res=",result[i,0],result[i,1])
-            q5rev[result[i,0]] = result[i,1]
-        return q5rev
+        sp_result = p_tpch_demo.Query5()
+        p_result = sp_result.get()
+        q5result = { }        
+        if (NULL == p_result):
+            print("Failed to run Query5")
+            return q5result
+        print("Result Size=", p_result.size())
+        cdef unordered_map[c_string, double].iterator it = p_result.begin()
+        while (it != p_result.end()):
+            key = deref(it).first
+            value = deref(it).second
+            q5result[key] = value
+            print(key,"=",value)
+            postincrement(it)
+        return q5result
     
     @property
     def version(self):
