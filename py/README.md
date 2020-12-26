@@ -77,7 +77,10 @@ cmake --build . --config _tendb
 
 #### setup.py
 Run setup.py to check for build
-TODO - Fix Query6 export. Name is getting mangled between cython and C++
+TODO - Check Q6, Q5 results on notebook. Measure and clean. Set numWorkers.
+       Clean notebooks. Reproduce on Azure web.
+       Draw query plan, print query and result for each query.
+       
 ```
 python setup.py build
 ```

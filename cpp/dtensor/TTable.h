@@ -30,11 +30,6 @@ namespace tendb {
     TTable(std::string& tableName) : name_(tableName), table_(nullptr), schema_(nullptr) { }  
     TTable(std::string name, std::shared_ptr<arrow::Table> table);
     
-    // read csv File csvFileName and add it to table_
-    bool ReadCsv(std::string csvFileName,
-                 const arrow::csv::ReadOptions& readOptions,
-                 const arrow::csv::ParseOptions& parseOptions,
-                 const arrow::csv::ConvertOptions& convertOptions);
     void PrintSchema();
     void PrintTable();
 

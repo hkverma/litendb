@@ -10,8 +10,7 @@ namespace tendb
   public:
 
     static std::shared_ptr<TpchDemo> GetInstance(std::shared_ptr<TCache> tCache);
-    TpchDemo(std::shared_ptr<TCache> tCache) :
-      tCache_(tCache) { }
+    TpchDemo(std::shared_ptr<TCache> tCache);
 
     // TPCH table enums
     enum {
@@ -23,16 +22,7 @@ namespace tendb
       region=5,
       numTables=6
     };
-
-    std::vector<std::string> tableNames =
-      {
-        "lineitem",
-        "customer",
-        "orders",
-        "supplier",
-        "nation",
-        "region"
-      };
+    static const std::vector<std::string> tableNames;
 
     // Table entries
     const static int32_t c_custkey=0, c_nationkey=3;
@@ -116,7 +106,8 @@ namespace tendb
     double q5revenues[25];
     void ClearQ5Revenues();
     std::map<std::string, double> GetAggrRevenues();
-
+    // Utility functions
+    void InitTpchTables();
   };
 
 };

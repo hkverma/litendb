@@ -68,6 +68,13 @@ namespace tendb {
        const arrow::csv::ReadOptions& read_options = arrow::csv::ReadOptions::Defaults(),
        const arrow::csv::ParseOptions& parse_options = arrow::csv::ParseOptions::Defaults(),
        const arrow::csv::ConvertOptions& convert_options = arrow::csv::ConvertOptions::Defaults());
+
+    /// Read csv file in an arrow table
+    std::shared_ptr<arrow::Table> ReadCsv
+      (std::string csvFileName,
+       const arrow::csv::ReadOptions& readOptions,
+       const arrow::csv::ParseOptions& parseOptions,
+       const arrow::csv::ConvertOptions& convertOptions);
     
     /// Get Table from Id
     std::shared_ptr<TTable> GetTable(boost::uuids::uuid id);
@@ -75,7 +82,6 @@ namespace tendb {
     std::shared_ptr<TTable> GetTable(std::string tableName);
 
     /// Add table to cache
-    int AddTable(std::shared_ptr<TTable> ttable);
     std::shared_ptr<TTable> AddTable(std::string name, std::shared_ptr<arrow::Table> table);
 
   private:
@@ -96,11 +102,3 @@ namespace tendb {
   };
 
 };
-
-// These functions are exposed for external python like bindings
-extern "C"
-{
-  tendb::TCache* TCache_GetInstance();
-  int TCache_AddTable(tendb::TCache *tcache, char* name, void* table);
-}
-

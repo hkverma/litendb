@@ -10,6 +10,17 @@
 
 using namespace tendb;
 
+// Tables
+const std::vector<std::string> TpchDemo::tableNames =
+  {
+    "lineitem",
+    "customer",
+    "orders",
+    "supplier",
+    "nation",
+    "region"
+  };
+
 // Maintain a tpchDemo classs
 std::shared_ptr<TpchDemo> TpchDemo::tpchDemo_ = nullptr;
 std::shared_ptr<TpchDemo> TpchDemo::GetInstance(std::shared_ptr<TCache> tCache)
@@ -18,8 +29,23 @@ std::shared_ptr<TpchDemo> TpchDemo::GetInstance(std::shared_ptr<TCache> tCache)
   {
     tpchDemo_ = std::make_shared<TpchDemo>(tCache);
   }
+  tpchDemo_->InitTpchTables();
   return tpchDemo_;
 }
+
+TpchDemo::TpchDemo(std::shared_ptr<TCache> tCache) :
+      tCache_(tCache) {
+  // constants
+  date19970101Value =
+    SecondsSinceEpoch(boost::gregorian::date(1997, 1, 1), boost::posix_time::seconds(0));
+  date19971231Value =
+    SecondsSinceEpoch(boost::gregorian::date(1997, 12, 31), boost::posix_time::seconds(0));
+  date19950101Value =
+    SecondsSinceEpoch(boost::gregorian::date(1995, 1, 1), boost::posix_time::seconds(0));
+  date19951231Value =
+    SecondsSinceEpoch(boost::gregorian::date(1995, 12, 31), boost::posix_time::seconds(0));
+}
+
 
 void TpchDemo::ReadTables(std::string tpchDir)
 {
@@ -39,24 +65,40 @@ void TpchDemo::ReadTables(std::string tpchDir)
     //tables_[i]->Print();
   }
 
-  // Populate tables
-  lShipdate = tables_[lineitem]->GetTable()->column(l_shipdate);
-  lDiscount = tables_[lineitem]->GetTable()->column(l_discount);
-  lQuantity = tables_[lineitem]->GetTable()->column(l_quantity);
-  lExtendedprice = tables_[lineitem]->GetTable()->column(l_extendedprice);
-  lOrderkey = tables_[lineitem]->GetTable()->column(l_orderkey);
-  lSuppkey = tables_[lineitem]->GetTable()->column(l_suppkey);
+}
 
-  // constants
-  date19970101Value =
-    SecondsSinceEpoch(boost::gregorian::date(1997, 1, 1), boost::posix_time::seconds(0));
-  date19971231Value =
-    SecondsSinceEpoch(boost::gregorian::date(1997, 12, 31), boost::posix_time::seconds(0));
-  date19950101Value =
-    SecondsSinceEpoch(boost::gregorian::date(1995, 1, 1), boost::posix_time::seconds(0));
-  date19951231Value =
-    SecondsSinceEpoch(boost::gregorian::date(1995, 12, 31), boost::posix_time::seconds(0));
+// Do these before running query, table may have changed
+void TpchDemo::InitTpchTables()
+{
+  tables_.resize(numTables);
+  for (int32_t i=0; i<numTables; i++)
+  {
+    auto ttable = tCache_->GetTable(tableNames[i]);
+    if (nullptr == ttable)
+    {
+      LOG(INFO) << "No table " << tableNames[i] << " in cache";
+    }
+    else
+    {
+      LOG(INFO) << "Found table " << tableNames[i] << " in cache";
+    }
+    tables_[i] = ttable;
+  }
 
+  if (nullptr == tables_[lineitem])
+  {
+    LOG(ERROR) << "No lineitem table";
+  }
+  else
+  {
+    // Populate lineitem columns
+    lShipdate = tables_[lineitem]->GetTable()->column(l_shipdate);
+    lDiscount = tables_[lineitem]->GetTable()->column(l_discount);
+    lQuantity = tables_[lineitem]->GetTable()->column(l_quantity);
+    lExtendedprice = tables_[lineitem]->GetTable()->column(l_extendedprice);
+    lOrderkey = tables_[lineitem]->GetTable()->column(l_orderkey);
+    lSuppkey = tables_[lineitem]->GetTable()->column(l_suppkey);
+  }
 }
 
 /*
@@ -72,6 +114,11 @@ where
 */
 double TpchDemo::Query6Serial()
 {
+  if (tables_[lineitem] == nullptr)
+  {
+    LOG(ERROR) <<  "No valid table to run Query6" ;
+    return 0;
+  }
   int shipdateChunkNum=0, discountChunkNum=0, quantityChunkNum=0, extendedpriceChunkNum=0;
   TColumnIterator<int64_t, arrow::Int64Array> shipdateIter(lShipdate);
   TColumnIterator<double, arrow::DoubleArray> discountIter(lDiscount);
@@ -139,12 +186,18 @@ double TpchDemo::Query6()
 {
   int64_t shipdateValue, quantityValue;
   double discountValue, extendedpriceValue;
+  if (tables_[lineitem] == nullptr)
+  {
+    LOG(ERROR) <<  "No valid table to run Query6" ;
+    return 0;
+  }
 
   tbb::task_group tg;
 
   StopWatch timer;
   timer.Start();
 
+  return 1000;
   // for now do a full table scan need to build filtering metadata per column chunk
   int64_t numChunks = lExtendedprice->num_chunks();
   std::vector<double> revenues(lExtendedprice->num_chunks());
@@ -222,6 +275,13 @@ limit -1;
 */
 std::map<std::string, double> TpchDemo::Query5Serial()
 {
+  if (nullptr == tables_[lineitem] || nullptr == tables_[supplier] ||
+      nullptr == tables_[orders] || nullptr == tables_[customer] ||
+      nullptr == tables_[nation] || nullptr == tables_[region])
+  {
+    LOG(ERROR) <<  "No valid table to run Query5" ;
+    return std::map<std::string, double>();
+  }
 
   TColumnIterator<double, arrow::DoubleArray> lDiscountIter(lDiscount);
   TColumnIterator<double, arrow::DoubleArray> lExtendedpriceIter(lExtendedprice);
@@ -457,6 +517,14 @@ void TpchDemo::GetQuery5Revenue(int64_t chunkNum, double revenue[], int32_t mapN
 
 std::map<std::string, double> TpchDemo::Query5()
 {
+  if (nullptr == tables_[lineitem] || nullptr == tables_[supplier] ||
+      nullptr == tables_[orders] || nullptr == tables_[customer] ||
+      nullptr == tables_[nation] || nullptr == tables_[region])
+  {
+    LOG(ERROR) <<  "No valid table to run Query5" ;
+    return std::map<std::string, double>();
+  }
+
   int64_t numChunks = lExtendedprice->num_chunks();
 
   // revenue for each chunk initialize

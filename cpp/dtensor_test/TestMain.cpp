@@ -18,15 +18,29 @@ int main(int argc, char** argv) {
     std::cout << "Usage: exec file_name" << std::endl;
     return EXIT_SUCCESS;
   }
-  std::string tpchDataDir = argv[1];
+
+  std::string tpchDir = argv[1];
 
   // Get Cache and Demo objects
   std::shared_ptr<TCache>  tCache = TCache::GetInstance();
+  // Read tpch tables into cache
+  arrow::csv::ReadOptions readOptions = arrow::csv::ReadOptions::Defaults();
+  readOptions.block_size = 1 << 20; // 1MB
+  arrow::csv::ParseOptions parseOptions = arrow::csv::ParseOptions::Defaults();
+  parseOptions.delimiter = '|';
+  arrow::csv::ConvertOptions convertOptions = arrow::csv::ConvertOptions::Defaults();
+  for (int32_t i=0; i<TpchDemo::tableNames.size(); i++)
+  {
+    std::string fileName = tpchDir + TpchDemo::tableNames[i] + ".tbl";
+    auto ttable = tCache->ReadCsv(TpchDemo::tableNames[i], fileName,
+                                  readOptions, parseOptions, convertOptions);
+    //ttable->Print();
+  }
+  // tpchDemo->PrintSchemas();
+
+  // tpchDemo will probe cache to get all the tables
   shared_ptr<TpchDemo> tpchDemo = TpchDemo::GetInstance(tCache);
 
-  // Read tpch tables
-  tpchDemo->ReadTables(tpchDataDir);
-  tpchDemo->PrintSchemas();
 
   // Run Query6
   StopWatch stopWatch;
