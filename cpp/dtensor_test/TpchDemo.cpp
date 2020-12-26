@@ -197,7 +197,6 @@ double TpchDemo::Query6()
   StopWatch timer;
   timer.Start();
 
-  return 1000;
   // for now do a full table scan need to build filtering metadata per column chunk
   int64_t numChunks = lExtendedprice->num_chunks();
   std::vector<double> revenues(lExtendedprice->num_chunks());
