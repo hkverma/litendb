@@ -65,9 +65,6 @@ $ sbin/stop-slave.sh
 $ sbin/stop-master.sh
 ```
 
-### Jupyter Notebook
-I use conda and create a new env tendb. Use this env and install new environment. 
-
 ### C++ Build Environment
 
 Use C++-17 standard. For compilation, g++/gcc version 9 is used.
@@ -102,6 +99,102 @@ For local machine setup, following environment is used.
 SSL should be installed
 ```
 apt-get install openssl libssl-dev
+```
+### Jupyter Notebook and Python lib Installations
+I use conda and create a new env tendb. Use this env and install new environment.
+
+#### Conda environment
+Install miniconda with python3. Follow instructions from here
+https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html
+Set environement variabel MINICONDA_ROOT_DIR to ~/miniconda3 or other directory here conda was installed.
+```
+MINICONDA_ROOT_DIR="/home/azureuser/miniconda3"
+```
+
+Create a new environment tendb for tenanlytics tests
+```
+conda create --name tendb
+```
+Change env to tendb everytime for tendb work
+```
+conda activate tendb
+```
+#### Install Arrow
+Follow directions from
+https://arrow.apache.org/docs/python/install.html
+Install arrow
+```
+conda install -c conda-forge pyarrow
+```
+#### Install Jupyter
+Install jupyter notebook and then start the notebook
+```
+conda install jupyter
+...
+jupyter notebook
+```
+Open ArrowTutorial from py/notebooks/ and run to check that arrow is ok
+
+#### Install Cython
+Cython is used for C++ bindings and wrappers. Install conda as shown below.
+```
+conda install -c anaconda cython
+```
+For C++ build to pick the correct arrow lib, add following to LD_LIBRARY_PATH
+```
+export LD_LIBRARY_PATH=${MINICONDA_ROOT_DIR}/envs/tendb/lib:${LD_LIBRARY_PATH}
+```
+#### Install graphviz
+TenDB uses graphviz to show query plans.Install using the following commands
+```
+sudo apt install graphviz
+pip install graphviz
+```
+
+#### Other python pacakges
+Install these python packages as well.
+```
+conda install numpy
+```
+
+### Python Setup Builds
+Python setup.py is in py/tendb subdirectory.
+
+Always develop in tendb environment.
+You can check cmake command separately. Not needed but useful if cmake canges are made.
+```
+cmake -DPYTHON_EXECUTABLE=/home/hkverma/miniconda3/envs/tendb/bin/python -DPython3_EXECUTABLE=/home/hkverma/miniconda3/envs/tendb/bin/python  -DCMAKE_BUILD_TYPE=debug /mnt/c/Users/hkver/Documents/dbai/dbaistuff/py/tendb
+cmake --build . --config _tendb
+```
+#### setup.py
+Run setup.py to build from py/tendb directory.
+       
+```
+python setup.py build
+```
+To check for a dist do the following
+```
+python3 setup.py sdist
+```
+Create a wheel (zip file with all the install libs, files etc.) do the following.
+```
+python3 setup.py bdist_wheel
+```
+
+This wheel can be testeted locally by using pip install. Uninstall tendb first if installed erarlier.
+```
+pip uninstall tendb
+..
+pip install dist/tendb-0.0.2-cp39-cp39-linux_x86_64.whl
+```
+Test the code with TenalyticsIntro notebook.
+
+Upload it for pip install commands from testpy repository.
+```
+python3 -m twine upload --repository dist/*
+```
+This package can be installed using conda like.
+```
 ```
 
 ### Boost

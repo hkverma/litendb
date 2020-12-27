@@ -20,7 +20,7 @@ set(module_name ${module})
 link_directories(${TENDB_ROOT_DIR}/cpp/build)
 include_directories(${TENDB_ROOT_DIR}/cpp/dtensor_test ${TENDB_ROOT_DIR}/cpp/dtensor ${TENDB_ROOT_DIR}/cpp/common)
 include_directories(${TENDB_ROOT_DIR}/cpp/external_libs/arrow/arrow/cpp/src)
-include_directories(/home/hkverma/miniconda3/envs/tendb/lib/python3.9/site-packages/numpy/core/include)
+include_directories($ENV{MINICONDA_ROOT_DIR}/envs/tendb/lib/python3.9/site-packages/numpy/core/include)
 set(LINK_LIBS tendb)
 
 set(module_SRC tendb/${module}.pyx)
