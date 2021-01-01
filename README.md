@@ -2,7 +2,7 @@
 
 ## What is this repository for?
 
-Tenalytics DB data structure
+Tenalytics Information
 * [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
 
 ## How do I get set up?
@@ -194,10 +194,14 @@ Upload it for pip install commands from testpy repository.
 python3 -m twine upload --repository dist/*
 ```
 This package can be installed using conda like.
-```
+```bash
+python3 -m pip install --index-url https://test.pypi.org/simple/ --no-deps tendb-pkg-tendb
 ```
 
-### Boost
+### Submodule packages
+These are the packages in external_libs that Tenalytics uses.
+
+#### Boost
 
 Download 1.73.0 from https://www.boost.org/users/download to the following directory ${TENDB_ROOT_DIR}/cpp/external_libs/boost
 
@@ -214,7 +218,7 @@ Download 1.73.0 from https://www.boost.org/users/download to the following direc
 
 POCO is network library for C++ See here https://pocoproject.org/ for more information.
 
-It is built as a submodule in tendb. Follow these steps to build
+It is built as a submodule in tendb. Follow these steps to build. Tenalytics does not currently use Poco library.
 
 ```
 $ cd ${TENDB_ROOT_DIR}/cpp/external_libs
@@ -640,23 +644,19 @@ Query 5 - 3.2s (numMaps = 6 or 3 or 1)
 Query 6 - 32ms
 Query 5 - 2.4s (numMaps = 6 or 3 or 1)
 
+12/23/2020
+Completed end-2-end demo with Arrow and Tenalytics demo.
+
+#### Discoveries
+* Broadcast of inverse maps (Can we reduce 3.2 sec further for 6 parallel threads). Broadcast on same VM should have no impact. It is only across nodes that this matters.
+
 #### Tasks TODO
 
-* Do broadcast of inverse maps (Can we reduce 3.2 sec further for 6 parallel threads). Broadcast on same VM should have no impact. It is only across nodes that this matters.
-
-* Add python bindings to work with Jupyter notebook. Tie it with Arrow and Pandas.
+* Use Ray to add clusters - Use Ray and Object Library for a scaleout demo.
 
 * Add event IDs in the message. Also add context for each user.
 
 * Inverse map - get the arrays where zones exist instead of traversing
-
-* Hash look up into the values
-
-* Query6 and Query5 comparisons with Spark
-
-* Add logging and clean up code
-
-* Multi-threaded and thread-pool implementation analysis
 
 * Use Ray & Dask type clusters with Python bindings for a single VM node 
 
@@ -664,16 +664,7 @@ Query 5 - 2.4s (numMaps = 6 or 3 or 1)
 * CMakefile changes to put binarues in bin
 * DSL - which ML algorithm to encode & which app
 
-*  Read TPCH data and print table
-*  Run Query 6
-* Compare Query 6 against Spark on VM
-*  Do pre-join to create the tables
-*  Put zone-map for column chunks
-
-* Run Query 5
-* Compare Query 5 against Spark on VM
-
-* Write DSLs - groupby scan filter etc.
+* Write DSLs - groupby scan filter etc. using decorator to pipeline these operations
 * Write Query 6 & Query 5 using DSL
 * Do TPCH queries using the DSL using jupyter
 
