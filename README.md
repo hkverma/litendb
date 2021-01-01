@@ -158,20 +158,21 @@ sudo apt install graphviz
 ```
 
 #### Check Arrow Installation
-Install arrow
-```
-conda install -c conda-forge pyarrow
-```
 Open ArrowTutorial.ipynb in notebook and run to check that arrow is ok.
 ```
 cd py/notebooks
 jupyter notebook
 ```
 
-#### Check Liten Installation
-TODO
+#### Check Arrow Installation
+Open RayTutorial.ipynb in notebook and run to check that Ray is ok.
+```
+cd py/notebooks
+jupyter notebook
+```
 
-Open ArrowTutorial.ipynb in notebook and run to check that arrow is ok.
+#### Check Liten Installation
+Open LitenIntro.ipynb in notebook and run to check that arrow is ok.
 ```
 cd py/notebooks
 jupyter notebook
