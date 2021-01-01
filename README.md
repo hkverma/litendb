@@ -6,7 +6,9 @@ Tenalytics Information
 * [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
 
 ## How do I get set up?
+
 ### Clone this repo
+
 git clone https://hkv@bitbucket.org/hkv/dbaistuff.git
 
 ### Build Structure Setup
@@ -110,51 +112,69 @@ Set environement variabel MINICONDA_ROOT_DIR to ~/miniconda3 or other directory 
 ```
 MINICONDA_ROOT_DIR="/home/azureuser/miniconda3"
 ```
+Use python 3.8.5 version. Ray needs version 3.8
+```
+conda install python=3.8.5
+```
+Create a new environment liten for tenanlytics tests
+```
+conda create --name liten python=3.8.5
+```
+Change env to liten everytime for work
+```
+conda activate liten
+```
+If needed env can be removed.
+```
+conda env remove --name liten
+```
+Update pip and setuptools. This is typically not needed.
+```
+curl https://bootstrap.pypa.io/get-pip.py | python
+pip install --upgrade setuptools
+```
 
-Create a new environment tendb for tenanlytics tests
-```
-conda create --name tendb
-```
-Change env to tendb everytime for tendb work
-```
-conda activate tendb
-```
-#### Install Arrow
-Follow directions from
-https://arrow.apache.org/docs/python/install.html
-Install arrow
-```
-conda install -c conda-forge pyarrow
-```
 #### Install Jupyter
-Install jupyter notebook and then start the notebook
+Install jupyter notebook and then start the notebook.
 ```
 conda install jupyter
-...
+```
+
+#### Install required packges
+Open InstallPackages.ipynb in notebook and run to install all required packages. Kernel needs to be restarted each time.
+```
+cd py/notebooks
 jupyter notebook
 ```
-Open ArrowTutorial from py/notebooks/ and run to check that arrow is ok
+This would install Ray, Arrow, Pandas, Graphviz, Cython and all the other dependencies.
 
-#### Install Cython
-Cython is used for C++ bindings and wrappers. Install conda as shown below.
-```
-conda install -c anaconda cython
-```
 For C++ build to pick the correct arrow lib, add following to LD_LIBRARY_PATH
 ```
 export LD_LIBRARY_PATH=${MINICONDA_ROOT_DIR}/envs/tendb/lib:${LD_LIBRARY_PATH}
 ```
-#### Install graphviz
-TenDB uses graphviz to show query plans.Install using the following commands
+TenDB uses graphviz to show query plans. It is installed using sudo command.
 ```
 sudo apt install graphviz
-pip install graphviz
 ```
 
-#### Other python pacakges
-Install these python packages as well.
+#### Check Arrow Installation
+Install arrow
 ```
-conda install numpy
+conda install -c conda-forge pyarrow
+```
+Open ArrowTutorial.ipynb in notebook and run to check that arrow is ok.
+```
+cd py/notebooks
+jupyter notebook
+```
+
+#### Check Liten Installation
+TODO
+
+Open ArrowTutorial.ipynb in notebook and run to check that arrow is ok.
+```
+cd py/notebooks
+jupyter notebook
 ```
 
 ### Python Setup Builds
