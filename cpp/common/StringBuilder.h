@@ -2,7 +2,7 @@
 
 #include <sstream>
 
-namespace tendb
+namespace liten
 {
   
   template <typename Head>

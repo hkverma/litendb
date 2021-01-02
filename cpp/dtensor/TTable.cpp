@@ -8,7 +8,7 @@
 #include "TTable.h"
 
 
-using namespace tendb;
+using namespace liten;
 
 TTable::TTable(std::string name, std::shared_ptr<arrow::Table> table) : table_(table)
 {

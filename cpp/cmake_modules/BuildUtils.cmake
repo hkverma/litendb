@@ -4,10 +4,10 @@
 #
 message(STATUS "Building using CMake version: ${CMAKE_VERSION}")
 #
-# Set TenDB Version
+# Set Liten Version
 #
-set(TENDB_VERSION "0.0.1")
-string(REGEX MATCH "^[0-9]+\\.[0-9]+\\.[0-9]+" TENDB_BASE_VERSION "${TENDB_VERSION}")
+set(LITEN_VERSION "0.0.1")
+string(REGEX MATCH "^[0-9]+\\.[0-9]+\\.[0-9]+" LITEN_BASE_VERSION "${LITEN_VERSION}")
 #
 # Select C++17
 #
@@ -24,24 +24,24 @@ endif()
 #
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 #
-# TenDB RootDir
+# Liten RootDir
 #
-set (TENDB_ROOT_DIR $ENV{TENDB_ROOT_DIR})
+set (LITEN_ROOT_DIR $ENV{LITEN_ROOT_DIR})
 
 # Bin directories
 #
-set(TENDB_BIN ${TENDB_ROOT_DIR}/build/bin)
+set(LITEN_BIN ${LITEN_ROOT_DIR}/build/bin)
 #
 # TBB include directory
 #
-set(TBB_INC_DIR $ENV{TENDB_ROOT_DIR}/cpp/external_libs/tbb/tbb/include)
-set(TBB_LIB_DIR $ENV{TENDB_ROOT_DIR}/cpp/external_libs/tbb/bin)
+set(TBB_INC_DIR $ENV{LITEN_ROOT_DIR}/cpp/external_libs/tbb/tbb/include)
+set(TBB_LIB_DIR $ENV{LITEN_ROOT_DIR}/cpp/external_libs/tbb/bin)
 #
 # Source Code directories
 #
-set(COMMON_SRC  $ENV{TENDB_ROOT_DIR}/cpp/common)
-set(DTENSOR_SRC $ENV{TENDB_ROOT_DIR}/cpp/dtensor)
-set(DTENSOR_TEST_SRC $ENV{TENDB_ROOT_DIR}/cpp/dtensor_test)
+set(COMMON_SRC  $ENV{LITEN_ROOT_DIR}/cpp/common)
+set(DTENSOR_SRC $ENV{LITEN_ROOT_DIR}/cpp/dtensor)
+set(DTENSOR_TEST_SRC $ENV{LITEN_ROOT_DIR}/cpp/dtensor_test)
 #
 # Global include and link directories
 # TODO expand include directories

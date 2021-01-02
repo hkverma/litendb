@@ -75,9 +75,9 @@ Install cmake 3.17 minimum. Download source code & build. Or download the binary
 
 https://cmake.org/download/
 
-Set TENDB_ROOT_DIR to the root of the repository.
+Set LITEN_ROOT_DIR to the root of the repository.
 ```
-$ export TENDB_ROOT_DIR=<root-dir>
+$ export LITEN_ROOT_DIR=<root-dir>
 ```
 
 From the root following directories exist.
@@ -88,7 +88,7 @@ From the root following directories exist.
 Within cpp these directories exist.
 
 * external_libs - All external C++ libs. These include boost, Poco,Apache-arrow
-* Other directories in C++ are tendb specific code.
+* Other directories in C++ are liten specific code.
 
 
 For local machine setup, following environment is used.
@@ -103,7 +103,7 @@ SSL should be installed
 apt-get install openssl libssl-dev
 ```
 ### Jupyter Notebook and Python lib Installations
-I use conda and create a new env tendb. Use this env and install new environment.
+I use conda and create a new env liten. Use this env and install new environment.
 
 #### Conda environment
 Install miniconda with python3. Follow instructions from here
@@ -150,9 +150,9 @@ This would install Ray, Arrow, Pandas, Graphviz, Cython and all the other depend
 
 For C++ build to pick the correct arrow lib, add following to LD_LIBRARY_PATH
 ```
-export LD_LIBRARY_PATH=${MINICONDA_ROOT_DIR}/envs/tendb/lib:${LD_LIBRARY_PATH}
+export LD_LIBRARY_PATH=${MINICONDA_ROOT_DIR}/envs/liten/lib:${LD_LIBRARY_PATH}
 ```
-TenDB uses graphviz to show query plans. It is installed using sudo command.
+Liten uses graphviz to show query plans. It is installed using sudo command.
 ```
 sudo apt install graphviz
 ```
@@ -179,16 +179,16 @@ jupyter notebook
 ```
 
 ### Python Setup Builds
-Python setup.py is in py/tendb subdirectory.
+Python setup.py is in py/liten subdirectory.
 
-Always develop in tendb environment.
+Always develop in liten environment.
 You can check cmake command separately. Not needed but useful if cmake canges are made.
 ```
-cmake -DPYTHON_EXECUTABLE=/home/hkverma/miniconda3/envs/tendb/bin/python -DPython3_EXECUTABLE=/home/hkverma/miniconda3/envs/tendb/bin/python  -DCMAKE_BUILD_TYPE=debug /mnt/c/Users/hkver/Documents/dbai/dbaistuff/py/tendb
-cmake --build . --config _tendb
+cmake -DPYTHON_EXECUTABLE=/home/hkverma/miniconda3/envs/liten/bin/python -DPython3_EXECUTABLE=/home/hkverma/miniconda3/envs/liten/bin/python  -DCMAKE_BUILD_TYPE=debug /mnt/c/Users/hkver/Documents/dbai/dbaistuff/py/liten
+cmake --build . --config _liten
 ```
 #### setup.py
-Run setup.py to build from py/tendb directory.
+Run setup.py to build from py/liten directory.
        
 ```
 python setup.py build
@@ -202,11 +202,11 @@ Create a wheel (zip file with all the install libs, files etc.) do the following
 python3 setup.py bdist_wheel
 ```
 
-This wheel can be testeted locally by using pip install. Uninstall tendb first if installed erarlier.
+This wheel can be testeted locally by using pip install. Uninstall liten first if installed erarlier.
 ```
-pip uninstall tendb
+pip uninstall liten
 ..
-pip install dist/tendb-0.0.2-cp39-cp39-linux_x86_64.whl
+pip install dist/liten-0.0.2-cp39-cp39-linux_x86_64.whl
 ```
 Test the code with TenalyticsIntro notebook.
 
@@ -216,7 +216,7 @@ python3 -m twine upload --repository dist/*
 ```
 This package can be installed using conda like.
 ```bash
-python3 -m pip install --index-url https://test.pypi.org/simple/ --no-deps tendb-pkg-tendb
+python3 -m pip install --index-url https://test.pypi.org/simple/ --no-deps liten-pkg-liten
 ```
 
 ### Submodule packages
@@ -224,12 +224,12 @@ These are the packages in external_libs that Tenalytics uses.
 
 #### Boost
 
-Download 1.73.0 from https://www.boost.org/users/download to the following directory ${TENDB_ROOT_DIR}/cpp/external_libs/boost
+Download 1.73.0 from https://www.boost.org/users/download to the following directory ${LITEN_ROOT_DIR}/cpp/external_libs/boost
 
  Run the following commands to compile boost.
  
  ```
- $ cd ${TENDB_ROOT_DIR}/cpp/external_libs/boost
+ $ cd ${LITEN_ROOT_DIR}/cpp/external_libs/boost
  $ gunzip boost_1_73_0.tar.gz
  $ tar xvf gunzip boost_1_73_0.tar
  $ sudo ./build.sh [debug|release]
@@ -239,10 +239,10 @@ Download 1.73.0 from https://www.boost.org/users/download to the following direc
 
 POCO is network library for C++ See here https://pocoproject.org/ for more information.
 
-It is built as a submodule in tendb. Follow these steps to build. Tenalytics does not currently use Poco library.
+It is built as a submodule in liten. Follow these steps to build. Tenalytics does not currently use Poco library.
 
 ```
-$ cd ${TENDB_ROOT_DIR}/cpp/external_libs
+$ cd ${LITEN_ROOT_DIR}/cpp/external_libs
 $ git submodule update --init --recursive
 $ cd poco
 $ ./build.sh
@@ -250,7 +250,7 @@ $ ./build.sh
 It was registered as a submodule using steps shown below. master branch points to the latest stable release. Latest release is 1.10.1
 
 ```
-$ cd ${TENDB_ROOT_DIR}/cpp/external_libs/poco
+$ cd ${LITEN_ROOT_DIR}/cpp/external_libs/poco
 $ git submodule add https://github.com/pocoproject/poco
 remote: Enumerating objects: 5, done.        
 remote: Counting objects: 100% (5/5), done.        
@@ -271,14 +271,14 @@ $ git submodule update
 
 #### Apache Arrow
 
-Apache Arrow is in-memory representation of data formats. It can be used to read csv, json, parquet etc. TenDB will read from arrow API to create its own Tensor structure.
+Apache Arrow is in-memory representation of data formats. It can be used to read csv, json, parquet etc. Liten will read from arrow API to create its own Tensor structure.
 
 Apache Arrow is a submodule within external_libs.
 
 Follow the following steps to build it.
 
 ```
-$ cd ${TENDB_ROOT_DIR}/cpp/external_libs
+$ cd ${LITEN_ROOT_DIR}/cpp/external_libs
 $ git submodule update --recursive
 $ cd arrow
 $ sudo ./build.sh [Debug|Release]
@@ -289,7 +289,7 @@ First submodule was added. It clones the data into the arrow subdir.
 It is currently fixed as to release 2.0.0. You can get it by first updating the git and then checkout the tag
 
 ```
-$ cd ${TENDB_ROOT_DIR}/cpp/external_libs/arrow
+$ cd ${LITEN_ROOT_DIR}/cpp/external_libs/arrow
 $ git submodule add https://github.com/apache/arrow
 remote: Enumerating objects: 100065, done.        
 remote: Total 100065 (delta 0), reused 0 (delta 0), pack-reused 100065        
@@ -320,7 +320,7 @@ Follow the tutorial to install all the components and run ray.
 Follow the following steps to build it locally. 
 
 ```
-$ cd ${TENDB_ROOT_DIR}/cpp/external_libs
+$ cd ${LITEN_ROOT_DIR}/cpp/external_libs
 $ git submodule update --recursive
 $ cd ray
 $ sudo ./build.sh
@@ -329,7 +329,7 @@ $ sudo ./build.sh
 It was registered as a submodule using steps shown below. It is currently fixed as release ray-0.8.5 This is a branch with release 0.8.5
 First submodule was added. It clones the data into the ray as shown below.
 ```
-$ cd ${TENDB_ROOT_DIR}/cpp/external_libs/ray
+$ cd ${LITEN_ROOT_DIR}/cpp/external_libs/ray
 $ git submodule add https://github.com/apache/ray
 $ cd ray
 $ git checkout -b ray-0.8.5
@@ -343,7 +343,7 @@ Google glog is a C++ logging library.
 Follow the following steps to build it.
 
 ```
-$ cd ${TENDB_ROOT_DIR}/cpp/external_libs
+$ cd ${LITEN_ROOT_DIR}/cpp/external_libs
 $ git submodule update --recursive
 $ cd glog
 $ sudo ./build.sh [Debug|Release]
@@ -351,7 +351,7 @@ $ sudo ./build.sh [Debug|Release]
 It was registered as a submodule using steps shown below. It is currently fixed as latest release commit from Oct 3, 2020. It can be updated and new submodule version checked in if needed.
 
 ```
-$ cd ${TENDB_ROOT_DIR}/cpp/external_libs/glog
+$ cd ${LITEN_ROOT_DIR}/cpp/external_libs/glog
 $ git submodule add https://github.com/google/glog
 $ cd glog
 $ git pull
@@ -369,7 +369,7 @@ $ git submodule update
 Googletest is a C++ unit test library. Follow the following steps to build it.
 
 ```
-$ cd ${TENDB_ROOT_DIR}/cpp/external_libs
+$ cd ${LITEN_ROOT_DIR}/cpp/external_libs
 $ git submodule update --recursive
 $ cd googletest
 $ sudo ./build.sh
@@ -377,7 +377,7 @@ $ sudo ./build.sh
 It was registered as a submodule using steps shown below. It is currently fixed as latest release commit as aee0f9d9b5b87796ee8a0ab26b7587ec30e8858e June 26, 2020
 
 ```
-$ cd ${TENDB_ROOT_DIR}/cpp/external_libs/googletest
+$ cd ${LITEN_ROOT_DIR}/cpp/external_libs/googletest
 $ git submodule add https://github.com/google/glog
 ```
 
@@ -386,7 +386,7 @@ $ git submodule add https://github.com/google/glog
 gperftools is google perftool library. This can be used in conjunction with valgrind.
 
 ```
-$ cd ${TENDB_ROOT_DIR}/cpp/external_libs
+$ cd ${LITEN_ROOT_DIR}/cpp/external_libs
 $ git submodule add https://github.com/gperftools/gperftools
 ```
 For profiling following tools can be used
@@ -403,13 +403,13 @@ TBB is a submodule within external_libs.
 Follow the following steps to build it.
 
 ```
-$ cd ${TENDB_ROOT_DIR}/cpp/external_libs/tbb
+$ cd ${LITEN_ROOT_DIR}/cpp/external_libs/tbb
 $ git submodule update --init
 $ ./build.sh [debug|release]
 ```
 It was registered as a submodule using steps shown below.
 ```
-$ cd ${TENDB_ROOT_DIR}/cpp/external_libs/tbb
+$ cd ${LITEN_ROOT_DIR}/cpp/external_libs/tbb
 $ git submodule add https://github.com/apache/arrow
 remote: Enumerating objects: 100065, done.        
 remote: Total 100065 (delta 0), reused 0 (delta 0), pack-reused 100065        
@@ -575,7 +575,7 @@ Time =  20259536us = 20 sec
 
 * Query Result - 10/10/2020 Release build VM 8 core 8GB  (3x reduction from debug build)
   Single thread implementaion
-  TenDB - single thread
+  Liten - single thread
     Query 6 -  Revenue=1.56378e+08 Time = 176848us = 177ms
     Query 5 -  Revenue=6.33263e+09 Time = 32016802us = 32s
     Rows = 100000 Elapsed ms=76 Rows = 200000 Elapsed ms=167
@@ -593,7 +593,7 @@ Time =  20259536us = 20 sec
 
 * Query Result - 10/18/2020 Release build VM 8 core 8GB  (3-4x reduction from debug build)
   Single thread implementaion
-  TenDB - single thread
+  Liten - single thread
 sqlDf = spark.sql("select sum(l_extendedprice * l_discount) as revenue from lineitem "
                   "where l_shipdate >= date '1997-01-01' "
                   "and l_shipdate < date '1997-01-01' + interval '1' year "
@@ -657,7 +657,7 @@ Time = 10 sec
 Query 5
 Time = 26 sec (scan, broadcast, join, hash-aggregate)
 
-TenDB 6 Thread results -
+Liten 6 Thread results -
 Query 6 - 42ms
 Query 5 - 3.2s (numMaps = 6 or 3 or 1)
 

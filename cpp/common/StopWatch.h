@@ -4,7 +4,7 @@
 
 // TODO make it thread safe
 
-namespace tendb
+namespace liten
 {
   class StopWatch
   {

@@ -8,7 +8,7 @@
 #include "TpchDemo.h"
 #include <tbb/tbb.h>
 
-using namespace tendb;
+using namespace liten;
 
 // Tables - lineitem (first entry is fact table), rest are dimensions
 const std::vector<std::string> TpchDemo::tableNames =

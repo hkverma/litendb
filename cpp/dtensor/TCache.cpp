@@ -4,7 +4,7 @@
 
 #include <boost/uuid/random_generator.hpp>
 
-using namespace tendb;
+using namespace liten;
 
 // For now the columnChunk should be present here.
 // TODO In future it could not be here, in that case fetch it if not present here
@@ -20,7 +20,7 @@ std::shared_ptr<TCache> TCache::GetInstance()
   if (tCache_ == nullptr)
   {
     tCache_ = std::make_shared<TCache>();
-    google::InitGoogleLogging("tendb");
+    google::InitGoogleLogging("liten");
   }
   LOG(INFO) << "Created a new TCache";
   return tCache_;
@@ -146,7 +146,7 @@ std::shared_ptr<arrow::Table> TCache::ReadCsv
  const arrow::csv::ConvertOptions& convertOptions)
 {
   // A default memory pool
-  // TODO define tendb memory pool
+  // TODO define liten memory pool
   arrow::MemoryPool* pool = arrow::default_memory_pool();
 
   // Readable File for the csvFile

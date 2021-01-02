@@ -16,32 +16,32 @@
 
 /*
 /// \brief Return with given status if condition is met.
-#define TENDB_RETURN_IF_(condition, status, expr)       \
+#define LITEN_RETURN_IF_(condition, status, expr)       \
   do {                                                  \
-    if (TENDB_PREDICT_FALSE(condition)) {               \
-      ::tendb::Status _st = (status);                   \
+    if (LITEN_PREDICT_FALSE(condition)) {               \
+      ::liten::Status _st = (status);                   \
       _st.AddContextLine(__FILE__, __LINE__, expr);     \
       return _st;                                       \
     }                                                   \
   } while (0)
 
-#define TENDB_RETURN_IF_(condition, status, _)  \
+#define LITEN_RETURN_IF_(condition, status, _)  \
   do {                                          \
-    if (TENDB_PREDICT_FALSE(condition)) {       \
+    if (LITEN_PREDICT_FALSE(condition)) {       \
       return (status);                          \
     }                                           \
   } while (0)
 
-#endif  // TENDB_EXTRA_ERROR_CONTEXT
+#endif  // LITEN_EXTRA_ERROR_CONTEXT
 
-#define TENDB_RETURN_IF(condition, status)                      \
-  TENDB_RETURN_IF_(condition, status, TENDB_STRINGIFY(status))
+#define LITEN_RETURN_IF(condition, status)                      \
+  LITEN_RETURN_IF_(condition, status, LITEN_STRINGIFY(status))
 
 /// \brief Propagate any non-successful Status to the caller
-#define TENDB_RETURN_NOT_OK(status)                                     \
+#define LITEN_RETURN_NOT_OK(status)                                     \
   do {                                                                  \
-    ::tendb::Status __s = ::arrow::internal::GenericToStatus(status);   \
-    TENDB_RETURN_IF_(!__s.ok(), __s, TENDB_STRINGIFY(status));          \
+    ::liten::Status __s = ::arrow::internal::GenericToStatus(status);   \
+    LITEN_RETURN_IF_(!__s.ok(), __s, LITEN_STRINGIFY(status));          \
   } while (false)
 
 #define RETURN_NOT_OK_ELSE(s, else_)                            \
@@ -55,10 +55,10 @@
 
 // This is an internal-use macro and should not be used in public headers.
 #ifndef RETURN_NOT_OK
-#define RETURN_NOT_OK(s) TENDB_RETURN_NOT_OK(s)
+#define RETURN_NOT_OK(s) LITEN_RETURN_NOT_OK(s)
 #endif
 */
-namespace tendb {
+namespace liten {
 
   enum class StatusCode : char {
     OK = 0,
@@ -105,7 +105,7 @@ namespace tendb {
     ~Status() noexcept {
       // On certain compilers, splitting off the slow path improves
       // performance significantly.
-      if (TENDB_PREDICT_FALSE(state_ != NULL)) {
+      if (LITEN_PREDICT_FALSE(state_ != NULL)) {
         DeleteState();
       }
     }
@@ -135,13 +135,13 @@ namespace tendb {
 
     template <typename... Args>
     static Status FromArgs(StatusCode code, Args&&... args) {
-      return Status(code, tendb::StringBuilder(std::forward<Args>(args)...));
+      return Status(code, liten::StringBuilder(std::forward<Args>(args)...));
     }
 
     template <typename... Args>
     static Status FromDetailAndArgs(StatusCode code, std::shared_ptr<StatusDetail> detail,
                                     Args&&... args) {
-      return Status(code, tendb::StringBuilder(std::forward<Args>(args)...),
+      return Status(code, liten::StringBuilder(std::forward<Args>(args)...),
                     std::move(detail));
     }
 
@@ -267,7 +267,7 @@ namespace tendb {
     [[noreturn]] void Abort() const;
     [[noreturn]] void Abort(const std::string& message) const;
 
-#ifdef TENDB_EXTRA_ERROR_CONTEXT
+#ifdef LITEN_EXTRA_ERROR_CONTEXT
     void AddContextLine(const char* filename, int line, const char* expr);
 #endif
 

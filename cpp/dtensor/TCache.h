@@ -1,5 +1,5 @@
 //
-// TenDB Columnar Cache Directory
+// Liten Columnar Cache Directory
 //
 // All tables are held in TCache.
 // Each table when read in cached with a unique UUID.
@@ -18,7 +18,7 @@
 //
 //  Columnar Data storage
 //
-//   One column chunk stores numComponents of a single column of TenDB
+//   One column chunk stores numComponents of a single column of Liten
 //   Arrow in memory, persistent in parquet format
 //
 // TODO
@@ -55,7 +55,7 @@ namespace std
 };
 
 // TCache with tables
-namespace tendb {
+namespace liten {
 
   class TCache {
   public:

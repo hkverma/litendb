@@ -26,9 +26,9 @@ if Cython.__version__ < '0.29':
 setup_dir = os.path.abspath(os.path.dirname(__file__))
 
 try:
-    tendb_root_dir = os.environ.get('TENDB_ROOT_DIR')
+    liten_root_dir = os.environ.get('LITEN_ROOT_DIR')
 except KeyError:
-    print("Must set TENDB_ROOT_DIR")
+    print("Must set LITEN_ROOT_DIR")
 
 ext_suffix = sysconfig.get_config_var('EXT_SUFFIX')
 if ext_suffix is None:
@@ -53,12 +53,12 @@ class cmake_build_ext(_build_ext):
   user_options = [('extra-cmake-args=', None, 'extra arguments for CMake')]
 
   CYTHON_MODULE_NAMES = [
-    '_tendb']
+    '_liten']
 
 
   def initialize_options(self):
     _build_ext.initialize_options(self)
-    self.build_type = os.environ.get('TENDB_BUILD_TYPE','debug').lower()
+    self.build_type = os.environ.get('LITEN_BUILD_TYPE','debug').lower()
 
   def run(self):
     self._run_cmake()
@@ -70,11 +70,11 @@ class cmake_build_ext(_build_ext):
   def _failure_permitted(self, name):
     return False
 
-  def _bundle_tendb_cpp(self, build_prefix, build_lib):
-    tendb_lib = pjoin(tendb_root_dir,'cpp','build','libtendb.so')
-    if not tendb_lib:
-      raise Exception("Could not find " + tendb_lib)
-    shutil.copyfile(tendb_lib, pjoin(build_prefix, build_lib, 'tendb','libtendb.so'))
+  def _bundle_liten_cpp(self, build_prefix, build_lib):
+    liten_lib = pjoin(liten_root_dir,'cpp','build','libliten.so')
+    if not liten_lib:
+      raise Exception("Could not find " + liten_lib)
+    shutil.copyfile(liten_lib, pjoin(build_prefix, build_lib, 'liten','libliten.so'))
                     
   def _run_cmake(self):
     # check if build_type is correctly passed / set
@@ -123,14 +123,14 @@ class cmake_build_ext(_build_ext):
       build_tool_args = []
 
       # Generate the build files
-      print("-- Running cmake for tendb")
+      print("-- Running cmake for liten")
       self.spawn(['cmake'] + extra_cmake_args + cmake_options + [source])
-      print("-- Finished cmake for tendb")
+      print("-- Finished cmake for liten")
 
-      print("-- Running cmake --build for tendb")
+      print("-- Running cmake --build for liten")
       self.spawn(['cmake', '--build', '.', '--config', self.build_type] +
                  build_tool_args)
-      print("-- Finished cmake --build for tendb")
+      print("-- Finished cmake --build for liten")
 
       if self.inplace:
         # a bit hacky
@@ -138,7 +138,7 @@ class cmake_build_ext(_build_ext):
 
       # Move the libraries to the place expected by the Python build
       try:
-        os.makedirs(pjoin(build_lib, 'tendb'))
+        os.makedirs(pjoin(build_lib, 'liten'))
       except OSError:
         pass
 
@@ -154,11 +154,11 @@ class cmake_build_ext(_build_ext):
             print('Cython module {0} failure permitted'
                   .format(name))
             continue
-          raise RuntimeError('tendb C-extension failed to build:',
+          raise RuntimeError('liten C-extension failed to build:',
                              os.path.abspath(built_path))
 
         # The destination path to move the built C extension to
-        ext_path = pjoin(build_lib, 'tendb', self.get_ext_built(name))
+        ext_path = pjoin(build_lib, 'liten', self.get_ext_built(name))
         if os.path.exists(ext_path):
           os.remove(ext_path)
         self.mkpath(os.path.dirname(ext_path))
@@ -168,29 +168,29 @@ class cmake_build_ext(_build_ext):
         shutil.move(built_path, ext_path)
         self._found_names.append(name)
         
-      self._bundle_tendb_cpp(build_prefix, build_lib)
+      self._bundle_liten_cpp(build_prefix, build_lib)
 
 with open("README.md", "r") as fh:
   long_description = fh.read()
 
 setup(
-  name='tendb',
-  version='0.0.2',
+  name='liten',
+  version='0.0.1',
   author='HK Verma',
   author_email='hkverma@gmail.com',
   description='Big Data Analytics Toolset',
   long_description=long_description,
   long_description_content_type='text/markdown',
-  url='https://github.com/tendb/',
+  url='https://github.com/liten/',
   # pkg data
-  packages=['tendb'],
+  packages=['liten'],
   zip_safe=False,
-  package_data={'tendb': ['*.pxd','*.pyx','includes/*.pxd']},
+  package_data={'liten': ['*.pxd','*.pyx','includes/*.pxd']},
   include_package_data=True,
   distclass=BinaryDistribution,
   # build_ext is overridden to call cmake, the Extension is just
   # needed so things like bdist_wheel understand what's going on
-    ext_modules=[Extension('tendb', sources=[], include_dirs=[numpy.get_include()])],
+    ext_modules=[Extension('liten', sources=[], include_dirs=[numpy.get_include()])],
   # This includes both build and install requirements. Setuptools' setup_requires
   # option does not actually install things, so isn't actually helpful...
   install_requires = ['cython'],

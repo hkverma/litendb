@@ -6,7 +6,7 @@
 from cython.operator cimport dereference as deref, postincrement
 from pyarrow.includes.libarrow cimport *
 from pyarrow.lib cimport *
-from tendb.includes.dtensor cimport *
+from liten.includes.dtensor cimport *
 
 from graphviz import Digraph
 from graphviz import Source
@@ -76,7 +76,9 @@ digraph Q5{
 }
 """
 
-cdef class CTenDB:
+_version = "0.0.1"
+
+cdef class CLiten:
     def __cinit__(self):
         self.tcache = NULL
 
@@ -87,7 +89,7 @@ cdef class CTenDB:
         print("Added a new cache")
 
     def show_versions(self):
-        return "0.0.2"
+        return _version
 
     def info(self):
         cdef:
@@ -192,4 +194,4 @@ ORDER BY
     
     @property
     def version(self):
-        return "0.0.2"
+        return _version

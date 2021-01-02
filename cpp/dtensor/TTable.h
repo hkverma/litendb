@@ -21,7 +21,7 @@
 
 #pragma once
 
-namespace tendb {
+namespace liten {
   
   // TTable holds table values
   class TTable {

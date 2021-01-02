@@ -1,6 +1,6 @@
 #include "dtensor.h"
 
-namespace tendb
+namespace liten
 {
 
   // TODO expose numWorkers to the demo same as from TCache

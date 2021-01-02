@@ -13,7 +13,7 @@
 #include <glog/logging.h>
 #include "Status.h"
 
-namespace tendb {
+namespace liten {
 
   Status::Status(StatusCode code, const std::string& msg)
     : Status::Status(code, msg, nullptr) {}

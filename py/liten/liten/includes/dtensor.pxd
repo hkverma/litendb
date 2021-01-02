@@ -13,20 +13,20 @@ from libcpp.unordered_set cimport unordered_set
 
 from pyarrow.includes.libarrow cimport *
 
-cdef extern from "dtensor.h" namespace "tendb" nogil:
+cdef extern from "dtensor.h" namespace "liten" nogil:
 
-   cdef cppclass CTTable" tendb::TTable":
+   cdef cppclass CTTable" liten::TTable":
       c_string GetName()
       
-   cdef cppclass CTCache" tendb::TCache":
+   cdef cppclass CTCache" liten::TCache":
        shared_ptr[CTTable] AddTable(c_string name, shared_ptr[CTable] table)
        @staticmethod
        shared_ptr[CTCache] GetInstance()
        c_string GetInfo()
        int MakeMaps(c_string name)
 
-cdef extern from "TpchDemo.h" namespace "tendb" nogil:
-   cdef cppclass CTpchDemo" tendb::TpchDemo":
+cdef extern from "TpchDemo.h" namespace "liten" nogil:
+   cdef cppclass CTpchDemo" liten::TpchDemo":
        @staticmethod
        shared_ptr[CTpchDemo] GetInstance(shared_ptr[CTCache] tCache)
        double Query6()

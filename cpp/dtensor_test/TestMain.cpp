@@ -10,7 +10,7 @@
 
 #include <tbb/tbb.h>
 
-using namespace tendb;
+using namespace liten;
 using namespace std;
 
 int main(int argc, char** argv) {
@@ -91,7 +91,7 @@ int main(int argc, char** argv) {
     }
   }
   stopWatch.Stop();
-  LOG(INFO) << "TenDB Tensor Creation Time (us)=" << stopWatch.ElapsedInMicroseconds();
+  LOG(INFO) << "Liten Tensor Creation Time (us)=" << stopWatch.ElapsedInMicroseconds();
   tpchDemo->PrintMaps(tpchDemo->customer);
 
   auto printRevenue = [&](std::shared_ptr<std::unordered_map<std::string, double>> q5revs) -> void {

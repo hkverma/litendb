@@ -1,7 +1,7 @@
 #include "dtensor.h"
 #include <iostream>
 
-using namespace tendb;
+using namespace liten;
 
 // TODO - Split zone maps from inverted index
 //

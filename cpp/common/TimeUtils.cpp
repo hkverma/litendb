@@ -1,6 +1,6 @@
 #include <TimeUtils.h>
 
-namespace tendb
+namespace liten
 {
 
   // for now use boost::posix_time

@@ -9,7 +9,7 @@
 #include <arrow/io/api.h>
 
 #include "dtensor.h"
-using namespace tendb;
+using namespace liten;
 
 using arrow::DoubleBuilder;
 using arrow::Int64Builder;

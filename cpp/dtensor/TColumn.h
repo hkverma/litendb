@@ -1,9 +1,9 @@
 //
-// TenDB Columnar Storage Node
+// Liten Columnar Storage Node
 //
 // Columnar Data storage
 //
-// One column chunk stores numComponents of a single column of TenDB
+// One column chunk stores numComponents of a single column of Liten
 // Arrow in memory, persistent in parquet format
 //
 // TODO Use Status to return value wrapped with a message
@@ -21,7 +21,7 @@
 #include <TTable.h>
 #include <common.h>
 
-namespace tendb {
+namespace liten {
 
   // arrow::ChunkedArray Iterator
   template <class Type, class ArrayType>

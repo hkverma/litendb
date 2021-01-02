@@ -1,9 +1,9 @@
 //
-// TenDB Columnar Storage Node
+// Liten Columnar Storage Node
 //
 // Columnar Data storage
 //
-// One column chunk stores numComponents of a single column of TenDB
+// One column chunk stores numComponents of a single column of Liten
 // Arrow in memory, persistent in parquet format
 //
 #pragma once
@@ -14,7 +14,7 @@
 #include <boost/uuid/uuid.hpp>
 #include <arrow/api.h>
 
-namespace tendb {
+namespace liten {
   //
   // TODO Use Memory Pool to create an arrow memory pool liks  arrow::MemoryPool* pool_
   //      Use pool to store all the values

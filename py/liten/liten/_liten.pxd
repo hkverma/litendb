@@ -13,9 +13,9 @@ from libcpp.unordered_set cimport unordered_set
 
 
 from pyarrow.includes.libarrow cimport *
-from tendb.includes.dtensor cimport *
+from liten.includes.dtensor cimport *
 
-cdef class CTenDB:
+cdef class CLiten:
     cdef:
         shared_ptr[CTCache] sp_tcache
         CTCache* tcache
