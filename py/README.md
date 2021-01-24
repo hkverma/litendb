@@ -2,6 +2,10 @@
 ## Liten packages into a wheel to be installed by pip or conda
 Directions are available at the following link -
 https://packaging.python.org/tutorials/packaging-projects/
+### Example notebooks
+LitenIntro_0 - python arrow and Liten with Query6 and Query5
+LitenIntro_1 - TpchH Q6/Q5 with arrow & liten & python decorators
+LitenIntro_2 - Add Ray remote with ray cpu=1
 
 ### ctype use to intgerate C++ code
 
