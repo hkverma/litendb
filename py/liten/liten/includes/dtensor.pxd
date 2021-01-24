@@ -17,9 +17,11 @@ cdef extern from "dtensor.h" namespace "liten" nogil:
 
    cdef cppclass CTTable" liten::TTable":
       c_string GetName()
+      shared_ptr[CTable] GetTable()
       
    cdef cppclass CTCache" liten::TCache":
        shared_ptr[CTTable] AddTable(c_string name, shared_ptr[CTable] table)
+       shared_ptr[CTTable] GetTable(c_string name)
        @staticmethod
        shared_ptr[CTCache] GetInstance()
        c_string GetInfo()

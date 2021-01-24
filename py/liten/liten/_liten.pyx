@@ -30,13 +30,11 @@ def q5digraph():
     q5.edge_attr.update(arrowhead='vee',arrowsize='1')
     q5.node_attr.update(shape='rect',fontname='Arial', fontcolor='blue', fontsize='11')
     q5.node('A','Scan\n(lineitem)')
-    q5.node('B','Join\n(lineitem,orders)')
+    q5.node('B','OrdersCell\n[lineitem]')
     q5.node('C','Filter\n(orders)')
-    q5.node('D','Join\n(lineitem,supplier)')
-    q5.node('E','Join\n(supplier,nation)')
-    q5.node('F','Join\n(nation,region)')
-    q5.node('G','GroupBy Aggr\n(lineitem)')
-    q5.edges(['AB','BC','CD','DE','EF','FG'])
+    q5.node('D','RegionCell\n[lineitem][supplier][nation][region]')
+    q5.node('E','GroupBy Aggr\n(lineitem)')
+    q5.edges(['AB','BC','CD','DE'])
 
 q6diggraphcmd = """
 digraph Q6{
@@ -60,18 +58,14 @@ digraph Q5{
     edge [arrowhead=vee, arrowsize=1]
     node [shape=rect, fontname=Arial, fontcolor=blue, fontsize=12]
     0 [label="Scan\n(lineitem)"]
-    1 [label="Join\n(lineitem,orders)"]
+    1 [label="OrdersCell\n[lineitem]"]
     2 [label="Filter\n(orders)"]
-    3 [label="Join\n(lineitem,supplier)"]
-    4 [label="Join\n(supplier,nation)"]
-    5 [label="Join\n(nation,region)"]
-    6 [label="GroupBy Aggr\n(lineitem)"]
+    3 [label="RegionCell\n[lineitem][supplier][nation]"]
+    4 [label="GroupBy Aggr\n(lineitem)"]
     0 -> 1
     1 -> 2
     2 -> 3
     3 -> 4
-    4 -> 5
-    5 -> 6
   }
 }
 """
@@ -86,7 +80,6 @@ cdef class CLiten:
         self.tcache = NULL
         self.sp_tcache = CTCache.GetInstance()
         self.tcache = self.sp_tcache.get()
-        print("Added a new cache")
 
     def show_versions(self):
         return _version
@@ -112,6 +105,20 @@ cdef class CLiten:
         print ("Added Table=", name)
         return name
 
+    def get_table(self, name):
+        cdef:
+            shared_ptr[CTTable] sp_ttable
+            CTTable* p_ttable
+            shared_ptr[CTable] sp_table
+        sp_ttable = self.tcache.GetTable(name)
+        p_ttable = sp_ttable.get()
+        if (NULL == p_ttable):
+            print ("Failed to get table=", name)
+            return None
+        sp_table = p_ttable.GetTable()
+        pa_table = pyarrow_wrap_table(sp_table)
+        return pa_table
+    
     def make_dtensor(self, name):
         result = self.tcache.MakeMaps(name)
         if (result):

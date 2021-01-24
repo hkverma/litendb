@@ -202,7 +202,7 @@ Create a wheel (zip file with all the install libs, files etc.) do the following
 python3 setup.py bdist_wheel
 ```
 
-This wheel can be testeted locally by using pip install. Uninstall liten first if installed erarlier.
+This wheel can be testeted locally by using pip install. Uninstall liten first if installed earlier.
 ```
 pip uninstall liten
 ..
@@ -672,6 +672,8 @@ Completed end-2-end demo with Arrow and Tenalytics demo.
 * Broadcast of inverse maps (Can we reduce 3.2 sec further for 6 parallel threads). Broadcast on same VM should have no impact. It is only across nodes that this matters.
 
 #### Tasks TODO
+
+* Added LCache as class in package. Works with local as well as Ray remote code. Build the demo here.
 
 * Use Ray to add clusters - Use Ray and Object Library for a scaleout demo.
 
