@@ -73,31 +73,50 @@ digraph Q5{
 _version = "0.0.1"
 
 cdef class CLiten:
+    DimTable=0
+    FactTable=1
     def __cinit__(self):
         self.tcache = NULL
 
     def __init__(self):
+        """
+        Create and initialize Liten Cache
+        """
         self.tcache = NULL
         self.sp_tcache = CTCache.GetInstance()
         self.tcache = self.sp_tcache.get()
 
     def show_versions(self):
+        """
+        Liten Version
+        """
         return _version
 
     def info(self):
+        """
+        Print Liten compute and storage information
+        """
         cdef:
            c_string cache_info
         print ("Workers=6")
         cache_info = self.tcache.GetInfo()
         return cache_info
     
-    def add_table(self, name, table):
+    def add_table(self, name, table, ttype):
+        """
+        Add arrow table in cache as name.
+        """
         cdef:
             shared_ptr[CTable] sp_table
             shared_ptr[CTTable] sp_ttable
             CTTable* p_ttable
+            CTTable.TType tc_ttype
         sp_table = pyarrow_unwrap_table(table)
-        sp_ttable = self.tcache.AddTable(name, sp_table)
+        if ttype != self.DimTable and ttype != self.FactTable:
+            print("Error: Table must be DimTable or FactTable")
+            return "";        
+        tc_ttype = <CTTable.TType>ttype
+        sp_ttable = self.tcache.AddTable(name, sp_table, tc_ttype)
         p_ttable = sp_ttable.get()
         if (NULL == p_ttable):
             print ("Failed to add table=", name)
@@ -119,12 +138,24 @@ cdef class CLiten:
         pa_table = pyarrow_wrap_table(sp_table)
         return pa_table
     
-    def make_dtensor(self, name):
+    def make_dtensor_table(self, name):
+        """
+        Create data tensors for the table
+        """
         result = self.tcache.MakeMaps(name)
         if (result):
             print ("Failed to create data-tensor for ", name)
         return result
 
+    def make_dtensor(self):
+        """
+        Create data tensors for dimension tables
+        """
+        result = self.tcache.MakeMaps()
+        if (result):
+            print ("Failed to create data-tensor")
+        return result
+    
     def query6(self):
         cdef:
             shared_ptr[CTpchDemo] sp_tpch_demo

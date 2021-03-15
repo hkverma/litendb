@@ -71,7 +71,7 @@ std::shared_ptr<TTable> TCache::ReadCsv
   {
     return nullptr;
   }
-  auto ttable = AddTable(tableName, arrowTable);
+  auto ttable = AddTable(tableName, arrowTable, TTable::Dim);
   return ttable;
 }
 
@@ -105,7 +105,8 @@ bool TCache::GetId(std::string tableName, boost::uuids::uuid& cacheId)
 }
 
 std::shared_ptr<TTable> TCache::AddTable(std::string tableName,
-                                         std::shared_ptr<arrow::Table> table)
+                                         std::shared_ptr<arrow::Table> table,
+                                         TTable::TType type)
 {
   boost::uuids::uuid cacheId;
   if (GetId(tableName, cacheId))
@@ -115,7 +116,7 @@ std::shared_ptr<TTable> TCache::AddTable(std::string tableName,
   }
   
   LOG(INFO) << "Adding new table " << tableName;
-  auto ttable = std::make_shared<TTable>(tableName, table);
+  auto ttable = std::make_shared<TTable>(tableName, table, type);
   cacheId = idGenerator();
   tables_[cacheId] = ttable;
   cacheIds_[tableName] = cacheId;
@@ -125,15 +126,36 @@ std::shared_ptr<TTable> TCache::AddTable(std::string tableName,
 int TCache::MakeMaps(std::string tableName)
 {
   auto ttable = GetTable(tableName);
+  int result = MakeMaps(ttable);
+  return result;
+}
+
+int TCache::MakeMaps(std::shared_ptr<TTable> ttable)
+{
   if (nullptr == ttable)
   {
-    LOG(ERROR) << "Failed to create data-tensor. Did not find in cache table " << tableName;
+    LOG(ERROR) << "Failed to create data-tensor. Did not find in cache table " << ttable->GetName();
     return 1;
   }
-  int result = ttable->MakeMaps(1); // TODO are numCopies needed
+  // TODO are numCopies needed? remove it.
+  int result = ttable->MakeMaps(1); 
   if (result)
   {
-    LOG(ERROR) << "Found table " << tableName << " but failed to create data tensor";
+    LOG(ERROR) << "Found table " << ttable->GetName() << " but failed to create data tensor";
+  }
+  return result;
+}
+
+int TCache::MakeMaps()
+{
+  int result = 0;
+  for (auto it=tables_.begin(); it != tables_.end(); it++)
+  {
+    auto table = it->second;
+    if (MakeMaps(table))
+    {
+      result = 1;
+    }
   }
   return result;
 }

@@ -340,6 +340,10 @@ cmake -DPYTHON_EXECUTABLE=/home/hkverma/miniconda3/envs/liten/bin/python -DPytho
 cmake --build . --config _liten
 ```
 #### setup.py
+First get to the liten conda environment. This should have all the library components.
+```
+conda activate liten
+```
 Run setup.py to build from py/liten directory.
        
 ```
@@ -358,7 +362,7 @@ This wheel can be testeted locally by using pip install. Uninstall liten first i
 ```
 pip uninstall liten
 ..
-pip install dist/liten-0.0.2-cp39-cp39-linux_x86_64.whl
+pip install dist/liten-0.0.1-cp38-cp38-linux_x86_64.whl
 ```
 Test the code with TenalyticsIntro notebook.
 

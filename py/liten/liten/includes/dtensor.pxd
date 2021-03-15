@@ -15,17 +15,20 @@ from pyarrow.includes.libarrow cimport *
 
 cdef extern from "dtensor.h" namespace "liten" nogil:
 
+# CTTable is liten::TTable in Cython. CTable is arrow::Table cython from pyarrow.
    cdef cppclass CTTable" liten::TTable":
+      ctypedef enum TType: Dim, Fact
       c_string GetName()
       shared_ptr[CTable] GetTable()
       
    cdef cppclass CTCache" liten::TCache":
-       shared_ptr[CTTable] AddTable(c_string name, shared_ptr[CTable] table)
-       shared_ptr[CTTable] GetTable(c_string name)
-       @staticmethod
-       shared_ptr[CTCache] GetInstance()
-       c_string GetInfo()
-       int MakeMaps(c_string name)
+      shared_ptr[CTTable] AddTable(c_string name, shared_ptr[CTable] table, CTTable.TType)
+      shared_ptr[CTTable] GetTable(c_string name)
+      @staticmethod
+      shared_ptr[CTCache] GetInstance()
+      c_string GetInfo()
+      int MakeMaps(c_string name)
+      int MakeMaps()
 
 cdef extern from "TpchDemo.h" namespace "liten" nogil:
    cdef cppclass CTpchDemo" liten::TpchDemo":

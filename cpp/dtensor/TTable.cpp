@@ -10,7 +10,8 @@
 
 using namespace liten;
 
-TTable::TTable(std::string name, std::shared_ptr<arrow::Table> table) : table_(table)
+TTable::TTable(std::string name, std::shared_ptr<arrow::Table> table, TType type)
+  : table_(table), type_(type)
 {
   schema_ = table_->schema();
   name_ = move(name);

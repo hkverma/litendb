@@ -86,11 +86,17 @@ namespace liten {
     /// Get Table from tableName
     std::shared_ptr<TTable> GetTable(std::string tableName);
 
-    /// Make maps for each dimension table
+    /// Make maps for a given table name
     int MakeMaps(std::string tableName);
+    int MakeMaps(std::shared_ptr<TTable> ttable);
+    
+    /// Make maps for all dimension tables
+    int MakeMaps();
 
     /// Add table to cache
-    std::shared_ptr<TTable> AddTable(std::string name, std::shared_ptr<arrow::Table> table);
+    std::shared_ptr<TTable> AddTable(std::string name,
+                                     std::shared_ptr<arrow::Table> table,
+                                     TTable::TType type);
 
   private:
 

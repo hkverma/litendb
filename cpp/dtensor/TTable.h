@@ -27,8 +27,11 @@ namespace liten {
   class TTable {
   public:
 
-    TTable(std::string& tableName) : name_(tableName), table_(nullptr), schema_(nullptr) { }  
-    TTable(std::string name, std::shared_ptr<arrow::Table> table);
+    enum TType {Dim=0, Fact};
+    
+    TTable(std::string& tableName)
+      : name_(tableName), table_(nullptr), schema_(nullptr), type_(Dim) { }
+    TTable(std::string name, std::shared_ptr<arrow::Table> table, TType type);
     
     void PrintSchema();
     void PrintTable();
@@ -40,10 +43,9 @@ namespace liten {
     std::shared_ptr<arrow::Table> GetTable();
     std::shared_ptr<arrow::Array> GetArray(int64_t rowNum, int64_t colNum);
     std::string GetName();
-
-    int64_t NumColumns() { return table_->num_columns(); }
-    int64_t NumRows() { return table_->num_rows(); }
-
+    TType GetType();
+    int64_t NumColumns();
+    int64_t NumRows();
     
     // Options TODO create an options class
     static const bool EnableColumnReverseMap = false;
@@ -53,6 +55,7 @@ namespace liten {
     std::string name_;
     std::shared_ptr<arrow::Schema> schema_;
     std::shared_ptr<arrow::Table> table_;
+    TType type_;
     // Table Maps
     // TODO One copy should be sufficient, multiple copies will not make it faster
     int32_t numMapCopies_ = 0;
@@ -75,4 +78,20 @@ namespace liten {
   {
     return name_;
   }
+
+  inline TTable::TType TTable::GetType()
+  {
+    return type_;
+  }
+
+  inline int64_t TTable::NumColumns()
+  {
+    return table_->num_columns();
+  }
+  
+  inline int64_t TTable::NumRows()
+  {
+    return table_->num_rows();
+  }
+
 };
