@@ -501,15 +501,17 @@ These are some of the techniques being used in Liten code.
 
 ### TODO
 
+* Clean LitenIntro_0.ipynb 
+
 * Clean LitenIntro_1.ipynb with Ray
-
 * Create demo with optimized timing 
-
 * Select between all TXXX name or Lxxx names. Make it consistent across python and cpp
 * Write cache into SSD or storage for persistence
 * In TTable.h remove multiple maps_ copies, keep only one. Do an analysis.
 * Use ctest to run tests (from cmake)
 * What to do if same table is read again & again
+* Register Liten library with pytest 
+* 
 
 ### Ideas
 
