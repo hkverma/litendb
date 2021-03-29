@@ -58,14 +58,16 @@ digraph Q5{
     edge [arrowhead=vee, arrowsize=1]
     node [shape=rect, fontname=Arial, fontcolor=blue, fontsize=12]
     0 [label="Scan\n(lineitem)"]
-    1 [label="OrdersCell\n[lineitem]"]
+    1 [label="DTensor\n[l_orderkey]"]
     2 [label="Filter\n(orders)"]
-    3 [label="RegionCell\n[lineitem][supplier][nation]"]
-    4 [label="GroupBy Aggr\n(lineitem)"]
+    3 [label="DTensor\n[l_suppkey][s_nationkey][n_regionkey]"]
+    4 [label="Filter\n(region)"]
+    5 [label="Aggregate\n(lineitem)"]
     0 -> 1
     1 -> 2
     2 -> 3
     3 -> 4
+    4 -> 5
   }
 }
 """

@@ -495,7 +495,23 @@ These are some of the techniques being used in Liten code.
 * DSLs on DAGs - lazy evaluation
 
 
-#### Tasks TODO
+#### Tasks
+
+### In Progress
+
+### TODO
+
+* Clean LitenIntro_1.ipynb with Ray
+
+* Create demo with optimized timing 
+
+* Select between all TXXX name or Lxxx names. Make it consistent across python and cpp
+* Write cache into SSD or storage for persistence
+* In TTable.h remove multiple maps_ copies, keep only one. Do an analysis.
+* Use ctest to run tests (from cmake)
+* What to do if same table is read again & again
+
+### Ideas
 
 * Added LCache as class in package. Works with local as well as Ray remote code. Build the demo here.
 
@@ -508,7 +524,7 @@ These are some of the techniques being used in Liten code.
 * Use Ray & Dask type clusters with Python bindings for a single VM node 
 
 * Async multi-tasking using Ray - explore
-* CMakefile changes to put binarues in bin
+* CMakefile changes to put binaries in bin
 * DSL - which ML algorithm to encode & which app
 
 * Write DSLs - groupby scan filter etc. using decorator to pipeline these operations
@@ -516,6 +532,9 @@ These are some of the techniques being used in Liten code.
 * Do TPCH queries using the DSL using jupyter
 
 * Use arrow::Result to return Status along with the value
+
+### Completed
+* Completed LitenIntro_0.ipynb - Added dimention and fact tabes
 
 ### To Write
 
