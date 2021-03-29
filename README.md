@@ -502,6 +502,7 @@ These are some of the techniques being used in Liten code.
 ### TODO
 
 * Clean LitenIntro_1.ipynb for print outputs
+* Design LitenIntro_2.ipynb with multiple remote cache
 
 * Create demo with optimized timing 
 * Select between all TXXX name or Lxxx names. Make it consistent across python and cpp
