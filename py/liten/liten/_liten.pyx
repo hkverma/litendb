@@ -118,7 +118,7 @@ cdef class CLiten:
             print("Error: Table must be DimTable or FactTable")
             return "";        
         tc_ttype = <CTTable.TType>ttype
-        sp_ttable = self.tcache.AddTable(name, sp_table, tc_ttype)
+        sp_ttable = self.tcache.AddTable(name.encode('utf-8'), sp_table, tc_ttype)
         p_ttable = sp_ttable.get()
         if (NULL == p_ttable):
             print ("Failed to add table=", name)
