@@ -11,6 +11,9 @@ from liten.includes.dtensor cimport *
 from graphviz import Digraph
 from graphviz import Source
 
+import sys
+import codecs
+
 def q6digraph():
     q6 = Digraph(comment='Tpch Query6')
     q6.graph_attr['rankdir'] = 'LR'
@@ -74,6 +77,14 @@ digraph Q5{
 
 _version = "0.0.1"
 
+def to_bytes(s):
+    if type(s) is bytes:
+        return s
+    elif type(s) is str or (sys.version_info[0] < 3 and type(s) is unicode):
+        return codecs.encode(s, 'utf-8')
+    else:
+        raise TypeError("Expected bytes or string, but got %s." % type(s))
+
 cdef class CLiten:
     DimTable=0
     FactTable=1
@@ -118,7 +129,7 @@ cdef class CLiten:
             print("Error: Table must be DimTable or FactTable")
             return "";        
         tc_ttype = <CTTable.TType>ttype
-        sp_ttable = self.tcache.AddTable(name.encode('utf-8'), sp_table, tc_ttype)
+        sp_ttable = self.tcache.AddTable(to_bytes(name), sp_table, tc_ttype)
         p_ttable = sp_ttable.get()
         if (NULL == p_ttable):
             print ("Failed to add table=", name)

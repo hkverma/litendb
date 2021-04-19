@@ -32,7 +32,6 @@ std::string TCache::GetInfo()
   ss << "[";
   for (auto tableId : cacheIds_)
   {
-    ss << tableId.first << ",";
     auto it = tables_.find(tableId.second);
     if (it == tables_.end())
     {
@@ -41,6 +40,13 @@ std::string TCache::GetInfo()
     }
     LOG(INFO) << "Found table=" << tableId.first;
     auto ttable = it->second;
+    if (TTable::Dim == ttable->GetType()) {
+      ss << "Dim:" << tableId.first << ",";
+    } else if (TTable::Fact == ttable->GetType()) {
+      ss << "Fact:" << tableId.first << ",";
+    } else {
+      ss << "Unknown:" << tableId.first << ",";
+    }
     //ttable->PrintSchema();
     //ttable->PrintTable();
   }

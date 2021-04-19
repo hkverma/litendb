@@ -6,16 +6,27 @@ from pyarrow import csv
 
 import liten._liten as cliten
 
+import sys
+import codecs
+
 DimTable = 0
 FactTable = 1
 
+def to_bytes(s):
+    if type(s) is bytes:
+        return s
+    elif type(s) is str or (sys.version_info[0] < 3 and type(s) is unicode):
+        return codecs.encode(s, 'utf-8')
+    else:
+        raise TypeError("Expected bytes or string, but got %s." % type(s))
+    
 class RCLiten:
     """An actor wrapper for Liten Cache"""
     
     num_table = 0
     table_name = ""
     table_type = FactTable
-    
+        
     def __init__(self):
         self.tc = cliten.CLiten()
         self.table_name = "_t" + str(self.num_table);
@@ -27,7 +38,7 @@ class RCLiten:
     
     def read_csv(self, *args, **kwargs):
         arrow_table = pa.csv.read_csv(*args, **kwargs)
-        self.tc.add_table(self.table_name.encode('utf-8'), arrow_table, self.table_type)
+        self.tc.add_table(to_bytes(self.table_name), arrow_table, self.table_type)
         added_table_name = self.table_name
         self.num_table = self.num_table + 1
         self.table_name = "_t" + str(self.num_table)
