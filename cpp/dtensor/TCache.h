@@ -62,6 +62,9 @@ namespace liten {
 
     /// Get a singleton instance, if not present create one
     static std::shared_ptr<TCache> GetInstance();
+
+    /// Total worker CPU nodes
+    static const int64_t numWorkerThreads_ = 6;
     
     /// Get Cache info
     std::string GetInfo();

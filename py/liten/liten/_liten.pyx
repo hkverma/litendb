@@ -2,7 +2,9 @@
 # distutils: language = c++
 # cython: embedsignature = True
 # cython: language_level = 3
-
+"""
+CLiten Cache System
+"""
 from cython.operator cimport dereference as deref, postincrement
 from pyarrow.includes.libarrow cimport *
 from pyarrow.lib cimport *
@@ -14,7 +16,12 @@ from graphviz import Source
 import sys
 import codecs
 
+import liten.litenutils as litenutils
+
 def q6digraph():
+    """
+    Graph diagram for Query6 plan
+    """
     q6 = Digraph(comment='Tpch Query6')
     q6.graph_attr['rankdir'] = 'LR'
     q6.graph_attr['bgcolor'] = 'whitesmoke'
@@ -27,6 +34,9 @@ def q6digraph():
     return q6
 
 def q5digraph():
+    """
+    Graph diagram for Query5 plan
+    """
     q5 = Digraph(comment='Tpch Query5')
     q5.graph_attr['rankdir'] = 'LR'
     q5.graph_attr['bgcolor'] = 'whitesmoke'
@@ -77,47 +87,42 @@ digraph Q5{
 
 _version = "0.0.1"
 
-def to_bytes(s):
-    if type(s) is bytes:
-        return s
-    elif type(s) is str or (sys.version_info[0] < 3 and type(s) is unicode):
-        return codecs.encode(s, 'utf-8')
-    else:
-        raise TypeError("Expected bytes or string, but got %s." % type(s))
-
 cdef class CLiten:
+    """
+    Liten Cache Class
+    """
     DimTable=0
     FactTable=1
+    
     def __cinit__(self):
-        self.tcache = NULL
-
-    def __init__(self):
         """
         Create and initialize Liten Cache
         """
-        self.tcache = NULL
         self.sp_tcache = CTCache.GetInstance()
         self.tcache = self.sp_tcache.get()
 
-    def show_versions(self):
-        """
-        Liten Version
-        """
-        return _version
-
     def info(self):
         """
-        Print Liten compute and storage information
+        info()
+        return cache information including compute and storage 
+        Returns
+          string containing cache information
         """
         cdef:
            c_string cache_info
-        print ("Workers=6")
         cache_info = self.tcache.GetInfo()
         return cache_info
     
     def add_table(self, name, table, ttype):
         """
-        Add arrow table in cache as name.
+        add_table(name, table, ttype)
+           Add arrow table in cache by name
+        Parameters
+           name: name of table
+           table: arrow table to be added in liten cache
+           ttype: type og table must be DimTable or FactTable
+        Returns
+           name of the table added
         """
         cdef:
             shared_ptr[CTable] sp_table
@@ -129,7 +134,7 @@ cdef class CLiten:
             print("Error: Table must be DimTable or FactTable")
             return "";        
         tc_ttype = <CTTable.TType>ttype
-        sp_ttable = self.tcache.AddTable(to_bytes(name), sp_table, tc_ttype)
+        sp_ttable = self.tcache.AddTable(litenutils.to_bytes(name), sp_table, tc_ttype)
         p_ttable = sp_ttable.get()
         if (NULL == p_ttable):
             print ("Failed to add table=", name)
@@ -138,6 +143,14 @@ cdef class CLiten:
         return name
 
     def get_table(self, name):
+        """
+        get_table(name)
+        get arrow table by name name
+        Parameters
+          name: name of table
+        Returns
+          Arrow table of given name
+        """        
         cdef:
             shared_ptr[CTTable] sp_ttable
             CTTable* p_ttable
@@ -153,7 +166,12 @@ cdef class CLiten:
     
     def make_dtensor_table(self, name):
         """
-        Create data tensors for the table
+        make_dtensor_table(name)
+        Create data-tensor for name table
+        Parameters
+           name: Name of table 
+        Returns
+           true if create successfully else false
         """
         result = self.tcache.MakeMaps(name)
         if (result):
@@ -162,7 +180,10 @@ cdef class CLiten:
 
     def make_dtensor(self):
         """
-        Create data tensors for dimension tables
+        make_dtensor(name)
+        Create n-dimensional data tensor for all n dimension tables in cache
+        Returns
+           true if create successfully else false
         """
         result = self.tcache.MakeMaps()
         if (result):
@@ -170,6 +191,12 @@ cdef class CLiten:
         return result
     
     def query6(self):
+        """
+        query6()
+        Run Tpch query 6
+        Returns
+           query 6 result
+        """
         cdef:
             shared_ptr[CTpchDemo] sp_tpch_demo
             CTpchDemo* p_tpch_demo
@@ -193,6 +220,12 @@ WHERE
         return q6di
 
     def query5(self):
+        """
+        query5()
+        Run Tpch query 5
+        Returns
+           query 5 result
+        """
         cdef:
             shared_ptr[CTpchDemo] sp_tpch_demo
             CTpchDemo* p_tpch_demo
@@ -242,7 +275,16 @@ ORDER BY
         print("")
         q5di = Source(q5diggraphcmd, filename="_temp.gv", format="png")
         return q5di
+
+    def show_versions(self):
+        """
+        show_versions()
+        Returns
+          Liten cache version
+        """
+        return _version
     
     @property
     def version(self):
+        """ Liten Cache Version """
         return _version

@@ -1,6 +1,8 @@
 # disutils: language = c++
 # cython: language_level = 3
-
+"""
+Cython interface class to C++ Liten Cache and tables
+"""
 from libc.stdint cimport *
 from libcpp cimport bool as c_bool, nullptr
 from libcpp.functional cimport function

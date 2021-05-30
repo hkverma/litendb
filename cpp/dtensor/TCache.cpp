@@ -29,7 +29,8 @@ std::shared_ptr<TCache> TCache::GetInstance()
 std::string TCache::GetInfo()
 {
   std::stringstream ss;
-  ss << "[";
+  ss << "{\n";
+  ss << "\"Worker Threads\":" << numWorkerThreads_;
   for (auto tableId : cacheIds_)
   {
     auto it = tables_.find(tableId.second);
@@ -38,19 +39,19 @@ std::string TCache::GetInfo()
       LOG(ERROR) << tableId.first << ": No TTable";
       continue;
     }
-    LOG(INFO) << "Found table=" << tableId.first;
     auto ttable = it->second;
+    ss << ",\n";
     if (TTable::Dim == ttable->GetType()) {
-      ss << "Dim:" << tableId.first << ",";
+      ss << "\"Dim\":\"" << tableId.first << "\"";
     } else if (TTable::Fact == ttable->GetType()) {
-      ss << "Fact:" << tableId.first << ",";
+      ss << "\"Fact\":" << tableId.first << "\"";
     } else {
-      ss << "Unknown:" << tableId.first << ",";
+      ss << "\"Unknown\":" << tableId.first << "\"";
     }
     //ttable->PrintSchema();
     //ttable->PrintTable();
   }
-  ss << "]";
+  ss << "\n}";
   google::FlushLogFiles(google::INFO);  
   return ss.str();
 }
