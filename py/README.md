@@ -72,3 +72,4 @@ https://cython.readthedocs.io/en/latest/src/userguide/wrapping_CPlusPlus.html
 
 TODO - Clean notebooks. Reproduce on Azure web.
        Draw query plan, print query and result for each query.
+       Complete ML and NLP training data predictions
