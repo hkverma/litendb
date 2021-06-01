@@ -239,3 +239,18 @@ std::shared_ptr<arrow::Table> TCache::ReadCsv
   }
   return table;
 }
+
+// This gives a slice from offset from beginning of length length
+// TODO if read in cython, when does shared_ptr go out of scope
+std::shared_ptr<arrow::Table> TCache::Slice(std::string tableName, int64_t offset, int64_t length)
+{
+  auto arrTable = GetTable(tableName);
+  // No table by this name
+  if (nullptr == arrTable) {
+    return nullptr;
+  }
+  
+  auto slicedTable = arrTable->Slice(offset, length);
+  return slicedTable;
+  
+}

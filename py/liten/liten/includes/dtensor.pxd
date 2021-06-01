@@ -22,6 +22,7 @@ cdef extern from "dtensor.h" namespace "liten" nogil:
       ctypedef enum TType: Dim, Fact
       c_string GetName()
       shared_ptr[CTable] GetTable()
+      shared_ptr[CTable] Slice(int64_t offset, int64_t length)
       
    cdef cppclass CTCache" liten::TCache":
       shared_ptr[CTTable] AddTable(c_string name, shared_ptr[CTable] table, CTTable.TType)
@@ -31,6 +32,7 @@ cdef extern from "dtensor.h" namespace "liten" nogil:
       c_string GetInfo()
       int MakeMaps(c_string name)
       int MakeMaps()
+      shared_ptr[CTable] Slice(c_string tableName, int64_t offset, int64_t length)
 
 cdef extern from "TpchDemo.h" namespace "liten" nogil:
    cdef cppclass CTpchDemo" liten::TpchDemo":

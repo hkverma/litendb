@@ -101,6 +101,15 @@ namespace liten {
                                      std::shared_ptr<arrow::Table> table,
                                      TTable::TType type);
 
+    // Define various cuts here - slicing and dicing
+    // Examples are - point, range, set
+
+    // Defining first cut here based on index, it creates a new arrow table
+    // https://cubes.readthedocs.io/en/v1.0.1/slicing_and_dicing.html
+
+    // This gives a slice from offset from beginning of length length
+    std::shared_ptr<arrow::Table> Slice(std::string tableName, int64_t offset, int64_t length);
+    
   private:
 
     /// Get table from table uuid

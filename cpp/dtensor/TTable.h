@@ -46,6 +46,10 @@ namespace liten {
     TType GetType();
     int64_t NumColumns();
     int64_t NumRows();
+
+    // Get different cuts. For now it is a simple index cut - minIndex <= index <= maxIndex
+    // TODO do point, range, set cuts 
+    std::shared_ptr<arrow::Table> Slice(int64_t offset, int64_t length);
     
     // Options TODO create an options class
     static const bool EnableColumnReverseMap = false;

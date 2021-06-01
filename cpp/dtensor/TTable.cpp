@@ -127,3 +127,9 @@ void TTable::PrintMaps()
   }
   LOG(INFO) << ss.str();
 }
+
+// This gives a slice from offset from beginning of length length
+std::shared_ptr<arrow::Table> TTable::Slice(int64_t offset, int64_t length) {
+  auto arrTable = table_->Slice(offset, length);
+  return arrTable;
+}

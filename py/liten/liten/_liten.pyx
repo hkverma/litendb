@@ -103,7 +103,6 @@ cdef class CLiten:
 
     def info(self):
         """
-        info()
         return cache information including compute and storage 
         Returns
           string containing cache information
@@ -115,8 +114,7 @@ cdef class CLiten:
     
     def add_table(self, name, table, ttype):
         """
-        add_table(name, table, ttype)
-           Add arrow table in cache by name
+        Add arrow table in cache by name
         Parameters
            name: name of table
            table: arrow table to be added in liten cache
@@ -144,7 +142,6 @@ cdef class CLiten:
 
     def get_table(self, name):
         """
-        get_table(name)
         get arrow table by name name
         Parameters
           name: name of table
@@ -166,7 +163,6 @@ cdef class CLiten:
     
     def make_dtensor_table(self, name):
         """
-        make_dtensor_table(name)
         Create data-tensor for name table
         Parameters
            name: Name of table 
@@ -180,7 +176,6 @@ cdef class CLiten:
 
     def make_dtensor(self):
         """
-        make_dtensor(name)
         Create n-dimensional data tensor for all n dimension tables in cache
         Returns
            true if create successfully else false
@@ -192,7 +187,6 @@ cdef class CLiten:
     
     def query6(self):
         """
-        query6()
         Run Tpch query 6
         Returns
            query 6 result
@@ -221,7 +215,6 @@ WHERE
 
     def query5(self):
         """
-        query5()
         Run Tpch query 5
         Returns
            query 5 result
@@ -276,9 +269,24 @@ ORDER BY
         q5di = Source(q5diggraphcmd, filename="_temp.gv", format="png")
         return q5di
 
+    def slice(self, table_name, offset, length):
+        """
+        Parameters
+          table_name: name of table
+          offset: offset from beginning
+          length: number for rows to be sliced
+        Returns:
+          arrow table with the given slice, None if table not found
+        """
+        sp_table = self.tcache.Slice(litenutils.to_bytes(table_name), offset, length)
+        if (NULL == sp_table.get()):
+            print ("Failed to get table=", table_name)
+            return None
+        arr_table = pyarrow_wrap_table(sp_table)        
+        return arr_table
+        
     def show_versions(self):
         """
-        show_versions()
         Returns
           Liten cache version
         """
