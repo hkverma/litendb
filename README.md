@@ -502,6 +502,7 @@ These are some of the techniques being used in Liten code.
 ### TODO
 
 * Demo work
+  Use RecordBatches instead of Table in C++ code, make type names consistent across python and cpp
   Add pcap reading and parsing for network security work with streaming actions
   Reading logs from multiple database systems and doing performance analysis (say between Oracle and SQL-Server)
   

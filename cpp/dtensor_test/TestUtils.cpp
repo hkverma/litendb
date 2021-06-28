@@ -214,10 +214,12 @@ int ReadFile(std::string fileName)
   auto read_options = arrow::csv::ReadOptions::Defaults();
   auto parse_options = arrow::csv::ParseOptions::Defaults();
   auto convert_options = arrow::csv::ConvertOptions::Defaults();
+  
+  arrow::io::IOContext io_context = arrow::io::default_io_context();
 
   // Instantiate TableReader from input stream and options
   arrow::Result<std::shared_ptr<arrow::csv::TableReader>> readerResult
-    = arrow::csv::TableReader::Make(pool, inputStream, read_options,
+    = arrow::csv::TableReader::Make(io_context, inputStream, read_options,
                                     parse_options, convert_options);
   if (!readerResult.ok()) {
     std::cout << "Cannot read table " << fileName << std::endl;

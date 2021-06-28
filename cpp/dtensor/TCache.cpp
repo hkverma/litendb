@@ -200,8 +200,9 @@ std::shared_ptr<arrow::Table> TCache::ReadCsv
     arrow::io::RandomAccessFile::GetStream(fp, 0, fileSize);
     
   // Instantiate TableReader from input stream and options
+  arrow::io::IOContext ioContext = arrow::io::default_io_context();
   arrow::Result<std::shared_ptr<arrow::csv::TableReader>> readerResult
-    = arrow::csv::TableReader::Make(pool, inputStream, readOptions,
+    = arrow::csv::TableReader::Make(ioContext, inputStream, readOptions,
                                     parseOptions, convertOptions);
   if (!readerResult.ok()) {
     LOG(ERROR) << "Cannot read table " << csvFileName;
