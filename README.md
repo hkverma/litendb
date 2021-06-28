@@ -501,6 +501,10 @@ These are some of the techniques being used in Liten code.
 
 ### TODO
 
+* Demo work
+  Add pcap reading and parsing for network security work with streaming actions
+  Reading logs from multiple database systems and doing performance analysis (say between Oracle and SQL-Server)
+  
 * Clean LitenIntro_1.ipynb for print outputs
 * Design LitenIntro_2.ipynb with multiple remote cache
 
