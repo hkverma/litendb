@@ -24,6 +24,14 @@ class RCLiten:
     table_name = ""
     table_type = FactTable
         
+    def __init__(self):
+        """
+        Create and initialize remote Liten Cache
+        """
+        self.tc = cliten.CLiten()
+        self.table_name = "_t" + str(self.num_table);
+        self.table_type = FactTable
+        
     def __cinit__(self):
         """
         Create and initialize remote Liten Cache
