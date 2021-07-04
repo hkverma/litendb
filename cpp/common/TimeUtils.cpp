@@ -5,9 +5,10 @@ namespace liten
 
   // for now use boost::posix_time
   // Use time_point calendars when move to C++-20 standards
-  int64_t SecondsSinceEpoch(boost::gregorian::date d, boost::posix_time::time_duration td)
+  int64_t SecondsSinceEpoch(boost::gregorian::date d,
+                            boost::posix_time::time_duration offset)
   {
-    boost::posix_time::ptime t(d, td);
+    boost::posix_time::ptime t(d, offset);
     boost::posix_time::ptime start(boost::gregorian::date(1970,1,1));
     boost::posix_time::time_duration dur = t - start;
     time_t epoch = dur.total_seconds();
@@ -23,4 +24,14 @@ namespace liten
     time_t epoch = dur.total_seconds();
     return (int64_t)epoch;
   }
+
+  int32_t DaysSinceEpoch(boost::gregorian::date d,
+                         boost::posix_time::time_duration offset)
+  {
+    int64_t dur = SecondsSinceEpoch(d, offset);
+    dur = dur/(24*60*60);
+    int32_t days = (int32_t)dur;
+    return days;
+  }
+  
 };

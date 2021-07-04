@@ -37,13 +37,13 @@ TpchDemo::TpchDemo(std::shared_ptr<TCache> tCache) :
       tCache_(tCache) {
   // constants
   date19970101Value =
-    SecondsSinceEpoch(boost::gregorian::date(1997, 1, 1), boost::posix_time::seconds(0));
+    DaysSinceEpoch(boost::gregorian::date(1997, 1, 1));
   date19971231Value =
-    SecondsSinceEpoch(boost::gregorian::date(1997, 12, 31), boost::posix_time::seconds(0));
+    DaysSinceEpoch(boost::gregorian::date(1997, 12, 31));
   date19950101Value =
-    SecondsSinceEpoch(boost::gregorian::date(1995, 1, 1), boost::posix_time::seconds(0));
+    DaysSinceEpoch(boost::gregorian::date(1995, 1, 1));
   date19951231Value =
-    SecondsSinceEpoch(boost::gregorian::date(1995, 12, 31), boost::posix_time::seconds(0));
+    DaysSinceEpoch(boost::gregorian::date(1995, 12, 31));
 }
 
 
@@ -120,7 +120,7 @@ double TpchDemo::Query6Serial()
     return 0;
   }
   int shipdateChunkNum=0, discountChunkNum=0, quantityChunkNum=0, extendedpriceChunkNum=0;
-  TColumnIterator<int64_t, arrow::Int64Array> shipdateIter(lShipdate);
+  TColumnIterator<int32_t, arrow::Int32Array> shipdateIter(lShipdate);
   TColumnIterator<double, arrow::DoubleArray> discountIter(lDiscount);
   TColumnIterator<int64_t, arrow::Int64Array> quantityIter(lQuantity);
   TColumnIterator<double, arrow::DoubleArray> extendedpriceIter(lExtendedprice);
@@ -135,7 +135,8 @@ double TpchDemo::Query6Serial()
   }
 
   double revenue = 0;
-  int64_t shipdateValue, quantityValue;
+  int32_t shipdateValue;
+  int64_t quantityValue;
   double discountValue, extendedpriceValue;
 
   // for now do a full table scan need to build filtering metadata per column chunk
@@ -158,7 +159,7 @@ double TpchDemo::Query6Serial()
 
 void TpchDemo::GetQuery6Revenue(int64_t chunkNum, double& revenue)
 {
-  auto shipdate = std::static_pointer_cast<arrow::Int64Array>(lShipdate->chunk(chunkNum));
+  auto shipdate = std::static_pointer_cast<arrow::Int32Array>(lShipdate->chunk(chunkNum));
   auto discount = std::static_pointer_cast<arrow::DoubleArray>(lDiscount->chunk(chunkNum));
   auto quantity = std::static_pointer_cast<arrow::Int64Array>(lQuantity->chunk(chunkNum));
   auto extendedprice = std::static_pointer_cast<arrow::DoubleArray>(lExtendedprice->chunk(chunkNum));
@@ -299,7 +300,8 @@ std::shared_ptr<std::unordered_map<std::string, double>> TpchDemo::Query5Serial(
 
   ClearQ5Revenues();
 
-  int64_t orderRowId, oOrderdateValue;
+  int64_t orderRowId;
+  int32_t oOrderdateValue;
   int64_t suppRowId, sNationkeyValue;
   int64_t nationRowId;
   int64_t nRegionkeyValue;
@@ -387,7 +389,7 @@ std::shared_ptr<std::unordered_map<std::string, double>> TpchDemo::Query5Serial(
     // l_orderkey = o_orderkey
     // and o_orderdate >= date '1995-01-01'
     // and o_orderdate < date '1995-01-01' + interval '1' year
-    if (!JoinInner<int64_t, arrow::Int64Array>
+    if (!JoinInner<int64_t, arrow::Int64Array, int32_t, arrow::Int32Array>
         (tables_[orders],
          lOrderkeyValue, o_orderkey, ordersGetRowIdTime,
          oOrderdateValue, o_orderdate, ordersGetValTime, 0))

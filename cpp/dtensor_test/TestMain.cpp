@@ -39,12 +39,13 @@ int main(int argc, char** argv) {
     fileName /= tableName;
     auto ttable = tCache->ReadCsv(TpchDemo::tableNames[i], fileName,
                                   readOptions, parseOptions, convertOptions);
-    //ttable->Print();
+    ttable->PrintSchema();
+    //ttable->PrintTable();
   }
   // tpchDemo->PrintSchemas();
   std::string cacheInfo = tCache->GetInfo();
   LOG(INFO) << "Cache=" << cacheInfo;
-  
+
   // tpchDemo will probe cache to get all the tables
   shared_ptr<TpchDemo> tpchDemo = TpchDemo::GetInstance(tCache);
 

@@ -202,15 +202,16 @@ namespace liten {
   }
   
   // This performs the following operation
-  // 1. Find arrId, rowId where leftTable[leftColNum][rowId] == leftValue
-  // 2. Return rightValue equal to rightTable[rightColNum][rowId]
+  // 1. Find arrId, rowId where leftTable[lefttColNum][arrId,rowId] == leftValue
+  // 2. Return rightValue equal to rightTable[rightColNum][arrId,rowId]
   //
-  template<class Type, class ArrayType> inline
+  template<class TypeLeft, class ArrayTypeLeft,
+           class TypeRight=TypeLeft, class ArrayTypeRight=ArrayTypeLeft> inline
   bool JoinInner(std::shared_ptr<TTable> table, // Table
-                 Type& leftValue,      // leftValue Input
+                 TypeLeft& leftValue,      // leftValue Input
                  int64_t leftColNum,      // leftColNum
                  int64_t& leftRowIdInMicroseconds,   // time taken to look for leftValue
-                 Type& rightValue,    // rightValue output
+                 TypeRight& rightValue,    // rightValue output
                  int64_t rightColNum,     // right Col Num
                  int64_t& rightValueInMicroseconds,  // time taken to look for rightValue
                  int32_t mapNum)               // worker Number
@@ -219,7 +220,7 @@ namespace liten {
     int64_t rowId, arrId;
     StopWatch timer;
     timer.Start();
-    bool result = GetRowId<Type, ArrayType>(arrId, rowId, leftValue, table, leftColNum, mapNum);
+    bool result = GetRowId<TypeLeft, ArrayTypeLeft>(arrId, rowId, leftValue, table, leftColNum, mapNum);
     timer.Stop();
     leftRowIdInMicroseconds += timer.ElapsedInMicroseconds();
     if (!result)
@@ -228,7 +229,7 @@ namespace liten {
     }
 
     timer.Start();
-    result = GetValue<Type, ArrayType>(arrId, rowId, rightValue, table, rightColNum);
+    result = GetValue<TypeRight, ArrayTypeRight>(arrId, rowId, rightValue, table, rightColNum);
     timer.Stop();
     rightValueInMicroseconds += timer.ElapsedInMicroseconds();
 
