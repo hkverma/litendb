@@ -480,6 +480,103 @@ Follow the README file to create data files and queries.
 
 The results of the TPC runs are in benchmarks/README.md
 
+### Software Architecture
+
+#### TCache
+Thread safe simple Key-Value storage for buffer management
+Get a sha512 on schema json. Sha512 is the name of the schema.
+array_uuid is added in ascending version
+```
+{[table_name, field_name]-> vector<TLinkedListFastLookup(array_uuid,version)>
+{schema_sha512}
+```
+If in DDR-RAM, there is a map from array_uuid to Array pointer.
+unordered_map<array_uuid, array_ptr>
+
+List of all the tables and schema is stored separately
+```
+unordered_map<table_name, schema_sha512>
+```
+We also maintain the latest version of the data. version starts from 0 and increased every time a change is made.
+```
+uint64_t current_version
+```
+CacheManager (LRU or NFU or Time-region-based), evict if cache size exceeds max
+
+#### TMetaPersist
+Buffer-Manager to read and write TCache components like – {UUID.array, table_name, field_name, version}
+
+#### DataViews
+
+Dataviews are from cache structure. 
+They can to be rebuilt lazily or eagerly once commit has been called for a new version.
+
+Dataviews are created for a given table name. Given a memory structure TTable can be partial and full table. 
+Howevr TRowBlock is always served, and one should be able to hold it in memory.
+
+|View      | Information          |
+| -------  | --------------       |
+|TRowBlock | vector [array_ptr]   |
+|TTable    | vector [TRowBlock]   |
+
+
+
+#### DataTensorView
+TColumnMap has Reverse Index, Zone-map (min-max)
+
+#### Liten Cache Operations
+Exposed through GQL or REST
+Cache-ops
+```
+Download-table (table_name, table URI) 
+Remove-table(table_name)
+```
+Table URI is most likely in S3/ABFS etc.
+For streaming operations.
+```
+Add-rowblock([start_time,end_time], table_name, rowblock URI) – Used for streaming
+```
+Streaming data must be presented in order of time
+Buidling tensor views
+```
+build-data-tensor(table_name)
+```
+
+#### Hierarchy
+Extra dataviews to create the hierarchy
+
+
+#### Liten Transactional
+Liten array is immutable. Each transaction creates a new array with a new version. 
+Use delta table to keep a transaction storage views.
+```
+update(key,value)
+delete(key)
+```
+
+#### Liten datatensor operations
+Cube is a view of the arrow data. It is generated based on the user query.
+The indices can be point, range or set
+```
+point - one value such as 12-12-21 or 'Adam' etc
+range - between min and max ['12-12-20':'12-12;-21'], [0:4]
+set - list of values [2,4,8]
+```
+Multidimensional indices will be viewed as indices as shown below
+```
+ordertable[orderitem][region][city]
+```
+One can apply aggregate operations on chosen cubes
+```
+aggregate(cell)
+```
+
+#### ROLAP - OLAP using Relational SQL
+Use Liten to OLAP operations
+Use Velox for all vector operations, compare with Gandiva
+Use Liten for data store and managemement
+
+
 #### Concepts
 
 These are some of the techniques being used in Liten code.
@@ -495,18 +592,19 @@ These are some of the techniques being used in Liten code.
 * DSLs on DAGs - lazy evaluation
 
 
-#### Tasks
+### Tasks
 
-### In Progress
-
-### TODO
-
-* Demo work
-
+#### In Progress
+  Modify Liten to enable these two operations
+  
   Change ML training example and add features as table in Liten as well
   Add pcap reading and parsing for network security work with streaming actions
   
   Use RecordBatches instead of Table in C++ code, make type names consistent across python and cpp
+
+#### TODO
+
+  Explore Splunk addition
   
   Reading logs from multiple database systems and doing performance analysis (say between Oracle and SQL-Server)
   
@@ -522,7 +620,7 @@ These are some of the techniques being used in Liten code.
 * Register Liten library with pytest 
 * 
 
-### Ideas
+#### Ideas
 
 * Added LCache as class in package. Works with local as well as Ray remote code. Build the demo here.
 
@@ -544,11 +642,11 @@ These are some of the techniques being used in Liten code.
 
 * Use arrow::Result to return Status along with the value
 
-### Completed
+#### Completed
 * Added LitenIntro_0.ipynb - Added dimention and fact tabes
 * Added LitenIntro_1.ipynb Works with Ray remote calls
 
-### To Write
+#### To Write
 
 * Writing tests
 * Code review
