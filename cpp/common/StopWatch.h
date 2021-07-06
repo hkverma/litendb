@@ -1,8 +1,8 @@
-#include <chrono>
-
 #pragma once
 
-// TODO make it thread safe
+#include <chrono>
+
+// TBD make it thread safe
 
 namespace liten
 {

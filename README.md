@@ -487,12 +487,17 @@ Thread safe simple Key-Value storage for buffer management
 Get a sha512 on schema json. Sha512 is the name of the schema.
 array_uuid is added in ascending version
 ```
-{[table_name, field_name]-> vector<TLinkedListFastLookup(array_uuid,version)>
+{[table_name, field_name]-> map<version, array_uuid>
 {schema_sha512}
 ```
 If in DDR-RAM, there is a map from array_uuid to Array pointer.
+```
 unordered_map<array_uuid, array_ptr>
-
+```
+There is also a map to know version for a given array_uuid
+```
+unordered_map<array_uuid, version>
+```
 List of all the tables and schema is stored separately
 ```
 unordered_map<table_name, schema_sha512>

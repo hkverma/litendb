@@ -8,11 +8,11 @@
 // external synchronization.
 
 // Adapted from Apache Arrow, Apache Kudu, TensorFlow
-
 #pragma once
+
 #include <memory>
-#include "Macros.h"
-#include "StringBuilder.h"
+#include <Macros.h>
+#include <StringBuilder.h>
 
 /*
 /// \brief Return with given status if condition is met.
