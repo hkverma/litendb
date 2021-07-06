@@ -1,7 +1,7 @@
-
-#include <arrow/api.h>
-
 #pragma once
+
+#include <common.h>
+
 
 //
 // provide hash template with uuid
@@ -24,7 +24,7 @@ namespace liten {
   class TBlock {
   public:
     /// Wrap Arrow array in TBlock
-    TBlock(arrow::shared_ptr<arrow::Array> arr) : arr_(arr) { }
+    TBlock(std::shared_ptr<arrow::Array> arr) : arr_(arr) { }
     /// Destruct the array, nothing to do here
     ~TBlock() { }
     /// Get Raw Array, Use it judiciously to enable easy transformations

@@ -1,13 +1,15 @@
-#include "TCache.h"
 #include <iostream>
 #include <common.h>
+
+#include <TBlock.h>
+#include <TCache.h>
 
 #include <boost/uuid/random_generator.hpp>
 
 using namespace liten;
 
 // For now the columnChunk should be present here.
-// TODO In future it could not be here, in that case fetch it if not present here
+// TBD In future it could not be here, in that case fetch it if not present here
 //      Use status code to return back instance
 //      Use arrow::Result type object for getting value
 
@@ -20,34 +22,31 @@ std::shared_ptr<TCache> TCache::GetInstance()
   if (tCache_ == nullptr)
   {
     tCache_ = std::make_shared<TCache>();
-    google::InitGoogleLogging("liten");
   }
-  LOG(INFO) << "Created a new TCache";
+  TLOG(INFO) << "Created a new TCache";
   return tCache_;
 }
+
+// $$$$$$
 
 std::string TCache::GetInfo()
 {
   std::stringstream ss;
   ss << "{\n";
-  ss << "\"Worker Threads\":" << numWorkerThreads_;
-  for (auto tableId : cacheIds_)
+  ss << TConfigs::GetInstance()->GetComputeInfo();
+  for (auto tableId : tablesUri_)
   {
-    auto it = tables_.find(tableId.second);
-    if (it == tables_.end())
-    {
-      LOG(ERROR) << tableId.first << ": No TTable";
-      continue;
-    }
-    auto ttable = it->second;
+    auto tableName = 
+    auto tableType = tableId.second.second;
     ss << ",\n";
-    if (TTable::Dim == ttable->GetType()) {
-      ss << "\"Dim\":\"" << tableId.first << "\"";
+    if (DimensionTable == tableType) {
+      ss << "\"Dim\":\"" << tableName << "\"";
     } else if (TTable::Fact == ttable->GetType()) {
       ss << "\"Fact\":" << tableId.first << "\"";
     } else {
       ss << "\"Unknown\":" << tableId.first << "\"";
     }
+    ss << tableId.second.first << "\"";
     //ttable->PrintSchema();
     //ttable->PrintTable();
   }
@@ -68,7 +67,7 @@ std::shared_ptr<TTable> TCache::ReadCsv
   std::shared_ptr<TTable> table = GetTable(tableName);
   if (nullptr != table)
   {
-    LOG(INFO) << "Cannnot read " << csvFileName << " table name already exists " << tableName;
+    TLOG(INFO) << "Cannnot read " << csvFileName << " table name already exists " << tableName;
     return table;
   }
 
@@ -118,11 +117,11 @@ std::shared_ptr<TTable> TCache::AddTable(std::string tableName,
   boost::uuids::uuid cacheId;
   if (GetId(tableName, cacheId))
   {
-    LOG(ERROR) << "Adding another table with an existing table name " << tableName;
+    TLOG(ERROR) << "Adding another table with an existing table name " << tableName;
     return nullptr;
   }
   
-  LOG(INFO) << "Adding new table " << tableName;
+  TLOG(INFO) << "Adding new table " << tableName;
   auto ttable = std::make_shared<TTable>(tableName, table, type);
   cacheId = idGenerator();
   tables_[cacheId] = ttable;
@@ -141,14 +140,14 @@ int TCache::MakeMaps(std::shared_ptr<TTable> ttable)
 {
   if (nullptr == ttable)
   {
-    LOG(ERROR) << "Failed to create data-tensor. Did not find in cache table " << ttable->GetName();
+    TLOG(ERROR) << "Failed to create data-tensor. Did not find in cache table " << ttable->GetName();
     return 1;
   }
   // TODO are numCopies needed? remove it.
   int result = ttable->MakeMaps(1); 
   if (result)
   {
-    LOG(ERROR) << "Found table " << ttable->GetName() << " but failed to create data tensor";
+    TLOG(ERROR) << "Found table " << ttable->GetName() << " but failed to create data tensor";
   }
   return result;
 }
@@ -182,7 +181,7 @@ std::shared_ptr<arrow::Table> TCache::ReadCsv
   arrow::Result<std::shared_ptr<arrow::io::ReadableFile>> fpResult =
     arrow::io::ReadableFile::Open(csvFileName, pool);
   if (!fpResult.ok()) {
-    LOG(ERROR) << "Cannot open file " << csvFileName;
+    TLOG(ERROR) << "Cannot open file " << csvFileName;
     return nullptr;
   }
   std::shared_ptr<arrow::io::ReadableFile> fp = fpResult.ValueOrDie();
@@ -190,7 +189,7 @@ std::shared_ptr<arrow::Table> TCache::ReadCsv
   // Get fileSizeResult
   arrow::Result<int64_t> fileSizeResult = fp->GetSize();
   if (!fileSizeResult.ok()) {
-    LOG(ERROR) << "Unknown filesize for file " << csvFileName;
+    TLOG(ERROR) << "Unknown filesize for file " << csvFileName;
     return nullptr;
   }
   int64_t fileSize = fileSizeResult.ValueOrDie();
@@ -205,7 +204,7 @@ std::shared_ptr<arrow::Table> TCache::ReadCsv
     = arrow::csv::TableReader::Make(ioContext, inputStream, readOptions,
                                     parseOptions, convertOptions);
   if (!readerResult.ok()) {
-    LOG(ERROR) << "Cannot read table " << csvFileName;
+    TLOG(ERROR) << "Cannot read table " << csvFileName;
     return nullptr;
   }
   std::shared_ptr<arrow::csv::TableReader> reader = readerResult.ValueOrDie();
@@ -215,7 +214,7 @@ std::shared_ptr<arrow::Table> TCache::ReadCsv
   if (!tableResult.ok()) {
     // Handle CSV read error
     // (for example a CSV syntax error or failed type conversion)
-    LOG(ERROR) << "Reading csv table";
+    TLOG(ERROR) << "Reading csv table";
     return nullptr;
   }
     
@@ -223,18 +222,18 @@ std::shared_ptr<arrow::Table> TCache::ReadCsv
   
   // Log table information
   std::vector<std::shared_ptr<arrow::ChunkedArray>> cols = table->columns();
-  LOG(INFO) << "Total columns=" << cols.size();
+  TLOG(INFO) << "Total columns=" << cols.size();
   int64_t numChunks = cols[0]->num_chunks();
   for (int i=0; i<cols.size(); i++) {
     if (cols[i]->num_chunks() != numChunks) {
-      LOG(ERROR) << "Chunks " << cols[i]->num_chunks() << " != " << numChunks;
+      TLOG(ERROR) << "Chunks " << cols[i]->num_chunks() << " != " << numChunks;
     }
   }
   for (auto i=0; i<cols.size(); i++) {
     for (auto j=0; j<numChunks; j++) {
       if (cols[i]->chunk(j)->length() != cols[0]->chunk(j)->length()) {
-        LOG(ERROR) << "Col " << i << " Chunk " << j ;
-        LOG(ERROR) << "Chunk length " << cols[i]->chunk(j)->length() << "!=" << cols[0]->chunk(j)->length() ;
+        TLOG(ERROR) << "Col " << i << " Chunk " << j ;
+        TLOG(ERROR) << "Chunk length " << cols[i]->chunk(j)->length() << "!=" << cols[0]->chunk(j)->length() ;
       }
     }
   }

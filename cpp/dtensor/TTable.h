@@ -27,12 +27,11 @@ namespace liten {
   class TTable {
   public:
 
-    enum TType {Dim=0, Fact};
+    enum Type {DimensionTable=0, FactTable};
     
-    TTable(std::string& tableName)
-      : name_(tableName), table_(nullptr), schema_(nullptr), type_(Dim) { }
-    TTable(std::string name, std::shared_ptr<arrow::Table> table, TType type);
-    
+    TTable(std::string name, Type type, std::string uri);
+
+    // $$$$$$$
     void PrintSchema();
     void PrintTable();
 

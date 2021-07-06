@@ -90,7 +90,7 @@ namespace liten {
     std::shared_ptr<arrow::Table> Slice(std::string tableName, int64_t offset, int64_t length);
 
     using VersionToUuidMap = std::map<int64_t, boost::uuids::uuid>;
-    using TableNameColumnNamePair = std::pair<std:;string, std::string>;
+    using TableNameColumnNamePair = std::pair<std::string, std::string>;
     
   private:
 
@@ -105,13 +105,12 @@ namespace liten {
     /// @param cacheId UUid for the given pair
     bool GetId(TableNameColumnNamePair blockName, boost::uuids::uuid& cacheId);
 
-    /// hash map table name to its URI
-    std::unordered_map<string tableName, string tableUri> tablesUri_;
+    /// hash map table name to table information
+    std::unordered_map<std::string, std::shared<TTable>> tablesUri_;
     
     /// A singleton cache keeps all the tables
     static std::shared_ptr<TCache> tCache_;
 
-    /// CacheConfig 
   };
 
 };
