@@ -9,17 +9,23 @@
 // Stored as a Redis table for persistence. 
 // TCatalog is prepared from MySQL database. Any updated in MySQL should be updated to TCatalog.
 //
-#include <vector>
-#include <map>
-#include <boost/uuid/uuid.hpp>
+
+#pragma once
+
+//#include <vector>
+//#include <map>
+//#include <boost/uuid/uuid.hpp>
 // Need scalar before arrow/api.h to access full class definitions
-#include <arrow/scalar.h>
-#include <arrow/api.h>
-#include <arrow/csv/api.h>
+//#include <arrow/scalar.h>
+//#include <arrow/api.h>
+//#include <arrow/csv/api.h>
+
+#include <common.h>
 
 #include <TColumnMap.h>
 
-#pragma once
+class TColumn;
+class TRowBlock;
 
 namespace liten {
   
@@ -27,9 +33,20 @@ namespace liten {
   class TTable {
   public:
 
-    enum Type {DimensionTable=0, FactTable};
-    
+    /// Tables are either dimension or fact tables
+    enum Type {Dimension=0, Fact};
+
+    /// Construct a table
+    /// @param name of the table
+    /// @param type if dimension or fact table
+    /// @param uri is a uniform resource allocator for raw file
     TTable(std::string name, Type type, std::string uri);
+
+    /// Construct a table
+    /// @param name of the table
+    /// @param type if dimension or fact table
+    /// @param table an arrow table that has been read 
+    TTable(std::string name, Type type, std::shared_ptr<arrow::Table> table);
 
     // $$$$$$$
     void PrintSchema();
@@ -42,7 +59,10 @@ namespace liten {
     std::shared_ptr<arrow::Table> GetTable();
     std::shared_ptr<arrow::Array> GetArray(int64_t rowNum, int64_t colNum);
     std::string GetName();
-    TType GetType();
+
+    /// Type of table - dim or fact
+    Type GetType();
+    
     int64_t NumColumns();
     int64_t NumRows();
 
@@ -54,11 +74,18 @@ namespace liten {
     static const bool EnableColumnReverseMap = false;
     
   private:
-    // Arrow table information
+    /// Arrow table name, must be unique
     std::string name_;
+    /// Type of table -fact or dimension
+    Type type_;
+    /// Tables consist of columnar series
+    std::vector<std::shared_ptr<TColumn>> columns_;
+    /// Tables consist of columnar series
+    std::vector<std::shared_ptr<TRowBlock>> rowBlocks_;
+    /// Schema of the table
     std::shared_ptr<arrow::Schema> schema_;
-    std::shared_ptr<arrow::Table> table_;
-    TType type_;
+    
+    // TBD std::shared_ptr<arrow::Table> table_;
     // Table Maps
     // TODO One copy should be sufficient, multiple copies will not make it faster
     int32_t numMapCopies_ = 0;

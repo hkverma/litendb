@@ -1,10 +1,8 @@
-#include <iostream>
+//#include <iostream>
 #include <common.h>
 
 #include <TBlock.h>
 #include <TCache.h>
-
-#include <boost/uuid/random_generator.hpp>
 
 using namespace liten;
 
@@ -16,7 +14,7 @@ using namespace liten;
 /// Singleton cache instance
 std::shared_ptr<TCache> TCache::tCache_ = nullptr;
 
-/// Get a singleton instance, if not present create one
+// Get a singleton instance, if not present create one
 std::shared_ptr<TCache> TCache::GetInstance()
 {
   if (tCache_ == nullptr)
@@ -27,32 +25,82 @@ std::shared_ptr<TCache> TCache::GetInstance()
   return tCache_;
 }
 
-// $$$$$$
-
+// Get Cache information
 std::string TCache::GetInfo()
 {
   std::stringstream ss;
   ss << "{\n";
   ss << TConfigs::GetInstance()->GetComputeInfo();
-  for (auto tableId : tablesUri_)
+  for (auto& tableId : tablesUri_)
   {
-    auto tableName = 
-    auto tableType = tableId.second.second;
+    std::string& tableName = tableId.first;
+    auto tTable = tableId.second;
     ss << ",\n";
-    if (DimensionTable == tableType) {
+    if (TTable::Dimension == tTable->GetType()) {
       ss << "\"Dim\":\"" << tableName << "\"";
     } else if (TTable::Fact == ttable->GetType()) {
-      ss << "\"Fact\":" << tableId.first << "\"";
+      ss << "\"Fact\":" << tableName << "\"";
     } else {
-      ss << "\"Unknown\":" << tableId.first << "\"";
+      ss << "\"Unknown\":" << tableName << "\"";
     }
-    ss << tableId.second.first << "\"";
     //ttable->PrintSchema();
     //ttable->PrintTable();
   }
   ss << "\n}";
-  google::FlushLogFiles(google::INFO);  
+  TLog::GetInstance()->FlushLogFile(TLog::Info);
   return ss.str();
+}
+
+std::shared_ptr<TTable> TCache::GetTTable(std::string tableName)
+{
+  auto itr = tables_.find(tableName);
+  if (tables_.end() == itr)
+    return nullptr;
+  return (itr->second);
+}
+
+// $$$$$$
+
+// Todo make it thread-safe
+std::shared_ptr<TTable> TCache::AddTable(std::string tableName,
+                                         TTable::TType type,
+                                         std::shared_ptr<arrow::Table> table)
+                                         
+{
+  auto tTable = GetTTable(tableName);
+  if (tTable) {
+    TLOG(ERROR) << "Adding another table with an existing table name " << tableName;
+    return nullptr;
+  }
+  
+  boost::uuids::uuid cacheId;
+  if (GetId(tableName, cacheId))
+  {
+  }
+  
+  TLOG(INFO) << "Adding new table " << tableName;
+  try {
+    auto ttable = make_shared<TTable>(tableName, type, table);
+    if (nullptr = ttable) {
+      TLOG(ERROR) << "Adding table table name " << tableName;
+      return nullptr;
+    }
+    
+  }
+  catch (std::exception& e)
+  {
+    TLOG(ERROR) << "Adding table name " << tableName << " failed with exception " << e.what();
+  }
+  return nullptr;
+}
+
+bool TCache::GetId(std::string tableName, boost::uuids::uuid& cacheId)
+{
+  auto itr = blockIds_.find(tableName);
+  if (itr ==  cacheIds_.end())
+    return false;
+  cacheId = itr->second;
+  return true;
 }
 
 /// Read csv file in a new table tableName. tableName should be unique
@@ -101,33 +149,6 @@ std::shared_ptr<TTable> TCache::GetTable(std::string tableName)
   return nullptr;
 }
 
-bool TCache::GetId(std::string tableName, boost::uuids::uuid& cacheId)
-{
-  auto itr = cacheIds_.find(tableName);
-  if (itr ==  cacheIds_.end())
-    return false;
-  cacheId = itr->second;
-  return true;
-}
-
-std::shared_ptr<TTable> TCache::AddTable(std::string tableName,
-                                         std::shared_ptr<arrow::Table> table,
-                                         TTable::TType type)
-{
-  boost::uuids::uuid cacheId;
-  if (GetId(tableName, cacheId))
-  {
-    TLOG(ERROR) << "Adding another table with an existing table name " << tableName;
-    return nullptr;
-  }
-  
-  TLOG(INFO) << "Adding new table " << tableName;
-  auto ttable = std::make_shared<TTable>(tableName, table, type);
-  cacheId = idGenerator();
-  tables_[cacheId] = ttable;
-  cacheIds_[tableName] = cacheId;
-  return ttable;
-}
 
 int TCache::MakeMaps(std::string tableName)
 {

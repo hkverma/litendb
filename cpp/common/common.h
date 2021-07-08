@@ -1,3 +1,7 @@
+#include <unordered_map>
+#include <vector>
+#include <string>
+
 #include <arrow/api.h>
 #include <arrow/csv/api.h>
 #include <arrow/filesystem/api.h>

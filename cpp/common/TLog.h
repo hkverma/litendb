@@ -9,6 +9,7 @@
 namespace liten
 {
   
+
   /// Liten wide logging use this interface, using google logging for now
   class TLog
   {
@@ -51,6 +52,13 @@ namespace liten
     };
     
     ~TLog() { }
+    
+    /// Flush log files with minimum severity
+    void FlushLogFiles(google::LogSeverity min_severity) {
+      google::FlushLogFiles(min_severity);
+    }
+
+    const google::LogSeverity Info = google::INFO;
     
   private:
 

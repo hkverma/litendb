@@ -23,6 +23,17 @@
 
 namespace liten {
 
+  class TColumn {
+  public:
+    
+  private:    
+    /// Arrow table name, must be unique
+    std::string name_;
+    /// Type of column -fact or dimension
+    Table::Type type_;
+    
+  };
+  
   // arrow::ChunkedArray Iterator
   template <class Type, class ArrayType>
   class TColumnIterator

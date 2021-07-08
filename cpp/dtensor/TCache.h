@@ -24,17 +24,9 @@
 // TODO
 //   Add and remove tables, clear cache commands needed
 //
-#include <unordered_map>
-#include <common.h>
-
-#include <arrow/api.h>
-#include <arrow/csv/api.h>
-#include "TTable.h"
 
 #pragma once
-//
-// Cache a ttable some
-//  remote storage, local storage, in-memory (that is cache hierarchy)
+#include <common.h>
 
 namespace liten {
 
@@ -48,6 +40,11 @@ namespace liten {
     /// Get Cache info
     std::string GetInfo();
     
+    /// Add table to cache
+    std::shared_ptr<TTable> AddTable(std::string name,
+                                     std::shared_ptr<arrow::Table> table,
+                                     TTable::TType type);
+    // $$$$$$
     /// Read csv file for now
     std::shared_ptr<TTable> ReadCsv
       (std::string tableName,
@@ -75,10 +72,6 @@ namespace liten {
     /// Make maps for all dimension tables
     int MakeMaps();
 
-    /// Add table to cache
-    std::shared_ptr<TTable> AddTable(std::string name,
-                                     std::shared_ptr<arrow::Table> table,
-                                     TTable::TType type);
 
     // Define various cuts here - slicing and dicing
     // Examples are - point, range, set
@@ -94,22 +87,18 @@ namespace liten {
     
   private:
 
-    /// Map an array uuid to an array pointer
-    std::unordered_map<boost::uuids::uuid, std::shared_ptr<TBlock>> blocks_;
-    
-    /// map table name and field_name to a map containing pairs of version and array UUIDs
-    std::unordered_map<TableNameColumnNamePair, VersionToUuidMap> blockIds_;
+    /// A singleton cache keeps all the tables
+    static std::shared_ptr<TCache> tCache_;
+
+    /// Get Id for given table name and field name
+    /// @param tableName name of the table
+    /// returns ptr to TTable, null if not present
+    std::shared_ptr<TTable> GetTTable(std::string tableName);
     
     /// Get Id for given table name and field name
     /// @param blockName table and column name
     /// @param cacheId UUid for the given pair
     bool GetId(TableNameColumnNamePair blockName, boost::uuids::uuid& cacheId);
-
-    /// hash map table name to table information
-    std::unordered_map<std::string, std::shared<TTable>> tablesUri_;
-    
-    /// A singleton cache keeps all the tables
-    static std::shared_ptr<TCache> tCache_;
 
   };
 
