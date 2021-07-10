@@ -84,8 +84,10 @@ namespace liten {
     std::vector<std::shared_ptr<TRowBlock>> rowBlocks_;
     /// Schema of the table
     std::shared_ptr<arrow::Schema> schema_;
+
+    /// Arrow table from which this table was created
+    std::shared_ptr<arrow::Table> table_;
     
-    // TBD std::shared_ptr<arrow::Table> table_;
     // Table Maps
     // TODO One copy should be sufficient, multiple copies will not make it faster
     int32_t numMapCopies_ = 0;

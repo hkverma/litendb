@@ -18,8 +18,11 @@ namespace liten {
     /// A singleton class for catalog
     static std::shared_ptr<TCatalog> tCatalog_;
       
-    /// Map an array uuid to an array pointer
-    std::unordered_map<boost::uuids::uuid, std::shared_ptr<TBlock>> blocks_;
+    /// Map an uuid to a block pointer
+    std::unordered_map<boost::uuids::uuid, std::shared_ptr<TBlock>> idToBlock_;
+    
+    /// Map a block pointer to a UUID
+    std::unordered_map<std::shared_ptr<TBlock>, boost::uuids::uuid> blockToId_;
     
     /// map table name and field_name to a map containing pairs of version and array UUIDs
     std::unordered_map<TableNameColumnNamePair, VersionToUuidMap> blockIds_;

@@ -26,12 +26,23 @@ namespace liten {
   class TColumn {
   public:
     
+    /// Construct a column
+    /// @param name of the column
+    /// @param type if dimension or fact table
+    /// @param chunkedArrow an arrow table that has been read 
+    TColumn(std::string name,
+            Type type,
+            std::shared_ptr<arrow::ChunkedArray> chunkedArray);
+    
   private:    
     /// Arrow table name, must be unique
     std::string name_;
+    
     /// Type of column -fact or dimension
     Table::Type type_;
-    
+
+    /// chunkedArrows from which TCache was created
+    std::unique_ptr<arrow::ChunkedArray> chunkedArray_;
   };
   
   // arrow::ChunkedArray Iterator

@@ -39,12 +39,17 @@ namespace liten {
     
     /// Get Cache info
     std::string GetInfo();
+
+    /// Add Block to Cache
+    /// @param block TBlock pointer to be added
+    /// @param uuid a new uuid if addition was successful
+    Status AddBlock(shared_ptr<TBlock> block, boost::uuids::uuid& id);
     
+    // $$$$$$
     /// Add table to cache
     std::shared_ptr<TTable> AddTable(std::string name,
                                      std::shared_ptr<arrow::Table> table,
                                      TTable::TType type);
-    // $$$$$$
     /// Read csv file for now
     std::shared_ptr<TTable> ReadCsv
       (std::string tableName,

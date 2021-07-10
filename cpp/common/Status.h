@@ -110,7 +110,9 @@ namespace liten {
       }
     }
 
+    // \brief Create a status with msg
     Status(StatusCode code, const std::string& msg);
+    
     /// \brief Pluggable constructor for use by sub-systems.  detail cannot be null.
     Status(StatusCode code, std::string msg, std::shared_ptr<StatusDetail> detail);
 
@@ -133,11 +135,13 @@ namespace liten {
     /// Return a success status
     static Status OK() { return Status(); }
 
+    /// Status from given string arguments
     template <typename... Args>
     static Status FromArgs(StatusCode code, Args&&... args) {
       return Status(code, liten::StringBuilder(std::forward<Args>(args)...));
     }
 
+    /// Status from given detail StatusDetail and string arguments    
     template <typename... Args>
     static Status FromDetailAndArgs(StatusCode code, std::shared_ptr<StatusDetail> detail,
                                     Args&&... args) {
@@ -272,24 +276,32 @@ namespace liten {
 #endif
 
   private:
+
+    /// State is used if there is a non-OK status
     struct State {
       StatusCode code;
       std::string msg;
       std::shared_ptr<StatusDetail> detail;
     };
-    // OK status has a `NULL` state_.  Otherwise, `state_` points to
-    // a `State` structure containing the error code and message(s)
+    
+    /// OK status has a `NULL` state_.  Otherwise, `state_` points to
+    /// a `State` structure containing the error code and message(s)
     State* state_;
 
+    // Delete the state of status
     void DeleteState() {
       delete state_;
       state_ = nullptr;
     }
+
+    /// Copy status to this status
     void CopyFrom(const Status& s);
+
+    /// Move to this status
     inline void MoveFrom(Status& s);
   };
 
-  void Status::MoveFrom(Status& s) {
+  inline void Status::MoveFrom(Status& s) {
     delete state_;
     state_ = s.state_;
     s.state_ = nullptr;
@@ -376,4 +388,4 @@ namespace liten {
 
   }  // namespace internal
 
-}  // namespace arrow
+}  // namespace liten
