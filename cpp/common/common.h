@@ -1,6 +1,13 @@
 #include <unordered_map>
 #include <vector>
 #include <string>
+#include <shared_mutex>
+#include <mutex>
+#include <memory>
+#include <iostream>
+#include <set>
+#include <sstream>
+
 
 #include <arrow/api.h>
 #include <arrow/csv/api.h>
@@ -16,5 +23,5 @@
 
 #include <TLog.h>
 #include <TService.h>
-#include <Tuuid.h>
+#include <Tguid.h>
 #include <TConfigs.h>

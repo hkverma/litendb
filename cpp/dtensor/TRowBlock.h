@@ -2,6 +2,7 @@
 // Liten Columnar Storage Node
 //
 // RowBlock with all blocks for a row of table
+// TBD Add versions here for transational support
 //
 #pragma once
 

@@ -40,35 +40,12 @@ namespace liten {
     /// Get Cache info
     std::string GetInfo();
 
-    /// Add Block to Cache
-    /// @param block TBlock pointer to be added
-    /// @param uuid a new uuid if addition was successful
-    Status AddBlock(shared_ptr<TBlock> block, boost::uuids::uuid& id);
-    
-    // $$$$$$
-    /// Add table to cache
-    std::shared_ptr<TTable> AddTable(std::string name,
-                                     std::shared_ptr<arrow::Table> table,
-                                     TTable::TType type);
-    /// Read csv file for now
-    std::shared_ptr<TTable> ReadCsv
-      (std::string tableName,
-       std::string csvFileName,
-       const arrow::csv::ReadOptions& read_options = arrow::csv::ReadOptions::Defaults(),
-       const arrow::csv::ParseOptions& parse_options = arrow::csv::ParseOptions::Defaults(),
-       const arrow::csv::ConvertOptions& convert_options = arrow::csv::ConvertOptions::Defaults());
 
-    /// Read csv file in an arrow table
-    std::shared_ptr<arrow::Table> ReadCsv
-      (std::string csvFileName,
-       const arrow::csv::ReadOptions& readOptions,
-       const arrow::csv::ParseOptions& parseOptions,
-       const arrow::csv::ConvertOptions& convertOptions);
-    
-    /// Get Table from Id
-    std::shared_ptr<TTable> GetTable(boost::uuids::uuid id);
-    /// Get Table from tableName
-    std::shared_ptr<TTable> GetTable(std::string tableName);
+    /// Construct a table
+    /// @param name of the table
+    /// @param type if dimension or fact table
+    /// @param uri is a uniform resource allocator for raw file
+    Status ReadTable(std::string name, TableType type, std::string uri);
 
     /// Make maps for a given table name
     int MakeMaps(std::string tableName);
@@ -78,6 +55,7 @@ namespace liten {
     int MakeMaps();
 
 
+    // TBD
     // Define various cuts here - slicing and dicing
     // Examples are - point, range, set
 
@@ -87,9 +65,6 @@ namespace liten {
     // This gives a slice from offset from beginning of length length
     std::shared_ptr<arrow::Table> Slice(std::string tableName, int64_t offset, int64_t length);
 
-    using VersionToUuidMap = std::map<int64_t, boost::uuids::uuid>;
-    using TableNameColumnNamePair = std::pair<std::string, std::string>;
-    
   private:
 
     /// A singleton cache keeps all the tables
@@ -100,10 +75,6 @@ namespace liten {
     /// returns ptr to TTable, null if not present
     std::shared_ptr<TTable> GetTTable(std::string tableName);
     
-    /// Get Id for given table name and field name
-    /// @param blockName table and column name
-    /// @param cacheId UUid for the given pair
-    bool GetId(TableNameColumnNamePair blockName, boost::uuids::uuid& cacheId);
 
   };
 

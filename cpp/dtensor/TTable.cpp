@@ -1,21 +1,29 @@
-#include <iostream>
-#include <sstream>
-#include <arrow/csv/api.h>
-#include <arrow/filesystem/api.h>
-#include <arrow/io/api.h>
-
-#include <common.h>
-#include "TTable.h"
-
+#include <TTable.h>
 
 using namespace liten;
 
-TTable::TTable(std::string name, std::shared_ptr<arrow::Table> table, TType type)
+TTable::TTable(std::string name, TType type, std::shared_ptr<arrow::Table> table)
   : table_(table), type_(type)
 {
   schema_ = table_->schema();
   name_ = move(name);
 }
+
+// Add all blocks to catalog
+// TBD create TRowBlock
+// TBD remove all the Arrow pointers once the blocks are created
+Status TTable::AddToCatalog() {
+  for (int colNum = 0; colNum->table_->NumColumns(); colNum++)
+  {
+    auto col = make_shared<TColumn>(table_->column(colNum));
+    Status status = std::move(col->AddToCatalog());
+    if (!status.ok()) {
+      return status;
+    }
+  }
+  return Status::OK();
+}
+
   
 void TTable::PrintSchema()
 {

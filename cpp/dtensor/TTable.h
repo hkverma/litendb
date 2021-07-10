@@ -11,21 +11,9 @@
 //
 
 #pragma once
-
-//#include <vector>
-//#include <map>
-//#include <boost/uuid/uuid.hpp>
-// Need scalar before arrow/api.h to access full class definitions
-//#include <arrow/scalar.h>
-//#include <arrow/api.h>
-//#include <arrow/csv/api.h>
-
 #include <common.h>
+#include <TCoreTypes.h>
 
-#include <TColumnMap.h>
-
-class TColumn;
-class TRowBlock;
 
 namespace liten {
   
@@ -33,21 +21,22 @@ namespace liten {
   class TTable {
   public:
 
-    /// Tables are either dimension or fact tables
-    enum Type {Dimension=0, Fact};
 
     /// Construct a table
     /// @param name of the table
     /// @param type if dimension or fact table
     /// @param uri is a uniform resource allocator for raw file
-    TTable(std::string name, Type type, std::string uri);
+    TTable(std::string name, TableType type, std::string uri);
 
     /// Construct a table
     /// @param name of the table
     /// @param type if dimension or fact table
     /// @param table an arrow table that has been read 
-    TTable(std::string name, Type type, std::shared_ptr<arrow::Table> table);
+    TTable(std::string name, TableType type, std::shared_ptr<arrow::Table> table);
 
+    // Add all columns to catalog
+    Status AddToCatalog();
+      
     // $$$$$$$
     void PrintSchema();
     void PrintTable();
@@ -61,7 +50,7 @@ namespace liten {
     std::string GetName();
 
     /// Type of table - dim or fact
-    Type GetType();
+    TableType GetType();
     
     int64_t NumColumns();
     int64_t NumRows();
@@ -77,7 +66,7 @@ namespace liten {
     /// Arrow table name, must be unique
     std::string name_;
     /// Type of table -fact or dimension
-    Type type_;
+    TableType type_;
     /// Tables consist of columnar series
     std::vector<std::shared_ptr<TColumn>> columns_;
     /// Tables consist of columnar series
@@ -111,7 +100,7 @@ namespace liten {
     return name_;
   }
 
-  inline TTable::TType TTable::GetType()
+  inline TableType TTable::GetType()
   {
     return type_;
   }

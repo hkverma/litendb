@@ -1,5 +1,6 @@
 #pragma once
 
+#include "TCatalog.h"
 #include "TBlock.h"
 #include "TColumn.h"
 #include "TColumnMap.h"

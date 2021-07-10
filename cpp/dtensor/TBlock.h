@@ -2,23 +2,6 @@
 
 #include <common.h>
 
-
-//
-// provide hash template with uuid
-//
-namespace std
-{
-  template<>
-  struct hash<boost::uuids::uuid>
-  {
-    size_t operator () (const boost::uuids::uuid& uid) const
-    {
-        return boost::hash<boost::uuids::uuid>()(uid);
-    }
-  };
-  
-};
-
 namespace liten {
   /// Zero cost wrapper class for Arrow Array
   class TBlock {
@@ -29,12 +12,16 @@ namespace liten {
     
     /// Destruct the array, nothing here for now
     ~TBlock() { }
-    
-    /// Get Raw Array, Use it judiciously to enable easy transformations
+
+    /// Get Raw Array, Use it judiciously, prefer if you add an access method
     std::shared_ptr<arrow::Array> GetArray();
   
   private:
+
+    /// Arrow array
     std::shared_ptr<arrow::Array> arr_;
+
   };
 
+  
 };

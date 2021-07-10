@@ -8,17 +8,18 @@ TColumn::TColumn(std::string name,
                  std::shared_ptr<arrow::ChunkedArray> chunkedArray)
   : type_(type), name_(name), chunkedArray_(chunkedArray)
 {
-    for (int arrNum = 0; chunkedArray_->num_chunks(); arrNum++)
-    {
-      auto tBlock = make_shared<TTable>(chArr->chunk(arrNum));
-      
-      ss << " Arr " << arrNum << " Size=" << arr->length();
-      ss << " Type=" << arr->type()->ToString() ;
-      ss << " Min=";
-      colMap->GetMin(arrNum,minVal)?(ss << minVal):(ss << "None");
-      ss << " Max=";
-      colMap->GetMax(arrNum,maxVal)?(ss << maxVal):(ss << "None");
-      ss << ";" ;
+}
+
+// Add all blocks to catalog
+Status TColumn::AddToCatalog() {
+  for (int arrNum = 0; arrNum<chunkedArray_->num_chunks(); arrNum++)
+  {
+    auto block = make_shared<TBlock>(chArr->chunk(arrNum));
+    Tguid::Uuid id;
+    Status status = std::move(tCatalog_->AddBlock(block, id));
+    if (!status.ok()) {
+      return status;
     }
-  
+  }
+  return Status::OK();
 }
