@@ -10,14 +10,14 @@ project(liten VERSION "${LITEN_BASE_VERSION}")
 # Subdirectories
 #
 add_subdirectory(common)
-add_subdirectory(dtensor)
+add_subdirectory(cache)
 add_subdirectory(dtensor_test)
 
 # 
 # liten dynamic library - .so
 #
-add_library(liten SHARED $<TARGET_OBJECTS:dtensor_objects> $<TARGET_OBJECTS:dtensor_test_objects>)
-target_include_directories(liten PUBLIC dtensor dtensor_test)
+add_library(liten SHARED $<TARGET_OBJECTS:cache_objects> $<TARGET_OBJECTS:dtensor_test_objects>)
+target_include_directories(liten PUBLIC cache dtensor_test)
 target_link_libraries(liten general common arrow)
 target_link_libraries(liten debug glogd debug tbb_debug)
 target_link_libraries(liten optimized glog optimized tbb)

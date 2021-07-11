@@ -8,11 +8,7 @@
 //
 #pragma once
 
-#include <vector>
-#include <map>
-
-#include <boost/uuid/uuid.hpp>
-#include <arrow/api.h>
+#include <common.h>
 
 namespace liten {
   //

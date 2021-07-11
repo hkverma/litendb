@@ -1,5 +1,4 @@
-#include "dtensor.h"
-#include <iostream>
+#include <TColumnMap.h>
 
 using namespace liten;
 

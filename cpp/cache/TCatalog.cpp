@@ -1,4 +1,5 @@
-#include <dtensor.h>
+#include <TCatalog.h>
+#include <TTable.h>
 
 using namespace liten;
 

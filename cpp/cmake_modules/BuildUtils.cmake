@@ -40,7 +40,7 @@ set(TBB_LIB_DIR $ENV{LITEN_ROOT_DIR}/cpp/external_libs/tbb/bin)
 # Source Code directories
 #
 set(COMMON_SRC  $ENV{LITEN_ROOT_DIR}/cpp/common)
-set(DTENSOR_SRC $ENV{LITEN_ROOT_DIR}/cpp/dtensor)
+set(CACHE_SRC $ENV{LITEN_ROOT_DIR}/cpp/cache)
 set(DTENSOR_TEST_SRC $ENV{LITEN_ROOT_DIR}/cpp/dtensor_test)
 #
 # Global include and link directories
