@@ -1,3 +1,5 @@
+#pragma once
+
 #include <unordered_map>
 #include <vector>
 #include <string>
@@ -15,6 +17,7 @@
 #include <arrow/io/api.h>
 #include <arrow/util/string_view.h>
 
+#include <THashFuncs.h>
 #include <Macros.h>
 #include <TimeUtils.h>
 #include <StopWatch.h>
@@ -23,5 +26,5 @@
 
 #include <TLog.h>
 #include <TService.h>
-#include <Tguid.h>
+#include <TGuid.h>
 #include <TConfigs.h>

@@ -10,6 +10,6 @@ namespace liten {
   class TRowBlock;
   class TBlock;
   class TTable;
-  
+  class TColumnMap;
 
 };

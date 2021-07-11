@@ -54,11 +54,11 @@ namespace liten
     ~TLog() { }
     
     /// Flush log files with minimum severity
-    void FlushLogFiles(google::LogSeverity min_severity) {
+    void FlushLogFiles(const google::LogSeverity min_severity) {
       google::FlushLogFiles(min_severity);
     }
 
-    const google::LogSeverity Info = google::INFO;
+    const static google::LogSeverity Info;
     
   private:
 

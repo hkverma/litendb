@@ -3,6 +3,7 @@
 
 #include <TBlock.h>
 #include <TCache.h>
+#include <TCatalog.h>
 
 using namespace liten;
 
@@ -31,31 +32,11 @@ std::string TCache::GetInfo()
   std::stringstream ss;
   ss << "{\n";
   ss << TConfigs::GetInstance()->GetComputeInfo();
-  for (auto& tableId : tablesUri_)
-  {
-    std::string& tableName = tableId.first;
-    auto tTable = tableId.second;
-    ss << ",\n";
-    if (TTable::Dimension == tTable->GetType()) {
-      ss << "\"Dim\":\"" << tableName << "\"";
-    } else if (TTable::Fact == ttable->GetType()) {
-      ss << "\"Fact\":" << tableName << "\"";
-    } else {
-      ss << "\"Unknown\":" << tableName << "\"";
-    }
-    //ttable->PrintSchema();
-    //ttable->PrintTable();
-  }
+  ss << "\n}\n,{\n";
+  ss << TCatalog::GetInstance()->GetTableInfo();
   ss << "\n}";
-  TLog::GetInstance()->FlushLogFile(TLog::Info);
-  return ss.str();
+  TLog::GetInstance()->FlushLogFiles(TLog::Info);
+  return std::move(ss.str());
 }
 
-std::shared_ptr<TTable> TCache::GetTTable(std::string tableName)
-{
-  auto itr = tables_.find(tableName);
-  if (tables_.end() == itr)
-    return nullptr;
-  return (itr->second);
-}
 

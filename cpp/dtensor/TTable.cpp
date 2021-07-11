@@ -1,8 +1,10 @@
 #include <TTable.h>
+#include <TColumn.h>
+#include <TColumnMap.h>
 
 using namespace liten;
 
-TTable::TTable(std::string name, TType type, std::shared_ptr<arrow::Table> table)
+TTable::TTable(std::string name, TableType type, std::shared_ptr<arrow::Table> table)
   : table_(table), type_(type)
 {
   schema_ = table_->schema();
@@ -12,10 +14,11 @@ TTable::TTable(std::string name, TType type, std::shared_ptr<arrow::Table> table
 // Add all blocks to catalog
 // TBD create TRowBlock
 // TBD remove all the Arrow pointers once the blocks are created
+/*
 Status TTable::AddToCatalog() {
-  for (int colNum = 0; colNum->table_->NumColumns(); colNum++)
+  for (int colNum = 0; colNum>table_->NumColumns(); colNum++)
   {
-    auto col = make_shared<TColumn>(table_->column(colNum));
+    auto col = std::make_shared<TColumn>(table_->column(colNum));
     Status status = std::move(col->AddToCatalog());
     if (!status.ok()) {
       return status;
@@ -23,7 +26,7 @@ Status TTable::AddToCatalog() {
   }
   return Status::OK();
 }
-
+*/
   
 void TTable::PrintSchema()
 {

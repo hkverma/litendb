@@ -6,32 +6,18 @@
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/uuid/random_generator.hpp>
 
-/// provide hash template with uuid
-namespace std
-{
-  template<>
-  struct hash<boost::uuids::uuid>
-  {
-    size_t operator () (const boost::uuids::uuid& uid) const
-    {
-        return boost::hash<boost::uuids::uuid>()(uid);
-    }
-  };
-  
-};
-
 namespace liten
 {
 
   /// Threadsafe UUID Generator using Boost UUID
-  class Tguid
+  class TGuid
   {
   public:
 
-    using Uuid = boost::uuids::uuid;
+    using Uuid = ::boost::uuids::uuid;
 
     /// It is a singleton class
-    static std::shared_ptr<Tguid> GetInstance();
+    static std::shared_ptr<TGuid> GetInstance();
 
     /// Create a new UUID
     inline Uuid GenerateUuid()
@@ -39,15 +25,15 @@ namespace liten
       return idGenerator_();
     }
 
-    ~Tguid() { }
+    ~TGuid() { }
 
   private:
 
     /// Cannot be constructed
-    Tguid() { }
+    TGuid() { }
 
     /// static singleton instance
-    static std::shared_ptr<Tguid> tguid_;
+    static std::shared_ptr<TGuid> tGuid_;
 
     /// Create an UUID random
     boost::uuids::random_generator idGenerator_;
@@ -57,18 +43,19 @@ namespace liten
 
   };
 
-  struct Tguid::MakeSharedEnabler : public Tguid {
-    MakeSharedEnabler() : Tguid() { }
+  struct TGuid::MakeSharedEnabler : public TGuid {
+    MakeSharedEnabler() : TGuid() { }
   };
 
 
-  inline std::shared_ptr<Tguid> Tguid::GetInstance()
+  inline std::shared_ptr<TGuid> TGuid::GetInstance()
   {
-    if (nullptr == tguid_)
+    if (nullptr == tGuid_)
     {
-      tguid_ = std::make_shared<MakeSharedEnabler>();
+      tGuid_ = std::make_shared<MakeSharedEnabler>();
     }
-    return tguid_;
+    return tGuid_;
   };
   
 };
+

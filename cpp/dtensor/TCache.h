@@ -27,6 +27,7 @@
 
 #pragma once
 #include <common.h>
+#include <TCoreTypes.h>
 
 namespace liten {
 
@@ -69,12 +70,6 @@ namespace liten {
 
     /// A singleton cache keeps all the tables
     static std::shared_ptr<TCache> tCache_;
-
-    /// Get Id for given table name and field name
-    /// @param tableName name of the table
-    /// returns ptr to TTable, null if not present
-    std::shared_ptr<TTable> GetTTable(std::string tableName);
-    
 
   };
 

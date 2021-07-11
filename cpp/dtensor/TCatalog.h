@@ -2,7 +2,8 @@
 #include <TCoreTypes.h>
 
 namespace liten {
-
+  
+  
   class TCatalog {
   public:
     /// Get a singleton instance, if not present create one
@@ -19,20 +20,33 @@ namespace liten {
     /// Add a block to catalog
     /// @param block block to be added
     /// @id assigned uuid
-    Status AddBlock(std::shared_ptr<TBlock> block,  Tguid::Uuid& id);
+    Status AddBlock(std::shared_ptr<TBlock> block,  TGuid::Uuid& id);
 
     
     /// Return true if block exists
     /// @param block to be checked in catalog
     /// @param id is the uuid
-    bool IfExists(std::shared_ptr<TBlock> block,  Tguid::Uuid& id);
+    bool IfExists(std::shared_ptr<TBlock> block,  TGuid::Uuid& id);
 
     /// Return true if block exists
     /// @param block to be checked in catalog
     bool IfExists(std::shared_ptr<TBlock> block);
 
+    /// Return information with compute information
+    std::string GetTableInfo() const; //TBD bool schema=false, bool table=false) const;
+
+    /// Get Id for given table name and field name
+    /// @param tableName name of the table
+    /// returns ptr to TTable, null if not present
+    /// TBD Get Table by tableName 
+    std::shared_ptr<TTable> GetTTable(std::string tableName) const;
+    
     using TableNameColumnNamePair = std::pair<std::string, std::string>;
-    using VersionToUuidMap = std::map<int, Tguid::Uuid>;
+    using VersionToUuidMap = std::map<int, TGuid::Uuid>;
+
+    // TBD make in private
+    TCatalog() { }
+    ~TCatalog() { }
     
   private:
 
@@ -40,13 +54,13 @@ namespace liten {
     static std::shared_ptr<TCatalog> tCatalog_;
       
     /// Map an uuid to a block pointer
-    std::unordered_map<Tguid::Uuid, std::shared_ptr<TBlock>> idToBlock_;
+    std::unordered_map<TGuid::Uuid, std::shared_ptr<TBlock>, hash_boost> idToBlock_;
     
     /// Map a block pointer to a UUID
-    std::unordered_map<std::shared_ptr<TBlock>, Tguid::Uuid> blockToId_;
+    std::unordered_map<std::shared_ptr<TBlock>, TGuid::Uuid> blockToId_;
     
     /// map table name and field_name to a map containing pairs of version and array UUIDs
-    std::unordered_map<TableNameColumnNamePair, VersionToUuidMap> blockIds_;
+    std::unordered_map<TableNameColumnNamePair, VersionToUuidMap, hash_pair> blockIds_;
     
     /// hash map table name to table information
     std::unordered_map<std::string, std::shared_ptr<TTable>> tables_;
@@ -58,7 +72,7 @@ namespace liten {
     /// Get Id for given table name and field name
     /// @param blockName table and column name
     /// @param cacheId UUid for the given pair
-    bool GetId(TableNameColumnNamePair blockName, Tguid::Uuid& cacheId);
+    bool GetId(TableNameColumnNamePair blockName, TGuid::Uuid& cacheId);
     
   };
   
