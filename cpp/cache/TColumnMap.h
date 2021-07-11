@@ -1,3 +1,7 @@
+#pragma once
+
+#include <common.h>
+
 //
 // Liten Columnar Storage Node
 //
@@ -6,9 +10,6 @@
 // One column chunk stores numComponents of a single column of Liten
 // Arrow in memory, persistent in parquet format
 //
-#pragma once
-
-#include <common.h>
 
 namespace liten {
   //

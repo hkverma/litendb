@@ -1,3 +1,9 @@
+#pragma once
+
+#include <memory>
+#include <Macros.h>
+#include <StringBuilder.h>
+
 //
 // A Status encapsulates the result of an operation.  It may indicate success,
 // or it may indicate an error with an associated error message.
@@ -8,11 +14,7 @@
 // external synchronization.
 
 // Adapted from Apache Arrow, Apache Kudu, TensorFlow
-#pragma once
-
-#include <memory>
-#include <Macros.h>
-#include <StringBuilder.h>
+//
 
 /*
 /// \brief Return with given status if condition is met.

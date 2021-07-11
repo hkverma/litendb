@@ -1,11 +1,15 @@
-#include <common.h>
-#include <TCoreTypes.h>
+#pragma once
 
+#include <common.h>
+#include <TCacheTypes.h>
+
+// TBD persist schema and all data files in SSD using a separate object
 namespace liten {
   
   
   class TCatalog {
   public:
+    
     /// Get a singleton instance, if not present create one
     static std::shared_ptr<TCatalog> GetInstance()
     {

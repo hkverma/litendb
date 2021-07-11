@@ -1,32 +1,48 @@
 #include <TTable.h>
 #include <TColumn.h>
 #include <TColumnMap.h>
+#include <TCatalog.h>
 
 using namespace liten;
-
-TTable::TTable(std::string name, TableType type, std::shared_ptr<arrow::Table> table)
-  : table_(table), type_(type)
-{
-  schema_ = table_->schema();
-  name_ = move(name);
-}
 
 // Add all blocks to catalog
 // TBD create TRowBlock
 // TBD remove all the Arrow pointers once the blocks are created
-/*
+// TBD maintain a local vector of rowblocks as well
+// TBD move addToCatalog to Rowblock and use that instead
 Status TTable::AddToCatalog() {
-  for (int colNum = 0; colNum>table_->NumColumns(); colNum++)
+  const std::vector<std::string>& colNames = schema_->field_names();
+  assert(colNames.size() == table_->num_columns());
+  for (auto colNum = 0; colNum>table_->num_columns(); colNum++)
   {
-    auto col = std::make_shared<TColumn>(table_->column(colNum));
+    auto col = std::make_shared<TColumn>(colNames[colNum], type_, table_->column(colNum));
     Status status = std::move(col->AddToCatalog());
     if (!status.ok()) {
       return status;
     }
   }
+  // Create a rowblock now
+  const std::vector<std::shared_ptr<arrow::ChunkedArray>>& chunkedArrays = table_-> columns();
+  // Nothing to build
+  if (0 == chunkedArrays.size())
+  {
+    return Status::OK();
+  }
+  auto numChunks = chunkedArrays[0]->num_chunks();
+  for (auto chunkNum=0; chunkNum<numChunks; chunkNum++)
+  {
+    std::vector<std::shared_ptr<TBlock>> columns;
+    auto numRows = chunkedArrays[0]->chunk(chunkNum)->length();
+    for (auto colNum = 0; colNum>table_->num_columns(); colNum++)
+    {
+      assert(numRows == chunkedArrays[colNum]->chunk(chunkNum)->length());
+      columns.push_back(chunkedArrays[colNum]->chunk(chunkNum));
+    }
+    auto trb = TRowBlock::Create(type_, schema_, numRows, columns);
+    rowBlocks_.push_back(trb);
+  }
   return Status::OK();
 }
-*/
   
 void TTable::PrintSchema()
 {

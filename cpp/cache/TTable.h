@@ -1,38 +1,21 @@
-//
-// Catalog Data
-//
-// Represented in C++ class for cached data from Redis
-// Store in Redis to provide in-memory fast, as well as consistent & persistent catalog nodes
-//
-// Catalog is represented by a vector of rows. It is a flat representation of Data Tensor.
-// TBD
-// Stored as a Redis table for persistence. 
-// TCatalog is prepared from MySQL database. Any updated in MySQL should be updated to TCatalog.
-//
-
 #pragma once
-#include <common.h>
-#include <TCoreTypes.h>
 
+#include <common.h>
+#include <TCacheTypes.h>
 
 namespace liten {
   
   // TTable holds table values
   class TTable {
   public:
-
-
-    /// Construct a table
-    /// @param name of the table
-    /// @param type if dimension or fact table
-    /// @param uri is a uniform resource allocator for raw file
-    TTable(std::string name, TableType type, std::string uri);
-
+    
     /// Construct a table
     /// @param name of the table
     /// @param type if dimension or fact table
     /// @param table an arrow table that has been read 
-    TTable(std::string name, TableType type, std::shared_ptr<arrow::Table> table);
+    TTable(std::string tableName,
+           TableType type,
+           std::shared_ptr<arrow::Table> table);
 
     // Add all columns to catalog
     Status AddToCatalog();
@@ -63,17 +46,22 @@ namespace liten {
     static const bool EnableColumnReverseMap = false;
     
   private:
+    
     /// Arrow table name, must be unique
     std::string name_;
+    
     /// Type of table -fact or dimension
     TableType type_;
+    
     /// Tables consist of columnar series
     std::vector<std::shared_ptr<TColumn>> columns_;
+    
     /// Tables consist of columnar series
     std::vector<std::shared_ptr<TRowBlock>> rowBlocks_;
+    
     /// Schema of the table
     std::shared_ptr<arrow::Schema> schema_;
-
+    
     /// Arrow table from which this table was created
     std::shared_ptr<arrow::Table> table_;
     
@@ -85,6 +73,17 @@ namespace liten {
   };
 
   // Header functions
+
+  // Construct a table
+  inline TTable::TTable(std::string name, TableType type, std::shared_ptr<arrow::Table> table)
+    : table_(table), type_(type)
+  {
+    schema_ = table_->schema();
+    name_ = move(name);
+  }
+
+  // $$$$$$
+  
   inline std::shared_ptr<arrow::Table> TTable::GetTable()
   {
     return table_;

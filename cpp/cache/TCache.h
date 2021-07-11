@@ -1,3 +1,8 @@
+#pragma once
+
+#include <common.h>
+#include <TCacheTypes.h>
+
 //
 // Liten Columnar Cache Directory
 //
@@ -21,13 +26,8 @@
 //   One column chunk stores numComponents of a single column of Liten
 //   Arrow in memory, persistent in parquet format
 //
-// TODO
-//   Add and remove tables, clear cache commands needed
+// TBD Add RecordBatchReader
 //
-
-#pragma once
-#include <common.h>
-#include <TCoreTypes.h>
 
 namespace liten {
 

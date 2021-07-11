@@ -1,22 +1,17 @@
+#include <TColumn.h>
+#include <TCatalog.h>
+#include <TBlock.h>
 
-/// Construct a column
-    /// @param name of the column
-    /// @param type if dimension or fact table
-    /// @param chunkedArrow an arrow table that has been read 
-TColumn::TColumn(std::string name,
-                 Type type,
-                 std::shared_ptr<arrow::ChunkedArray> chunkedArray)
-  : type_(type), name_(name), chunkedArray_(chunkedArray)
-{
-}
+using namespace liten;
 
 // Add all blocks to catalog
 Status TColumn::AddToCatalog() {
   for (int arrNum = 0; arrNum<chunkedArray_->num_chunks(); arrNum++)
   {
-    auto block = make_shared<TBlock>(chArr->chunk(arrNum));
-    Tguid::Uuid id;
-    Status status = std::move(tCatalog_->AddBlock(block, id));
+    std::shared_ptr<arrow::Array> arr = chunkedArray_->chunk(arrNum);
+    auto block = std::make_shared<TBlock>(arr);
+    TGuid::Uuid id;
+    Status status = std::move(TCatalog::GetInstance()->AddBlock(block, id));
     if (!status.ok()) {
       return status;
     }
