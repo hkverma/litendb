@@ -2,8 +2,19 @@
 #include <TColumn.h>
 #include <TColumnMap.h>
 #include <TCatalog.h>
+#include <TBlock.h>
+#include <TRowBlock.h>
+#include <TSchema.h>
 
 using namespace liten;
+
+// TBD Use named constructor
+TTable::TTable(std::string name, TableType type, std::shared_ptr<arrow::Table> table)
+  : table_(table), type_(type)
+{
+  schema_ = std::make_shared<TSchema>(table_->schema());
+  name_ = move(name);
+}
 
 // Add all blocks to catalog
 // TBD create TRowBlock
@@ -11,7 +22,7 @@ using namespace liten;
 // TBD maintain a local vector of rowblocks as well
 // TBD move addToCatalog to Rowblock and use that instead
 Status TTable::AddToCatalog() {
-  const std::vector<std::string>& colNames = schema_->field_names();
+  const std::vector<std::string>& colNames = schema_->GetSchema()->field_names();
   assert(colNames.size() == table_->num_columns());
   for (auto colNum = 0; colNum>table_->num_columns(); colNum++)
   {
@@ -35,8 +46,14 @@ Status TTable::AddToCatalog() {
     auto numRows = chunkedArrays[0]->chunk(chunkNum)->length();
     for (auto colNum = 0; colNum>table_->num_columns(); colNum++)
     {
-      assert(numRows == chunkedArrays[colNum]->chunk(chunkNum)->length());
-      columns.push_back(chunkedArrays[colNum]->chunk(chunkNum));
+      auto arr = chunkedArrays[colNum]->chunk(chunkNum);
+      assert(numRows == arr->length());
+      auto blk = TBlock::Create(arr);
+      if (nullptr == blk)
+      {
+        return Status::UnknownError("Cannor create a block.");
+      }
+      columns.push_back(blk);
     }
     auto trb = TRowBlock::Create(type_, schema_, numRows, columns);
     rowBlocks_.push_back(trb);
@@ -47,7 +64,7 @@ Status TTable::AddToCatalog() {
 void TTable::PrintSchema()
 {
   // Print Table for now
-  const std::vector<std::shared_ptr<arrow::Field>>& tableSchemaFields = schema_->fields();
+  const std::vector<std::shared_ptr<arrow::Field>>& tableSchemaFields = schema_->GetSchema()->fields();
   std::stringstream ss;
   ss << "Schema=";
 
@@ -68,7 +85,7 @@ void TTable::PrintTable()
   for (int64_t i=0; i<NumColumns(); i++)
   {
     auto chunkedArray = table_->column(i);
-    //const std::shared_ptr<arrow::Field>& colField = schema_->field(i);
+    //const std::shared_ptr<arrow::Field>& colField = schema_->GetSchema()->field(i);
     //const std::shared_ptr<arrow::DataType>& colFieldType = colField->type();
        
     for (int64_t j=0; j<chunkedArray->num_chunks(); j++)

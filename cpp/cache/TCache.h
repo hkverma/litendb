@@ -26,7 +26,7 @@
 //   One column chunk stores numComponents of a single column of Liten
 //   Arrow in memory, persistent in parquet format
 //
-// TBD Add RecordBatchReader
+// TBD Add RecordBatchReader and being able to add to the table in streaming fashion
 //
 
 namespace liten {

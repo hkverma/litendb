@@ -15,7 +15,8 @@
 
 // Adapted from Apache Arrow, Apache Kudu, TensorFlow
 //
-
+// TBD change status class name to TStatus
+//
 /*
 /// \brief Return with given status if condition is met.
 #define LITEN_RETURN_IF_(condition, status, expr)       \

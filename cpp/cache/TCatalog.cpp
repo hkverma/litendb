@@ -21,11 +21,14 @@ Status TCatalog::AddBlock(std::shared_ptr<TBlock> block,
     std::unique_lock<std::shared_mutex> lk(mutex_);
     auto it = blockToId_.find(block);
     if (blockToId_.end() != it) {
-      return Status::KeyError("Block already exists in catalog");
+      id = it->second;
     }
-    TGuid::Uuid id = TGuid::GetInstance()->GenerateUuid();
-    idToBlock_[id] = block;
-    blockToId_[block] = id;
+    else
+    {
+      TGuid::Uuid id = TGuid::GetInstance()->GenerateUuid();
+      idToBlock_[id] = block;
+      blockToId_[block] = id;
+    }
   }
   
   return Status::OK();

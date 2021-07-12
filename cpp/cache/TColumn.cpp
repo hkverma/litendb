@@ -9,11 +9,10 @@ Status TColumn::AddToCatalog() {
   for (int arrNum = 0; arrNum<chunkedArray_->num_chunks(); arrNum++)
   {
     std::shared_ptr<arrow::Array> arr = chunkedArray_->chunk(arrNum);
-    auto block = std::make_shared<TBlock>(arr);
-    TGuid::Uuid id;
-    Status status = std::move(TCatalog::GetInstance()->AddBlock(block, id));
-    if (!status.ok()) {
-      return status;
+    auto block = TBlock::Create(arr);
+    if (nullptr == block)
+    {
+      return Status::UnknownError("Cannor create a block.");
     }
   }
   return Status::OK();

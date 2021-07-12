@@ -60,7 +60,7 @@ namespace liten {
     std::vector<std::shared_ptr<TRowBlock>> rowBlocks_;
     
     /// Schema of the table
-    std::shared_ptr<arrow::Schema> schema_;
+    std::shared_ptr<TSchema> schema_;
     
     /// Arrow table from which this table was created
     std::shared_ptr<arrow::Table> table_;
@@ -73,14 +73,6 @@ namespace liten {
   };
 
   // Header functions
-
-  // Construct a table
-  inline TTable::TTable(std::string name, TableType type, std::shared_ptr<arrow::Table> table)
-    : table_(table), type_(type)
-  {
-    schema_ = table_->schema();
-    name_ = move(name);
-  }
 
   // $$$$$$
   
