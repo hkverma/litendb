@@ -42,11 +42,22 @@ namespace liten {
     std::string GetInfo();
 
 
-    /// Construct a table
+    /// Construct a table in cache from csv
     /// @param name of the table
     /// @param type if dimension or fact table
-    /// @param uri is a uniform resource allocator for raw file
-    Status ReadTable(std::string name, TableType type, std::string uri);
+    /// @param csvUri is a uniform resource allocator for raw file
+    /// @param readOptions
+    /// @param parseOptions
+    /// @param convertOptions
+    /// @returns Status
+    /// @exception Arrow error exceptions for internal errors
+    Status ReadCsv(std::string tableName,
+                   TableType type,
+                   std::string csvUri,
+                   const arrow::csv::ReadOptions& readOptions,
+                   const arrow::csv::ParseOptions& parseOptions,
+                   const arrow::csv::ConvertOptions& convertOptions);
+
 
     /// Make maps for a given table name
     int MakeMaps(std::string tableName);

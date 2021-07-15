@@ -43,7 +43,7 @@ namespace liten {
     /// @param tableName name of the table
     /// returns ptr to TTable, null if not present
     /// TBD Get Table by tableName 
-    std::shared_ptr<TTable> GetTTable(std::string tableName) const;
+    std::shared_ptr<TTable> GetTable(std::string tableName) const;
     
     using TableNameColumnNamePair = std::pair<std::string, std::string>;
     using VersionToUuidMap = std::map<int, TGuid::Uuid>;

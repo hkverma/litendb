@@ -77,7 +77,7 @@ std::string TCatalog::GetTableInfo() const
 
 /// Get Table by tableName
 // TBD shared_lock ???
-std::shared_ptr<TTable> TCatalog::GetTTable(std::string tableName) const
+std::shared_ptr<TTable> TCatalog::GetTable(std::string tableName) const
 {
   auto itr = tables_.find(tableName);
   if (tables_.end() == itr)

@@ -13,13 +13,13 @@ namespace liten {
     /// @param name of the table
     /// @param type if dimension or fact table
     /// @param table an arrow table that has been read 
-    TTable(std::string tableName,
-           TableType type,
-           std::shared_ptr<arrow::Table> table);
+    static std::shared_ptr<TTable> Create(std::string tableName,
+                                          TableType type,
+                                          std::shared_ptr<arrow::Table> table);
 
-    // Add all columns to catalog
-    Status AddToCatalog();
-      
+    /// Get underlying arrow::Table
+    std::shared_ptr<arrow::Table> GetTable();
+    
     // $$$$$$$
     void PrintSchema();
     void PrintTable();
@@ -28,7 +28,6 @@ namespace liten {
     int MakeMaps(int32_t numCopies);
     void PrintMaps();
     std::shared_ptr<TColumnMap> GetColMap(int mapNum, int colNum);
-    std::shared_ptr<arrow::Table> GetTable();
     std::shared_ptr<arrow::Array> GetArray(int64_t rowNum, int64_t colNum);
     std::string GetName();
 
@@ -42,10 +41,19 @@ namespace liten {
     // TODO do point, range, set cuts 
     std::shared_ptr<arrow::Table> Slice(int64_t offset, int64_t length);
     
-    // Options TODO create an options class
+    // TBD Create an options class
     static const bool EnableColumnReverseMap = false;
+
+    /// Destructor
+    ~TTable() { }
     
   private:
+
+    /// Use named constructor only
+    TTable() { }
+
+    /// Enable shared constructor
+    struct MakeSharedEnabler;
     
     /// Arrow table name, must be unique
     std::string name_;
@@ -65,6 +73,9 @@ namespace liten {
     /// Arrow table from which this table was created
     std::shared_ptr<arrow::Table> table_;
     
+    // Add all columns to catalog
+    Status AddToCatalog();
+      
     // Table Maps
     // TODO One copy should be sufficient, multiple copies will not make it faster
     int32_t numMapCopies_ = 0;
@@ -72,7 +83,10 @@ namespace liten {
     
   };
 
-  // Header functions
+  // Enable shared_ptr with private constructors
+  struct TTable::MakeSharedEnabler : public TTable {
+    MakeSharedEnabler() : TTable() { }
+  };
 
   // $$$$$$
   

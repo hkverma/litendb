@@ -65,6 +65,7 @@ namespace liten {
 
   enum class StatusCode : char {
     OK = 0,
+    // Genetic Codes
     OutOfMemory = 1,
     KeyError = 2,
     TypeError = 3,
@@ -74,7 +75,8 @@ namespace liten {
     UnknownError = 7,
     NotImplemented = 8,
     IndexError = 9,
-    SerializationError=10
+    SerializationError = 10,
+    AlreadyExists = 11
   };
 
   /// \brief An abstract class that allows subsystems to add 
@@ -213,6 +215,12 @@ namespace liten {
       return Status::FromArgs(StatusCode::SerializationError, std::forward<Args>(args)...);
     }
 
+    /// Return an error status when something already exists
+    template <typename... Args>
+    static Status AlreadyExists(Args&&... args) {
+      return Status::FromArgs(StatusCode::AlreadyExists, std::forward<Args>(args)...);
+    }
+    
     /// Return true iff the status indicates success.
     bool ok() const { return (state_ == nullptr); }
 

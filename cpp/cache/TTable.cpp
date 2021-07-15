@@ -9,11 +9,14 @@
 using namespace liten;
 
 // TBD Use named constructor
-TTable::TTable(std::string name, TableType type, std::shared_ptr<arrow::Table> table)
-  : table_(table), type_(type)
+std::shared_ptr<TTable> TTable::Create(std::string tableName,
+                                       TableType type,
+                                       std::shared_ptr<arrow::Table> table)
 {
-  schema_ = std::make_shared<TSchema>(table_->schema());
-  name_ = move(name);
+  auto ttable = std::make_shared<MakeSharedEnabler>();
+  ttable->schema_ = std::make_shared<TSchema>(table->schema());
+  ttable->name_ = std::move(tableName);
+  return ttable;
 }
 
 // Add all blocks to catalog
