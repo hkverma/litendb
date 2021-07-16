@@ -8,7 +8,9 @@
 #include <arrow/filesystem/api.h>
 #include <arrow/io/api.h>
 
-#include "dtensor.h"
+#include <common.h>
+#include <cache.h>
+
 using namespace liten;
 
 using arrow::DoubleBuilder;

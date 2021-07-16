@@ -2,11 +2,9 @@
 #include <iostream>
 #include <vector>
 
-#include "common.h"
-#include "dtensor.h"
-
-#include "TpchDemo.h"
 #include <tbb/tbb.h>
+
+#include <TpchDemo.h>
 
 using namespace liten;
 
@@ -20,6 +18,17 @@ const std::vector<std::string> TpchDemo::tableNames =
     "nation",
     "region"
   };
+
+const std::vector<TableType> TpchDemo::tableTypes =
+  {
+    FactTable,
+    DimensionTable,
+    DimensionTable,
+    DimensionTable,
+    DimensionTable,
+    DimensionTable
+  };
+
 
 // Maintain a tpchDemo classs
 std::shared_ptr<TpchDemo> TpchDemo::tpchDemo_ = nullptr;
@@ -60,8 +69,15 @@ void TpchDemo::ReadTables(std::string tpchDir)
   for (int32_t i=0; i<numTables; i++)
   {
     std::string fileName = tpchDir + tableNames[i] + ".tbl";
-    tables_[i] = tCache_->ReadCsv(tableNames[i], fileName,
+    Status status  = tCache_->ReadCsv(tableNames[i], tableTypes[i], fileName,
                                   readOptions, parseOptions, convertOptions);
+    if (!status.ok())
+    {
+      TLOG(ERROR) << "Unable to Read file=" << fileName;
+      continue;
+    }
+    // TBD use Result to get TTable back as well
+    tables_[i] = TCatalog::GetInstance()->GetTable(tableNames[i]);
     //tables_[i]->Print();
   }
 
@@ -73,7 +89,7 @@ void TpchDemo::InitTpchTables()
   tables_.resize(numTables);
   for (int32_t i=0; i<numTables; i++)
   {
-    auto ttable = tCache_->GetTable(tableNames[i]);
+    auto ttable = TCatalog::GetInstance()->GetTable(tableNames[i]);
     if (nullptr == ttable)
     {
       LOG(INFO) << "No table " << tableNames[i] << " in cache";

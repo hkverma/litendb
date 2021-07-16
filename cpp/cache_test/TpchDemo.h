@@ -1,4 +1,6 @@
-#include "dtensor.h"
+
+#include <common.h>
+#include <cache.h>
 
 namespace liten
 {
@@ -23,6 +25,7 @@ namespace liten
       numTables=6
     };
     static const std::vector<std::string> tableNames;
+    static const std::vector<TableType> tableTypes;
 
     // Table entries
     const static int32_t c_custkey=0, c_nationkey=3;

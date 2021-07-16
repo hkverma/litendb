@@ -3,6 +3,10 @@
 
 using namespace liten;
 
+std::unordered_map<std::shared_ptr<arrow::Array>, std::shared_ptr<TBlock>> TBlock::arrayToBlock_;
+std::shared_mutex TBlock::arrayToBlockMutex_;
+
+
 std::shared_ptr<TBlock> TBlock::Create(std::shared_ptr<arrow::Array> arr)
 {
   auto tblk = GetTBlock(arr);

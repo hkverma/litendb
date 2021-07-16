@@ -5,7 +5,7 @@
 #include <filesystem>
 
 #include <common.h>
-#include <dtensor.h>
+#include <cache.h>
 #include <TpchDemo.h>
 
 #include <tbb/tbb.h>
@@ -37,8 +37,14 @@ int main(int argc, char** argv) {
     std::filesystem::path fileName = tpchDir;
     std::string tableName = TpchDemo::tableNames[i] + ".tbl";
     fileName /= tableName;
-    auto ttable = tCache->ReadCsv(TpchDemo::tableNames[i], fileName,
+    auto status = tCache->ReadCsv(TpchDemo::tableNames[i], TpchDemo::tableTypes[i], fileName,
                                   readOptions, parseOptions, convertOptions);
+    if (!status.ok())
+    {
+      TLOG(ERROR) << "Unable to Read file=" << fileName;
+      continue;
+    }    
+    auto ttable = TCatalog::GetInstance()->GetTable(fileName);
     ttable->PrintSchema();
     //ttable->PrintTable();
   }
