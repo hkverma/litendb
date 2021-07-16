@@ -51,12 +51,12 @@ namespace liten {
     /// @param convertOptions
     /// @returns Status
     /// @exception Arrow error exceptions for internal errors
-    Status ReadCsv(std::string tableName,
-                   TableType type,
-                   std::string csvUri,
-                   const arrow::csv::ReadOptions& readOptions,
-                   const arrow::csv::ParseOptions& parseOptions,
-                   const arrow::csv::ConvertOptions& convertOptions);
+    TStatus ReadCsv(std::string tableName,
+                    TableType type,
+                    std::string csvUri,
+                    const arrow::csv::ReadOptions& readOptions,
+                    const arrow::csv::ParseOptions& parseOptions,
+                    const arrow::csv::ConvertOptions& convertOptions);
 
 
     /// Make maps for a given table name

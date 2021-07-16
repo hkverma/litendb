@@ -1,6 +1,3 @@
-//#include <iostream>
-#include <common.h>
-
 #include <TBlock.h>
 #include <TCache.h>
 #include <TCatalog.h>
@@ -41,7 +38,7 @@ std::string TCache::GetInfo()
 }
 
 /// Read csv file in a new table tableName. tableName should be unique
-Status TCache::ReadCsv(std::string tableName,
+TStatus TCache::ReadCsv(std::string tableName,
                        TableType type,
                        std::string csvUri,
                        const arrow::csv::ReadOptions& readOptions,
@@ -53,7 +50,7 @@ Status TCache::ReadCsv(std::string tableName,
   if (nullptr != ttable)
   {
     TLOG(INFO) << csvUri << " found in cache memory for tableName=" << tableName;
-    Status::OK();
+    TStatus::OK();
   }
 
   // Create one table with tableName
@@ -65,22 +62,22 @@ Status TCache::ReadCsv(std::string tableName,
     arrow::io::ReadableFile::Open(csvUri, pool);
   if (!fpResult.ok()) {
     TLOG(ERROR) << "Cannot open file " << csvUri;
-    return Status::Invalid("Cannot open file=", csvUri);
+    return TStatus::Invalid("Cannot open file=", csvUri);
   }
   std::shared_ptr<arrow::io::ReadableFile> fp = fpResult.ValueOrDie();
-  
+
   // Get fileSizeResult
   arrow::Result<int64_t> fileSizeResult = fp->GetSize();
   if (!fileSizeResult.ok()) {
-    LOG(ERROR) << "Unknown filesize for file " << csvUri;
-    return Status::UnknownError("Unknown filesize for file ", csvUri);
+    TLOG(ERROR) << "Unknown filesize for file " << csvUri;
+    return TStatus::UnknownError("Unknown filesize for file ", csvUri);
   }
   int64_t fileSize = fileSizeResult.ValueOrDie();
 
   // Random access file reader
   std::shared_ptr<arrow::io::InputStream> inputStream =
     arrow::io::RandomAccessFile::GetStream(fp, 0, fileSize);
-    
+
   // Instantiate TableReader from input stream and options
   arrow::io::IOContext ioContext = arrow::io::default_io_context();
   arrow::Result<std::shared_ptr<arrow::csv::TableReader>> readerResult
@@ -88,20 +85,20 @@ Status TCache::ReadCsv(std::string tableName,
                                     parseOptions, convertOptions);
   if (!readerResult.ok()) {
     TLOG(ERROR) << "Cannot read table " << csvUri;
-    return Status::IOError("Cannot read table=", csvUri);
+    return TStatus::IOError("Cannot read table=", csvUri);
   }
   std::shared_ptr<arrow::csv::TableReader> reader = readerResult.ValueOrDie();
-  
+
   // Read table from CSV file
   arrow::Result<std::shared_ptr<arrow::Table>> tableResult = reader->Read();
   if (!tableResult.ok()) {
     // Handle CSV read error
     // (for example a CSV syntax error or failed type conversion)
     TLOG(ERROR) << "Reading csv table= " << tableResult.status().ToString();
-    return Status::IOError("Reading csv table= ", tableResult.status().ToString());
+    return TStatus::IOError("Reading csv table= ", tableResult.status().ToString());
   }
   std::shared_ptr<arrow::Table> table = tableResult.ValueOrDie();
-  
+
   // Log table information
   std::vector<std::shared_ptr<arrow::ChunkedArray>> cols = table->columns();
   TLOG(INFO) << "Total columns=" << cols.size();
@@ -121,15 +118,15 @@ Status TCache::ReadCsv(std::string tableName,
   }
   if (nullptr == table)
   {
-    return Status::UnknownError("Creating arrow table");
+    return TStatus::UnknownError("Creating arrow table");
   }
   ttable = TTable::Create(tableName, type, table);
   if (nullptr == ttable)
   {
     TLOG(ERROR) << "Error creating Liten table= " << tableName;
-    return Status::UnknownError("Creating Liten table");
+    return TStatus::UnknownError("Creating Liten table");
   }
-  return Status::OK();
+  return TStatus::OK();
 }
 
 // TBD modify these
@@ -144,14 +141,14 @@ int TCache::MakeMaps(std::shared_ptr<TTable> ttable)
 {
   if (nullptr == ttable)
   {
-    LOG(ERROR) << "Failed to create data-tensor. Did not find in cache table " << ttable->GetName();
+    TLOG(ERROR) << "Failed to create data-tensor. Did not find in cache table " << ttable->GetName();
     return 1;
   }
   // TBD Are numCopies needed? remove it.
-  int result = ttable->MakeMaps(1); 
+  int result = ttable->MakeMaps(1);
   if (result)
   {
-    LOG(ERROR) << "Found table " << ttable->GetName() << " but failed to create data tensor";
+    TLOG(ERROR) << "Found table " << ttable->GetName() << " but failed to create data tensor";
   }
   return result;
 }

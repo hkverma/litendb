@@ -23,7 +23,7 @@ namespace liten {
     static std::shared_ptr<TBlock> GetTBlock(std::shared_ptr<arrow::Array> arr);
     
     /// Add TBlock to the lookup list
-    static Status  AddTBlock(std::shared_ptr<TBlock> blk);
+    static TStatus  AddTBlock(std::shared_ptr<TBlock> blk);
     
   private:
 

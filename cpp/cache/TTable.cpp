@@ -24,13 +24,13 @@ std::shared_ptr<TTable> TTable::Create(std::string tableName,
 // TBD remove all the Arrow pointers once the blocks are created
 // TBD maintain a local vector of rowblocks as well
 // TBD move addToCatalog to Rowblock and use that instead
-Status TTable::AddToCatalog() {
+TStatus TTable::AddToCatalog() {
   const std::vector<std::string>& colNames = schema_->GetSchema()->field_names();
   assert(colNames.size() == table_->num_columns());
   for (auto colNum = 0; colNum>table_->num_columns(); colNum++)
   {
     auto col = std::make_shared<TColumn>(colNames[colNum], type_, table_->column(colNum));
-    Status status = std::move(col->AddToCatalog());
+    TStatus status = std::move(col->AddToCatalog());
     if (!status.ok()) {
       return status;
     }
@@ -40,7 +40,7 @@ Status TTable::AddToCatalog() {
   // Nothing to build
   if (0 == chunkedArrays.size())
   {
-    return Status::OK();
+    return TStatus::OK();
   }
   auto numChunks = chunkedArrays[0]->num_chunks();
   for (auto chunkNum=0; chunkNum<numChunks; chunkNum++)
@@ -54,14 +54,14 @@ Status TTable::AddToCatalog() {
       auto blk = TBlock::Create(arr);
       if (nullptr == blk)
       {
-        return Status::UnknownError("Cannor create a block.");
+        return TStatus::UnknownError("Cannor create a block.");
       }
       columns.push_back(blk);
     }
     auto trb = TRowBlock::Create(type_, schema_, numRows, columns);
     rowBlocks_.push_back(trb);
   }
-  return Status::OK();
+  return TStatus::OK();
 }
   
 void TTable::PrintSchema()

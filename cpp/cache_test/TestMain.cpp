@@ -59,7 +59,7 @@ int main(int argc, char** argv) {
   // Run Query6
   auto execQuery6 = [&]()
   {
-    StopWatch stopWatch;
+    TStopWatch stopWatch;
     stopWatch.Start();
     double result = tpchDemo->Query6Serial();
     stopWatch.Stop();
@@ -82,7 +82,7 @@ int main(int argc, char** argv) {
   }
 
   // Make Maps except for lineitem
-  StopWatch stopWatch;
+  TStopWatch stopWatch;
   stopWatch.Start();
   for (int32_t i=1; i<TpchDemo::tableNames.size(); i++)
   {

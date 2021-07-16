@@ -74,7 +74,7 @@ namespace liten {
     std::shared_ptr<arrow::Table> table_;
     
     // Add all columns to catalog
-    Status AddToCatalog();
+    TStatus AddToCatalog();
       
     // Table Maps
     // TODO One copy should be sufficient, multiple copies will not make it faster

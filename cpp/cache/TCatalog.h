@@ -24,7 +24,7 @@ namespace liten {
     /// Add a block to catalog
     /// @param block block to be added
     /// @id assigned uuid
-    Status AddBlock(std::shared_ptr<TBlock> block,  TGuid::Uuid& id);
+    TStatus AddBlock(std::shared_ptr<TBlock> block,  TGuid::Uuid& id);
 
     
     /// Return true if block exists

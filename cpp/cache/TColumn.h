@@ -22,7 +22,7 @@ namespace liten {
       : name_(name), type_(type), chunkedArray_(chunkedArray) { }
 
     /// Add all blocks to catalog
-    Status AddToCatalog();
+    TStatus AddToCatalog();
 
   private:
     /// Arrow table name, must be unique
@@ -232,7 +232,7 @@ namespace liten {
   {
 
     int64_t rowId, arrId;
-    StopWatch timer;
+    TStopWatch timer;
     timer.Start();
     bool result = GetRowId<TypeLeft, ArrayTypeLeft>(arrId, rowId, leftValue, table, leftColNum, mapNum);
     timer.Stop();

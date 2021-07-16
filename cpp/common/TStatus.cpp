@@ -11,16 +11,16 @@
 // external synchronization.
 
 #include <glog/logging.h>
-#include "Status.h"
+#include "TStatus.h"
 
 namespace liten {
 
-  Status::Status(StatusCode code, const std::string& msg)
-    : Status::Status(code, msg, nullptr) {}
+  TStatus::TStatus(TStatusCode code, const std::string& msg)
+    : TStatus::TStatus(code, msg, nullptr) {}
 
-  Status::Status(StatusCode code, std::string msg, std::shared_ptr<StatusDetail> detail)
+  TStatus::TStatus(TStatusCode code, std::string msg, std::shared_ptr<TStatusDetail> detail)
   {
-    LOG_IF(INFO, (code == StatusCode::OK)) << "Cannot construct ok status with message";
+    LOG_IF(INFO, (code == TStatusCode::OK)) << "Cannot construct ok status with message";
     state_ = new State;
     state_->code = code;
     state_->msg = std::move(msg);
@@ -30,7 +30,7 @@ namespace liten {
     }
   }
 
-  void Status::CopyFrom(const Status& s)
+  void TStatus::CopyFrom(const TStatus& s)
   {
     delete state_;
     if (s.state_ == nullptr) {
@@ -40,35 +40,35 @@ namespace liten {
     }
   }
 
-  std::string Status::CodeAsString() const {
+  std::string TStatus::CodeAsString() const {
     if (state_ == nullptr) {
       return "OK";
     }
     return CodeAsString(code());
   }
 
-  std::string Status::CodeAsString(StatusCode code) {
+  std::string TStatus::CodeAsString(TStatusCode code) {
     const char* type;
     switch (code) {
-    case StatusCode::OK:
+    case TStatusCode::OK:
       type = "OK";
       break;
-    case StatusCode::OutOfMemory:
+    case TStatusCode::OutOfMemory:
       type = "Out of memory";
       break;
-    case StatusCode::KeyError:
+    case TStatusCode::KeyError:
       type = "Key error";
       break;
-    case StatusCode::TypeError:
+    case TStatusCode::TypeError:
       type = "Type error";
       break;
-    case StatusCode::Invalid:
+    case TStatusCode::Invalid:
       type = "Invalid";
       break;
-    case StatusCode::IOError:
+    case TStatusCode::IOError:
       type = "IOError";
       break;
-    case StatusCode::CapacityError:
+    case TStatusCode::CapacityError:
       type = "Capacity error";
       break;
     default:
@@ -78,7 +78,7 @@ namespace liten {
     return std::string(type);
   }
 
-  std::string Status::ToString() const {
+  std::string TStatus::ToString() const {
     std::string result(CodeAsString());
     if (state_ == nullptr) {
       return result;

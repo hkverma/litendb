@@ -1,9 +1,3 @@
-#include <cstdint>
-#include <iostream>
-#include <vector>
-
-#include <tbb/tbb.h>
-
 #include <TpchDemo.h>
 
 using namespace liten;
@@ -69,7 +63,7 @@ void TpchDemo::ReadTables(std::string tpchDir)
   for (int32_t i=0; i<numTables; i++)
   {
     std::string fileName = tpchDir + tableNames[i] + ".tbl";
-    Status status  = tCache_->ReadCsv(tableNames[i], tableTypes[i], fileName,
+    TStatus status  = tCache_->ReadCsv(tableNames[i], tableTypes[i], fileName,
                                   readOptions, parseOptions, convertOptions);
     if (!status.ok())
     {
@@ -211,7 +205,7 @@ double TpchDemo::Query6()
 
   tbb::task_group tg;
 
-  StopWatch timer;
+  TStopWatch timer;
   timer.Start();
 
   // for now do a full table scan need to build filtering metadata per column chunk
@@ -331,15 +325,15 @@ std::shared_ptr<std::unordered_map<std::string, double>> TpchDemo::Query5Serial(
   std::string rNationValue;
 
 
-  StopWatch timer;
+  TStopWatch timer;
   timer.Start();
 
   // for now do a full table scan need to build filtering metadata per column chunk
-  StopWatch totalTimer;
+  TStopWatch totalTimer;
   totalTimer.Start();
-  StopWatch extraTimer;
+  TStopWatch extraTimer;
   extraTimer.Start();
-  StopWatch scanTimer;
+  TStopWatch scanTimer;
   scanTimer.Start();
 
   int64_t ordersGetRowIdTime=0, ordersGetValTime=0, extraTime=0, scanTime=0, totalTime=0;
@@ -464,7 +458,7 @@ void TpchDemo::GetQuery5Revenue(int64_t chunkNum, double revenue[], int32_t mapN
   auto discount = std::static_pointer_cast<arrow::DoubleArray>(lDiscount->chunk(chunkNum));
   auto quantity = std::static_pointer_cast<arrow::Int64Array>(lQuantity->chunk(chunkNum));
   auto extendedprice = std::static_pointer_cast<arrow::DoubleArray>(lExtendedprice->chunk(chunkNum));
-  StopWatch timer;
+  TStopWatch timer;
   timer.Start();
 
   int64_t ordersGetRowIdTime=0, ordersGetValTime=0, extraTime=0, scanTime=0, totalTime=0;
@@ -559,7 +553,7 @@ std::shared_ptr<std::unordered_map<std::string, double>> TpchDemo::Query5()
 
   tbb::task_group tg;
 
-  StopWatch timer;
+  TStopWatch timer;
   timer.Start();
   int64_t pnum=0;
   for (int64_t chunkNum = 0; chunkNum < numChunks; chunkNum++)

@@ -16,7 +16,7 @@ std::shared_ptr<TBlock> TBlock::Create(std::shared_ptr<arrow::Array> arr)
   }
   tblk = std::make_shared<TBlock::MakeSharedEnabler>();
   tblk->arr_ = arr;
-  Status status = std::move(TCatalog::GetInstance()->AddBlock(tblk, tblk->id_));
+  TStatus status = std::move(TCatalog::GetInstance()->AddBlock(tblk, tblk->id_));
   if (!status.ok())
   {
     TLOG(ERROR) << "Cannot create uuid for block. " << status.message();
@@ -43,7 +43,7 @@ std::shared_ptr<TBlock> TBlock::GetTBlock(std::shared_ptr<arrow::Array> arr)
 }
 
 // Add TBlock to the lookup list
-Status TBlock::AddTBlock(std::shared_ptr<TBlock> blk)
+TStatus TBlock::AddTBlock(std::shared_ptr<TBlock> blk)
 {
   std::unique_lock<std::shared_mutex> lk(arrayToBlockMutex_);
   auto it = arrayToBlock_.find(blk->arr_);
@@ -51,5 +51,5 @@ Status TBlock::AddTBlock(std::shared_ptr<TBlock> blk)
   {
     arrayToBlock_[blk->arr_] = blk;
   }
-  return Status::OK();
+  return TStatus::OK();
 }

@@ -1,8 +1,6 @@
 #pragma once
 
-#include <memory>
-#include <Macros.h>
-#include <StringBuilder.h>
+#include <common.h>
 
 //
 // A Status encapsulates the result of an operation.  It may indicate success,
@@ -63,7 +61,7 @@
 */
 namespace liten {
 
-  enum class StatusCode : char {
+  enum class TStatusCode : char {
     OK = 0,
     // Genetic Codes
     OutOfMemory = 1,
@@ -81,15 +79,15 @@ namespace liten {
 
   /// \brief An abstract class that allows subsystems to add 
   /// additional information inside the Status
-  class StatusDetail {
+  class TStatusDetail {
   public:
-    virtual ~StatusDetail() = default;
+    virtual ~TStatusDetail() = default;
     /// \brief Return a unique id for the type of the StatusDetail
     virtual const char* TypeId() const = 0;
     /// \brief Produce a human-readable description of this status
     virtual std::string ToString() const = 0;
     /// Same status if same Id and error string
-    bool operator==(const StatusDetail& other) const noexcept
+    bool operator==(const TStatusDetail& other) const noexcept
     {
       return std::string(TypeId()) == other.TypeId() && ToString() == other.ToString();
     }
@@ -103,11 +101,11 @@ namespace liten {
   ///
   /// Additionally, if an error occurred, a specific error message is generally
   /// attached.
-  class Status  {
+  class TStatus  {
   public:
     // \brief By default create a success status.
-    Status() noexcept : state_(nullptr) {}
-    ~Status() noexcept {
+    TStatus() noexcept : state_(nullptr) {}
+    ~TStatus() noexcept {
       // On certain compilers, splitting off the slow path improves
       // performance significantly.
       if (LITEN_PREDICT_FALSE(state_ != NULL)) {
@@ -116,134 +114,134 @@ namespace liten {
     }
 
     // \brief Create a status with msg
-    Status(StatusCode code, const std::string& msg);
+    TStatus(TStatusCode code, const std::string& msg);
     
     /// \brief Pluggable constructor for use by sub-systems.  detail cannot be null.
-    Status(StatusCode code, std::string msg, std::shared_ptr<StatusDetail> detail);
+    TStatus(TStatusCode code, std::string msg, std::shared_ptr<TStatusDetail> detail);
 
     // Copy the specified status.
-    inline Status(const Status& s);
-    inline Status& operator=(const Status& s);
+    inline TStatus(const TStatus& s);
+    inline TStatus& operator=(const TStatus& s);
 
     // Move the specified status.
-    inline Status(Status&& s) noexcept;
-    inline Status& operator=(Status&& s) noexcept;
+    inline TStatus(TStatus&& s) noexcept;
+    inline TStatus& operator=(TStatus&& s) noexcept;
 
-    inline bool Equals(const Status& s) const;
+    inline bool Equals(const TStatus& s) const;
 
     // AND the statuses.
-    inline Status operator&(const Status& s) const noexcept;
-    inline Status operator&(Status&& s) const noexcept;
-    inline Status& operator&=(const Status& s) noexcept;
-    inline Status& operator&=(Status&& s) noexcept;
+    inline TStatus operator&(const TStatus& s) const noexcept;
+    inline TStatus operator&(TStatus&& s) const noexcept;
+    inline TStatus& operator&=(const TStatus& s) noexcept;
+    inline TStatus& operator&=(TStatus&& s) noexcept;
 
     /// Return a success status
-    static Status OK() { return Status(); }
+    static TStatus OK() { return TStatus(); }
 
-    /// Status from given string arguments
+    /// TStatus from given string arguments
     template <typename... Args>
-    static Status FromArgs(StatusCode code, Args&&... args) {
-      return Status(code, liten::StringBuilder(std::forward<Args>(args)...));
+    static TStatus FromArgs(TStatusCode code, Args&&... args) {
+      return TStatus(code, liten::StringBuilder(std::forward<Args>(args)...));
     }
 
-    /// Status from given detail StatusDetail and string arguments    
+    /// TStatus from given detail TStatusDetail and string arguments    
     template <typename... Args>
-    static Status FromDetailAndArgs(StatusCode code, std::shared_ptr<StatusDetail> detail,
+    static TStatus FromDetailAndArgs(TStatusCode code, std::shared_ptr<TStatusDetail> detail,
                                     Args&&... args) {
-      return Status(code, liten::StringBuilder(std::forward<Args>(args)...),
+      return TStatus(code, liten::StringBuilder(std::forward<Args>(args)...),
                     std::move(detail));
     }
 
     /// Return an error status for out-of-memory conditions
     template <typename... Args>
-    static Status OutOfMemory(Args&&... args) {
-      return Status::FromArgs(StatusCode::OutOfMemory, std::forward<Args>(args)...);
+    static TStatus OutOfMemory(Args&&... args) {
+      return TStatus::FromArgs(TStatusCode::OutOfMemory, std::forward<Args>(args)...);
     }
 
     /// Return an error status for failed key lookups (e.g. column name in a table)
     template <typename... Args>
-    static Status KeyError(Args&&... args) {
-      return Status::FromArgs(StatusCode::KeyError, std::forward<Args>(args)...);
+    static TStatus KeyError(Args&&... args) {
+      return TStatus::FromArgs(TStatusCode::KeyError, std::forward<Args>(args)...);
     }
 
     /// Return an error status for type errors (such as mismatching data types)
     template <typename... Args>
-    static Status TypeError(Args&&... args) {
-      return Status::FromArgs(StatusCode::TypeError, std::forward<Args>(args)...);
+    static TStatus TypeError(Args&&... args) {
+      return TStatus::FromArgs(TStatusCode::TypeError, std::forward<Args>(args)...);
     }
 
     /// Return an error status for unknown errors
     template <typename... Args>
-    static Status UnknownError(Args&&... args) {
-      return Status::FromArgs(StatusCode::UnknownError, std::forward<Args>(args)...);
+    static TStatus UnknownError(Args&&... args) {
+      return TStatus::FromArgs(TStatusCode::UnknownError, std::forward<Args>(args)...);
     }
 
     /// Return an error status when an operation or a combination of operation and
     /// data types is unimplemented
     template <typename... Args>
-    static Status NotImplemented(Args&&... args) {
-      return Status::FromArgs(StatusCode::NotImplemented, std::forward<Args>(args)...);
+    static TStatus NotImplemented(Args&&... args) {
+      return TStatus::FromArgs(TStatusCode::NotImplemented, std::forward<Args>(args)...);
     }
 
     /// Return an error status for invalid data (for example a string that fails parsing)
     template <typename... Args>
-    static Status Invalid(Args&&... args) {
-      return Status::FromArgs(StatusCode::Invalid, std::forward<Args>(args)...);
+    static TStatus Invalid(Args&&... args) {
+      return TStatus::FromArgs(TStatusCode::Invalid, std::forward<Args>(args)...);
     }
 
     /// Return an error status when an index is out of bounds
     template <typename... Args>
-    static Status IndexError(Args&&... args) {
-      return Status::FromArgs(StatusCode::IndexError, std::forward<Args>(args)...);
+    static TStatus IndexError(Args&&... args) {
+      return TStatus::FromArgs(TStatusCode::IndexError, std::forward<Args>(args)...);
     }
 
     /// Return an error status when a container's capacity would exceed its limits
     template <typename... Args>
-    static Status CapacityError(Args&&... args) {
-      return Status::FromArgs(StatusCode::CapacityError, std::forward<Args>(args)...);
+    static TStatus CapacityError(Args&&... args) {
+      return TStatus::FromArgs(TStatusCode::CapacityError, std::forward<Args>(args)...);
     }
 
     /// Return an error status when some IO-related operation failed
     template <typename... Args>
-    static Status IOError(Args&&... args) {
-      return Status::FromArgs(StatusCode::IOError, std::forward<Args>(args)...);
+    static TStatus IOError(Args&&... args) {
+      return TStatus::FromArgs(TStatusCode::IOError, std::forward<Args>(args)...);
     }
 
     /// Return an error status when some (de)serialization operation failed
     template <typename... Args>
-    static Status SerializationError(Args&&... args) {
-      return Status::FromArgs(StatusCode::SerializationError, std::forward<Args>(args)...);
+    static TStatus SerializationError(Args&&... args) {
+      return TStatus::FromArgs(TStatusCode::SerializationError, std::forward<Args>(args)...);
     }
 
     /// Return an error status when something already exists
     template <typename... Args>
-    static Status AlreadyExists(Args&&... args) {
-      return Status::FromArgs(StatusCode::AlreadyExists, std::forward<Args>(args)...);
+    static TStatus AlreadyExists(Args&&... args) {
+      return TStatus::FromArgs(TStatusCode::AlreadyExists, std::forward<Args>(args)...);
     }
     
     /// Return true iff the status indicates success.
     bool ok() const { return (state_ == nullptr); }
 
     /// Return true iff the status indicates an out-of-memory error.
-    bool IsOutOfMemory() const { return code() == StatusCode::OutOfMemory; }
+    bool IsOutOfMemory() const { return code() == TStatusCode::OutOfMemory; }
     /// Return true iff the status indicates a key lookup error.
-    bool IsKeyError() const { return code() == StatusCode::KeyError; }
+    bool IsKeyError() const { return code() == TStatusCode::KeyError; }
     /// Return true iff the status indicates invalid data.
-    bool IsInvalid() const { return code() == StatusCode::Invalid; }
+    bool IsInvalid() const { return code() == TStatusCode::Invalid; }
     /// Return true iff the status indicates an IO-related failure.
-    bool IsIOError() const { return code() == StatusCode::IOError; }
+    bool IsIOError() const { return code() == TStatusCode::IOError; }
     /// Return true iff the status indicates a container reaching capacity limits.
-    bool IsCapacityError() const { return code() == StatusCode::CapacityError; }
+    bool IsCapacityError() const { return code() == TStatusCode::CapacityError; }
     /// Return true iff the status indicates an out of bounds index.
-    bool IsIndexError() const { return code() == StatusCode::IndexError; }
+    bool IsIndexError() const { return code() == TStatusCode::IndexError; }
     /// Return true iff the status indicates a type error.
-    bool IsTypeError() const { return code() == StatusCode::TypeError; }
+    bool IsTypeError() const { return code() == TStatusCode::TypeError; }
     /// Return true iff the status indicates an unknown error.
-    bool IsUnknownError() const { return code() == StatusCode::UnknownError; }
+    bool IsUnknownError() const { return code() == TStatusCode::UnknownError; }
     /// Return true iff the status indicates an unimplemented operation.
-    bool IsNotImplemented() const { return code() == StatusCode::NotImplemented; }
+    bool IsNotImplemented() const { return code() == TStatusCode::NotImplemented; }
     /// Return true iff the status indicates a (de)serialization failure
-    bool IsSerializationError() const { return code() == StatusCode::SerializationError; }
+    bool IsSerializationError() const { return code() == TStatusCode::SerializationError; }
 
     /// \brief Return a string representation of this status suitable for printing.
     ///
@@ -253,29 +251,29 @@ namespace liten {
     /// \brief Return a string representation of the status code, without the message
     /// text or POSIX code information.
     std::string CodeAsString() const;
-    static std::string CodeAsString(StatusCode);
+    static std::string CodeAsString(TStatusCode);
 
-    /// \brief Return the StatusCode value attached to this status.
-    StatusCode code() const { return ok() ? StatusCode::OK : state_->code; }
+    /// \brief Return the TStatusCode value attached to this status.
+    TStatusCode code() const { return ok() ? TStatusCode::OK : state_->code; }
 
     /// \brief Return the specific error message attached to this status.
     std::string message() const { return ok() ? "" : state_->msg; }
 
     /// \brief Return the status detail attached to this message.
-    std::shared_ptr<StatusDetail> detail() const {
+    std::shared_ptr<TStatusDetail> detail() const {
       return state_ == nullptr ? nullptr : state_->detail;
     }
 
-    /// \brief Return a new Status copying the existing status, but
+    /// \brief Return a new TStatus copying the existing status, but
     /// updating with the existing detail.
-    Status WithDetail(std::shared_ptr<StatusDetail> new_detail) const {
-      return Status(code(), message(), std::move(new_detail));
+    TStatus WithDetail(std::shared_ptr<TStatusDetail> new_detail) const {
+      return TStatus(code(), message(), std::move(new_detail));
     }
 
-    /// \brief Return a new Status with changed message, copying the
+    /// \brief Return a new TStatus with changed message, copying the
     /// existing status code and detail.
     template <typename... Args>
-    Status WithMessage(Args&&... args) const {
+    TStatus WithMessage(Args&&... args) const {
       return FromArgs(code(), std::forward<Args>(args)...).WithDetail(detail());
     }
 
@@ -290,9 +288,9 @@ namespace liten {
 
     /// State is used if there is a non-OK status
     struct State {
-      StatusCode code;
+      TStatusCode code;
       std::string msg;
-      std::shared_ptr<StatusDetail> detail;
+      std::shared_ptr<TStatusDetail> detail;
     };
     
     /// OK status has a `NULL` state_.  Otherwise, `state_` points to
@@ -306,22 +304,22 @@ namespace liten {
     }
 
     /// Copy status to this status
-    void CopyFrom(const Status& s);
+    void CopyFrom(const TStatus& s);
 
     /// Move to this status
-    inline void MoveFrom(Status& s);
+    inline void MoveFrom(TStatus& s);
   };
 
-  inline void Status::MoveFrom(Status& s) {
+  inline void TStatus::MoveFrom(TStatus& s) {
     delete state_;
     state_ = s.state_;
     s.state_ = nullptr;
   }
 
-  Status::Status(const Status& s)
+  TStatus::TStatus(const TStatus& s)
     : state_((s.state_ == nullptr) ? nullptr : new State(*s.state_)) {}
 
-  Status& Status::operator=(const Status& s) {
+  TStatus& TStatus::operator=(const TStatus& s) {
     // The following condition catches both aliasing (when this == &s),
     // and the common case where both s and *this are ok.
     if (state_ != s.state_) {
@@ -330,14 +328,14 @@ namespace liten {
     return *this;
   }
 
-  Status::Status(Status&& s) noexcept : state_(s.state_) { s.state_ = nullptr; }
+  TStatus::TStatus(TStatus&& s) noexcept : state_(s.state_) { s.state_ = nullptr; }
 
-  Status& Status::operator=(Status&& s) noexcept {
+  TStatus& TStatus::operator=(TStatus&& s) noexcept {
     MoveFrom(s);
     return *this;
   }
 
-  bool Status::Equals(const Status& s) const {
+  bool TStatus::Equals(const TStatus& s) const {
     if (state_ == s.state_) {
       return true;
     }
@@ -359,7 +357,7 @@ namespace liten {
   /// \cond FALSE
   // (note: emits warnings on Doxygen < 1.8.15,
   //  see https://github.com/doxygen/doxygen/issues/6295)
-  Status Status::operator&(const Status& s) const noexcept {
+  TStatus TStatus::operator&(const TStatus& s) const noexcept {
     if (ok()) {
       return s;
     } else {
@@ -367,7 +365,7 @@ namespace liten {
     }
   }
 
-  Status Status::operator&(Status&& s) const noexcept {
+  TStatus TStatus::operator&(TStatus&& s) const noexcept {
     if (ok()) {
       return std::move(s);
     } else {
@@ -375,28 +373,19 @@ namespace liten {
     }
   }
 
-  Status& Status::operator&=(const Status& s) noexcept {
+  TStatus& TStatus::operator&=(const TStatus& s) noexcept {
     if (ok() && !s.ok()) {
       CopyFrom(s);
     }
     return *this;
   }
 
-  Status& Status::operator&=(Status&& s) noexcept {
+  TStatus& TStatus::operator&=(TStatus&& s) noexcept {
     if (ok() && !s.ok()) {
       MoveFrom(s);
     }
     return *this;
   }
   /// \endcond
-
-  namespace internal {
-
-    // Extract Status from Status or Result<T>
-    // Useful for the status check macros such as RETURN_NOT_OK.
-    inline Status GenericToStatus(const Status& st) { return st; }
-    inline Status GenericToStatus(Status&& st) { return std::move(st); }
-
-  }  // namespace internal
 
 }  // namespace liten

@@ -6,15 +6,19 @@
 
 namespace liten
 {
-  class StopWatch
+  class TStopWatch
   {
   public:
     using clock_resolution = std::chrono::high_resolution_clock;
+
+    /// Start clock
     void Start()
     {
       start_ = clock_resolution::now();
       running_= true;
     }
+
+    /// Stop clock
     void Stop()
     {
       if (running_)
@@ -22,12 +26,14 @@ namespace liten
       running_ = false;
     }
 
+    /// Time in microseconds
     int64_t ElapsedInMicroseconds()
     {
       auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(stop_-start_);
       return microseconds.count();
     }
 
+    /// Time in milliseconds
     int64_t ElapsedInMilliseconds()
     {
       auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(stop_-start_);

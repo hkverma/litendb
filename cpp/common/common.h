@@ -17,6 +17,9 @@
 #include <sstream>
 #include <unordered_map>
 
+#include <cstdint>
+#include <tbb/tbb.h>
+
 #include <arrow/api.h>
 #include <arrow/csv/api.h>
 #include <arrow/filesystem/api.h>
@@ -24,11 +27,11 @@
 #include <arrow/util/string_view.h>
 
 #include <THashFuncs.h>
-#include <Macros.h>
-#include <TimeUtils.h>
-#include <StopWatch.h>
-#include <StringBuilder.h>
-#include <Status.h>
+#include <TMacros.h>
+#include <TTimeUtils.h>
+#include <TStopWatch.h>
+#include <TStringBuilder.h>
+#include <TStatus.h>
 #include <TLog.h>
 #include <TService.h>
 #include <TGuid.h>

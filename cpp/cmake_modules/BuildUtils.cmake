@@ -30,7 +30,9 @@ set (LITEN_ROOT_DIR $ENV{LITEN_ROOT_DIR})
 
 # Bin directories
 #
-set(LITEN_BIN ${LITEN_ROOT_DIR}/build/bin)
+set(LITEN_BIN_DIR bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${LITEN_BIN_DIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${LITEN_BIN_DIR})
 #
 # TBB include directory
 #
