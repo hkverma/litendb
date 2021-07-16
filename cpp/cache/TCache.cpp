@@ -131,3 +131,42 @@ Status TCache::ReadCsv(std::string tableName,
   }
   return Status::OK();
 }
+
+// TBD modify these
+int TCache::MakeMaps(std::string tableName)
+{
+  auto ttable = TCatalog::GetInstance()->GetTable(tableName);
+  int result = MakeMaps(ttable);
+  return result;
+}
+
+int TCache::MakeMaps(std::shared_ptr<TTable> ttable)
+{
+  if (nullptr == ttable)
+  {
+    LOG(ERROR) << "Failed to create data-tensor. Did not find in cache table " << ttable->GetName();
+    return 1;
+  }
+  // TBD Are numCopies needed? remove it.
+  int result = ttable->MakeMaps(1); 
+  if (result)
+  {
+    LOG(ERROR) << "Found table " << ttable->GetName() << " but failed to create data tensor";
+  }
+  return result;
+}
+
+int TCache::MakeMaps()
+{
+  auto& tables = TCatalog::GetInstance()->GetTableMap();
+  int result = 0;
+  for (auto it=tables.begin(); it != tables.end(); it++)
+  {
+    auto table = it->second;
+    if (MakeMaps(table))
+    {
+      result = 1;
+    }
+  }
+  return result;
+}

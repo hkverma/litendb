@@ -44,6 +44,8 @@ namespace liten {
     /// returns ptr to TTable, null if not present
     /// TBD Get Table by tableName 
     std::shared_ptr<TTable> GetTable(std::string tableName) const;
+    // TBD Write an iterator here..
+    std::unordered_map<std::string, std::shared_ptr<TTable>>& GetTableMap() { return tables_; }
     
     using TableNameColumnNamePair = std::pair<std::string, std::string>;
     using VersionToUuidMap = std::map<int, TGuid::Uuid>;
