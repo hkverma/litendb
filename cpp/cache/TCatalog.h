@@ -18,7 +18,6 @@ namespace liten {
     /// @id assigned uuid
     TStatus AddBlock(std::shared_ptr<TBlock> block,  TGuid::Uuid& id);
 
-    
     /// Return true if block exists
     /// @param block to be checked in catalog
     /// @param id is the uuid
@@ -28,13 +27,18 @@ namespace liten {
     /// @param block to be checked in catalog
     bool IfExists(std::shared_ptr<TBlock> block);
 
+    /// Add a table to catalog, should be added after all blocks have been added
+    /// @param table table to be added
+    /// @param tableName name of table
+    /// @returns status if table got added
+    TStatus AddTable(std::shared_ptr<TTable> ttable, std::string tableName);
+    
     /// Return information with compute information
     std::string GetTableInfo() const; //TBD bool schema=false, bool table=false) const;
 
     /// Get Id for given table name and field name
     /// @param tableName name of the table
-    /// returns ptr to TTable, null if not present
-    /// TBD Get Table by tableName 
+    /// @returns ptr to TTable, null if not present
     std::shared_ptr<TTable> GetTable(std::string tableName) const;
     // TBD Write an iterator here..
     std::unordered_map<std::string, std::shared_ptr<TTable>>& GetTableMap() { return tables_; }
@@ -66,12 +70,13 @@ namespace liten {
     std::unordered_map<TableNameColumnNamePair, VersionToUuidMap, hash_pair> blockIds_;
     
     /// hash map table name to table information
+    // TBD Add table URI as well here for caching purpose
+    // TBD convert to RowBlocks with its own mutex Have generic atomic templates
     std::unordered_map<std::string, std::shared_ptr<TTable>> tables_;
 
     /// shared_lock
     mutable std::shared_mutex mutex_;
 
-    /// TBD
     /// Get Id for given table name and field name
     /// @param blockName table and column name
     /// @param cacheId UUid for the given pair

@@ -8,14 +8,27 @@
 
 using namespace liten;
 
-// TBD Use named constructor
+// TBD Return Result wrapping TTable
 std::shared_ptr<TTable> TTable::Create(std::string tableName,
                                        TableType type,
                                        std::shared_ptr<arrow::Table> table)
 {
-  auto ttable = std::make_shared<MakeSharedEnabler>();
+  auto ttable = TCatalog::GetInstance()->GetTable(tableName);
+  if (nullptr != ttable)
+  {
+    TLOG(INFO) << "Table=" << tableName << " is already in catalog";
+    return nullptr;
+  }
+  ttable = std::make_shared<MakeSharedEnabler>();
   ttable->schema_ = std::make_shared<TSchema>(table->schema());
   ttable->name_ = std::move(tableName);
+  ttable->table_ = table;
+  TStatus status = ttable->AddToCatalog();
+  if (!status.ok())
+  {
+    TLOG(ERROR) << "Failed adding table= " << tableName << " to catalog. " << status.message();
+    return nullptr;
+  }
   return ttable;
 }
 
@@ -61,7 +74,8 @@ TStatus TTable::AddToCatalog() {
     auto trb = TRowBlock::Create(type_, schema_, numRows, columns);
     rowBlocks_.push_back(trb);
   }
-  return TStatus::OK();
+  TStatus status = TCatalog::GetInstance()->AddTable(shared_from_this(), name_);
+  return std::move(status);
 }
   
 void TTable::PrintSchema()

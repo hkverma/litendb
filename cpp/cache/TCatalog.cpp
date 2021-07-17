@@ -65,33 +65,53 @@ std::string TCatalog::GetTableInfo() const
 {
   std::string str;
   str.append("{");
-  for (auto& tableId : tables_)
   {
-    std::string tableName = tableId.first;
-    auto tTable = tableId.second;
-    if (DimensionTable == tTable->GetType()) {
-      str.append("\"Dim\":");
-    } else if (FactTable == tTable->GetType()) {
-      str.append("\"Fact\":");
-    } else {
-      str.append("\"Unknown\":");
+    std::shared_lock<std::shared_mutex> lk(mutex_);
+    for (auto& tableId : tables_)
+    {
+      std::string tableName = tableId.first;
+      auto tTable = tableId.second;
+      if (DimensionTable == tTable->GetType()) {
+        str.append("\"Dim\":");
+      } else if (FactTable == tTable->GetType()) {
+        str.append("\"Fact\":");
+      } else {
+        str.append("\"Unknown\":");
+      }
+      str.append("\"").append(tableName).append("\"");
     }
-    str.append("\"").append(tableName).append("\"");
-    /*TBD  if (schema)
-      ttable->PrintSchema();
-      if (table)
-      ttable->PrintTable(); */
   }
   str.append("}");
   return std::move(str);
 }
 
 /// Get Table by tableName
-// TBD shared_lock ???
 std::shared_ptr<TTable> TCatalog::GetTable(std::string tableName) const
 {
+  std::shared_lock<std::shared_mutex> lk(mutex_);
   auto itr = tables_.find(tableName);
   if (tables_.end() == itr)
     return nullptr;
   return (itr->second);
+}
+
+// Add a table to catalog, should be added after all blocks have been added
+TStatus TCatalog::AddTable(std::shared_ptr<TTable> ttable, std::string tableName)
+{
+  std::unique_lock<std::shared_mutex> lk(mutex_);
+  auto itr = tables_.find(tableName);
+  if (tables_.end() != itr)
+  {
+    if (itr->second == ttable)
+    {
+      TLOG(INFO) << "Table=" << tableName << " is already in catalog";
+      return TStatus::OK();
+    }
+    else
+    {
+      return TStatus::AlreadyExists("Modifying existing Table name=", tableName, " with a different liten table");
+    }
+  }
+  tables_[tableName] = ttable;
+  return TStatus::OK();
 }

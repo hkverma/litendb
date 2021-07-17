@@ -46,7 +46,12 @@ int main(int argc, char** argv) {
       TLOG(ERROR) << "Unable to Read file=" << fileName;
       continue;
     }    
-    auto ttable = TCatalog::GetInstance()->GetTable(fileName);
+    auto ttable = TCatalog::GetInstance()->GetTable(TpchDemo::tableNames[i]);
+    if (nullptr == ttable)
+    {
+      TLOG(ERROR) << "Unable to get table from catalog=" << TpchDemo::tableNames[i];
+      continue;
+    }    
     ttable->PrintSchema();
     //ttable->PrintTable();
   }

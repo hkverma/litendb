@@ -6,7 +6,7 @@
 namespace liten {
   
   // TTable holds table values
-  class TTable {
+  class TTable : public std::enable_shared_from_this<TTable> {
   public:
     
     /// Construct a table
