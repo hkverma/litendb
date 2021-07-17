@@ -15,6 +15,8 @@ using namespace std;
 
 int main(int argc, char** argv) {
 
+  TService::GetInstance()->Start();
+  
   if (argc < 2) {
     std::cout << "Usage: exec file_name" << std::endl;
     return EXIT_SUCCESS;

@@ -19,6 +19,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 if(NOT DEFINED CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build.")
 endif()
+message( "LITEN_BUILD_DIR = ${LITEN_BUILD_DIR}" )
+if(NOT DEFINED LITEN_BUILD_DIR)
+  set(LITEN_BUILD_DIR $ENV{LITEN_ROOT_DIR}/cpp/build/ CACHE STRING "Specify the build dir.")
+endif()
+
 #
 # Set global compile options
 #
@@ -30,9 +35,10 @@ set (LITEN_ROOT_DIR $ENV{LITEN_ROOT_DIR})
 
 # Bin directories
 #
-set(LITEN_BIN_DIR bin)
+set(LITEN_BIN_DIR ${LITEN_BUILD_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${LITEN_BIN_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${LITEN_BIN_DIR})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${LITEN_BIN_DIR})
 #
 # TBB include directory
 #
