@@ -10,7 +10,7 @@ std::shared_ptr<TConfigs> TConfigs::GetInstance()
 {
   if (tConfigs_ == nullptr)
   {
-    tConfigs_ = std::make_shared<TConfigs>();
+    tConfigs_ = std::make_shared<TConfigs::MakeSharedEnabler>();
   }
   TLOG(INFO) << "Created a new TConfigs";
   return tConfigs_;

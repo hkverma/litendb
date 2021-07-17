@@ -28,19 +28,27 @@ namespace liten
     }
         
     
-    /// Should be constructed once at startup
-    TConfigs() { }
-    
     ~TConfigs() { }
     
   private:
 
+    /// Should be constructed once at startup
+    TConfigs() { }
+    
     /// singleton member
     static std::shared_ptr<TConfigs> tConfigs_;
     
     /// Total worker CPU nodes
     int64_t numWorkerThreads_ = 6;
+
+    /// Allow shared_ptr with private constructors
+    struct MakeSharedEnabler;    
     
   };
+  
+  struct TConfigs::MakeSharedEnabler : public TConfigs {
+    MakeSharedEnabler() : TConfigs() { }
+  };
+  
 
 };

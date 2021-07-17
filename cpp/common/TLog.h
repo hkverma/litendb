@@ -17,14 +17,7 @@ namespace liten
   public:
 
     /// Get Singleton Instance
-    static std::shared_ptr<TLog> GetInstance()
-    {
-      if (nullptr == tLog_)
-      {
-        tLog_ = std::make_shared<TLog>();
-      }
-      return tLog_;
-    };
+    static std::shared_ptr<TLog> GetInstance();
 
     /// Get Singleton Instance to start logging
     std::shared_ptr<TLog> Start()
@@ -44,12 +37,6 @@ namespace liten
       google::ShutdownGoogleLogging();
     };
 
-    /// Initialize google logging at construction
-    TLog()
-    {
-      google::InitGoogleLogging("Liten");
-      TLOG(INFO) << "Start Liten Logger" ;
-    };
     
     ~TLog() { }
     
@@ -59,14 +46,28 @@ namespace liten
     }
 
     const static google::LogSeverity Info;
-    
+
   private:
 
+    /// Initialize google logging at construction
+    TLog()
+    {
+      google::InitGoogleLogging("Liten");
+      TLOG(INFO) << "Start Liten Logger" ;
+    };
 
+    /// Allow shared_ptr with private constructors
+    struct MakeSharedEnabler;    
+    
     /// Singleton log class
     static std::shared_ptr<TLog> tLog_;
     
   };
+
+  struct TLog::MakeSharedEnabler : public TLog {
+    MakeSharedEnabler() : TLog() { }
+  };
+  
   
 };
 

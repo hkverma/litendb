@@ -77,11 +77,25 @@ namespace liten {
     // This gives a slice from offset from beginning of length length
     std::shared_ptr<arrow::Table> Slice(std::string tableName, int64_t offset, int64_t length);
 
+    /// Default destructor
+    ~TCache() { }
+    
   private:
 
     /// A singleton cache keeps all the tables
     static std::shared_ptr<TCache> tCache_;
 
+    /// Cannot be constructed
+    TCache() { }
+
+    /// Allow shared_ptr with private constructors
+    struct MakeSharedEnabler;
+    
   };
+
+  struct TCache::MakeSharedEnabler : public TCache {
+    MakeSharedEnabler() : TCache() { }
+  };  
+  
 
 };

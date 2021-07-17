@@ -18,7 +18,7 @@ std::shared_ptr<TCache> TCache::GetInstance()
 {
   if (nullptr == tCache_)
   {
-    tCache_ = std::make_shared<TCache>();
+    tCache_ = std::make_shared<TCache::MakeSharedEnabler>();
   }
   TLOG(INFO) << "Created a new TCache";
   return tCache_;

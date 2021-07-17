@@ -11,15 +11,7 @@ namespace liten {
   public:
     
     /// Get a singleton instance, if not present create one
-    static std::shared_ptr<TCatalog> GetInstance()
-    {
-      if (nullptr == tCatalog_)
-      {
-        tCatalog_ = std::make_shared<TCatalog>();
-      }
-      TLOG(INFO) << "Created a new TCatalog";
-      return tCatalog_;
-    }
+    static std::shared_ptr<TCatalog> GetInstance();
 
     /// Add a block to catalog
     /// @param block block to be added
@@ -50,12 +42,17 @@ namespace liten {
     using TableNameColumnNamePair = std::pair<std::string, std::string>;
     using VersionToUuidMap = std::map<int, TGuid::Uuid>;
 
-    // TBD make in private
-    TCatalog() { }
+    /// Default destructor
     ~TCatalog() { }
-    
+
   private:
 
+    /// Cannot construct
+    TCatalog() { }
+    
+    /// Allow shared_ptr with private constructors
+    struct MakeSharedEnabler;    
+    
     /// A singleton class for catalog
     static std::shared_ptr<TCatalog> tCatalog_;
       
@@ -80,6 +77,10 @@ namespace liten {
     /// @param cacheId UUid for the given pair
     bool GetId(TableNameColumnNamePair blockName, TGuid::Uuid& cacheId);
     
+  };
+  
+  struct TCatalog::MakeSharedEnabler : public TCatalog {
+    MakeSharedEnabler() : TCatalog() { }
   };
   
 };

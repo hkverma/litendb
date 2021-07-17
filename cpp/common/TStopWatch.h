@@ -11,6 +11,10 @@ namespace liten
   public:
     using clock_resolution = std::chrono::high_resolution_clock;
 
+    /// For now default constructors are ok
+    TStopWatch() { }
+    ~TStopWatch() { }
+    
     /// Start clock
     void Start()
     {

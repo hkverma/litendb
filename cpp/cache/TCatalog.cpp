@@ -5,6 +5,17 @@ using namespace liten;
 
 std::shared_ptr<TCatalog> TCatalog::tCatalog_=nullptr;
 
+// Get a singleton instance, if not present create one
+std::shared_ptr<TCatalog> TCatalog::GetInstance()
+{
+  if (nullptr == tCatalog_)
+  {
+    tCatalog_ = std::make_shared<TCatalog::MakeSharedEnabler>();
+  }
+  TLOG(INFO) << "Created a new TCatalog";
+  return tCatalog_;
+}
+
 // Add Block to Cache  
 TStatus TCatalog::AddBlock(std::shared_ptr<TBlock> block,
                           TGuid::Uuid& id)
