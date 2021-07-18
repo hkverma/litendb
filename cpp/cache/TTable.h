@@ -22,11 +22,14 @@ public:
   /// Get underlying arrow::Table
   std::shared_ptr<arrow::Table> GetTable();
     
-  // $$$$$$$
+  /// Print schema in logfile
   void PrintSchema();
+
+  /// Print table in logfile
   void PrintTable();
 
-  // Inverted maps and min-max zones
+  /// TBD Clean these up with tensor values
+  /// Inverted maps and min-max zones
   int MakeMaps(int32_t numCopies);
   void PrintMaps();
   std::shared_ptr<TColumnMap> GetColMap(int mapNum, int colNum);
@@ -43,7 +46,7 @@ public:
   // TODO do point, range, set cuts 
   std::shared_ptr<arrow::Table> Slice(int64_t offset, int64_t length);
     
-  // TBD Create an options class
+  // TBD Add to the option class
   static const bool EnableColumnReverseMap = false;
 
   /// Destructor

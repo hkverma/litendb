@@ -77,9 +77,9 @@ TStatus TTable::AddToCatalog() {
   return std::move(status);
 }
   
+// Print Schema in logfile
 void TTable::PrintSchema()
 {
-  // Print Table for now
   const std::vector<std::shared_ptr<arrow::Field>>& tableSchemaFields = schema_->GetSchema()->fields();
   std::stringstream ss;
   ss << "Schema=";
@@ -88,9 +88,10 @@ void TTable::PrintSchema()
   {
     ss << "{" << schemaField->ToString() << "}," ;
   }
-  LOG(INFO) << ss.str();
+  TLOG(INFO) << ss.str();
 }
 
+// print table in logfile
 void TTable::PrintTable()
 {
   std::stringstream ss;
@@ -101,8 +102,8 @@ void TTable::PrintTable()
   for (int64_t i=0; i<NumColumns(); i++)
   {
     auto chunkedArray = table_->column(i);
-    //const std::shared_ptr<arrow::Field>& colField = schema_->GetSchema()->field(i);
-    //const std::shared_ptr<arrow::DataType>& colFieldType = colField->type();
+    const std::shared_ptr<arrow::Field>& colField = schema_->GetSchema()->field(i);
+    const std::shared_ptr<arrow::DataType>& colFieldType = colField->type();
        
     for (int64_t j=0; j<chunkedArray->num_chunks(); j++)
     {
@@ -117,9 +118,6 @@ void TTable::PrintTable()
         else
         {
           std::shared_ptr<arrow::Scalar> data = dataResult.ValueOrDie();
-          // todo
-          //auto typeData = static_cast<decltype(colFieldType.get())>(data.get());
-          //ss << typeData?typeData->ToString():"" << ",";
           if (data->is_valid)
             ss << data->ToString();
           ss << ",";
@@ -127,8 +125,8 @@ void TTable::PrintTable()
       }
     }
   }
-  LOG(INFO) << ss.str();
-  google::FlushLogFiles(google::INFO);
+  TLOG(INFO) << ss.str();
+  TLog::GetInstance()->FlushLogFiles(google::INFO);
 }
 
 // Returns non-zero code if fails to make map
@@ -185,7 +183,7 @@ void TTable::PrintMaps()
     //colMap->GetReverseMap(ss);
     //ss << "; ";
   }
-  LOG(INFO) << ss.str();
+  TLOG(INFO) << ss.str();
 }
 
 // This gives a slice from offset from beginning of length length
