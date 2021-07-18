@@ -7,247 +7,249 @@
 
 //TBD See which shared pointers can be unique
 
-namespace liten {
+namespace liten
+{
 
-  class TColumn {
-  public:
+class TColumn
+{
+public:
 
-    /// Construct a column
-    /// @param name of the column
-    /// @param type if dimension or fact table
-    /// @param chunkedArrow an arrow table that has been read
-    TColumn(std::string name,
-            TableType type,
-            std::shared_ptr<arrow::ChunkedArray> chunkedArray)
-      : name_(name), type_(type), chunkedArray_(chunkedArray) { }
+  /// Construct a column
+  /// @param name of the column
+  /// @param type if dimension or fact table
+  /// @param chunkedArrow an arrow table that has been read
+  TColumn(std::string name,
+          TableType type,
+          std::shared_ptr<arrow::ChunkedArray> chunkedArray)
+    : name_(name), type_(type), chunkedArray_(chunkedArray) { }
 
-    /// Add all blocks to catalog
-    TStatus AddToCatalog();
+  /// Add all blocks to catalog
+  TStatus AddToCatalog();
 
-  private:
-    /// Arrow table name, must be unique
-    std::string name_;
+private:
+  /// Arrow table name, must be unique
+  std::string name_;
 
-    /// Type of column -fact or dimension
-    TableType type_;
+  /// Type of column -fact or dimension
+  TableType type_;
 
-    /// chunkedArrows from which TCache was created
-    std::shared_ptr<arrow::ChunkedArray> chunkedArray_;
+  /// chunkedArrows from which TCache was created
+  std::shared_ptr<arrow::ChunkedArray> chunkedArray_;
 
-  };
+};
 
-  // TBD Current Iteraors and join make it cube based
-  // arrow::ChunkedArray Iterator
-  template <class Type, class ArrayType>
-  class TColumnIterator
+// TBD Current Iteraors and join make it cube based
+// arrow::ChunkedArray Iterator
+template <class Type, class ArrayType>
+class TColumnIterator
+{
+public:
+  TColumnIterator(std::shared_ptr<arrow::ChunkedArray> chary) :
+    currentArrayRowId_(0), lastArrayRowId_(0), chunkNum_(0)
   {
-  public:
-    TColumnIterator(std::shared_ptr<arrow::ChunkedArray> chary) :
-      currentArrayRowId_(0), lastArrayRowId_(0), chunkNum_(0)
-    {
-      chunkedArray_ = chary;
-      array_ =
-        std::static_pointer_cast<ArrayType>(chunkedArray_->chunk(chunkNum_));
-      chunkNum_++;
-    }
+    chunkedArray_ = chary;
+    array_ =
+      std::static_pointer_cast<ArrayType>(chunkedArray_->chunk(chunkNum_));
+    chunkNum_++;
+  }
 
-    void reset()
-    {
-      currentArrayRowId_=0;
-      lastArrayRowId_=0;
-      chunkNum_=0;
-      array_ =
-        std::static_pointer_cast<ArrayType>(chunkedArray_->chunk(chunkNum_));
-      chunkNum_++;
-    }
+  void reset()
+  {
+    currentArrayRowId_=0;
+    lastArrayRowId_=0;
+    chunkNum_=0;
+    array_ =
+      std::static_pointer_cast<ArrayType>(chunkedArray_->chunk(chunkNum_));
+    chunkNum_++;
+  }
 
-    bool next(Type& data)
-    {
-      int64_t rowId = currentArrayRowId_+lastArrayRowId_;
-      if (rowId >= chunkedArray_->length())
-        return false;
+  bool next(Type& data)
+  {
+    int64_t rowId = currentArrayRowId_+lastArrayRowId_;
+    if (rowId >= chunkedArray_->length())
+      return false;
 
-      while (currentArrayRowId_ >= array_->length())
-      {
-        if (!nextArray())
-        {
-          return false;
-        }
-        lastArrayRowId_ += currentArrayRowId_;
-        currentArrayRowId_ = 0;
-      }
-      data = array_->Value(currentArrayRowId_);
-      currentArrayRowId_++;
-      return true;
-    }
-
-    bool nextArray()
+    while (currentArrayRowId_ >= array_->length())
     {
-      chunkNum_++;
-      if (chunkNum_ >= chunkedArray_->num_chunks())
+      if (!nextArray())
       {
         return false;
       }
-      array_ =
-        std::static_pointer_cast<ArrayType>(chunkedArray_->chunk(chunkNum_));
-      return true;
+      lastArrayRowId_ += currentArrayRowId_;
+      currentArrayRowId_ = 0;
     }
+    data = array_->Value(currentArrayRowId_);
+    currentArrayRowId_++;
+    return true;
+  }
 
-    int64_t currentArrayRowId_;
-    int64_t lastArrayRowId_;
-    int64_t chunkNum_;
-    std::shared_ptr<ArrayType> array_;
-    std::shared_ptr<arrow::ChunkedArray> chunkedArray_;
-  };
-
-  // first rowId for a given value in chunkedArray
-  // TODO under progress needs to define Table such that we can skip the columns in the table
-  // It leads to issues currently
-  // TODO currently assumes return first match it can be a set
-  //
-  template<class Type, class ArrayType> 
-  bool GetRowId(int64_t& arrId,            // Output array Id
-                int64_t& rowId,               // output Row Id
-                Type& value,                   // Input Value
-                std::shared_ptr<TTable> table, // TTable
-                int64_t colNum,                // Column Number
-                int32_t mapNum)                 // worker number
+  bool nextArray()
   {
-    std::shared_ptr<arrow::ChunkedArray> chunkedArray = table->GetTable()->column(colNum);
-    auto colMap = table->GetColMap(mapNum, colNum);
-
-    bool mapExists = colMap->IfValidMap();
-
-    if (mapExists)
+    chunkNum_++;
+    if (chunkNum_ >= chunkedArray_->num_chunks())
     {
-      bool found = colMap->GetReverseMap(value, arrId, rowId);
-      return found;
+      return false;
     }
+    array_ =
+      std::static_pointer_cast<ArrayType>(chunkedArray_->chunk(chunkNum_));
+    return true;
+  }
 
-    // TODO Use zone map here min-max here diferentiate using what has been built
-    
-    // Do this if no map found
-    int64_t chunkNum = 0;
-    for (arrId=0; arrId <chunkedArray->num_chunks(); arrId++)
-    {
-      std::shared_ptr<ArrayType> arr = std::static_pointer_cast<ArrayType>(chunkedArray->chunk(chunkNum));
-      for (rowId=0; rowId<arr->length(); rowId++)
-      {
-        if (value == arr->Value(rowId))
-        {
-          return true;
-        }
-      }
-    }
-    return false;
-    
-  };
+  int64_t currentArrayRowId_;
+  int64_t lastArrayRowId_;
+  int64_t chunkNum_;
+  std::shared_ptr<ArrayType> array_;
+  std::shared_ptr<arrow::ChunkedArray> chunkedArray_;
+};
 
-  // Get value from a rowId for a given chunkedArray
-  template<class Type, class ArrayType>
-  bool GetValue(int64_t& rowId,  // rowId input
-                Type& value,      // output value
-                std::shared_ptr<TTable> table, // table
-                int64_t colNum)   // column number
+// first rowId for a given value in chunkedArray
+// TODO under progress needs to define Table such that we can skip the columns in the table
+// It leads to issues currently
+// TODO currently assumes return first match it can be a set
+//
+template<class Type, class ArrayType> 
+bool GetRowId(int64_t& arrId,            // Output array Id
+              int64_t& rowId,               // output Row Id
+              Type& value,                   // Input Value
+              std::shared_ptr<TTable> table, // TTable
+              int64_t colNum,                // Column Number
+              int32_t mapNum)                 // worker number
+{
+  std::shared_ptr<arrow::ChunkedArray> chunkedArray = table->GetTable()->column(colNum);
+  auto colMap = table->GetColMap(mapNum, colNum);
+
+  bool mapExists = colMap->IfValidMap();
+
+  if (mapExists)
   {
-    std::shared_ptr<arrow::ChunkedArray> chunkedArray = table->GetTable()->column(colNum);
-    TColumnIterator<Type, ArrayType> columnIterator(chunkedArray);
+    bool found = colMap->GetReverseMap(value, arrId, rowId);
+    return found;
+  }
 
-    int64_t chunkRowId=0;
-    for (int64_t chunkNum=0; chunkNum<=chunkedArray->num_chunks(); chunkNum++)
+  // TODO Use zone map here min-max here diferentiate using what has been built
+    
+  // Do this if no map found
+  int64_t chunkNum = 0;
+  for (arrId=0; arrId <chunkedArray->num_chunks(); arrId++)
+  {
+    std::shared_ptr<ArrayType> arr = std::static_pointer_cast<ArrayType>(chunkedArray->chunk(chunkNum));
+    for (rowId=0; rowId<arr->length(); rowId++)
     {
-      std::shared_ptr<ArrayType> array =
-        std::static_pointer_cast<ArrayType>(chunkedArray->chunk(chunkNum));
-      int64_t length = array->length();
-      if (chunkRowId+length < rowId)
+      if (value == arr->Value(rowId))
       {
-        chunkRowId += length;
-      }
-      else
-      {
-        int64_t offset = rowId-chunkRowId;
-        if constexpr(std::is_same_v<Type, arrow::util::string_view>)
-        {
-          value = array->GetView(offset);
-        }
-        else if constexpr(std::is_same_v<Type, std::string>)
-        {
-          value = array->GetString(offset);
-        }
-        else
-        {
-          value = array->Value(offset);
-        }
         return true;
       }
     }
-    return false;
   }
-
-  // Get value from a rowId for a given chunkedArray
-  template<class Type, class ArrayType>
-  bool GetValue(int64_t arrId,  // array Id
-                int64_t rowId,  // rowId input                
-                Type& value,      // output value
-                std::shared_ptr<TTable> table, // table
-                int64_t colNum)   // column number
-  {
-    std::shared_ptr<arrow::ChunkedArray> chunkedArray = table->GetTable()->column(colNum);
-    if (arrId >= chunkedArray->length())
-      return false;
-    std::shared_ptr<ArrayType> array =
-      std::static_pointer_cast<ArrayType>(chunkedArray->chunk(arrId));
-    if (rowId >= array->length())
-      return false;
+  return false;
     
-    if constexpr(std::is_same_v<Type, arrow::util::string_view>)
+};
+
+// Get value from a rowId for a given chunkedArray
+template<class Type, class ArrayType>
+bool GetValue(int64_t& rowId,  // rowId input
+              Type& value,      // output value
+              std::shared_ptr<TTable> table, // table
+              int64_t colNum)   // column number
+{
+  std::shared_ptr<arrow::ChunkedArray> chunkedArray = table->GetTable()->column(colNum);
+  TColumnIterator<Type, ArrayType> columnIterator(chunkedArray);
+
+  int64_t chunkRowId=0;
+  for (int64_t chunkNum=0; chunkNum<=chunkedArray->num_chunks(); chunkNum++)
+  {
+    std::shared_ptr<ArrayType> array =
+      std::static_pointer_cast<ArrayType>(chunkedArray->chunk(chunkNum));
+    int64_t length = array->length();
+    if (chunkRowId+length < rowId)
     {
-      value = array->GetView(rowId);
-    }
-    else if constexpr(std::is_same_v<Type, std::string>)
-    {
-      value = array->GetString(rowId);
+      chunkRowId += length;
     }
     else
     {
-      value = array->Value(rowId);
+      int64_t offset = rowId-chunkRowId;
+      if constexpr(std::is_same_v<Type, arrow::util::string_view>)
+        {
+          value = array->GetView(offset);
+        }
+      else if constexpr(std::is_same_v<Type, std::string>)
+        {
+          value = array->GetString(offset);
+        }
+      else
+      {
+        value = array->Value(offset);
+      }
+      return true;
     }
-    return true;
   }
-  
-  // This performs the following operation
-  // 1. Find arrId, rowId where leftTable[lefttColNum][arrId,rowId] == leftValue
-  // 2. Return rightValue equal to rightTable[rightColNum][arrId,rowId]
-  //
-  template<class TypeLeft, class ArrayTypeLeft,
-           class TypeRight=TypeLeft, class ArrayTypeRight=ArrayTypeLeft> inline
-  bool JoinInner(std::shared_ptr<TTable> table, // Table
-                 TypeLeft& leftValue,      // leftValue Input
-                 int64_t leftColNum,      // leftColNum
-                 int64_t& leftRowIdInMicroseconds,   // time taken to look for leftValue
-                 TypeRight& rightValue,    // rightValue output
-                 int64_t rightColNum,     // right Col Num
-                 int64_t& rightValueInMicroseconds,  // time taken to look for rightValue
-                 int32_t mapNum)               // worker Number
-  {
+  return false;
+}
 
-    int64_t rowId, arrId;
-    TStopWatch timer;
-    timer.Start();
-    bool result = GetRowId<TypeLeft, ArrayTypeLeft>(arrId, rowId, leftValue, table, leftColNum, mapNum);
-    timer.Stop();
-    leftRowIdInMicroseconds += timer.ElapsedInMicroseconds();
-    if (!result)
+// Get value from a rowId for a given chunkedArray
+template<class Type, class ArrayType>
+bool GetValue(int64_t arrId,  // array Id
+              int64_t rowId,  // rowId input                
+              Type& value,      // output value
+              std::shared_ptr<TTable> table, // table
+              int64_t colNum)   // column number
+{
+  std::shared_ptr<arrow::ChunkedArray> chunkedArray = table->GetTable()->column(colNum);
+  if (arrId >= chunkedArray->length())
+    return false;
+  std::shared_ptr<ArrayType> array =
+    std::static_pointer_cast<ArrayType>(chunkedArray->chunk(arrId));
+  if (rowId >= array->length())
+    return false;
+    
+  if constexpr(std::is_same_v<Type, arrow::util::string_view>)
     {
-      return result;
+      value = array->GetView(rowId);
     }
+  else if constexpr(std::is_same_v<Type, std::string>)
+    {
+      value = array->GetString(rowId);
+    }
+  else
+  {
+    value = array->Value(rowId);
+  }
+  return true;
+}
+  
+// This performs the following operation
+// 1. Find arrId, rowId where leftTable[lefttColNum][arrId,rowId] == leftValue
+// 2. Return rightValue equal to rightTable[rightColNum][arrId,rowId]
+//
+template<class TypeLeft, class ArrayTypeLeft,
+         class TypeRight=TypeLeft, class ArrayTypeRight=ArrayTypeLeft> inline
+bool JoinInner(std::shared_ptr<TTable> table, // Table
+               TypeLeft& leftValue,      // leftValue Input
+               int64_t leftColNum,      // leftColNum
+               int64_t& leftRowIdInMicroseconds,   // time taken to look for leftValue
+               TypeRight& rightValue,    // rightValue output
+               int64_t rightColNum,     // right Col Num
+               int64_t& rightValueInMicroseconds,  // time taken to look for rightValue
+               int32_t mapNum)               // worker Number
+{
 
-    timer.Start();
-    result = GetValue<TypeRight, ArrayTypeRight>(arrId, rowId, rightValue, table, rightColNum);
-    timer.Stop();
-    rightValueInMicroseconds += timer.ElapsedInMicroseconds();
-
+  int64_t rowId, arrId;
+  TStopWatch timer;
+  timer.Start();
+  bool result = GetRowId<TypeLeft, ArrayTypeLeft>(arrId, rowId, leftValue, table, leftColNum, mapNum);
+  timer.Stop();
+  leftRowIdInMicroseconds += timer.ElapsedInMicroseconds();
+  if (!result)
+  {
     return result;
   }
+
+  timer.Start();
+  result = GetValue<TypeRight, ArrayTypeRight>(arrId, rowId, rightValue, table, rightColNum);
+  timer.Stop();
+  rightValueInMicroseconds += timer.ElapsedInMicroseconds();
+
+  return result;
+}
   
-};
+}

@@ -2,7 +2,8 @@
 #include <TBlock.h>
 #include <TSchema.h>
 
-using namespace liten;
+namespace liten
+{
 
 // Construct a rowblock from a vector of blocks
 std::shared_ptr<TRowBlock> TRowBlock::Create(TableType type,
@@ -26,4 +27,6 @@ std::shared_ptr<TRowBlock> TRowBlock::Create(TableType type,
   trb->type_ = type;
   trb->recordBatch_ = rb;
   return trb;
+}
+
 }

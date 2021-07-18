@@ -2,7 +2,8 @@
 #include <TCatalog.h>
 #include <TBlock.h>
 
-using namespace liten;
+namespace liten
+{
 
 // Add all blocks to catalog
 TStatus TColumn::AddToCatalog() {
@@ -16,4 +17,6 @@ TStatus TColumn::AddToCatalog() {
     }
   }
   return TStatus::OK();
+}
+
 }

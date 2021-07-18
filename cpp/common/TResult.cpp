@@ -19,5 +19,5 @@ void InvalidValueOrDie(const TStatus& st) {
   DieWithMessage(std::string("ValueOrDie called on an error: ") + st.ToString());
 }
 
-};
-};
+}
+}

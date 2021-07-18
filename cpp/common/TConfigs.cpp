@@ -1,7 +1,8 @@
 #include <TConfigs.h>
 #include <TLog.h>
 
-using namespace liten;
+namespace liten
+{
 
 std::shared_ptr<TConfigs> TConfigs::tConfigs_ = nullptr;
 
@@ -14,4 +15,6 @@ std::shared_ptr<TConfigs> TConfigs::GetInstance()
   }
   TLOG(INFO) << "Created a new TConfigs";
   return tConfigs_;
+}
+
 }

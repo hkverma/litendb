@@ -1,6 +1,7 @@
 #include <TpchDemo.h>
 
-using namespace liten;
+namespace liten
+{
 
 // Tables - lineitem (first entry is fact table), rest are dimensions
 const std::vector<std::string> TpchDemo::tableNames =
@@ -603,4 +604,6 @@ void TpchDemo::PrintMaps(int startAt)
     LOG(INFO) << "Table " << tableNames[i];
     tables_[i]->PrintMaps();
   }
+}
+
 }

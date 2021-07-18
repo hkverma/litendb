@@ -17,6 +17,7 @@
 // Adapted from Apache Arrow, Apache Kudu, TensorFlow
 //
 //
+
 /*
 /// \brief Return with given status if condition is met.
 #define LITEN_RETURN_IF_(condition, status, expr)       \
@@ -390,4 +391,4 @@ TStatus& TStatus::operator&=(TStatus&& s) noexcept {
 }
 /// \endcond
 
-};  // namespace liten
+}  // namespace liten

@@ -1,6 +1,7 @@
 #include <TService.h>
 
-using namespace liten;
+namespace liten
+{
 
 std::shared_ptr<TService> TService::tService_ = nullptr;
 
@@ -13,3 +14,4 @@ std::shared_ptr<TService> TService::GetInstance()
   return tService_;
 }
     
+}

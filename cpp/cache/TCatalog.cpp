@@ -1,7 +1,8 @@
 #include <TCatalog.h>
 #include <TTable.h>
 
-using namespace liten;
+namespace liten
+{
 
 std::shared_ptr<TCatalog> TCatalog::tCatalog_=nullptr;
 
@@ -18,7 +19,7 @@ std::shared_ptr<TCatalog> TCatalog::GetInstance()
 
 // Add Block to Cache  
 TStatus TCatalog::AddBlock(std::shared_ptr<TBlock> block,
-                          TGuid::Uuid& id)
+                           TGuid::Uuid& id)
 {
   
   if (nullptr == block)
@@ -114,4 +115,6 @@ TStatus TCatalog::AddTable(std::shared_ptr<TTable> ttable, std::string tableName
   }
   tables_[tableName] = ttable;
   return TStatus::OK();
+}
+
 }

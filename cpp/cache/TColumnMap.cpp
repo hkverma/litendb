@@ -1,6 +1,7 @@
 #include <TColumnMap.h>
 
-using namespace liten;
+namespace liten
+{
 
 // TODO - Split zone maps from inverted index
 //
@@ -135,4 +136,6 @@ bool TInt64ColumnMap::GetReverseMap(std::stringstream& ss)
     ss << it->first << "=" << (it->second).first << ":" << (it->second).second << "," ;
   }
   return true;
+}
+
 }

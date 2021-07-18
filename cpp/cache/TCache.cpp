@@ -3,7 +3,8 @@
 #include <TCatalog.h>
 #include <TTable.h>
 
-using namespace liten;
+namespace liten
+{
 
 // For now the columnChunk should be present here.
 // TBD In future it could not be here, in that case fetch it if not present here
@@ -166,4 +167,6 @@ int TCache::MakeMaps()
     }
   }
   return result;
+}
+
 }

@@ -1,7 +1,8 @@
 #include <TBlock.h>
 #include <TCatalog.h>
 
-using namespace liten;
+namespace liten
+{
 
 std::unordered_map<std::shared_ptr<arrow::Array>, std::shared_ptr<TBlock>> TBlock::arrayToBlock_;
 std::shared_mutex TBlock::arrayToBlockMutex_;
@@ -52,4 +53,6 @@ TStatus TBlock::AddTBlock(std::shared_ptr<TBlock> blk)
     arrayToBlock_[blk->arr_] = blk;
   }
   return TStatus::OK();
+}
+
 }

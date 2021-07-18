@@ -11,11 +11,13 @@
 #include <common.h>
 #include <cache.h>
 
-using namespace liten;
 
 using arrow::DoubleBuilder;
 using arrow::Int64Builder;
 using arrow::ListBuilder;
+
+namespace liten
+{
 
 // While we want to use columnar data structures to build efficient operations, we
 // often receive data in a row-wise fashion from other systems. In the following,
@@ -257,4 +259,6 @@ int ReadFile(std::string fileName)
 
   //return (TestVectorAndColumnar());
   return EXIT_SUCCESS;
+}
+
 }

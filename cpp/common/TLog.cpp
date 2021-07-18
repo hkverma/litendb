@@ -1,6 +1,7 @@
 #include <TLog.h>
 
-using namespace liten;
+namespace liten
+{
 
 std::shared_ptr<TLog> TLog::tLog_ = nullptr;
 
@@ -14,3 +15,5 @@ std::shared_ptr<TLog> TLog::GetInstance()
   }
   return tLog_;
 };
+
+}

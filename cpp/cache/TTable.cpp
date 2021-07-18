@@ -6,7 +6,8 @@
 #include <TRowBlock.h>
 #include <TSchema.h>
 
-using namespace liten;
+namespace liten
+{
 
 // TBD Return Result wrapping TTable
 std::shared_ptr<TTable> TTable::Create(std::string tableName,
@@ -193,4 +194,6 @@ void TTable::PrintMaps()
 std::shared_ptr<arrow::Table> TTable::Slice(int64_t offset, int64_t length) {
   auto arrTable = table_->Slice(offset, length);
   return arrTable;
+}
+
 }
