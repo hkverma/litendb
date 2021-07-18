@@ -64,15 +64,19 @@ void TpchDemo::ReadTables(std::string tpchDir)
   for (int32_t i=0; i<numTables; i++)
   {
     std::string fileName = tpchDir + tableNames[i] + ".tbl";
-    TStatus status  = tCache_->ReadCsv(tableNames[i], tableTypes[i], fileName,
-                                  readOptions, parseOptions, convertOptions);
-    if (!status.ok())
+    auto ttableResult  = std::move(tCache_->ReadCsv(tableNames[i], tableTypes[i], fileName,
+                                                    readOptions, parseOptions, convertOptions));
+    if (!ttableResult.ok())
     {
       TLOG(ERROR) << "Unable to Read file=" << fileName;
       continue;
     }
-    // TBD use Result to get TTable back as well
     tables_[i] = TCatalog::GetInstance()->GetTable(tableNames[i]);
+    if (ttableResult.ValueOrDie() != tables_[i])
+    {
+      TLOG(ERROR) << "Error reading file=" << fileName;
+      continue;
+    }    
     //tables_[i]->Print();
   }
 

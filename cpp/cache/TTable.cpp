@@ -9,28 +9,26 @@
 namespace liten
 {
 
-// TBD Return Result wrapping TTable
-std::shared_ptr<TTable> TTable::Create(std::string tableName,
-                                       TableType type,
-                                       std::shared_ptr<arrow::Table> table)
+// Create a new TTable
+TResult<std::shared_ptr<TTable>> TTable::Create(std::string tableName,
+                                                TableType type,
+                                                std::shared_ptr<arrow::Table> table)
 {
   auto ttable = TCatalog::GetInstance()->GetTable(tableName);
   if (nullptr != ttable)
   {
-    TLOG(INFO) << "Table=" << tableName << " is already in catalog";
-    return nullptr;
+    return TResult<std::shared_ptr<TTable>>(TStatus::AlreadyExists("Table=",tableName," is already in catalog"));
   }
   ttable = std::make_shared<MakeSharedEnabler>();
   ttable->schema_ = std::make_shared<TSchema>(table->schema());
   ttable->name_ = std::move(tableName);
   ttable->table_ = table;
-  TStatus status = ttable->AddToCatalog();
+  TStatus status = std::move(ttable->AddToCatalog());
   if (!status.ok())
   {
-    TLOG(ERROR) << "Failed adding table= " << tableName << " to catalog. " << status.message();
-    return nullptr;
+    return TResult<std::shared_ptr<TTable>>(status);
   }
-  return ttable;
+  return TResult<std::shared_ptr<TTable>>(ttable);
 }
 
 // Add all blocks to catalog

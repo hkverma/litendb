@@ -53,12 +53,12 @@ public:
   /// @param convertOptions
   /// @returns Status
   /// @exception Arrow error exceptions for internal errors
-  TStatus ReadCsv(std::string tableName,
-                  TableType type,
-                  std::string csvUri,
-                  const arrow::csv::ReadOptions& readOptions,
-                  const arrow::csv::ParseOptions& parseOptions,
-                  const arrow::csv::ConvertOptions& convertOptions);
+  TResult<std::shared_ptr<TTable>> ReadCsv(std::string tableName,
+                                           TableType type,
+                                           std::string csvUri,
+                                           const arrow::csv::ReadOptions& readOptions,
+                                           const arrow::csv::ParseOptions& parseOptions,
+                                           const arrow::csv::ConvertOptions& convertOptions);
 
 
   /// Make maps for a given table name

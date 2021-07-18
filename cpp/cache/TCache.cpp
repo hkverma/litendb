@@ -39,19 +39,19 @@ std::string TCache::GetInfo()
 }
 
 /// Read csv file in a new table tableName. tableName should be unique
-TStatus TCache::ReadCsv(std::string tableName,
-                       TableType type,
-                       std::string csvUri,
-                       const arrow::csv::ReadOptions& readOptions,
-                       const arrow::csv::ParseOptions& parseOptions,
-                       const arrow::csv::ConvertOptions& convertOptions)
+TResult<std::shared_ptr<TTable>> TCache::ReadCsv(std::string tableName,
+                                                 TableType type,
+                                                 std::string csvUri,
+                                                 const arrow::csv::ReadOptions& readOptions,
+                                                 const arrow::csv::ParseOptions& parseOptions,
+                                                 const arrow::csv::ConvertOptions& convertOptions)
 {
   // If found one, return it
   std::shared_ptr<TTable> ttable = TCatalog::GetInstance()->GetTable(tableName);
   if (nullptr != ttable)
   {
     TLOG(INFO) << csvUri << " found in cache memory for tableName=" << tableName;
-    TStatus::OK();
+    return TResult<std::shared_ptr<TTable>>(ttable);
   }
 
   // Create one table with tableName
@@ -71,7 +71,7 @@ TStatus TCache::ReadCsv(std::string tableName,
   arrow::Result<int64_t> fileSizeResult = fp->GetSize();
   if (!fileSizeResult.ok()) {
     TLOG(ERROR) << "Unknown filesize for file " << csvUri;
-    return TStatus::UnknownError("Unknown filesize for file ", csvUri);
+    return TResult<std::shared_ptr<TTable>>(TStatus::UnknownError("Unknown filesize for file ", csvUri));
   }
   int64_t fileSize = fileSizeResult.ValueOrDie();
 
@@ -96,7 +96,7 @@ TStatus TCache::ReadCsv(std::string tableName,
     // Handle CSV read error
     // (for example a CSV syntax error or failed type conversion)
     TLOG(ERROR) << "Reading csv table= " << tableResult.status().ToString();
-    return TStatus::IOError("Reading csv table= ", tableResult.status().ToString());
+    return TResult<std::shared_ptr<TTable>>(TStatus::IOError("Reading csv table= ", tableResult.status().ToString()));
   }
   std::shared_ptr<arrow::Table> table = tableResult.ValueOrDie();
 
@@ -119,15 +119,14 @@ TStatus TCache::ReadCsv(std::string tableName,
   }
   if (nullptr == table)
   {
-    return TStatus::UnknownError("Creating arrow table");
+    return TResult<std::shared_ptr<TTable>>(TStatus::UnknownError("Creating arrow table"));
   }
-  ttable = TTable::Create(tableName, type, table);
-  if (nullptr == ttable)
+  auto ttableResult = std::move(TTable::Create(tableName, type, table));
+  if (!ttableResult.ok())
   {
     TLOG(ERROR) << "Error creating Liten table= " << tableName;
-    return TStatus::UnknownError("Creating Liten table");
   }
-  return TStatus::OK();
+  return ttableResult;
 }
 
 // TBD modify these
