@@ -4,8 +4,11 @@
 // Currently support only GNU CC
 
 #if defined(__GNUC__)
-#define LITEN_PREDICT_FALSE(x) (__builtin_expect(!!(x), 0))
-#define LITEN_PREDICT_TRUE(x) (__builtin_expect(!!(x), 1))
+/// Use likely or unlikely to help compiler with branch prediction
+/// likely predicts true while unlikely predicts false
+#define LITEN_UNLIKELY(x) (__builtin_expect(!!(x),0))
+#define LITEN_LIKELY(x) (__builtin_expect(!!(x),1))
+///
 #define LITEN_NORETURN __attribute__((noreturn))
 #define LITEN_PREFETCH(addr) __builtin_prefetch(addr)
 #else

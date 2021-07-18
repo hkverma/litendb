@@ -36,3 +36,4 @@
 #include <TService.h>
 #include <TGuid.h>
 #include <TConfigs.h>
+#include <TResult.h>
