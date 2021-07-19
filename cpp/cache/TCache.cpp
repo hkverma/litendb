@@ -25,6 +25,18 @@ std::shared_ptr<TCache> TCache::GetInstance()
   return tCache_;
 }
 
+inline TResult<std::shared_ptr<TTable>> TCache::AddTable(std::string tableName,
+                                                 TableType type,
+                                                 std::shared_ptr<arrow::Table> table)
+{
+  return std::move(TTable::Create(tableName, type, table));
+}
+
+inline std::shared_ptr<TTable> TCache::GetTable(std::string tableName) const
+{
+  return (TCatalog::GetInstance()->GetTable(tableName));
+}
+
 // Get Cache information
 std::string TCache::GetInfo()
 {

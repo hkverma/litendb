@@ -93,7 +93,7 @@ struct TTable::MakeSharedEnabler : public TTable {
   MakeSharedEnabler() : TTable() { }
 };
 
-// $$$$$$
+// TBD Clean all these functions
   
 inline std::shared_ptr<arrow::Table> TTable::GetTable()
 {

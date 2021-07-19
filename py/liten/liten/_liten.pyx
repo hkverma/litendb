@@ -124,19 +124,24 @@ cdef class CLiten:
         """
         cdef:
             shared_ptr[CTable] sp_table
+            CTResultCTTable sp_ttable_result
             shared_ptr[CTTable] sp_ttable
             CTTable* p_ttable
-            CTTable.TType tc_ttype
+            TableType tc_ttype
         sp_table = pyarrow_unwrap_table(table)
         if ttype != self.DimTable and ttype != self.FactTable:
             print("Error: Table must be DimTable or FactTable")
             return "";        
-        tc_ttype = <CTTable.TType>ttype
-        sp_ttable = self.tcache.AddTable(litenutils.to_bytes(name), sp_table, tc_ttype)
+        tc_ttype = <TableType>ttype
+        sp_ttable_result = self.tcache.AddTable(litenutils.to_bytes(name), tc_ttype, sp_table)
+        if (not sp_ttable_result.ok()):
+            print ("Failed to add table=", name)
+            return ""
+        sp_ttable = sp_ttable_result.ValueOrDie()
         p_ttable = sp_ttable.get()
         if (NULL == p_ttable):
             print ("Failed to add table=", name)
-            return ""
+            return ""            
         print ("Added Table=", name)
         return name
 

@@ -36,10 +36,11 @@ public:
   /// Return information with compute information
   std::string GetTableInfo() const; //TBD bool schema=false, bool table=false) const;
 
-  /// Get Id for given table name and field name
+  /// Get table or given table name
   /// @param tableName name of the table
   /// @returns ptr to TTable, null if not present
   std::shared_ptr<TTable> GetTable(std::string tableName) const;
+  
   // TBD Write an iterator here..
   std::unordered_map<std::string, std::shared_ptr<TTable>>& GetTableMap() { return tables_; }
     

@@ -12,20 +12,34 @@ from libcpp.utility cimport pair
 from libcpp.vector cimport vector
 from libcpp.unordered_map cimport unordered_map
 from libcpp.unordered_set cimport unordered_set
+from libcpp cimport bool
 
 from pyarrow.includes.libarrow cimport *
 
-cdef extern from "dtensor.h" namespace "liten" nogil:
+cdef extern from "common.h" namespace "liten" nogil:
+# CTStatus is liten::TStatus
+   cdef cppclass CTStatus" liten::TStatus":
+      bool ok()
+      c_string message()
+      
+# CTResult is liten::CTResult
+   cdef cppclass CTResultCTTable" liten::TResult<std::shared_ptr<liten::TTable>>":
+      bool ok()
+      shared_ptr[CTTable]& ValueOrDie()
 
+cdef extern from "cache.h" namespace "liten" nogil:
+
+   ctypedef enum TableType: DimensionTable, FactTable
+   
 # CTTable is liten::TTable in Cython. CTable is arrow::Table cython from pyarrow.
    cdef cppclass CTTable" liten::TTable":
-      ctypedef enum TType: Dim, Fact
       c_string GetName()
       shared_ptr[CTable] GetTable()
       shared_ptr[CTable] Slice(int64_t offset, int64_t length)
-      
+
+# CTCache is liten::TCache      
    cdef cppclass CTCache" liten::TCache":
-      shared_ptr[CTTable] AddTable(c_string name, shared_ptr[CTable] table, CTTable.TType)
+      CTResultCTTable AddTable(c_string tableName, TableType type, shared_ptr[CTable] table)
       shared_ptr[CTTable] GetTable(c_string name)
       @staticmethod
       shared_ptr[CTCache] GetInstance()

@@ -43,7 +43,6 @@ public:
   /// Get Cache info
   std::string GetInfo();
 
-
   /// Construct a table in cache from csv
   /// @param name of the table
   /// @param type if dimension or fact table
@@ -61,6 +60,20 @@ public:
                                            const arrow::csv::ConvertOptions& convertOptions);
 
 
+  /// Add table to cache
+  /// @param tableName name of table
+  /// @param type fact or dimension table
+  /// @param table arrow table to be added
+  /// @returns Result with TTable
+  TResult<std::shared_ptr<TTable>> AddTable(std::string tableName,
+                                            TableType type,
+                                            std::shared_ptr<arrow::Table> table);
+
+  /// Get table or given table name
+  /// @param tableName name of the table
+  /// @returns ptr to TTable, null if not present
+  std::shared_ptr<TTable> GetTable(std::string tableName) const;  
+  
   /// Make maps for a given table name
   int MakeMaps(std::string tableName);
   int MakeMaps(std::shared_ptr<TTable> ttable);
@@ -99,6 +112,5 @@ struct TCache::MakeSharedEnabler : public TCache
 {
   MakeSharedEnabler() : TCache() { }
 };  
-  
 
 }
