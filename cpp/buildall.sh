@@ -1,15 +1,18 @@
 #!/bin/bash
-build_type="debug"
-if [[ "$#" -gt 0 ]]; then
-    if [[ "$1" == "debug" || "$1" == "release" ]]; then
-        build_type=$1
-    else
-        echo "Usage: build.sh <debug|release> [targets ... ]"
-        exit
-    fi
-fi
 if [ -z "$LITEN_ROOT_DIR" ]; then
     echo "LITEN_ROOT_DIR must be set"
+    exit
+fi
+build_type="debug"
+if [ -z "$LITEN_BUILD_TYPE" ]; then
+    echo "LITEN_BUILD_TYPE is not set, building debug by default"
+else
+    build_type=${LITEN_BUILD_TYPE}
+fi
+if [[ "${build_type}" == "debug" || "${build_type}" == "release" ]]; then
+    echo "Building ${build_type}"
+else
+    echo "LITEN_BUILD_TYPE must be release or debug"
     exit
 fi
 
