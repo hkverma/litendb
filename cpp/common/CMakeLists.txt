@@ -4,5 +4,5 @@ message(STATUS "Building using CMake version: ${CMAKE_VERSION}")
 #
 # Subdirectories
 #
-add_library(common TimeUtils.cpp Status.cpp)
+add_library(common TTimeUtils.cpp TStatus.cpp TLog.cpp TService.cpp TGuid.cpp TConfigs.cpp TResult.cpp)
 target_include_directories(common PUBLIC ${COMMON_SRC})

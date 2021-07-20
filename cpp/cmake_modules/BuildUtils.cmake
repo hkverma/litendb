@@ -19,6 +19,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 if(NOT DEFINED CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build.")
 endif()
+message( "CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}" )
+message( "LITEN_BIN_DIR = ${LITEN_BIN_DIR}" )
+if(NOT DEFINED LITEN_BIN_DIR)
+  set(LITEN_BIN_DIR $ENV{LITEN_ROOT_DIR}/cpp/build/bin CACHE STRING "Specify the build dir.")
+endif()
+
 #
 # Set global compile options
 #
@@ -28,9 +34,11 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 #
 set (LITEN_ROOT_DIR $ENV{LITEN_ROOT_DIR})
 
-# Bin directories
+# Copy all libraries and executables in bin dir
 #
-set(LITEN_BIN ${LITEN_ROOT_DIR}/build/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${LITEN_BIN_DIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${LITEN_BIN_DIR})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${LITEN_BIN_DIR})
 #
 # TBB include directory
 #
@@ -40,11 +48,12 @@ set(TBB_LIB_DIR $ENV{LITEN_ROOT_DIR}/cpp/external_libs/tbb/bin)
 # Source Code directories
 #
 set(COMMON_SRC  $ENV{LITEN_ROOT_DIR}/cpp/common)
-set(DTENSOR_SRC $ENV{LITEN_ROOT_DIR}/cpp/dtensor)
-set(DTENSOR_TEST_SRC $ENV{LITEN_ROOT_DIR}/cpp/dtensor_test)
+set(CACHE_SRC $ENV{LITEN_ROOT_DIR}/cpp/cache)
+set(CACHE_TEST_SRC $ENV{LITEN_ROOT_DIR}/cpp/cache_test)
 #
 # Global include and link directories
 # TODO expand include directories
 #
 include_directories(/usr/include/python3.6)
 link_directories(${TBB_LIB_DIR})
+

@@ -1,0 +1,24 @@
+<map id="common/TLog.h" name="common/TLog.h">
+<area shape="rect" id="node2" href="$common_8h.html" title="common/common.h" alt="" coords="711,155,848,181"/>
+<area shape="rect" id="node19" href="$TConfigs_8cpp.html" title="common/TConfigs.cpp" alt="" coords="595,80,750,107"/>
+<area shape="rect" id="node20" href="$TLog_8cpp.html" title="common/TLog.cpp" alt="" coords="774,80,905,107"/>
+<area shape="rect" id="node21" href="$TResult_8cpp.html" title="common/TResult.cpp" alt="" coords="929,80,1075,107"/>
+<area shape="rect" id="node22" href="$TService_8h.html" title="common/TService.h" alt="" coords="1099,80,1238,107"/>
+<area shape="rect" id="node3" href="$TCatalog_8h.html" title="cache/TCatalog.h" alt="" coords="1145,304,1270,331"/>
+<area shape="rect" id="node10" href="$TBlock_8h.html" title="cache/TBlock.h" alt="" coords="864,304,977,331"/>
+<area shape="rect" id="node12" href="$TSchema_8h.html" title="cache/TSchema.h" alt="" coords="170,304,298,331"/>
+<area shape="rect" id="node13" href="$TColumn_8h.html" title="cache/TColumn.h" alt="" coords="663,304,789,331"/>
+<area shape="rect" id="node14" href="$TColumnMap_8h.html" title="cache/TColumnMap.h" alt="" coords="544,229,695,256"/>
+<area shape="rect" id="node16" href="$TCache_8h.html" title="cache/TCache.h" alt="" coords="1001,304,1120,331"/>
+<area shape="rect" id="node17" href="$TTable_8h.html" title="cache/TTable.h" alt="" coords="770,229,882,256"/>
+<area shape="rect" id="node18" href="$TRowBlock_8h.html" title="cache/TRowBlock.h" alt="" coords="5,304,145,331"/>
+<area shape="rect" id="node4" href="$cache_8h.html" title="cache/cache.h" alt="" coords="694,379,801,405"/>
+<area shape="rect" id="node5" href="$TBlock_8cpp.html" title="cache/TBlock.cpp" alt="" coords="988,379,1115,405"/>
+<area shape="rect" id="node6" href="$TCache_8cpp.html" title="cache/TCache.cpp" alt="" coords="1139,379,1271,405"/>
+<area shape="rect" id="node7" href="$TCatalog_8cpp.html" title="cache/TCatalog.cpp" alt="" coords="1295,379,1434,405"/>
+<area shape="rect" id="node8" href="$TColumn_8cpp.html" title="cache/TColumn.cpp" alt="" coords="825,379,963,405"/>
+<area shape="rect" id="node9" href="$TTable_8cpp.html" title="cache/TTable.cpp" alt="" coords="512,379,639,405"/>
+<area shape="rect" id="node11" href="$TRowBlock_8cpp.html" title="cache/TRowBlock.cpp" alt="" coords="157,379,311,405"/>
+<area shape="rect" id="node15" href="$TColumnMap_8cpp.html" title="cache/TColumnMap.cpp" alt="" coords="323,304,487,331"/>
+<area shape="rect" id="node23" href="$TService_8cpp.html" title="common/TService.cpp" alt="" coords="1092,155,1245,181"/>
+</map>

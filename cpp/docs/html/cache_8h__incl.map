@@ -1,0 +1,22 @@
+<map id="cache/cache.h" name="cache/cache.h">
+<area shape="rect" id="node2" href="$TCatalog_8h.html" title="TCatalog.h" alt="" coords="1301,155,1387,181"/>
+<area shape="rect" id="node42" href="$TBlock_8h.html" title="TBlock.h" alt="" coords="845,80,920,107"/>
+<area shape="rect" id="node43" href="$TSchema_8h.html" title="TSchema.h" alt="" coords="947,80,1037,107"/>
+<area shape="rect" id="node44" href="$TColumn_8h.html" title="TColumn.h" alt="" coords="1114,80,1201,107"/>
+<area shape="rect" id="node45" href="$TTable_8h.html" title="TTable.h" alt="" coords="1203,155,1277,181"/>
+<area shape="rect" id="node46" href="$TColumnMap_8h.html" title="TColumnMap.h" alt="" coords="966,155,1077,181"/>
+<area shape="rect" id="node47" href="$TCache_8h.html" title="TCache.h" alt="" coords="1411,155,1490,181"/>
+<area shape="rect" id="node3" href="$common_8h.html" title="common.h" alt="" coords="1073,229,1156,256"/>
+<area shape="rect" id="node41" href="$TCacheTypes_8h.html" title="TCacheTypes.h" alt="" coords="1235,229,1349,256"/>
+<area shape="rect" id="node20" href="$THashFuncs_8h.html" title="THashFuncs.h" alt="" coords="2282,304,2390,331"/>
+<area shape="rect" id="node22" href="$TMacros_8h.html" title="TMacros.h" alt="" coords="442,468,526,495"/>
+<area shape="rect" id="node23" href="$TTimeUtils_8h.html" title="TTimeUtils.h" alt="" coords="2687,304,2785,331"/>
+<area shape="rect" id="node25" href="$TStopWatch_8h.html" title="TStopWatch.h" alt="" coords="2903,304,3009,331"/>
+<area shape="rect" id="node27" href="$TStringBuilder_8h.html" title="TStringBuilder.h" alt="" coords="551,468,665,495"/>
+<area shape="rect" id="node28" href="$TStatus_8h.html" title="TStatus.h" alt="" coords="489,386,567,413"/>
+<area shape="rect" id="node29" href="$TLog_8h.html" title="TLog.h" alt="" coords="657,386,719,413"/>
+<area shape="rect" id="node31" href="$TService_8h.html" title="TService.h" alt="" coords="657,304,743,331"/>
+<area shape="rect" id="node32" href="$TGuid_8h.html" title="TGuid.h" alt="" coords="2414,304,2482,331"/>
+<area shape="rect" id="node37" href="$TConfigs_8h.html" title="TConfigs.h" alt="" coords="139,386,226,413"/>
+<area shape="rect" id="node38" href="$TResult_8h.html" title="TResult.h" alt="" coords="393,304,471,331"/>
+</map>

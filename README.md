@@ -487,12 +487,17 @@ Thread safe simple Key-Value storage for buffer management
 Get a sha512 on schema json. Sha512 is the name of the schema.
 array_uuid is added in ascending version
 ```
-{[table_name, field_name]-> vector<TLinkedListFastLookup(array_uuid,version)>
+{[table_name, field_name]-> map<version, array_uuid>
 {schema_sha512}
 ```
 If in DDR-RAM, there is a map from array_uuid to Array pointer.
+```
 unordered_map<array_uuid, array_ptr>
-
+```
+There is also a map to know version for a given array_uuid
+```
+unordered_map<array_uuid, version>
+```
 List of all the tables and schema is stored separately
 ```
 unordered_map<table_name, schema_sha512>
@@ -595,6 +600,27 @@ These are some of the techniques being used in Liten code.
 ### Tasks
 
 #### In Progress
+
+  Create Liten tensor for query processing
+  Modife schema to add dimension hierarchy. For example in TPCH it looks like 
+  Child     Parent
+  ORDERS -> CUSTOMER
+  PART -> PARTSUPP
+  SUPP -> NATION -> REGION
+
+  Add these hierarchies into Schema.
+
+  Add the following APIs and execute query6 and query5 using these APIs.
+  
+  API -
+  lineitem = vector<region>  region contains set<nations>
+  lineitem = vector<orders>  orders contain set<customer>
+
+  l1[set<lineitem-ids>] = lineitem.slice(region == "europe")
+  l2[set<lineitem-ids>] = l1[set<lineitem-ids>].filter(for col == "orders" do pred = "orderdate == 1996")
+  l2.aggregate(revenue as ep*(1-dis) by nation)
+  map????
+  
   Modify Liten to enable these two operations
   
   Change ML training example and add features as table in Liten as well
