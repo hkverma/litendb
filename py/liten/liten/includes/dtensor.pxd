@@ -19,13 +19,13 @@ from pyarrow.includes.libarrow cimport *
 cdef extern from "common.h" namespace "liten" nogil:
 # CTStatus is liten::TStatus
    cdef cppclass CTStatus" liten::TStatus":
-      bool ok()
-      c_string message()
+      bool ok() const
+      c_string message() const
       
 # CTResult is liten::CTResult
    cdef cppclass CTResultCTTable" liten::TResult<std::shared_ptr<liten::TTable>>":
-      bool ok()
-      shared_ptr[CTTable]& ValueOrDie()
+      bool ok() const
+      const shared_ptr[CTTable]& ValueOrDie() const
 
 cdef extern from "cache.h" namespace "liten" nogil:
 
@@ -40,7 +40,7 @@ cdef extern from "cache.h" namespace "liten" nogil:
 # CTCache is liten::TCache      
    cdef cppclass CTCache" liten::TCache":
       CTResultCTTable AddTable(c_string tableName, TableType type, shared_ptr[CTable] table)
-      shared_ptr[CTTable] GetTable(c_string name)
+      shared_ptr[CTTable] GetTable(c_string name) const
       @staticmethod
       shared_ptr[CTCache] GetInstance()
       c_string GetInfo()

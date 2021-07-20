@@ -14,13 +14,14 @@ if [ -z "$LITEN_ROOT_DIR" ]; then
 fi
 
 # Create a debug or optimized make file
+# TBD Use LITEN_BUILD_TYPE as debug or release same as setup.py in python
 #
 echo "Create makefile for build type ${build_type}"
 build_dir=${LITEN_ROOT_DIR}/cpp/build/${build_type}
 echo "Building in directory ${build_dir}"
 mkdir -p ${build_dir}
 cd ${build_dir}
-cmake ${LITEN_ROOT_DIR}/cpp -DCMAKE_BUILD_TYPE=${build_type} -DLITEN_BUILD_DIR=/${build_dir}
+cmake ${LITEN_ROOT_DIR}/cpp -DCMAKE_BUILD_TYPE=${build_type} -DLITEN_BIN_DIR=${build_dir}/bin
 
 # Now build all the targets
 #

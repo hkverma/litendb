@@ -71,7 +71,7 @@ class cmake_build_ext(_build_ext):
     return False
 
   def _bundle_liten_cpp(self, build_prefix, build_lib):
-    liten_lib = pjoin(liten_root_dir,'cpp','build','libliten.so')
+    liten_lib = pjoin(liten_root_dir,'cpp','build', self.build_type.lower(), 'bin','libliten.so')
     if not liten_lib:
       raise Exception("Could not find " + liten_lib)
     shutil.copyfile(liten_lib, pjoin(build_prefix, build_lib, 'liten','libliten.so'))
@@ -119,6 +119,9 @@ class cmake_build_ext(_build_ext):
       cmake_options.append('-DCMAKE_BUILD_TYPE={0}'
                            .format(self.build_type.lower()))
 
+      cmake_options.append('-DLITEN_BIN_DIR={0}'
+                           .format(os.getcwd()))
+      
       extra_cmake_args = []
       build_tool_args = []
 
@@ -167,7 +170,8 @@ class cmake_build_ext(_build_ext):
               'to build path', ext_path)
         shutil.move(built_path, ext_path)
         self._found_names.append(name)
-        
+
+      print('Bundling liten C-libs prefix=', build_prefix, ' lib=', build_lib)
       self._bundle_liten_cpp(build_prefix, build_lib)
 
 with open("README.md", "r") as fh:

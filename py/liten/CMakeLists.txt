@@ -13,12 +13,15 @@ include(BuildUtils)
 #include(BuildUtils)
 find_package(Python3Alt)
 include(UseCython)
+# pick BuildUtils from cpp
+#
 include(BuildUtils)
-
 set(module _liten)
 set(module_name ${module})
-# TBD clean link and include dirs
-link_directories(${LITEN_ROOT_DIR}/cpp/build/debug/bin)
+# Change these to pick TBD Use $CMAKE_BUILD_TYPE here
+#
+link_directories(${LITEN_ROOT_DIR}/cpp/build/${CMAKE_BUILD_TYPE}/bin)
+#
 include_directories(${LITEN_ROOT_DIR}/cpp/cache_test ${LITEN_ROOT_DIR}/cpp/cache ${LITEN_ROOT_DIR}/cpp/common)
 include_directories(${LITEN_ROOT_DIR}/cpp/external_libs/arrow/arrow/cpp/src)
 include_directories($ENV{LITEN_SITELIBS_DIR}/numpy/core/include)
