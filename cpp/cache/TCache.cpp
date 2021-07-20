@@ -25,14 +25,14 @@ std::shared_ptr<TCache> TCache::GetInstance()
   return tCache_;
 }
 
-inline TResult<std::shared_ptr<TTable>> TCache::AddTable(std::string tableName,
+TResult<std::shared_ptr<TTable>> TCache::AddTable(std::string tableName,
                                                  TableType type,
                                                  std::shared_ptr<arrow::Table> table)
 {
   return std::move(TTable::Create(tableName, type, table));
 }
 
-inline std::shared_ptr<TTable> TCache::GetTable(std::string tableName) const
+std::shared_ptr<TTable> TCache::GetTable(std::string tableName) const
 {
   return (TCatalog::GetInstance()->GetTable(tableName));
 }
@@ -180,4 +180,18 @@ int TCache::MakeMaps()
   return result;
 }
 
+// This gives a slice from offset from beginning of length length
+// TBD do it using tensor
+std::shared_ptr<arrow::Table> TCache::Slice(std::string tableName, int64_t offset, int64_t length)
+{
+  auto arrTable = GetTable(tableName);
+  // No table by this name
+  if (nullptr == arrTable) {
+    return nullptr;
+  }
+  
+  auto slicedTable = arrTable->Slice(offset, length);
+  return slicedTable;
+  
+}
 }
