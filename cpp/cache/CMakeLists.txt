@@ -4,7 +4,7 @@ message(STATUS "Building using CMake version: ${CMAKE_VERSION}")
 #
 # Create all object files
 #
-add_library(cache_objects OBJECT TCatalog.cpp TCache.cpp TBlock.cpp TColumn.cpp TRowBlock.cpp TTable.cpp TColumnMap.cpp )
+add_library(cache_objects OBJECT TCatalog.cpp TCache.cpp TSchema.cpp TBlock.cpp TColumn.cpp TRowBlock.cpp TTable.cpp TColumnMap.cpp )
 target_include_directories(cache_objects PUBLIC ${COMMON_SRC}  ${CACHE_SRC})
 #
 # cache static library for executables

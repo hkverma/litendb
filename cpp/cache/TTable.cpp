@@ -19,8 +19,14 @@ TResult<std::shared_ptr<TTable>> TTable::Create(std::string tableName,
   {
     return TResult<std::shared_ptr<TTable>>(TStatus::AlreadyExists("Table=",tableName," is already in catalog"));
   }
+  std::string schemaName = tableName+"_schema";
+  auto schema = TSchema::Create(table->schema(), type, schemaName);
+  if (!schema.ok())
+  {
+    return TResult<std::shared_ptr<TTable>>(TStatus::AlreadyExists("Table=",tableName," could not be created because schema=", schemaName, "failed to create with msg=", schema.status().message()));
+  }
   ttable = std::make_shared<MakeSharedEnabler>();
-  ttable->schema_ = std::make_shared<TSchema>(table->schema());
+  ttable->schema_ = schema.ValueOrDie();
   ttable->name_ = std::move(tableName);
   ttable->table_ = table;
   TStatus status = std::move(ttable->AddToCatalog());
@@ -73,7 +79,7 @@ TStatus TTable::AddToCatalog() {
     auto trb = TRowBlock::Create(type_, schema_, numRows, columns);
     rowBlocks_.push_back(trb);
   }
-  TStatus status = TCatalog::GetInstance()->AddTable(shared_from_this(), name_);
+  TStatus status = TCatalog::GetInstance()->AddTable(shared_from_this());
   return std::move(status);
 }
   
