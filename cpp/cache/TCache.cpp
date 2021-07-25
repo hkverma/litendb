@@ -37,6 +37,11 @@ std::shared_ptr<TTable> TCache::GetTable(std::string tableName) const
   return (TCatalog::GetInstance()->GetTable(tableName));
 }
 
+std::shared_ptr<TSchema> TCache::GetSchema(std::string schemaName) const
+{
+  return (TCatalog::GetInstance()->GetSchema(schemaName));
+}
+
 // Get Cache information
 std::string TCache::GetInfo()
 {

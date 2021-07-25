@@ -49,6 +49,9 @@ private:
   /// Type of table defined by this schema
   TableType type_;
 
+  /// Field types either dim or metric
+  std::map<std::shared_ptr<arrow::Field>, FieldType> typeFields_;
+
   /// Join columns - joins this schema (child) field_id to parent[schema, field_id]
   std::map<std::shared_ptr<arrow::Field>, SchemaField> parentFields_;
 

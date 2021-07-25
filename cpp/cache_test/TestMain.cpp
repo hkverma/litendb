@@ -46,22 +46,48 @@ int main(int argc, char** argv) {
       TLOG(ERROR) << "Unable to Read file=" << fileName;
       continue;
     }    
-    auto ttable = TCatalog::GetInstance()->GetTable(TpchDemo::tableNames[i]);
+    auto ttable = tCache->GetTable(TpchDemo::tableNames[i]);
     if (nullptr == ttable)
     {
       TLOG(ERROR) << "Unable to get table from catalog=" << TpchDemo::tableNames[i];
       continue;
     }    
-    ttable->PrintSchema();
+    //ttable->PrintSchema();
     //ttable->PrintTable();
   }
-  // tpchDemo->PrintSchemas();
+
+  // Create Schema Heirarchy
+  auto lineitemSchema = tCache->GetSchema("lineitem_schema");
+  auto customerSchema = tCache->GetSchema("customer_schema");
+  auto ordersSchema = tCache->GetSchema("orders_schema");
+  auto supplierSchema = tCache->GetSchema("supplier_schema");
+  auto nationSchema = tCache->GetSchema("nation_schema");
+  auto regionSchema = tCache->GetSchema("region_schema");
+  if (nullptr == lineitemSchema || 
+      nullptr == customerSchema ||
+      nullptr == ordersSchema ||
+      nullptr == supplierSchema ||
+      nullptr == nationSchema ||
+      nullptr == regionSchema)
+  {
+    TLOG(ERROR) << "Unable to get schemas";
+  }
+  else
+  {
+    lineitemSchema->Join("L_ORDERKEY", ordersSchema, "O_ORDERKEY");
+    lineitemSchema->Join("L_SUPPKEY", supplierSchema, "S_SUPPKEY");
+    ordersSchema->Join("O_CUSTKEY", customerSchema, "C_CUSTKEY");
+    customerSchema->Join("C_NATIONKEY", nationSchema, "N_NATIONKEY");
+    nationSchema->Join("N_REGIONKEY", regionSchema, "R_REGIONKEY");
+  }
+  
   std::string cacheInfo = tCache->GetInfo();
   LOG(INFO) << "Cache=" << cacheInfo;
 
   // tpchDemo will probe cache to get all the tables
   shared_ptr<TpchDemo> tpchDemo = TpchDemo::GetInstance(tCache);
-
+  
+  tpchDemo->PrintSchemas();
 
   // Run Query6
   auto execQuery6 = [&]()
