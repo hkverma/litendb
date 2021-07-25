@@ -1,7 +1,7 @@
 #pragma once
 
 #include <common.h>
-#include <TCacheTypes.h>
+#include <cache_fwd.h>
 #include <TTable.h>
 #include <TColumnMap.h>
 

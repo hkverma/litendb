@@ -1,7 +1,7 @@
 #pragma once
 
 #include <common.h>
-#include <TCacheTypes.h>
+#include <cache_fwd.h>
 
 // TBD persist schema and all data files in SSD using a separate object
 namespace liten {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <common.h>
-#include <TCacheTypes.h>
+#include <cache_fwd.h>
 
 //
 // Liten Columnar Cache Directory
