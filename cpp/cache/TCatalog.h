@@ -31,7 +31,7 @@ public:
   /// @param table table to be added
   /// @param tableName name of table
   /// @returns status if table got added
-  TStatus AddTable(std::shared_ptr<TTable> ttable, std::string tableName);
+  TStatus AddTable(std::shared_ptr<TTable> ttable);
     
   /// Return information with compute information
   std::string GetTableInfo() const; //TBD bool schema=false, bool table=false) const;
@@ -44,6 +44,21 @@ public:
   // TBD Write an iterator here..
   std::unordered_map<std::string, std::shared_ptr<TTable>>& GetTableMap() { return tables_; }
     
+
+  /// Add a schema to catalog, should be added after all blocks have been added
+  /// @param schema schema to be added
+  /// @param schemaName name of schema
+  /// @returns status if schema got added
+  TStatus AddSchema(std::shared_ptr<TSchema> schema);
+    
+  /// Return information with compute information
+  std::string GetSchemaInfo() const; //TBD bool schema=false, bool schema=false) const;
+
+  /// Get schema or given schema name
+  /// @param schemaName name of the schema
+  /// @returns ptr to TSchema, null if not present
+  std::shared_ptr<TSchema> GetSchema(std::string schemaName) const;
+  
   using TableNameColumnNamePair = std::pair<std::string, std::string>;
   using VersionToUuidMap = std::map<int, TGuid::Uuid>;
 
@@ -75,6 +90,9 @@ private:
   // TBD convert to RowBlocks with its own mutex Have generic atomic templates
   std::unordered_map<std::string, std::shared_ptr<TTable>> tables_;
 
+  /// hash map schema name to schema information
+  std::unordered_map<std::string, std::shared_ptr<TSchema>> schemas_;
+  
   /// shared_lock
   mutable std::shared_mutex mutex_;
 

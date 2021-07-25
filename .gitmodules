@@ -19,3 +19,6 @@
 [submodule "cpp/external_libs/gperftools/gperftools"]
 	path = cpp/external_libs/gperftools/gperftools
 	url = https://github.com/gperftools/gperftools
+[submodule "cpp/external_libs/nlohmann/nlohmann"]
+	path = cpp/external_libs/nlohmann/nlohmann
+	url = https://github.com/nlohmann/json.git

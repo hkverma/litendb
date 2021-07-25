@@ -1,5 +1,6 @@
 #include <TCatalog.h>
 #include <TTable.h>
+#include <TSchema.h>
 
 namespace liten
 {
@@ -97,8 +98,9 @@ std::shared_ptr<TTable> TCatalog::GetTable(std::string tableName) const
 }
 
 // Add a table to catalog, should be added after all blocks have been added
-TStatus TCatalog::AddTable(std::shared_ptr<TTable> ttable, std::string tableName)
+TStatus TCatalog::AddTable(std::shared_ptr<TTable> ttable)
 {
+  std::string tableName = std::move(ttable->GetName());
   std::unique_lock<std::shared_mutex> lk(mutex_);
   auto itr = tables_.find(tableName);
   if (tables_.end() != itr)
@@ -114,6 +116,65 @@ TStatus TCatalog::AddTable(std::shared_ptr<TTable> ttable, std::string tableName
     }
   }
   tables_[tableName] = ttable;
+  return TStatus::OK();
+}
+
+// Return information with compute information
+// TBD Have to use catalog here ...
+// TBD shared_lock ???
+std::string TCatalog::GetSchemaInfo() const
+{
+  std::string str;
+  str.append("{");
+  {
+    std::shared_lock<std::shared_mutex> lk(mutex_);
+    for (auto& schemaId : schemas_)
+    {
+      std::string schemaName = schemaId.first;
+      auto tSchema = schemaId.second;
+      if (DimensionTable == tSchema->GetType()) {
+        str.append("\"Dim\":");
+      } else if (FactTable == tSchema->GetType()) {
+        str.append("\"Fact\":");
+      } else {
+        str.append("\"Unknown\":");
+      }
+      str.append("\"").append(schemaName).append("\"");
+    }
+  }
+  str.append("}");
+  return std::move(str);
+}
+
+/// Get Schema by schemaName
+std::shared_ptr<TSchema> TCatalog::GetSchema(std::string schemaName) const
+{
+  std::shared_lock<std::shared_mutex> lk(mutex_);
+  auto itr = schemas_.find(schemaName);
+  if (schemas_.end() == itr)
+    return nullptr;
+  return (itr->second);
+}
+
+// Add a schema to catalog, should be added after all blocks have been added
+TStatus TCatalog::AddSchema(std::shared_ptr<TSchema> tschema)
+{
+  std::unique_lock<std::shared_mutex> lk(mutex_);
+  std::string schemaName = std::move(tschema->GetName());
+  auto itr = schemas_.find(schemaName);
+  if (schemas_.end() != itr)
+  {
+    if (itr->second == tschema)
+    {
+      TLOG(INFO) << "Schema=" << schemaName << " is already in catalog";
+      return TStatus::OK();
+    }
+    else
+    {
+      return TStatus::AlreadyExists("Modifying existing Schema name=", schemaName, " with a different liten schema");
+    }
+  }
+  schemas_[schemaName] = tschema;
   return TStatus::OK();
 }
 

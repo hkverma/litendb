@@ -72,7 +72,15 @@ public:
   /// Get table or given table name
   /// @param tableName name of the table
   /// @returns ptr to TTable, null if not present
-  std::shared_ptr<TTable> GetTable(std::string tableName) const;  
+  std::shared_ptr<TTable> GetTable(std::string tableName) const;
+
+  /// Get schema or given schema name
+  /// @param schemaName name of the schema
+  /// @returns ptr to TSchema, null if not present
+  std::shared_ptr<TSchema> GetSchema(std::string schemaName) const;  
+
+  /// join schema field to to another schema field
+  //  $$$$$
   
   /// Make maps for a given table name
   int MakeMaps(std::string tableName);
