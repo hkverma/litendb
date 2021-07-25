@@ -90,17 +90,40 @@ void TSchema::AddChildField(std::shared_ptr<arrow::Field> field,
   childFields_[childField] = std::make_pair(childSchema, childField);
 }
 
-// Schema is an object TBD
+// Schema Json representation
 std::string TSchema::ToString()
 {
+  auto& fv = schema_->fields();
+  json fields;
+  for (auto f: fv)
+  {
+    fields[f->name()] = f->type()->ToString();
+  }
+  json sch;
+  sch["name"] =  name_;
+  sch["type"] = TableTypeString[type_];
+  sch["fields"] = fields;
+  if (parentFields_.size() > 0)
+  {
+    json parents;
+    for (auto& pf : parentFields_)
+    {
+      parents[pf.first->name()] = {pf.second.first->GetName(),pf.second.second->name()};
+    }
+    sch["parent"] = parents;
+  }
+  if (childFields_.size() > 0)
+  {
+    json child;
+    for (auto& pf : childFields_)
+    {
+      child[pf.first->name()] = {pf.second.first->GetName(),pf.second.second->name()};
+    }
+    sch["child"] = child;
+  }
+  json tsch;
+  tsch["schema"] = sch;
   std::stringstream ss;
-  ss << "{\n";
-  ss << " schema\":\n";
-  ss << " {\"name\":\"" << name_; //<< "\",\n" ;
-  ss << "  \"type\":\"" << TableTypeString[type_]<< "\",\n";  
-  ss << "  \"fields\":\n";
-  ss << "   {name:,\n";
-  ss << "    datatype:,}}\n";
-  return ss.str();
-}
+  ss << std::setw(1) << tsch;
+  return std::move(ss.str());
 }

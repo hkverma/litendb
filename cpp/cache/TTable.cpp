@@ -88,15 +88,8 @@ TStatus TTable::AddToCatalog() {
 // Print Schema in logfile
 void TTable::PrintSchema()
 {
-  const std::vector<std::shared_ptr<arrow::Field>>& tableSchemaFields = schema_->GetSchema()->fields();
-  std::stringstream ss;
-  ss << "Schema=";
-
-  for (auto schemaField : tableSchemaFields) 
-  {
-    ss << "{" << schemaField->ToString() << "}," ;
-  }
-  TLOG(INFO) << ss.str();
+  std::string schStr = std::move(schema_->ToString());
+  TLOG(INFO) << schStr;
 }
 
 // print table in logfile

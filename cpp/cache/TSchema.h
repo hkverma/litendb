@@ -38,7 +38,7 @@ public:
                std::shared_ptr<TSchema> parentSchema,
                std::string parentFieldName);
 
-  /// Get Schema Infos here
+  /// JSon string represntation for schema
   std::string ToString();
 
 private:
@@ -57,14 +57,13 @@ private:
                       std::shared_ptr<TSchema> parentSchema,
                       std::shared_ptr<arrow::Field> parentField);
 
+  /// Join columns - list all child schema fields here
+  std::map<std::shared_ptr<arrow::Field>, SchemaField> childFields_;
+
   /// Add child fields to the schema
   void AddChildField(std::shared_ptr<arrow::Field> field,
                      std::shared_ptr<TSchema> childSchema,
                      std::shared_ptr<arrow::Field> childField);
-  
-
-  /// Join columns - list all child schema fields here
-  std::map<std::shared_ptr<arrow::Field>, SchemaField> childFields_;  
 
   /// Provide a unique name for the schema
   std::string name_;
