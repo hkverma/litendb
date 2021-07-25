@@ -127,3 +127,5 @@ std::string TSchema::ToString()
   ss << std::setw(1) << tsch;
   return std::move(ss.str());
 }
+
+}
