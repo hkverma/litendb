@@ -4,6 +4,7 @@ namespace liten
 {
 /// Tables are either dimension or fact tables
 enum TableType {DimensionTable=0, FactTable};
+extern std::vector<std::string> TableTypeString;
 
 /// These are all defined classes in core library
 class TCatalog;

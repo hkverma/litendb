@@ -24,6 +24,7 @@
 #include <arrow/util/string_view.h>
 
 #include <THashFuncs.h>
+#include <TJSon.h>
 #include <TMacros.h>
 #include <TTimeUtils.h>
 #include <TStopWatch.h>
@@ -34,3 +35,4 @@
 #include <TGuid.h>
 #include <TConfigs.h>
 #include <TResult.h>
+

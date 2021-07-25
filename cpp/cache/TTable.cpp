@@ -9,6 +9,8 @@
 namespace liten
 {
 
+std::vector<std::string> TableTypeString = {"dim","fact"};
+
 // Create a new TTable
 TResult<std::shared_ptr<TTable>> TTable::Create(std::string tableName,
                                                 TableType type,

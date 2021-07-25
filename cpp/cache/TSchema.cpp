@@ -42,31 +42,65 @@ std::shared_ptr<arrow::Schema> TSchema::GetSchema()
 }
 
 TStatus TSchema::Join(std::string fieldName,
-                      std::shared_ptr<TSchema> childSchema,
-                      std::string childFieldName)
+                      std::shared_ptr<TSchema> parentSchema,
+                      std::string parentFieldName)
 {
-  if (nullptr == childSchema)
+  if (nullptr == parentSchema)
   {
-    return TStatus::Invalid("Child Schema is null");
+    return TStatus::Invalid("Join Schema is null");
   }
-  std::shared_ptr<arrow::Field> parentField = schema_->GetFieldByName(fieldName);
-  if (nullptr == parentField)
+  std::shared_ptr<arrow::Field> field = schema_->GetFieldByName(fieldName);
+  if (nullptr == field)
   {
     return TStatus::Invalid("Field name ", fieldName, " for schema ", name_, " does not exist.");
   }
-  std::shared_ptr<arrow::Field> childField = schema_->GetFieldByName(childFieldName);
-  if (nullptr == childField)
+  std::shared_ptr<arrow::Field> parentField = parentSchema->GetSchema()->GetFieldByName(parentFieldName);
+  if (nullptr == parentField)
   {
-    return TStatus::Invalid("Field name ", childFieldName, " for schema ", childSchema->GetName(), " does not exist.");
+    return TStatus::Invalid("Field name ", parentFieldName, " for schema ", parentSchema->GetName(), " does not exist.");
   }
-  auto itr = joinColumns_.find(parentField);
 
-  if (joinColumns_.end() != itr)
-  {
-    TLOG(INFO) << "Field name " << fieldName << " for schema " << " already exists. Will be overwritten";
-  }
-  joinColumns_[parentField] = std::make_pair(childSchema, childField);
+  AddParentField(field, parentSchema, parentField);
+  AddChildField(parentField, shared_from_this(), field);
+
   return TStatus::OK();
 }
 
+void TSchema::AddParentField(std::shared_ptr<arrow::Field> field,
+                             std::shared_ptr<TSchema> parentSchema,
+                             std::shared_ptr<arrow::Field> parentField)
+{
+  auto itr = parentFields_.find(parentField);
+  if (parentFields_.end() != itr)
+  {
+    TLOG(INFO) << "Field name " << field->name() << " for schema " << parentSchema->GetName() << " already exists. Will be overwritten";
+  }
+  parentFields_[parentField] = std::make_pair(parentSchema, parentField);
+}
+
+void TSchema::AddChildField(std::shared_ptr<arrow::Field> field,
+                            std::shared_ptr<TSchema> childSchema,
+                            std::shared_ptr<arrow::Field> childField)
+{
+  auto itr = childFields_.find(childField);
+  if (childFields_.end() != itr)
+  {
+    TLOG(INFO) << "Field name " << field->name() << " for schema " << name_ << " already exists. Will be overwritten";
+  }
+  childFields_[childField] = std::make_pair(childSchema, childField);
+}
+
+// Schema is an object TBD
+std::string TSchema::ToString()
+{
+  std::stringstream ss;
+  ss << "{\n";
+  ss << " schema\":\n";
+  ss << " {\"name\":\"" << name_; //<< "\",\n" ;
+  ss << "  \"type\":\"" << TableTypeString[type_]<< "\",\n";  
+  ss << "  \"fields\":\n";
+  ss << "   {name:,\n";
+  ss << "    datatype:,}}\n";
+  return ss.str();
+}
 }

@@ -7,7 +7,8 @@ namespace liten
 {
 
 /// Wrap arrow schema with fact, dimension and join columns
-class TSchema {
+class TSchema : public std::enable_shared_from_this<TSchema>
+{
 public:
 
   /// Create TSChema from Arrow array and other informations
@@ -21,7 +22,6 @@ public:
   /// Destruct the array, nothing here for now
   ~TSchema() { }
 
-
   /// Get the name of the schema
   std::string GetName() const { return name_; }
 
@@ -33,10 +33,13 @@ public:
 
   using SchemaField = std::pair<std::shared_ptr<TSchema>, std::shared_ptr<arrow::Field>>;
 
-  /// joins this schema (parent) field_id to child[schema, field_id]
+  /// joins this schema (child) field_id to parent[schema, field_id]
   TStatus Join(std::string fieldName,
-               std::shared_ptr<TSchema> childSchema,
-               std::string childFieldName);
+               std::shared_ptr<TSchema> parentSchema,
+               std::string parentFieldName);
+
+  /// Get Schema Infos here
+  std::string ToString();
 
 private:
 
@@ -46,8 +49,22 @@ private:
   /// Type of table defined by this schema
   TableType type_;
 
-  /// Join columns - joins this schema (parent) field_id to child[schema, field_id]
-  std::map<std::shared_ptr<arrow::Field>, SchemaField> joinColumns_;
+  /// Join columns - joins this schema (child) field_id to parent[schema, field_id]
+  std::map<std::shared_ptr<arrow::Field>, SchemaField> parentFields_;
+
+  /// Add parent fields to the schema
+  void AddParentField(std::shared_ptr<arrow::Field> field,
+                      std::shared_ptr<TSchema> parentSchema,
+                      std::shared_ptr<arrow::Field> parentField);
+
+  /// Add child fields to the schema
+  void AddChildField(std::shared_ptr<arrow::Field> field,
+                     std::shared_ptr<TSchema> childSchema,
+                     std::shared_ptr<arrow::Field> childField);
+  
+
+  /// Join columns - list all child schema fields here
+  std::map<std::shared_ptr<arrow::Field>, SchemaField> childFields_;  
 
   /// Provide a unique name for the schema
   std::string name_;
@@ -59,7 +76,8 @@ private:
   struct MakeSharedEnabler;
 };
 
-struct TSchema::MakeSharedEnabler : public TSchema {
+struct TSchema::MakeSharedEnabler : public TSchema
+{
   MakeSharedEnabler() : TSchema() { }
 };
 
