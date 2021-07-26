@@ -13,7 +13,7 @@ if [[ "$#" -gt 0 ]]; then
     fi
 fi
 # Build these on top of default components
-cmake_command="cmake ../nlohmann/ -DCMAKE_BUILD_TYPE="${build_target}""
+cmake_command="cmake ../re2/ -DCMAKE_BUILD_TYPE="${build_target}" -DBUILD_SHARED_LIBS=ON"
 echo "cmake command= "$cmake_command
 
 if [[ ${build_target} = "Release" ]]; then
@@ -22,10 +22,12 @@ if [[ ${build_target} = "Release" ]]; then
     cd release
     ${cmake_command}
     make
+    make install
 else
     echo "Building debug.."
     mkdir debug
     cd debug
     ${cmake_command}
     make
+    make install    
 fi

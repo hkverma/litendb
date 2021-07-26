@@ -107,6 +107,24 @@ When cloning these can be done from the arrow submodule directory to get arrow f
 $ git submodule init
 $ git submodule update
 ```
+Arrow also has gandiva in it. Liten uses gandiva as an expression evaluator. This needs these libs as well
+```
+sudo apt-get install clang-tools
+sudo apt-get install clang-format
+sudo apt-get install clang-tidy
+```
+Update to 12
+```
+sudo apt install clang-12 --install-suggests
+```
+Install llvm 12 as well.
+```
+printf "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-12 main" |sudo tee /etc/apt/sources.list.d/llvm-toolchain-xenial-12.list
+wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key |sudo apt-key add -
+sudo apt update
+sudo apt install llvm-12
+```
+
 #### Ray
 
 Ray is an open source task scheduler. It is a submodule within external_libs.

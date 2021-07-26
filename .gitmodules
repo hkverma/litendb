@@ -22,3 +22,6 @@
 [submodule "cpp/external_libs/nlohmann/nlohmann"]
 	path = cpp/external_libs/nlohmann/nlohmann
 	url = https://github.com/nlohmann/json.git
+[submodule "cpp/external_libs/re2/re2"]
+	path = cpp/external_libs/re2/re2
+	url = https://github.com/google/re2.git
