@@ -1,11 +1,18 @@
 
 ## Liten packages into a wheel to be installed by pip or conda
+V 0.0.1 - Created Demo branch 26 July 2021
+
 Directions are available at the following link -
 https://packaging.python.org/tutorials/packaging-projects/
-### Example notebooks
-LitenIntro_0 - python arrow and Liten with Query6 and Query5
-LitenIntro_1 - TpchH Q6/Q5 with arrow & liten & python decorators
-LitenIntro_2 - Add Ray remote with ray cpu=1
+### Demo notebooks
+| ------  | ------ |
+| Notebook | Description |
+| ------  | ------ |
+| LitenStandaloneQ5Q6.ipynb | Custom Query6 and Query5 |
+| LitenRaySingleActorQ5Q6.ipynb | Ray remote with one node |
+| LitenNYTaxiSQLXGBoost.ipynb | XGBoost on Liten data |
+| LitenBasicSentimentAnalysis.ipynb | Sentiment analysis on Liten data |
+| LitenPCapIPPktAnalyzer.ipynb | Liten pcap packet analyzer |
 
 ### ctype use to intgerate C++ code
 
