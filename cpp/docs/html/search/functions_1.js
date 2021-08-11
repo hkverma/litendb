@@ -6,5 +6,5 @@ var searchData=
   ['constructvalue',['ConstructValue',['../classliten_1_1TResult.html#a3304d3a69fef5b98332283016a63d318',1,'liten::TResult']]],
   ['copy',['Copy',['../classliten_1_1TColumnMap.html#a0dc5c650ea6e5d720e51ada9bb5217e3',1,'liten::TColumnMap::Copy()'],['../classliten_1_1TInt64ColumnMap.html#abed778f1636aa4c06f5148facd0c8def',1,'liten::TInt64ColumnMap::Copy()']]],
   ['copyfrom',['CopyFrom',['../classliten_1_1TStatus.html#ad7ca008335621975fc84954bfb9687e2',1,'liten::TStatus']]],
-  ['create',['Create',['../classliten_1_1TBlock.html#ab2b2939a4ea07109afc7dcf209445987',1,'liten::TBlock::Create()'],['../classliten_1_1TRowBlock.html#a3d2d99997f332a02fa3fc26dec2cce14',1,'liten::TRowBlock::Create()'],['../classliten_1_1TTable.html#aac6abfd82d4273f81bc168d5d34cb75b',1,'liten::TTable::Create()']]]
+  ['create',['Create',['../classliten_1_1TBlock.html#ab2b2939a4ea07109afc7dcf209445987',1,'liten::TBlock::Create()'],['../classliten_1_1TRowBlock.html#a3d2d99997f332a02fa3fc26dec2cce14',1,'liten::TRowBlock::Create()'],['../classliten_1_1TSchema.html#a2c335fad68bad8a97336ca72b87b3b16',1,'liten::TSchema::Create()'],['../classliten_1_1TTable.html#a6d77ffbb13fa20f4e6da317aebf5e770',1,'liten::TTable::Create()']]]
 ];

@@ -90,8 +90,6 @@ Inheritance diagram for liten::TTable:</div>
 Collaboration diagram for liten::TTable:</div>
 <div class="dyncontent">
 <div class="center"><img src="classliten_1_1TTable__coll__graph.png" border="0" usemap="#liten_1_1TTable_coll__map" alt="Collaboration graph"/></div>
-<map name="liten_1_1TTable_coll__map" id="liten_1_1TTable_coll__map">
-</map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
@@ -105,8 +103,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:addc4ae666d0459e276cc5153bcfff108"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get underlying arrow::Table.  <a href="#addc4ae666d0459e276cc5153bcfff108">More...</a><br /></td></tr>
 <tr class="separator:addc4ae666d0459e276cc5153bcfff108"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a331ed2e993e15ccf174a404157fd4722"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TTable.html#a331ed2e993e15ccf174a404157fd4722">PrintSchema</a> ()</td></tr>
+<tr class="memdesc:a331ed2e993e15ccf174a404157fd4722"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print schema in logfile.  <a href="#a331ed2e993e15ccf174a404157fd4722">More...</a><br /></td></tr>
 <tr class="separator:a331ed2e993e15ccf174a404157fd4722"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac65696ceaf4e2d758a8684e59559d08e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TTable.html#ac65696ceaf4e2d758a8684e59559d08e">PrintTable</a> ()</td></tr>
+<tr class="memdesc:ac65696ceaf4e2d758a8684e59559d08e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Print table in logfile.  <a href="#ac65696ceaf4e2d758a8684e59559d08e">More...</a><br /></td></tr>
 <tr class="separator:ac65696ceaf4e2d758a8684e59559d08e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4c6dcea0dabd7931a703e16639a6bf18"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TTable.html#a4c6dcea0dabd7931a703e16639a6bf18">MakeMaps</a> (int32_t numCopies)</td></tr>
 <tr class="separator:a4c6dcea0dabd7931a703e16639a6bf18"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -133,8 +133,8 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:aac6abfd82d4273f81bc168d5d34cb75b"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr&lt; <a class="el" href="classliten_1_1TTable.html">TTable</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TTable.html#aac6abfd82d4273f81bc168d5d34cb75b">Create</a> (std::string tableName, <a class="el" href="namespaceliten.html#a0bceb441a3312e84adfce46bf4c8953f">TableType</a> type, std::shared_ptr&lt; arrow::Table &gt; table)</td></tr>
-<tr class="separator:aac6abfd82d4273f81bc168d5d34cb75b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d77ffbb13fa20f4e6da317aebf5e770"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classliten_1_1TResult.html">TResult</a>&lt; std::shared_ptr&lt; <a class="el" href="classliten_1_1TTable.html">TTable</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TTable.html#a6d77ffbb13fa20f4e6da317aebf5e770">Create</a> (std::string tableName, <a class="el" href="namespaceliten.html#a0bceb441a3312e84adfce46bf4c8953f">TableType</a> type, std::shared_ptr&lt; arrow::Table &gt; table)</td></tr>
+<tr class="separator:a6d77ffbb13fa20f4e6da317aebf5e770"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
@@ -255,8 +255,8 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="aac6abfd82d4273f81bc168d5d34cb75b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aac6abfd82d4273f81bc168d5d34cb75b">&#9670;&nbsp;</a></span>Create()</h2>
+<a id="a6d77ffbb13fa20f4e6da317aebf5e770"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d77ffbb13fa20f4e6da317aebf5e770">&#9670;&nbsp;</a></span>Create()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -265,7 +265,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::shared_ptr&lt; <a class="el" href="classliten_1_1TTable.html">TTable</a> &gt; liten::TTable::Create </td>
+          <td class="memname"><a class="el" href="classliten_1_1TResult.html">TResult</a>&lt; std::shared_ptr&lt; <a class="el" href="classliten_1_1TTable.html">TTable</a> &gt; &gt; liten::TTable::Create </td>
           <td>(</td>
           <td class="paramtype">std::string&#160;</td>
           <td class="paramname"><em>tableName</em>, </td>
@@ -463,6 +463,7 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>TBD Clean these up with tensor values Inverted maps and min-max zones </p>
 
 </div>
 </div>
@@ -548,6 +549,8 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Print schema in logfile. </p>
+
 </div>
 </div>
 <a id="ac65696ceaf4e2d758a8684e59559d08e"></a>
@@ -564,6 +567,8 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Print table in logfile. </p>
 
 </div>
 </div>

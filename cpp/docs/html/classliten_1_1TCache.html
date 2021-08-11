@@ -99,19 +99,25 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aa7dc2b7de213084d054cd45b15fe227f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TCache.html#aa7dc2b7de213084d054cd45b15fe227f">GetInfo</a> ()</td></tr>
 <tr class="memdesc:aa7dc2b7de213084d054cd45b15fe227f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get Cache info.  <a href="#aa7dc2b7de213084d054cd45b15fe227f">More...</a><br /></td></tr>
 <tr class="separator:aa7dc2b7de213084d054cd45b15fe227f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a81ba8d2332d6bd8d9822519c8b727028"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classliten_1_1TStatus.html">TStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TCache.html#a81ba8d2332d6bd8d9822519c8b727028">ReadCsv</a> (std::string tableName, <a class="el" href="namespaceliten.html#a0bceb441a3312e84adfce46bf4c8953f">TableType</a> type, std::string csvUri, const arrow::csv::ReadOptions &amp;readOptions, const arrow::csv::ParseOptions &amp;parseOptions, const arrow::csv::ConvertOptions &amp;convertOptions)</td></tr>
-<tr class="memdesc:a81ba8d2332d6bd8d9822519c8b727028"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read csv file in a new table tableName. tableName should be unique.  <a href="#a81ba8d2332d6bd8d9822519c8b727028">More...</a><br /></td></tr>
-<tr class="separator:a81ba8d2332d6bd8d9822519c8b727028"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a238115cb01ca35ccd748472191a99349"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classliten_1_1TResult.html">TResult</a>&lt; std::shared_ptr&lt; <a class="el" href="classliten_1_1TTable.html">TTable</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TCache.html#a238115cb01ca35ccd748472191a99349">ReadCsv</a> (std::string tableName, <a class="el" href="namespaceliten.html#a0bceb441a3312e84adfce46bf4c8953f">TableType</a> type, std::string csvUri, const arrow::csv::ReadOptions &amp;readOptions, const arrow::csv::ParseOptions &amp;parseOptions, const arrow::csv::ConvertOptions &amp;convertOptions)</td></tr>
+<tr class="memdesc:a238115cb01ca35ccd748472191a99349"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read csv file in a new table tableName. tableName should be unique.  <a href="#a238115cb01ca35ccd748472191a99349">More...</a><br /></td></tr>
+<tr class="separator:a238115cb01ca35ccd748472191a99349"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65257c06b8f301690e3656b6f23d3a4d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classliten_1_1TResult.html">TResult</a>&lt; std::shared_ptr&lt; <a class="el" href="classliten_1_1TTable.html">TTable</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TCache.html#a65257c06b8f301690e3656b6f23d3a4d">AddTable</a> (std::string tableName, <a class="el" href="namespaceliten.html#a0bceb441a3312e84adfce46bf4c8953f">TableType</a> type, std::shared_ptr&lt; arrow::Table &gt; table)</td></tr>
+<tr class="separator:a65257c06b8f301690e3656b6f23d3a4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e5b978602e051df1b9b5cd8d4585f3c"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classliten_1_1TTable.html">TTable</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TCache.html#a2e5b978602e051df1b9b5cd8d4585f3c">GetTable</a> (std::string tableName) const</td></tr>
+<tr class="separator:a2e5b978602e051df1b9b5cd8d4585f3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac10895a43dfcb8c776f1b0d4643e2c88"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classliten_1_1TSchema.html">TSchema</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TCache.html#ac10895a43dfcb8c776f1b0d4643e2c88">GetSchema</a> (std::string schemaName) const</td></tr>
+<tr class="separator:ac10895a43dfcb8c776f1b0d4643e2c88"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a686f14c256e2aafd020d812372db834b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TCache.html#a686f14c256e2aafd020d812372db834b">MakeMaps</a> (std::string tableName)</td></tr>
-<tr class="memdesc:a686f14c256e2aafd020d812372db834b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make maps for a given table name.  <a href="#a686f14c256e2aafd020d812372db834b">More...</a><br /></td></tr>
+<tr class="memdesc:a686f14c256e2aafd020d812372db834b"><td class="mdescLeft">&#160;</td><td class="mdescRight">join schema field to to another schema field  <a href="#a686f14c256e2aafd020d812372db834b">More...</a><br /></td></tr>
 <tr class="separator:a686f14c256e2aafd020d812372db834b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9d19972276a4c7c1ad9f013298d14495"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TCache.html#a9d19972276a4c7c1ad9f013298d14495">MakeMaps</a> (std::shared_ptr&lt; <a class="el" href="classliten_1_1TTable.html">TTable</a> &gt; ttable)</td></tr>
 <tr class="separator:a9d19972276a4c7c1ad9f013298d14495"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a589b285c22fe4a3821f3f062859ad06c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TCache.html#a589b285c22fe4a3821f3f062859ad06c">MakeMaps</a> ()</td></tr>
 <tr class="memdesc:a589b285c22fe4a3821f3f062859ad06c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make maps for all dimension tables.  <a href="#a589b285c22fe4a3821f3f062859ad06c">More...</a><br /></td></tr>
 <tr class="separator:a589b285c22fe4a3821f3f062859ad06c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae558c8eb8c89a764d285f08c7c47eed0"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; arrow::Table &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TCache.html#ae558c8eb8c89a764d285f08c7c47eed0">Slice</a> (std::string tableName, int64_t offset, int64_t length)</td></tr>
-<tr class="separator:ae558c8eb8c89a764d285f08c7c47eed0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca0c4349315262c6c4598275f6e194bf"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; arrow::Table &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TCache.html#aca0c4349315262c6c4598275f6e194bf">Slice</a> (std::string tableName, int64_t offset, int64_t length)</td></tr>
+<tr class="separator:aca0c4349315262c6c4598275f6e194bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a48881ba883d750c10e341dfcf98ad802"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TCache.html#a48881ba883d750c10e341dfcf98ad802">~TCache</a> ()</td></tr>
 <tr class="memdesc:a48881ba883d750c10e341dfcf98ad802"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default destructor.  <a href="#a48881ba883d750c10e341dfcf98ad802">More...</a><br /></td></tr>
 <tr class="separator:a48881ba883d750c10e341dfcf98ad802"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -192,6 +198,49 @@ Static Private Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a65257c06b8f301690e3656b6f23d3a4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65257c06b8f301690e3656b6f23d3a4d">&#9670;&nbsp;</a></span>AddTable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classliten_1_1TResult.html">TResult</a>&lt; std::shared_ptr&lt; <a class="el" href="classliten_1_1TTable.html">TTable</a> &gt; &gt; liten::TCache::AddTable </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>tableName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceliten.html#a0bceb441a3312e84adfce46bf4c8953f">TableType</a>&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::shared_ptr&lt; arrow::Table &gt;&#160;</td>
+          <td class="paramname"><em>table</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Add table to cache </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tableName</td><td>name of table </td></tr>
+    <tr><td class="paramname">type</td><td>fact or dimension table </td></tr>
+    <tr><td class="paramname">table</td><td>arrow table to be added </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Result with <a class="el" href="classliten_1_1TTable.html">TTable</a> </dd></dl>
+
+</div>
+</div>
 <a id="aa7dc2b7de213084d054cd45b15fe227f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa7dc2b7de213084d054cd45b15fe227f">&#9670;&nbsp;</a></span>GetInfo()</h2>
 
@@ -238,6 +287,56 @@ Static Private Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="ac10895a43dfcb8c776f1b0d4643e2c88"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac10895a43dfcb8c776f1b0d4643e2c88">&#9670;&nbsp;</a></span>GetSchema()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt; <a class="el" href="classliten_1_1TSchema.html">TSchema</a> &gt; liten::TCache::GetSchema </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>schemaName</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Get schema or given schema name </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">schemaName</td><td>name of the schema </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>ptr to <a class="el" href="classliten_1_1TSchema.html" title="Wrap arrow schema with fact, dimension and join columns. ">TSchema</a>, null if not present </dd></dl>
+
+</div>
+</div>
+<a id="a2e5b978602e051df1b9b5cd8d4585f3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e5b978602e051df1b9b5cd8d4585f3c">&#9670;&nbsp;</a></span>GetTable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt; <a class="el" href="classliten_1_1TTable.html">TTable</a> &gt; liten::TCache::GetTable </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>tableName</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Get table or given table name </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tableName</td><td>name of the table </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>ptr to <a class="el" href="classliten_1_1TTable.html">TTable</a>, null if not present </dd></dl>
+
+</div>
+</div>
 <a id="a686f14c256e2aafd020d812372db834b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a686f14c256e2aafd020d812372db834b">&#9670;&nbsp;</a></span>MakeMaps() <span class="overload">[1/3]</span></h2>
 
@@ -254,7 +353,8 @@ Static Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Make maps for a given table name. </p>
+<p>join schema field to to another schema field </p>
+<p>Make maps for a given table name </p>
 
 </div>
 </div>
@@ -295,14 +395,14 @@ Static Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a81ba8d2332d6bd8d9822519c8b727028"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a81ba8d2332d6bd8d9822519c8b727028">&#9670;&nbsp;</a></span>ReadCsv()</h2>
+<a id="a238115cb01ca35ccd748472191a99349"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a238115cb01ca35ccd748472191a99349">&#9670;&nbsp;</a></span>ReadCsv()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classliten_1_1TStatus.html">TStatus</a> liten::TCache::ReadCsv </td>
+          <td class="memname"><a class="el" href="classliten_1_1TResult.html">TResult</a>&lt; std::shared_ptr&lt; <a class="el" href="classliten_1_1TTable.html">TTable</a> &gt; &gt; liten::TCache::ReadCsv </td>
           <td>(</td>
           <td class="paramtype">std::string&#160;</td>
           <td class="paramname"><em>tableName</em>, </td>
@@ -367,14 +467,14 @@ Static Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="ae558c8eb8c89a764d285f08c7c47eed0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae558c8eb8c89a764d285f08c7c47eed0">&#9670;&nbsp;</a></span>Slice()</h2>
+<a id="aca0c4349315262c6c4598275f6e194bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca0c4349315262c6c4598275f6e194bf">&#9670;&nbsp;</a></span>Slice()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::shared_ptr&lt;arrow::Table&gt; liten::TCache::Slice </td>
+          <td class="memname">std::shared_ptr&lt; arrow::Table &gt; liten::TCache::Slice </td>
           <td>(</td>
           <td class="paramtype">std::string&#160;</td>
           <td class="paramname"><em>tableName</em>, </td>

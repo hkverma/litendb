@@ -3,7 +3,7 @@ var searchData=
   ['secondssinceepoch',['SecondsSinceEpoch',['../namespaceliten.html#a948b4b8d8e9610f2c83efcdf75c1d42a',1,'liten::SecondsSinceEpoch(boost::gregorian::date d, boost::posix_time::time_duration offset)'],['../namespaceliten.html#ab2113394fbe1bfef743d28fff9ce5824',1,'liten::SecondsSinceEpoch(std::string &amp;ts)']]],
   ['serializationerror',['SerializationError',['../classliten_1_1TStatus.html#a6ff0c1e8a2d84530592569a7fa051bc5',1,'liten::TStatus']]],
   ['shutdown',['Shutdown',['../classliten_1_1TService.html#a80382dfe63fd570c76769cd8c63cad91',1,'liten::TService']]],
-  ['slice',['Slice',['../classliten_1_1TCache.html#ae558c8eb8c89a764d285f08c7c47eed0',1,'liten::TCache::Slice()'],['../classliten_1_1TTable.html#a76b14581fc2ed780c9ad1bbe69ea5d7c',1,'liten::TTable::Slice()']]],
+  ['slice',['Slice',['../classliten_1_1TCache.html#aca0c4349315262c6c4598275f6e194bf',1,'liten::TCache::Slice()'],['../classliten_1_1TTable.html#a76b14581fc2ed780c9ad1bbe69ea5d7c',1,'liten::TTable::Slice()']]],
   ['start',['Start',['../classliten_1_1TLog.html#a584ab4d04d07f9f135183628ae098232',1,'liten::TLog::Start()'],['../classliten_1_1TService.html#afcb977dbee3163901bdb415431f56cd4',1,'liten::TService::Start()'],['../classliten_1_1TStopWatch.html#a7bb95be11b7e26a281b23321d6e5a394',1,'liten::TStopWatch::Start()']]],
   ['status',['status',['../classliten_1_1TResult.html#a7505b1794f0a09b335921a79267071bd',1,'liten::TResult']]],
   ['stop',['Stop',['../classliten_1_1TLog.html#a25ffdd703ea97de958fc751b7d99a39c',1,'liten::TLog::Stop()'],['../classliten_1_1TStopWatch.html#adb1a8a245dba15922f59e7e1069f069f',1,'liten::TStopWatch::Stop()']]],

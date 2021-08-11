@@ -72,23 +72,26 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;<a class="el" href="common_8h_source.html">common.h</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="cache__fwd_8h_source.html">cache_fwd.h</a>&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for TSchema.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="TSchema_8h__incl.png" border="0" usemap="#cache_2TSchema_8h" alt=""/></div>
 <map name="cache_2TSchema_8h" id="cache_2TSchema_8h">
-<area shape="rect" id="node2" href="common_8h.html" title="common.h" alt="" coords="1035,80,1117,107"/>
-<area shape="rect" id="node19" href="THashFuncs_8h.html" title="THashFuncs.h" alt="" coords="2243,155,2351,181"/>
-<area shape="rect" id="node21" href="TMacros_8h.html" title="TMacros.h" alt="" coords="405,319,489,345"/>
-<area shape="rect" id="node22" href="TTimeUtils_8h.html" title="TTimeUtils.h" alt="" coords="2651,155,2749,181"/>
-<area shape="rect" id="node24" href="TStopWatch_8h.html" title="TStopWatch.h" alt="" coords="2959,155,3065,181"/>
-<area shape="rect" id="node26" href="TStringBuilder_8h.html" title="TStringBuilder.h" alt="" coords="640,319,755,345"/>
-<area shape="rect" id="node27" href="TStatus_8h.html" title="TStatus.h" alt="" coords="429,237,507,263"/>
-<area shape="rect" id="node28" href="TLog_8h.html" title="TLog.h" alt="" coords="583,237,646,263"/>
-<area shape="rect" id="node30" href="TService_8h.html" title="TService.h" alt="" coords="568,155,653,181"/>
-<area shape="rect" id="node31" href="TGuid_8h.html" title="TGuid.h" alt="" coords="2375,155,2443,181"/>
-<area shape="rect" id="node36" href="TConfigs_8h.html" title="TConfigs.h" alt="" coords="27,237,114,263"/>
-<area shape="rect" id="node37" href="TResult_8h.html" title="TResult.h" alt="" coords="333,155,411,181"/>
+<area shape="rect" id="node2" href="common_8h.html" title="common.h" alt="" coords="1076,80,1159,107"/>
+<area shape="rect" id="node42" href="cache__fwd_8h.html" title="cache_fwd.h" alt="" coords="1183,80,1279,107"/>
+<area shape="rect" id="node19" href="THashFuncs_8h.html" title="THashFuncs.h" alt="" coords="2245,155,2353,181"/>
+<area shape="rect" id="node21" href="TJSon_8h.html" title="TJSon.h" alt="" coords="2614,155,2685,181"/>
+<area shape="rect" id="node23" href="TMacros_8h.html" title="TMacros.h" alt="" coords="533,319,617,345"/>
+<area shape="rect" id="node24" href="TTimeUtils_8h.html" title="TTimeUtils.h" alt="" coords="2810,155,2907,181"/>
+<area shape="rect" id="node26" href="TStopWatch_8h.html" title="TStopWatch.h" alt="" coords="3036,155,3143,181"/>
+<area shape="rect" id="node28" href="TStringBuilder_8h.html" title="TStringBuilder.h" alt="" coords="641,319,756,345"/>
+<area shape="rect" id="node29" href="TStatus_8h.html" title="TStatus.h" alt="" coords="575,237,654,263"/>
+<area shape="rect" id="node30" href="TLog_8h.html" title="TLog.h" alt="" coords="489,237,551,263"/>
+<area shape="rect" id="node32" href="TService_8h.html" title="TService.h" alt="" coords="519,155,604,181"/>
+<area shape="rect" id="node33" href="TGuid_8h.html" title="TGuid.h" alt="" coords="2377,155,2445,181"/>
+<area shape="rect" id="node38" href="TConfigs_8h.html" title="TConfigs.h" alt="" coords="139,237,226,263"/>
+<area shape="rect" id="node39" href="TResult_8h.html" title="TResult.h" alt="" coords="365,155,443,181"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -97,8 +100,10 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="center"><img src="TSchema_8h__dep__incl.png" border="0" usemap="#cache_2TSchema_8hdep" alt=""/></div>
 <map name="cache_2TSchema_8hdep" id="cache_2TSchema_8hdep">
 <area shape="rect" id="node2" href="cache_8h.html" title="cache/cache.h" alt="" coords="5,80,112,107"/>
-<area shape="rect" id="node3" href="TRowBlock_8cpp.html" title="cache/TRowBlock.cpp" alt="" coords="136,80,291,107"/>
-<area shape="rect" id="node4" href="TTable_8cpp.html" title="cache/TTable.cpp" alt="" coords="315,80,442,107"/>
+<area shape="rect" id="node3" href="TCatalog_8cpp.html" title="cache/TCatalog.cpp" alt="" coords="136,80,275,107"/>
+<area shape="rect" id="node4" href="TRowBlock_8cpp.html" title="cache/TRowBlock.cpp" alt="" coords="299,80,453,107"/>
+<area shape="rect" id="node5" href="TSchema_8cpp.html" title="cache/TSchema.cpp" alt="" coords="478,80,621,107"/>
+<area shape="rect" id="node6" href="TTable_8cpp.html" title="cache/TTable.cpp" alt="" coords="645,80,771,107"/>
 </map>
 </div>
 </div>
@@ -107,7 +112,9 @@ This graph shows which files directly or indirectly include this file:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TSchema.html">liten::TSchema</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Zero cost wrapper class for Arrow Array.  <a href="classliten_1_1TSchema.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wrap arrow schema with fact, dimension and join columns.  <a href="classliten_1_1TSchema.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structliten_1_1TSchema_1_1MakeSharedEnabler.html">liten::TSchema::MakeSharedEnabler</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="namespaces"></a>

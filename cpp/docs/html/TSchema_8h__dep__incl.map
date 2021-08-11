@@ -1,5 +1,7 @@
 <map id="cache/TSchema.h" name="cache/TSchema.h">
 <area shape="rect" id="node2" href="$cache_8h.html" title="cache/cache.h" alt="" coords="5,80,112,107"/>
-<area shape="rect" id="node3" href="$TRowBlock_8cpp.html" title="cache/TRowBlock.cpp" alt="" coords="136,80,291,107"/>
-<area shape="rect" id="node4" href="$TTable_8cpp.html" title="cache/TTable.cpp" alt="" coords="315,80,442,107"/>
+<area shape="rect" id="node3" href="$TCatalog_8cpp.html" title="cache/TCatalog.cpp" alt="" coords="136,80,275,107"/>
+<area shape="rect" id="node4" href="$TRowBlock_8cpp.html" title="cache/TRowBlock.cpp" alt="" coords="299,80,453,107"/>
+<area shape="rect" id="node5" href="$TSchema_8cpp.html" title="cache/TSchema.cpp" alt="" coords="478,80,621,107"/>
+<area shape="rect" id="node6" href="$TTable_8cpp.html" title="cache/TTable.cpp" alt="" coords="645,80,771,107"/>
 </map>

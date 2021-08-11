@@ -64,7 +64,8 @@ $(function() {
 <a href="#namespaces">Namespaces</a> &#124;
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">liten Namespace Reference</div>  </div>
 </div><!--header-->
@@ -115,7 +116,7 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TRowBlock.html">TRowBlock</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TSchema.html">TSchema</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Zero cost wrapper class for Arrow Array.  <a href="classliten_1_1TSchema.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wrap arrow schema with fact, dimension and join columns.  <a href="classliten_1_1TSchema.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TService.html">TService</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts all liten services, performs startup and shutdown operations.  <a href="classliten_1_1TService.html#details">More...</a><br /></td></tr>
@@ -156,6 +157,11 @@ Enumerations</h2></td></tr>
  }<tr class="memdesc:a0bceb441a3312e84adfce46bf4c8953f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tables are either dimension or fact tables.  <a href="namespaceliten.html#a0bceb441a3312e84adfce46bf4c8953f">More...</a><br /></td></tr>
 </td></tr>
 <tr class="separator:a0bceb441a3312e84adfce46bf4c8953f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab91b44a099064445f7a115f79cad0b14"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceliten.html#ab91b44a099064445f7a115f79cad0b14">FieldType</a> { <a class="el" href="namespaceliten.html#ab91b44a099064445f7a115f79cad0b14a235e530c212820b24dc451c99e2f286e">DimensionField</a> =0, 
+<a class="el" href="namespaceliten.html#ab91b44a099064445f7a115f79cad0b14a2eb081ba8918e1ad7b22b81e9b6ba951">MetricField</a>
+ }<tr class="memdesc:ab91b44a099064445f7a115f79cad0b14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Schema field types are either dimension fields or Metric.  <a href="namespaceliten.html#ab91b44a099064445f7a115f79cad0b14">More...</a><br /></td></tr>
+</td></tr>
+<tr class="separator:ab91b44a099064445f7a115f79cad0b14"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -189,8 +195,35 @@ Functions</h2></td></tr>
 <tr class="memitem:a6c764d8cb8a7e44dada8c407212ccc62"><td class="memTemplParams" colspan="2">template&lt;class TypeLeft , class ArrayTypeLeft , class TypeRight  = TypeLeft, class ArrayTypeRight  = ArrayTypeLeft&gt; </td></tr>
 <tr class="memitem:a6c764d8cb8a7e44dada8c407212ccc62"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceliten.html#a6c764d8cb8a7e44dada8c407212ccc62">JoinInner</a> (std::shared_ptr&lt; <a class="el" href="classliten_1_1TTable.html">TTable</a> &gt; table, TypeLeft &amp;leftValue, int64_t leftColNum, int64_t &amp;leftRowIdInMicroseconds, TypeRight &amp;rightValue, int64_t rightColNum, int64_t &amp;rightValueInMicroseconds, int32_t mapNum)</td></tr>
 <tr class="separator:a6c764d8cb8a7e44dada8c407212ccc62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:a2b7615a78c512fa0c385bf6c069881db"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceliten.html#a2b7615a78c512fa0c385bf6c069881db">TableTypeString</a> = {&quot;dim&quot;,&quot;fact&quot;}</td></tr>
+<tr class="separator:a2b7615a78c512fa0c385bf6c069881db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06663fcccaa96536ccad2fb208daa905"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceliten.html#a06663fcccaa96536ccad2fb208daa905">FieldTypeString</a> = {&quot;dim&quot;, &quot;metric&quot;}</td></tr>
+<tr class="separator:a06663fcccaa96536ccad2fb208daa905"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
+<a id="ab91b44a099064445f7a115f79cad0b14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab91b44a099064445f7a115f79cad0b14">&#9670;&nbsp;</a></span>FieldType</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="namespaceliten.html#ab91b44a099064445f7a115f79cad0b14">liten::FieldType</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Schema field types are either dimension fields or Metric. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ab91b44a099064445f7a115f79cad0b14a235e530c212820b24dc451c99e2f286e"></a>DimensionField&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab91b44a099064445f7a115f79cad0b14a2eb081ba8918e1ad7b22b81e9b6ba951"></a>MetricField&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+</div>
+</div>
 <a id="a0bceb441a3312e84adfce46bf4c8953f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0bceb441a3312e84adfce46bf4c8953f">&#9670;&nbsp;</a></span>TableType</h2>
 
@@ -640,6 +673,35 @@ template&lt;typename T &gt; </div>
           <td class="paramtype">T&#160;</td>
           <td class="paramname"><em>t</em></td><td>)</td>
           <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="a06663fcccaa96536ccad2fb208daa905"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06663fcccaa96536ccad2fb208daa905">&#9670;&nbsp;</a></span>FieldTypeString</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::string &gt; liten::FieldTypeString = {&quot;dim&quot;, &quot;metric&quot;}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2b7615a78c512fa0c385bf6c069881db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b7615a78c512fa0c385bf6c069881db">&#9670;&nbsp;</a></span>TableTypeString</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::string &gt; liten::TableTypeString = {&quot;dim&quot;,&quot;fact&quot;}</td>
         </tr>
       </table>
 </div><div class="memdoc">

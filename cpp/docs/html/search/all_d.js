@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['name_5f',['name_',['../classliten_1_1TColumn.html#a7da9f21a62cefec208ec82d1fe0921af',1,'liten::TColumn::name_()'],['../classliten_1_1TTable.html#a495860780c884adc8a11d2e31e0aaee9',1,'liten::TTable::name_()']]],
+  ['name_5f',['name_',['../classliten_1_1TColumn.html#a7da9f21a62cefec208ec82d1fe0921af',1,'liten::TColumn::name_()'],['../classliten_1_1TSchema.html#a99b286adc57ecce556140d9964db5c01',1,'liten::TSchema::name_()'],['../classliten_1_1TTable.html#a495860780c884adc8a11d2e31e0aaee9',1,'liten::TTable::name_()']]],
   ['next',['next',['../classliten_1_1TColumnIterator.html#a6a8d6214648efb826cf95d500a214b57',1,'liten::TColumnIterator']]],
   ['nextarray',['nextArray',['../classliten_1_1TColumnIterator.html#ab9f3354c48261b498a2d24b1eff14b79',1,'liten::TColumnIterator']]],
   ['notimplemented',['NotImplemented',['../classliten_1_1TStatus.html#ac82cfb065941ac4cd54ef4f1a405c40e',1,'liten::TStatus::NotImplemented()'],['../namespaceliten.html#a84eeb34ab2a9b1c869f91848b4ca3be2a997ca4ce119685f40f03a9a8a6c5346e',1,'liten::NotImplemented()']]],
