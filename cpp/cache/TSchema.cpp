@@ -6,9 +6,9 @@ namespace liten
 
 std::vector<std::string> FieldTypeString = {"dim", "metric"};
 
-TResult<std::shared_ptr<TSchema>> TSchema::Create(std::shared_ptr<arrow::Schema> schema,
+TResult<std::shared_ptr<TSchema>> TSchema::Create(std::string name,
                                                   TableType type,
-                                                  std::string name)
+                                                  std::shared_ptr<arrow::Schema> schema)
 {
   auto catalog = TCatalog::GetInstance();
 

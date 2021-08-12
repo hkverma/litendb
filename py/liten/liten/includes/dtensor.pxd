@@ -17,19 +17,24 @@ from libcpp cimport bool
 from pyarrow.includes.libarrow cimport *
 
 cdef extern from "common.h" namespace "liten" nogil:
-# CTStatus is liten::TStatus
-   cdef cppclass CTStatus" liten::TStatus":
-      bool ok() const
-      c_string message() const
+
+  cdef cppclass CTStatus" liten::TStatus":
+    bool ok() const
+    c_string message() const
       
-# CTResult is liten::CTResult
-   cdef cppclass CTResultCTTable" liten::TResult<std::shared_ptr<liten::TTable>>":
-      bool ok() const
-      const shared_ptr[CTTable]& ValueOrDie() const
+  cdef cppclass CTResultCTTable" liten::TResult<std::shared_ptr<liten::TTable>>":
+     bool ok() const
+     const shared_ptr[CTTable]& ValueOrDie() const
+
+  cdef cppclass CTResultCTSchema" liten::TResult<std::shared_ptr<liten::TSchema>>":
+     bool ok() const
+     const shared_ptr[CTSchema]& ValueOrDie() const
 
 cdef extern from "cache.h" namespace "liten" nogil:
 
    ctypedef enum TableType: DimensionTable, FactTable
+
+   ctypedef enum FieldType: DimensionField, MetricField
    
 # CTTable is liten::TTable in Cython. CTable is arrow::Table cython from pyarrow.
    cdef cppclass CTTable" liten::TTable":
@@ -37,15 +42,27 @@ cdef extern from "cache.h" namespace "liten" nogil:
       shared_ptr[CTable] GetTable()
       shared_ptr[CTable] Slice(int64_t offset, int64_t length)
 
+# CTSchema is liten::TSchema in Cython. CSchema is arrow::Schema cython from pyarrow.
+   cdef cppclass CTSchema" liten::TSchema":
+      c_string GetName()
+      shared_ptr[CSchema] GetSchema()
+      CTStatus Join(c_string fieldName, shared_ptr[CTSchema] parentSchema, c_string parentFieldName)
+      
 # CTCache is liten::TCache      
    cdef cppclass CTCache" liten::TCache":
-      CTResultCTTable AddTable(c_string tableName, TableType type, shared_ptr[CTable] table)
-      shared_ptr[CTTable] GetTable(c_string name) const
       @staticmethod
       shared_ptr[CTCache] GetInstance()
       c_string GetInfo()
+      
+      CTResultCTTable AddTable(c_string tableName, TableType type, shared_ptr[CTable] table, c_string schemaName)
+      shared_ptr[CTTable] GetTable(c_string name) const
+      
+      CTResultCTSchema AddSchema(c_string schemaName, TableType type, shared_ptr[CSchema] schema)
+      shared_ptr[CTSchema] GetSchema(c_string name) const
+      
       int MakeMaps(c_string name)
       int MakeMaps()
+      
       shared_ptr[CTable] Slice(c_string tableName, int64_t offset, int64_t length)
 
 cdef extern from "TpchDemo.h" namespace "liten" nogil:

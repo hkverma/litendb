@@ -67,22 +67,28 @@ public:
   /// @returns Result with TTable
   TResult<std::shared_ptr<TTable>> AddTable(std::string tableName,
                                             TableType type,
-                                            std::shared_ptr<arrow::Table> table);
+                                            std::shared_ptr<arrow::Table> table,
+                                            std::string schemaName);
 
   /// Get table or given table name
   /// @param tableName name of the table
   /// @returns ptr to TTable, null if not present
   std::shared_ptr<TTable> GetTable(std::string tableName) const;
 
+  /// Add schema to cache
+  /// @param schemaName name of schema
+  /// @param type fact or dimension schema
+  /// @param schema arrow schema to be added
+  /// @returns Result with TSchema
+  TResult<std::shared_ptr<TSchema>> AddSchema(std::string schemaName,
+                                              TableType type,
+                                              std::shared_ptr<arrow::Schema> schema);
   /// Get schema or given schema name
   /// @param schemaName name of the schema
   /// @returns ptr to TSchema, null if not present
   std::shared_ptr<TSchema> GetSchema(std::string schemaName) const;  
-
-  /// join schema field to to another schema field
-  //  $$$$$
   
-  /// Make maps for a given table name
+  /// Make maps for a given schema name
   int MakeMaps(std::string tableName);
   int MakeMaps(std::shared_ptr<TTable> ttable);
     

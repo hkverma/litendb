@@ -17,7 +17,8 @@ public:
   /// @param table an arrow table that has been read 
   static TResult<std::shared_ptr<TTable>> Create(std::string tableName,
                                                  TableType type,
-                                                 std::shared_ptr<arrow::Table> table);
+                                                 std::shared_ptr<arrow::Table> table,
+                                                 std::string schemaName);
 
   /// Get underlying arrow::Table
   std::shared_ptr<arrow::Table> GetTable();

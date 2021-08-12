@@ -14,21 +14,36 @@ std::vector<std::string> TableTypeString = {"dim","fact"};
 // Create a new TTable
 TResult<std::shared_ptr<TTable>> TTable::Create(std::string tableName,
                                                 TableType type,
-                                                std::shared_ptr<arrow::Table> table)
+                                                std::shared_ptr<arrow::Table> table,
+                                                std::string schemaName)
 {
   auto ttable = TCatalog::GetInstance()->GetTable(tableName);
   if (nullptr != ttable)
   {
     return TResult<std::shared_ptr<TTable>>(TStatus::AlreadyExists("Table=",tableName," is already in catalog"));
   }
-  std::string schemaName = tableName+"_schema";
-  auto schema = TSchema::Create(table->schema(), type, schemaName);
-  if (!schema.ok())
+  if (schemaName.empty()) {
+    schemaName = tableName+"_schema";
+  }
+  std::shared_ptr<TSchema> tschema = TCatalog::GetInstance()->GetSchema(schemaName);
+  if (nullptr == tschema)
   {
-    return TResult<std::shared_ptr<TTable>>(TStatus::AlreadyExists("Table=",tableName," could not be created because schema=", schemaName, "failed to create with msg=", schema.status().message()));
+    auto tschemaResult = TSchema::Create(schemaName, type, table->schema());
+    if (!tschemaResult.ok())
+    {
+      return TResult<std::shared_ptr<TTable>>(TStatus::AlreadyExists("Table=",tableName," could not be created because schema=", schemaName, "failed to create with msg=", tschemaResult.status().message()));
+    }
+    tschema = tschemaResult.ValueOrDie();
+  }
+  else
+  {
+    if (tschema->GetSchema() != table->schema())
+    {
+      return TResult<std::shared_ptr<TTable>>(TStatus::KeyError("Table=",tableName," could not be created because schema name=", schemaName, " has different arrow schema than given table's schema"));
+    }
   }
   ttable = std::make_shared<MakeSharedEnabler>();
-  ttable->schema_ = schema.ValueOrDie();
+  ttable->schema_ = tschema;
   ttable->name_ = std::move(tableName);
   ttable->table_ = table;
   TStatus status = std::move(ttable->AddToCatalog());

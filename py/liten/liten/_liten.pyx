@@ -112,13 +112,13 @@ cdef class CLiten:
         cache_info = self.tcache.GetInfo()
         return cache_info
     
-    def add_table(self, name, table, ttype):
+    def add_table(self, name, table, ttype, schema_name=""):
         """
         Add arrow table in cache by name
         Parameters
            name: name of table
            table: arrow table to be added in liten cache
-           ttype: type og table must be DimTable or FactTable
+           ttype: type of table must be DimTable or FactTable
         Returns
            name of the table added
         """
@@ -133,7 +133,7 @@ cdef class CLiten:
             print("Error: Table must be DimTable or FactTable")
             return "";        
         tc_ttype = <TableType>ttype
-        sp_ttable_result = self.tcache.AddTable(litenutils.to_bytes(name), tc_ttype, sp_table)
+        sp_ttable_result = self.tcache.AddTable(litenutils.to_bytes(name), tc_ttype, sp_table, schema_name)
         if (not sp_ttable_result.ok()):
             print ("Failed to add table=", name)
             return ""
@@ -166,6 +166,60 @@ cdef class CLiten:
         pa_table = pyarrow_wrap_table(sp_table)
         return pa_table
     
+    def add_schema(self, name, ttype, schema):
+        """
+        Add arrow table in cache by name
+        Parameters
+           name: name of schema
+           ttype: type of table must be DimTable or FactTable
+           schema: arrow schema to be added in liten cache
+        Returns
+           name of the schema added
+        """
+        cdef:
+            shared_ptr[CSchema] sp_schema
+            CTResultCTSchema sp_tschema_result
+            shared_ptr[CTSchema] sp_tschema
+            CTSchema* p_tschema
+            TableType tc_ttype
+        sp_schema = pyarrow_unwrap_schema(schema)
+        if ttype != self.DimTable and ttype != self.FactTable:
+            print("Error: Schema type must be DimTable or FactTable")
+            return "";        
+        tc_ttype = <TableType>ttype
+        sp_tschema_result = self.tcache.AddSchema(litenutils.to_bytes(name), tc_ttype, sp_schema)
+        if (not sp_tschema_result.ok()):
+            print ("Failed to add schema=", name)
+            return ""
+        sp_tschema = sp_tschema_result.ValueOrDie()
+        p_tschema = sp_tschema.get()
+        if (NULL == p_tschema):
+            print ("Failed to add schema=", name)
+            return ""            
+        print ("Added Schema=", name)
+        return name
+
+    def get_schema(self, name):
+        """
+        get arrow schema by name name
+        Parameters
+          name: name of schema
+        Returns
+          Arrow schema of given name
+        """        
+        cdef:
+            shared_ptr[CTSchema] sp_tschema
+            CTSchema* p_tschema
+            shared_ptr[CSchema] sp_schema
+        sp_tschema = self.tcache.GetSchema(name)
+        p_tschema = sp_tschema.get()
+        if (NULL == p_tschema):
+            print ("Failed to get schema=", name)
+            return None
+        sp_schema = p_tschema.GetSchema()
+        pa_schema = pyarrow_wrap_schema(sp_schema)
+        return pa_schema
+
     def make_dtensor_table(self, name):
         """
         Create data-tensor for name table

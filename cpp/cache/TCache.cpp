@@ -2,6 +2,7 @@
 #include <TCache.h>
 #include <TCatalog.h>
 #include <TTable.h>
+#include <TSchema.h>
 
 namespace liten
 {
@@ -26,10 +27,18 @@ std::shared_ptr<TCache> TCache::GetInstance()
 }
 
 TResult<std::shared_ptr<TTable>> TCache::AddTable(std::string tableName,
-                                                 TableType type,
-                                                 std::shared_ptr<arrow::Table> table)
+                                                  TableType type,
+                                                  std::shared_ptr<arrow::Table> table,
+                                                  std::string schemaName)
 {
-  return std::move(TTable::Create(tableName, type, table));
+  return std::move(TTable::Create(tableName, type, table, schemaName));
+}
+
+TResult<std::shared_ptr<TSchema>> AddSchema(std::string schemaName,
+                                            TableType type,
+                                            std::shared_ptr<arrow::Schema> schema)
+{
+  return std::move(TSchema::Create(schemaName, type, schema));
 }
 
 std::shared_ptr<TTable> TCache::GetTable(std::string tableName) const
@@ -138,7 +147,7 @@ TResult<std::shared_ptr<TTable>> TCache::ReadCsv(std::string tableName,
   {
     return TResult<std::shared_ptr<TTable>>(TStatus::UnknownError("Creating arrow table"));
   }
-  auto ttableResult = std::move(TTable::Create(tableName, type, table));
+  auto ttableResult = std::move(TTable::Create(tableName, type, table, ""));
   if (!ttableResult.ok())
   {
     TLOG(ERROR) << "Error creating Liten table= " << tableName;
