@@ -85,7 +85,7 @@ digraph Q5{
 }
 """
 
-_version = "0.0.1"
+_version = "0.0.2"
 
 cdef class CLiten:
     """
@@ -93,6 +93,8 @@ cdef class CLiten:
     """
     DimTable=0
     FactTable=1
+    DimField=0
+    MetricField=1
     
     def __cinit__(self):
         """
