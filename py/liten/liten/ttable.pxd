@@ -19,6 +19,8 @@ from liten.includes.dtensor cimport *
 
 cdef class TTable:
     cdef:
+       shared_ptr[CTable] sp_ctable
+       CTResultCTTable sp_ttable_result
        shared_ptr[CTTable] sp_ttable
        CTTable* p_ttable
-       sp_ctable sp_ctable
+       TableType tc_ttype 

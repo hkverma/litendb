@@ -3,11 +3,11 @@
 namespace liten
 {
 /// Tables are either dimension or fact tables
-enum TableType {DimensionTable=0, FactTable};
+enum TableType {DimensionTable=0, FactTable=1};
 extern std::vector<std::string> TableTypeString;
 
 /// Schema field types are either dimension fields or Metric
-enum FieldType {DimensionField=0, MetricField};
+enum FieldType {DimensionField=0, MetricField=1};
 extern std::vector<std::string> FieldTypeString;
 
 /// These are all defined classes in core library

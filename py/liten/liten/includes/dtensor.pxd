@@ -40,11 +40,13 @@ cdef extern from "cache.h" namespace "liten" nogil:
    cdef cppclass CTTable" liten::TTable":
       c_string GetName()
       shared_ptr[CTable] GetTable()
+      TableType GetType()
       shared_ptr[CTable] Slice(int64_t offset, int64_t length)
 
 # CTSchema is liten::TSchema in Cython. CSchema is arrow::Schema cython from pyarrow.
    cdef cppclass CTSchema" liten::TSchema":
       c_string GetName()
+      TableType GetType()
       shared_ptr[CSchema] GetSchema()
       CTStatus Join(c_string fieldName, shared_ptr[CTSchema] parentSchema, c_string parentFieldName)
       

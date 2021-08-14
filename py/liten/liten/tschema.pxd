@@ -22,6 +22,8 @@ cdef class TSchema:
      Liten Schema Class
      """
      cdef:
+         shared_ptr[CSchema] sp_schema
+         CTResultCTSchema sp_tschema_result
          shared_ptr[CTSchema] sp_tschema
          CTSchema* p_tschema
-         shared_ptr[CSchema] sp_schema
+         TableType tc_ttype

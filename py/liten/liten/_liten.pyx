@@ -16,7 +16,7 @@ from graphviz import Source
 import sys
 import codecs
 
-import liten.litenutils as litenutils
+import liten as ten
 
 def q6digraph():
     """
@@ -122,51 +122,21 @@ cdef class CLiten:
            table: arrow table to be added in liten cache
            ttype: type of table must be DimTable or FactTable
         Returns
-           name of the table added
+           Added Liten TTable
         """
-        cdef:
-            shared_ptr[CTable] sp_table
-            CTResultCTTable sp_ttable_result
-            shared_ptr[CTTable] sp_ttable
-            CTTable* p_ttable
-            TableType tc_ttype
-        sp_table = pyarrow_unwrap_table(table)
-        if ttype != self.DimTable and ttype != self.FactTable:
-            print("Error: Table must be DimTable or FactTable")
-            return "";        
-        tc_ttype = <TableType>ttype
-        sp_ttable_result = self.tcache.AddTable(litenutils.to_bytes(name), tc_ttype, sp_table, schema_name)
-        if (not sp_ttable_result.ok()):
-            print ("Failed to add table=", name)
-            return ""
-        sp_ttable = sp_ttable_result.ValueOrDie()
-        p_ttable = sp_ttable.get()
-        if (NULL == p_ttable):
-            print ("Failed to add table=", name)
-            return ""            
-        print ("Added Table=", name)
-        return name
+        ttable = ten.TTable(name, table, ttype, schema_name)
+        return ttable
 
     def get_table(self, name):
         """
-        get arrow table by name name
+        get liten table by name
         Parameters
           name: name of table
         Returns
-          Arrow table of given name
+          Liten table of given name
         """        
-        cdef:
-            shared_ptr[CTTable] sp_ttable
-            CTTable* p_ttable
-            shared_ptr[CTable] sp_table
-        sp_ttable = self.tcache.GetTable(name)
-        p_ttable = sp_ttable.get()
-        if (NULL == p_ttable):
-            print ("Failed to get table=", name)
-            return None
-        sp_table = p_ttable.GetTable()
-        pa_table = pyarrow_wrap_table(sp_table)
-        return pa_table
+        ttable = ten.TTable.get_table(name)
+        return ttable
     
     def add_schema(self, name, ttype, schema):
         """
@@ -178,28 +148,8 @@ cdef class CLiten:
         Returns
            name of the schema added
         """
-        cdef:
-            shared_ptr[CSchema] sp_schema
-            CTResultCTSchema sp_tschema_result
-            shared_ptr[CTSchema] sp_tschema
-            CTSchema* p_tschema
-            TableType tc_ttype
-        sp_schema = pyarrow_unwrap_schema(schema)
-        if ttype != self.DimTable and ttype != self.FactTable:
-            print("Error: Schema type must be DimTable or FactTable")
-            return "";        
-        tc_ttype = <TableType>ttype
-        sp_tschema_result = self.tcache.AddSchema(litenutils.to_bytes(name), tc_ttype, sp_schema)
-        if (not sp_tschema_result.ok()):
-            print ("Failed to add schema=", name)
-            return ""
-        sp_tschema = sp_tschema_result.ValueOrDie()
-        p_tschema = sp_tschema.get()
-        if (NULL == p_tschema):
-            print ("Failed to add schema=", name)
-            return ""            
-        print ("Added Schema=", name)
-        return name
+        schema = ten.TSchema(name, ttype, schema)
+        return schema
 
     def get_schema(self, name):
         """
@@ -207,20 +157,10 @@ cdef class CLiten:
         Parameters
           name: name of schema
         Returns
-          Arrow schema of given name
-        """        
-        cdef:
-            shared_ptr[CTSchema] sp_tschema
-            CTSchema* p_tschema
-            shared_ptr[CSchema] sp_schema
-        sp_tschema = self.tcache.GetSchema(name)
-        p_tschema = sp_tschema.get()
-        if (NULL == p_tschema):
-            print ("Failed to get schema=", name)
-            return None
-        sp_schema = p_tschema.GetSchema()
-        pa_schema = pyarrow_wrap_schema(sp_schema)
-        return pa_schema
+          Liten schema of given name
+        """
+        schema = ten.TSchema.get_schema(name)
+        return schema
 
     def make_dtensor_table(self, name):
         """
@@ -339,7 +279,7 @@ ORDER BY
         Returns:
           arrow table with the given slice, None if table not found
         """
-        sp_table = self.tcache.Slice(litenutils.to_bytes(table_name), offset, length)
+        sp_table = self.tcache.Slice(ten.litenutils.to_bytes(table_name), offset, length)
         if (NULL == sp_table.get()):
             print ("Failed to get table=", table_name)
             return None
