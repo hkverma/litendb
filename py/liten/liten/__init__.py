@@ -5,6 +5,7 @@ from ctypes import cdll
 import os
 
 import liten as ten
+from liten import _liten
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 libpath = os.path.join(basedir, 'libliten.so')

@@ -46,6 +46,7 @@ cdef extern from "cache.h" namespace "liten" nogil:
 # CTSchema is liten::TSchema in Cython. CSchema is arrow::Schema cython from pyarrow.
    cdef cppclass CTSchema" liten::TSchema":
       c_string GetName()
+      c_string ToString()
       TableType GetType()
       shared_ptr[CSchema] GetSchema()
       CTStatus Join(c_string fieldName, shared_ptr[CTSchema] parentSchema, c_string parentFieldName)

@@ -43,6 +43,14 @@ cdef class TSchema:
         name = p_tschema.GetName()
         return ten.litenutils.to_bytes(name)
 
+    def get_info(self):
+        """
+        Returns
+          unique name of the table
+        """
+        schema_str =_tschema.ToString()
+        return ten.litenutils.to_bytes(schema_str)
+    
     def get_type(self):
         """
         Returns
@@ -57,3 +65,11 @@ cdef class TSchema:
         schema = self.nameToTSchema[name]
         return schema
         
+
+    def join(self, field_name, parent_schema, parent_field_name):
+        status = self.p_tschema.Join(field_name, parent_schema.sp_tschema, parent_field_name)
+        if (status.ok()):
+            return True
+        else:
+            print(status.message())
+            return False
