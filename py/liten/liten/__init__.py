@@ -5,7 +5,9 @@ from ctypes import cdll
 import os
 
 import liten as ten
-from liten import _liten
+from liten import tcache
+from liten import ttable
+from liten import tschema
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 libpath = os.path.join(basedir, 'libliten.so')
@@ -15,11 +17,11 @@ def show_versions():
     """
     Liten Version
     """
-    return ten._liten._version
+    return ten.tcache._version
 
 def new_cache():
     """
     Create a new Liten cache
     """
-    tc =  ten._liten.CLiten()
+    tc =  ten.tcache.TCache()
     return tc

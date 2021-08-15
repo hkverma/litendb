@@ -17,10 +17,19 @@ from libcpp.unordered_set cimport unordered_set
 from pyarrow.includes.libarrow cimport *
 from liten.includes.dtensor cimport *
 
-cdef class CLiten:
+cdef class TCache:
    """
-   Python C-wrapper CLiten for C++ Liten Cache
+   Liten TCache wrapping cppclass CTCache with user methods
    """
    cdef:
        shared_ptr[CTCache] sp_tcache
        CTCache* tcache
+     
+cdef class TSchema:
+     """
+     Liten Schema Class wrapping cppclass CTSchema
+     """
+     cdef:
+         shared_ptr[CSchema] sp_pa_schema
+         shared_ptr[CTSchema] sp_tschema
+       

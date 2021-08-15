@@ -29,6 +29,7 @@ cdef extern from "common.h" namespace "liten" nogil:
   cdef cppclass CTResultCTSchema" liten::TResult<std::shared_ptr<liten::TSchema>>":
      bool ok() const
      const shared_ptr[CTSchema]& ValueOrDie() const
+     const CTStatus& status() const
 
 cdef extern from "cache.h" namespace "liten" nogil:
 

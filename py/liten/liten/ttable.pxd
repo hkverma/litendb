@@ -17,10 +17,3 @@ from libcpp.unordered_set cimport unordered_set
 from pyarrow.includes.libarrow cimport *
 from liten.includes.dtensor cimport *
 
-cdef class TTable:
-    cdef:
-       shared_ptr[CTable] sp_ctable
-       CTResultCTTable sp_ttable_result
-       shared_ptr[CTTable] sp_ttable
-       CTTable* p_ttable
-       TableType tc_ttype 

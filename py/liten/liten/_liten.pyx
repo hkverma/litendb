@@ -17,6 +17,9 @@ import sys
 import codecs
 
 import liten as ten
+from liten import tcache
+from liten import ttable
+from liten import tschema
 
 def q6digraph():
     """
@@ -87,14 +90,11 @@ digraph Q5{
 
 _version = "0.0.2"
 
-cdef class CLiten:
+cdef class TCache:
     """
     Liten Cache Class
     """
-    DimTable=0
-    FactTable=1
-    DimField=0
-    MetricField=1
+    nameToTSchema = { }
     
     def __cinit__(self):
         """
@@ -113,32 +113,8 @@ cdef class CLiten:
            c_string cache_info
         cache_info = self.tcache.GetInfo()
         return cache_info
-    
-    def add_table(self, name, table, ttype, schema_name=""):
-        """
-        Add arrow table in cache by name
-        Parameters
-           name: name of table
-           table: arrow table to be added in liten cache
-           ttype: type of table must be DimTable or FactTable
-        Returns
-           Added Liten TTable
-        """
-        ttable = ten.TTable(name, table, ttype, schema_name)
-        return ttable
 
-    def get_table(self, name):
-        """
-        get liten table by name
-        Parameters
-          name: name of table
-        Returns
-          Liten table of given name
-        """        
-        ttable = ten.TTable.get_table(name)
-        return ttable
-    
-    def add_schema(self, name, ttype, schema):
+    def add_schema(self, name, ttype, pa_schema):
         """
         Add arrow table in cache by name
         Parameters
@@ -146,154 +122,84 @@ cdef class CLiten:
            ttype: type of table must be DimTable or FactTable
            schema: arrow schema to be added in liten cache
         Returns
-           name of the schema added
-        """
-        schema = ten.TSchema(name, ttype, schema)
-        return schema
-
-    def get_schema(self, name):
-        """
-        get arrow schema by name name
-        Parameters
-          name: name of schema
-        Returns
-          Liten schema of given name
-        """
-        schema = ten.TSchema.get_schema(name)
-        return schema
-
-    def make_dtensor_table(self, name):
-        """
-        Create data-tensor for name table
-        Parameters
-           name: Name of table 
-        Returns
-           true if create successfully else false
-        """
-        result = self.tcache.MakeMaps(name)
-        if (result):
-            print ("Failed to create data-tensor for ", name)
-        return result
-
-    def make_dtensor(self):
-        """
-        Create n-dimensional data tensor for all n dimension tables in cache
-        Returns
-           true if create successfully else false
-        """
-        result = self.tcache.MakeMaps()
-        if (result):
-            print ("Failed to create data-tensor")
-        return result
-    
-    def query6(self):
-        """
-        Run Tpch query 6
-        Returns
-           query 6 result
+           Newly added TSchema or None if failed to add
         """
         cdef:
-            shared_ptr[CTpchDemo] sp_tpch_demo
-            CTpchDemo* p_tpch_demo
-        sp_tpch_demo = CTpchDemo.GetInstance(self.sp_tcache)
-        p_tpch_demo = sp_tpch_demo.get()
-        print (""" TPCH QUERY 6 
-SELECT 
-  SUM(L_EXTENDEDPRICE * L_DISCOUNT) AS REVENUE 
-FROM 
-  LINEITEM
-WHERE
-  L_SHIPDATE >= DATE '1997-01-01'
-  AND L_SHIPDATE < DATE '1997-01-01' + INTERVAL '1' YEAR
-  AND L_DISCOUNT BETWEEN 0.07 - 0.01 AND 0.07 + 0.01
-  AND L_QUANTITY < 25;
-""")
-        result = p_tpch_demo.Query6()
-        print("Revenue=",result);
-        print("")
-        q6di = Source(q6diggraphcmd, filename="_temp.gv", format="png")
-        return q6di
+           shared_ptr[CSchema] sp_schema
+           CTResultCTSchema sp_tschema_result
+           shared_ptr[CTSchema] sp_tschema
+           CTSchema* p_tschema
+           TableType tc_ttype
 
-    def query5(self):
-        """
-        Run Tpch query 5
-        Returns
-           query 5 result
-        """
-        cdef:
-            shared_ptr[CTpchDemo] sp_tpch_demo
-            CTpchDemo* p_tpch_demo
-            shared_ptr[unordered_map[c_string, double]] sp_result
-            unordered_map[c_string, double]* p_result
-        sp_tpch_demo = CTpchDemo.GetInstance(self.sp_tcache)
-        p_tpch_demo = sp_tpch_demo.get()
-        print (""" 
-SELECT
-	N_NAME,
-	SUM(L_EXTENDEDPRICE * (1 - L_DISCOUNT)) AS REVENUE
-FROM
-	CUSTOMER,
-	ORDERS,
-	LINEITEM,
-	SUPPLIER,
-	NATION,
-	REGION
-WHERE
-	C_CUSTKEY = O_CUSTKEY
-	AND L_ORDERKEY = O_ORDERKEY
-	AND L_SUPPKEY = S_SUPPKEY
-	AND C_NATIONKEY = S_NATIONKEY
-	AND S_NATIONKEY = N_NATIONKEY
-	AND N_REGIONKEY = R_REGIONKEY
-	AND R_NAME = 'EUROPE'
-	AND O_ORDERDATE >= DATE '1995-01-01'
-	AND O_ORDERDATE < DATE '1995-01-01' + INTERVAL '1' YEAR
-GROUP BY
-	N_NAME
-ORDER BY
-	REVENUE DESC;
-""")
-        sp_result = p_tpch_demo.Query5()
-        p_result = sp_result.get()
-        q5result = { }        
-        if (NULL == p_result):
-            print("Failed to run Query5")
-            return q5result
-        cdef unordered_map[c_string, double].iterator it = p_result.begin()
-        while (it != p_result.end()):
-            key = deref(it).first
-            value = deref(it).second
-            q5result[key] = value
-            print(key,"=",value)
-            postincrement(it)
-        print("")
-        q5di = Source(q5diggraphcmd, filename="_temp.gv", format="png")
-        return q5di
-
-    def slice(self, table_name, offset, length):
-        """
-        Parameters
-          table_name: name of table
-          offset: offset from beginning
-          length: number for rows to be sliced
-        Returns:
-          arrow table with the given slice, None if table not found
-        """
-        sp_table = self.tcache.Slice(ten.litenutils.to_bytes(table_name), offset, length)
-        if (NULL == sp_table.get()):
-            print ("Failed to get table=", table_name)
+        sp_pa_schema = pyarrow_unwrap_schema(pa_schema)
+        if ttype != ten.TTable.Dimension and ttype != ten.TTable.Fact:
+            raise TypeError("Type ttype must be Dimension or Fact")
+        tc_ttype = <TableType>ttype
+        sp_tschema_result = self.tcache.AddSchema(ten.litenutils.to_bytes(name), ttype, sp_pa_schema)
+        if (not sp_tschema_result.ok()):
+            print(f"Failed to add schema {name}. {sp_tschema_result.status().message()}")
             return None
-        arr_table = pyarrow_wrap_table(sp_table)        
-        return arr_table
+        sp_tschema = sp_tschema_result.ValueOrDie()
+        p_tschema = sp_tschema.get()
+        if (NULL == p_tschema):
+            print (f"Failed to add schema {name}")
+            return None
+
+        tschema = TSchema()
+        tschema.sp_tschema = sp_tschema
+        tschema.sp_pa_schema = sp_pa_schema
+        tschema.ttype = ttype
         
-    def show_versions(self):
+        self.nameToTSchema[name] = tschema
+        return tschema
+    
+    def get_schema(self, name):
+        tschema = self.nameToTSchema[name]
+        return tschema
+
+cdef class TSchema:
+    """
+    Liten Schema Class
+    """
+    ttype = ten.TTable.Fact
+    
+    def __cinit__(self):
+        ttype = ten.TTable.Fact
+        
+    def get_arrow_schema(self):
+        """
+        Get pyarrow schema from Liten schema
+        """
+        pa_schema = pyarrow_wrap_schema(self.sp_pa_schema)
+        return pa_schema
+    
+    def get_name(self):
         """
         Returns
-          Liten cache version
+          unique name of the table
         """
-        return _version
+        name = self.sp_tschema.get().GetName()
+        return ten.litenutils.to_bytes(name)
+
+    def get_info(self):
+        """
+        Returns
+          unique name of the table
+        """
+        schema_str = self.sp_tschema.get().ToString()
+        return ten.litenutils.to_bytes(schema_str)
     
-    @property
-    def version(self):
-        """ Liten Cache Version """
-        return _version
+    def get_type(self):
+        """
+        Returns
+          Dimension or Fact Table
+        """
+        return self.ttype
+
+    def join(self, field_name, parent_schema, parent_field_name):
+        status = self.p_tschema.Join(field_name, parent_schema.sp_tschema, parent_field_name)
+        if (status.ok()):
+            return True
+        else:
+            print(status.message())
+            return False
