@@ -25,7 +25,8 @@ cdef extern from "common.h" namespace "liten" nogil:
   cdef cppclass CTResultCTTable" liten::TResult<std::shared_ptr<liten::TTable>>":
      bool ok() const
      const shared_ptr[CTTable]& ValueOrDie() const
-
+     const CTStatus& status() const
+     
   cdef cppclass CTResultCTSchema" liten::TResult<std::shared_ptr<liten::TSchema>>":
      bool ok() const
      const shared_ptr[CTSchema]& ValueOrDie() const

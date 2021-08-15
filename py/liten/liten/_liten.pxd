@@ -32,4 +32,13 @@ cdef class TSchema:
      cdef:
          shared_ptr[CSchema] sp_pa_schema
          shared_ptr[CTSchema] sp_tschema
+         CTSchema* p_tschema
        
+cdef class TTable:
+     """
+     Liten Table Class wrapping cppclass CTTable
+     """
+     cdef:
+        shared_ptr[CTable] sp_pa_table
+        shared_ptr[CTTable] sp_ttable
+        CTTable* p_ttable

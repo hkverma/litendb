@@ -95,6 +95,7 @@ cdef class TCache:
     Liten Cache Class
     """
     nameToTSchema = { }
+    nameToTTable = { }
     
     def __cinit__(self):
         """
@@ -147,6 +148,7 @@ cdef class TCache:
 
         tschema = TSchema()
         tschema.sp_tschema = sp_tschema
+        tschema.p_tschema = p_tschema
         tschema.sp_pa_schema = sp_pa_schema
         tschema.ttype = ttype
         
@@ -157,6 +159,54 @@ cdef class TCache:
         tschema = self.nameToTSchema[name]
         return tschema
 
+    def add_table(self, name, pa_table, ttype, schema_name=""):
+        """
+        Create arrow table in cache by name
+        Parameters
+           name: name of table
+           table: arrow table to be added in liten cache
+           ttype: type of table must be DimTable or FactTable
+        Returns
+           Added Liten TTable
+        """
+        cdef:
+           shared_ptr[CTable] sp_pa_table
+           CTResultCTTable sp_ttable_result
+           shared_ptr[CTTable] sp_ttable
+           CTTable* p_ttable
+           TableType tc_ttype 
+        
+        sp_pa_table = pyarrow_unwrap_table(pa_table)
+        if ttype != TTable.Dimension and ttype != TTable.Fact:
+            print(f"Table type must be Dimension or Fact")
+            return None
+        
+        tc_ttype = <TableType>ttype
+        sp_ttable_result = self.tcache.AddTable(ten.litenutils.to_bytes(name), tc_ttype, sp_pa_table, schema_name)
+        if (not sp_ttable_result.ok()):
+            print (f"Failed to add table {name} {sp_ttable_result.status().message()}")
+            return None
+        
+        sp_ttable = sp_ttable_result.ValueOrDie()
+        p_ttable = sp_ttable.get()
+        if (NULL == p_ttable):
+            print (f"Failed to build table {name}")
+            return None
+
+        ttable = TTable()
+        ttable.sp_pa_table = sp_pa_table
+        ttable.sp_ttable = sp_ttable
+        ttable.p_ttable = p_ttable
+        ttable.ttype = ttype
+        
+        self.nameToTTable[name] = ttable
+        return ttable
+
+    def get_table(self, name):
+        table = self.nameToTTable[name]
+        return table
+    
+
 cdef class TSchema:
     """
     Liten Schema Class
@@ -166,7 +216,7 @@ cdef class TSchema:
     def __cinit__(self):
         ttype = ten.TTable.Fact
         
-    def get_arrow_schema(self):
+    def get_pyarrow_schema(self):
         """
         Get pyarrow schema from Liten schema
         """
@@ -186,7 +236,7 @@ cdef class TSchema:
         Returns
           unique name of the table
         """
-        schema_str = self.sp_tschema.get().ToString()
+        schema_str = self.p_tschema.ToString()
         return ten.litenutils.to_bytes(schema_str)
     
     def get_type(self):
@@ -197,9 +247,49 @@ cdef class TSchema:
         return self.ttype
 
     def join(self, field_name, parent_schema, parent_field_name):
-        status = self.p_tschema.Join(field_name, parent_schema.sp_tschema, parent_field_name)
+        if (not type(parent_schema) is TSchema):
+            print(f"parent_schema {type(parent_schema)} must be TSchema")
+            return False
+        p_parent_schema = <TSchema>parent_schema
+        status = self.p_tschema.Join(field_name, p_parent_schema.sp_tschema, parent_field_name)
         if (status.ok()):
             return True
         else:
             print(status.message())
             return False
+
+cdef class TTable:
+    """
+    Liten Table Class
+    """
+    
+    Dimension = 0
+    Fact = 1
+    ttype = Fact
+    
+    def __cinit__(self):
+        TTable.Dimension = 0
+        TTable.Fact = 1
+        
+    def get_pyarrow_table(self):
+        """
+        Returns
+          Arrow table
+        """
+        pa_table = pyarrow_wrap_table(self.sp_pa_table)
+        return pa_table
+
+    def get_name(self):
+        """
+        Returns
+          unique name of the table
+        """
+        name = self.p_ttable.GetName()
+        return ten.litenutils.to_bytes(name)
+    
+    def get_type(self):
+        """
+        Returns
+          Dimension or Fact Table
+        """
+        return self.ttype
