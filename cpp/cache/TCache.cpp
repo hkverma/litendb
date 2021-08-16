@@ -34,9 +34,9 @@ TResult<std::shared_ptr<TTable>> TCache::AddTable(std::string tableName,
   return std::move(TTable::Create(tableName, type, table, schemaName));
 }
 
-TResult<std::shared_ptr<TSchema>> AddSchema(std::string schemaName,
-                                            TableType type,
-                                            std::shared_ptr<arrow::Schema> schema)
+TResult<std::shared_ptr<TSchema>> TCache::AddSchema(std::string schemaName,
+                                                    TableType type,
+                                                    std::shared_ptr<arrow::Schema> schema)
 {
   return std::move(TSchema::Create(schemaName, type, schema));
 }

@@ -4,7 +4,7 @@ Init python in conda release
 from ctypes import cdll
 import os
 
-import liten as ten
+import liten._liten as cliten
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 libpath = os.path.join(basedir, 'libliten.so')
@@ -14,11 +14,11 @@ def show_versions():
     """
     Liten Version
     """
-    return ten._liten._version
+    return cliten._version
 
 def new_cache():
     """
     Create a new Liten cache
     """
-    tc =  ten._liten.TCache()
+    tc =  cliten.TCache()
     return tc

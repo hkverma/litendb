@@ -16,7 +16,7 @@ include(UseCython)
 # pick BuildUtils from cpp
 #
 include(BuildUtils)
-set(module _liten)
+set(module lib)
 set(module_name ${module})
 # Change these to pick TBD Use $CMAKE_BUILD_TYPE here
 #
@@ -24,6 +24,7 @@ link_directories(${LITEN_ROOT_DIR}/cpp/build/${CMAKE_BUILD_TYPE}/bin)
 #
 include_directories(${LITEN_ROOT_DIR}/cpp/cache_test ${LITEN_ROOT_DIR}/cpp/cache ${LITEN_ROOT_DIR}/cpp/common)
 include_directories(${LITEN_ROOT_DIR}/cpp/external_libs/arrow/arrow/cpp/src)
+include_directories(${LITEN_ROOT_DIR}/py/liten/liten)
 include_directories($ENV{LITEN_SITELIBS_DIR}/numpy/core/include)
 set(LINK_LIBS liten)
 

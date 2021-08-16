@@ -17,14 +17,6 @@ from libcpp.unordered_set cimport unordered_set
 from pyarrow.includes.libarrow cimport *
 from liten.includes.dtensor cimport *
 
-cdef class TCache:
-   """
-   Liten TCache wrapping cppclass CTCache with user methods
-   """
-   cdef:
-       shared_ptr[CTCache] sp_tcache
-       CTCache* tcache
-     
 cdef class TSchema:
      """
      Liten Schema Class wrapping cppclass CTSchema
@@ -42,3 +34,11 @@ cdef class TTable:
         shared_ptr[CTable] sp_pa_table
         shared_ptr[CTTable] sp_ttable
         CTTable* p_ttable
+
+cdef class TCache:
+   """
+   Liten TCache wrapping cppclass CTCache with user methods
+   """
+   cdef:
+       shared_ptr[CTCache] sp_tcache
+       CTCache* tcache
