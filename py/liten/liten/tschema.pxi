@@ -21,12 +21,6 @@ cdef class TSchema:
     Liten Schema Class
     """
     
-    def __init__(self):
-        raise RuntimeError("Error: Always create liten ttable using TCache::add_schema")
-
-    def __init__(self, tc):
-        self.tcache = tc
-    
     def get_pyarrow_schema(self):
         """
         Get pyarrow schema from Liten schema

@@ -22,7 +22,7 @@ public:
   /// Return information with compute information
   std::string GetComputeInfo()
   {
-    std::string str("\"Worker Threads\":");
+    std::string str("\"WorkerThreads\":");
     str.append(std::to_string(numWorkerThreads_));
     return std::move(str);
   }

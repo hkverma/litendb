@@ -21,12 +21,6 @@ cdef class TTable:
     Liten Table Class
     """
     
-    def __init__(self):
-        raise RuntimeError("Error: Always create liten ttable using TCache::add_table")
-
-    def __init__(self, tc):
-        self.tcache = tc
-    
     def get_pyarrow_table(self):
         """
         Returns

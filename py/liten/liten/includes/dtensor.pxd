@@ -42,6 +42,7 @@ cdef extern from "cache.h" namespace "liten" nogil:
    cdef cppclass CTTable" liten::TTable":
       c_string GetName()
       shared_ptr[CTable] GetTable()
+      shared_ptr[CTSchema] GetSchema()
       TableType GetType()
       shared_ptr[CTable] Slice(int64_t offset, int64_t length)
 

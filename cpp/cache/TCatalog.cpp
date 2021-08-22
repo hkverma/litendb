@@ -69,18 +69,18 @@ std::string TCatalog::GetTableInfo() const
   str.append("{");
   {
     std::shared_lock<std::shared_mutex> lk(mutex_);
+    bool firstTable = true;
     for (auto& tableId : tables_)
     {
-      std::string tableName = tableId.first;
-      auto tTable = tableId.second;
-      if (DimensionTable == tTable->GetType()) {
-        str.append("\"Dim\":");
-      } else if (FactTable == tTable->GetType()) {
-        str.append("\"Fact\":");
+      if (firstTable) {
+        firstTable = false;
       } else {
-        str.append("\"Unknown\":");
+        str.append(",");
       }
+      std::string tableName = tableId.first;
+      auto tTable = tableId.second;      
       str.append("\"").append(tableName).append("\"");
+      str.append(":\"").append(TableTypeString[tTable->GetType()]).append("\"");
     }
   }
   str.append("}");
@@ -127,19 +127,19 @@ std::string TCatalog::GetSchemaInfo() const
   std::string str;
   str.append("{");
   {
+    bool firstTable = true;
     std::shared_lock<std::shared_mutex> lk(mutex_);
     for (auto& schemaId : schemas_)
     {
+      if (firstTable) {
+        firstTable = false;
+      } else {
+        str.append(",");
+      }
       std::string schemaName = schemaId.first;
       auto tSchema = schemaId.second;
-      if (DimensionTable == tSchema->GetType()) {
-        str.append("\"Dim\":");
-      } else if (FactTable == tSchema->GetType()) {
-        str.append("\"Fact\":");
-      } else {
-        str.append("\"Unknown\":");
-      }
       str.append("\"").append(schemaName).append("\"");
+      str.append(":\"").append(TableTypeString[tSchema->GetType()]).append("\"");
     }
   }
   str.append("}");

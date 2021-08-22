@@ -55,11 +55,13 @@ std::shared_ptr<TSchema> TCache::GetSchema(std::string schemaName) const
 std::string TCache::GetInfo()
 {
   std::stringstream ss;
-  ss << "{\n";
+  ss << "{\"Compute\":";
   ss << TConfigs::GetInstance()->GetComputeInfo();
-  ss << "\n}\n,{\n";
+  ss << "},{\"Table\":";
   ss << TCatalog::GetInstance()->GetTableInfo();
-  ss << "\n}";
+  ss << "},{\"Schema\":";
+  ss << TCatalog::GetInstance()->GetSchemaInfo();
+  ss << "}";
   TLog::GetInstance()->FlushLogFiles(TLog::Info);
   return std::move(ss.str());
 }

@@ -22,6 +22,9 @@ public:
 
   /// Get underlying arrow::Table
   std::shared_ptr<arrow::Table> GetTable();
+
+  /// get schema of the table
+  std::shared_ptr<TSchema> GetSchema();
     
   /// Print schema in logfile
   void PrintSchema();
@@ -56,7 +59,7 @@ public:
 private:
 
   /// Use named constructor only
-  TTable() { }
+  TTable() : type_(FactTable) { }
 
   /// Enable shared constructor
   struct MakeSharedEnabler;
@@ -99,6 +102,11 @@ struct TTable::MakeSharedEnabler : public TTable {
 inline std::shared_ptr<arrow::Table> TTable::GetTable()
 {
   return table_;
+}
+
+inline std::shared_ptr<TSchema> TTable::GetSchema()
+{
+  return schema_;
 }
 
 inline std::shared_ptr<TColumnMap> TTable::GetColMap(int mapNum, int colNum)

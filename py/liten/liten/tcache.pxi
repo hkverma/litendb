@@ -130,6 +130,7 @@ cdef class TCache:
         Returns
            Newly added TSchema or None if failed to add
         """
+
         cdef:
            shared_ptr[CSchema] sp_schema
            CTResultCTSchema sp_tschema_result
@@ -137,6 +138,11 @@ cdef class TCache:
            CTSchema* p_tschema
            TableType tc_ttype
 
+        # TBD Check if the name has the same pa_schema
+        if name in self.nameToTSchema:
+            ex_tschema = self.nameToTSchema[name]
+            return ex_tschema
+        
         sp_pa_schema = pyarrow_unwrap_schema(pa_schema)
         if ttype != self.DimensionTable and ttype != self.FactTable:
             raise TypeError("Type ttype must be Dimension or Fact")
@@ -151,17 +157,58 @@ cdef class TCache:
             print (f"Failed to add schema {name}")
             return None
 
-        tschema = TSchema(self)
+        tschema = TSchema()
         tschema.sp_tschema = sp_tschema
         tschema.p_tschema = p_tschema
         tschema.sp_pa_schema = sp_pa_schema
+        tschema.tcache = self
         
         self.nameToTSchema[name] = tschema
         return tschema
     
     def get_schema(self, name):
-        tschema = self.nameToTSchema[name]
+        """
+        Get schema by bame
+        Parameters
+           name: name of schema
+        Returns
+           Liten schema TSchema if exists else None
+        """
+        if name in self.nameToTSchema:
+            tschema = self.nameToTSchema[name]
+            return tschema        
+        return None
+
+    def add_schema_from_ttable(self, ttable):
+        """
+        Add schema associated with ttable by name. If a schema exists by name, that is returned
+        Parameters
+           ttable: schema in liten table ttable
+        Returns
+           Liten schema TSchema
+        """
+        cdef:
+           shared_ptr[CTSchema] sp_tschema
+           CTSchema* p_tschema
+
+        p_ttable = <TTable>ttable
+        sp_tschema = p_ttable.p_ttable.GetSchema()
+        p_tschema = sp_tschema.get()
+
+        schema_name = liten.litenutils.to_bytes(p_tschema.GetName())
+        if schema_name in self.nameToTSchema:
+            ex_tschema = self.nameToTSchema[schema_name]
+            return ex_tschema
+        
+        tschema = TSchema()
+        tschema.sp_tschema = sp_tschema
+        tschema.p_tschema = p_tschema
+        tschema.sp_pa_schema = p_tschema.GetSchema()
+        tschema.tcache = self
+        
+        self.nameToTSchema[schema_name] = tschema
         return tschema
+        
 
     def add_table(self, name, pa_table, ttype, schema_name=""):
         """
@@ -197,12 +244,14 @@ cdef class TCache:
             print (f"Failed to build table {name}")
             return None
 
-        ttable = TTable(self)
+        ttable = TTable()
         ttable.sp_pa_table = sp_pa_table
         ttable.sp_ttable = sp_ttable
         ttable.p_ttable = p_ttable
-        
+        ttable.tcache = self
+
         self.nameToTTable[name] = ttable
+        self.add_schema_from_ttable(ttable)        
         return ttable
 
     def get_table(self, name):

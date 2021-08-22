@@ -9,7 +9,7 @@
 namespace liten
 {
 
-std::vector<std::string> TableTypeString = {"dim","fact"};
+std::vector<std::string> TableTypeString = {"DimensionTable","FactTable"};
 
 // Create a new TTable
 TResult<std::shared_ptr<TTable>> TTable::Create(std::string tableName,
@@ -46,6 +46,7 @@ TResult<std::shared_ptr<TTable>> TTable::Create(std::string tableName,
   ttable->schema_ = tschema;
   ttable->name_ = std::move(tableName);
   ttable->table_ = table;
+  ttable->type_ = type;
   TStatus status = std::move(ttable->AddToCatalog());
   if (!status.ok())
   {
