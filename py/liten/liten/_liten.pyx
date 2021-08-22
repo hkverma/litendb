@@ -16,9 +16,6 @@ from graphviz import Source
 import sys
 import codecs
 
-import liten as ten
-from liten import litenutils
-
 def q6digraph():
     """
     Graph diagram for Query6 plan
@@ -93,10 +90,10 @@ cdef class TSchema:
     """
     Liten Schema Class
     """
-    ttype = ten.TTable.Fact
+    ttype #= ten.TTable.Fact
     
-    def __cinit__(self):
-        ttype = ten.TTable.Fact
+#    def __cinit__(self):
+#        ttype = ten.TTable.Fact
         
     def get_pyarrow_schema(self):
         """
@@ -111,7 +108,7 @@ cdef class TSchema:
           unique name of the table
         """
         name = self.sp_tschema.get().GetName()
-        return ten.litenutils.to_bytes(name)
+        return cliten.litenutils.to_bytes(name)
 
     def get_info(self):
         """
@@ -119,7 +116,7 @@ cdef class TSchema:
           unique name of the table
         """
         schema_str = self.p_tschema.ToString()
-        return ten.litenutils.to_bytes(schema_str)
+        return cliten.litenutils.to_bytes(schema_str)
     
     def get_type(self):
         """
@@ -167,7 +164,7 @@ cdef class TTable:
           unique name of the table
         """
         name = self.p_ttable.GetName()
-        return ten.litenutils.to_bytes(name)
+        return cliten.litenutils.to_bytes(name)
     
     def get_type(self):
         """
@@ -219,10 +216,10 @@ cdef class TCache:
            TableType tc_ttype
 
         sp_pa_schema = pyarrow_unwrap_schema(pa_schema)
-        if ttype != ten.TTable.Dimension and ttype != ten.TTable.Fact:
+        if ttype != cliten.TTable.Dimension and ttype != cliten.TTable.Fact:
             raise TypeError("Type ttype must be Dimension or Fact")
         tc_ttype = <TableType>ttype
-        sp_tschema_result = self.tcache.AddSchema(ten.litenutils.to_bytes(name), ttype, sp_pa_schema)
+        sp_tschema_result = self.tcache.AddSchema(cliten.litenutils.to_bytes(name), ttype, sp_pa_schema)
         if (not sp_tschema_result.ok()):
             print(f"Failed to add schema {name}. {sp_tschema_result.status().message()}")
             return None
@@ -268,7 +265,7 @@ cdef class TCache:
             return None
         
         tc_ttype = <TableType>ttype
-        sp_ttable_result = self.tcache.AddTable(ten.litenutils.to_bytes(name), tc_ttype, sp_pa_table, schema_name)
+        sp_ttable_result = self.tcache.AddTable(cliten.litenutils.to_bytes(name), tc_ttype, sp_pa_table, schema_name)
         if (not sp_ttable_result.ok()):
             print (f"Failed to add table {name} {sp_ttable_result.status().message()}")
             return None

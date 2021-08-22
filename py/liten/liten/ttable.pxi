@@ -16,21 +16,14 @@ from graphviz import Source
 import sys
 import codecs
 
-import liten as ten
-from liten import litenutils
-
 cdef class TTable:
     """
     Liten Table Class
     """
-    
-    Dimension = 0
-    Fact = 1
-    ttype = Fact
+    ttype = TCache.FactTable
     
     def __cinit__(self):
-        TTable.Dimension = 0
-        TTable.Fact = 1
+       self.ttype = TCache.FactTable
         
     def get_pyarrow_table(self):
         """
@@ -46,7 +39,7 @@ cdef class TTable:
           unique name of the table
         """
         name = self.p_ttable.GetName()
-        return ten.litenutils.to_bytes(name)
+        return cliten.litenutils.to_bytes(name)
     
     def get_type(self):
         """

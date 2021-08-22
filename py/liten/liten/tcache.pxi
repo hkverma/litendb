@@ -3,7 +3,7 @@
 # cython: embedsignature = True
 # cython: language_level = 3
 """
-CLiten Cache System
+Cache System
 """
 from cython.operator cimport dereference as deref, postincrement
 from pyarrow.includes.libarrow cimport *
@@ -15,9 +15,6 @@ from graphviz import Source
 
 import sys
 import codecs
-
-import liten as ten
-from liten import litenutils
 
 def q6digraph():
     """
@@ -100,6 +97,18 @@ cdef class TCache:
         self.sp_tcache = CTCache.GetInstance()
         self.tcache = self.sp_tcache.get()
 
+    @property
+    def version(self):
+        return _version
+
+    @property
+    def FactTable(self):
+        return 1
+
+    @property
+    def DimensionTable(self):
+        return 0
+    
     def info(self):
         """
         return cache information including compute and storage 
@@ -116,7 +125,7 @@ cdef class TCache:
         Add arrow table in cache by name
         Parameters
            name: name of schema
-           ttype: type of table must be DimTable or FactTable
+           ttype: type of table must be DimensionTable or FactTable
            schema: arrow schema to be added in liten cache
         Returns
            Newly added TSchema or None if failed to add
@@ -129,10 +138,10 @@ cdef class TCache:
            TableType tc_ttype
 
         sp_pa_schema = pyarrow_unwrap_schema(pa_schema)
-        if ttype != ten.TTable.Dimension and ttype != ten.TTable.Fact:
+        if ttype != self.DimensionTable and ttype != self.FactTable:
             raise TypeError("Type ttype must be Dimension or Fact")
         tc_ttype = <TableType>ttype
-        sp_tschema_result = self.tcache.AddSchema(ten.litenutils.to_bytes(name), ttype, sp_pa_schema)
+        sp_tschema_result = self.tcache.AddSchema(liten.litenutils.to_bytes(name), ttype, sp_pa_schema)
         if (not sp_tschema_result.ok()):
             print(f"Failed to add schema {name}. {sp_tschema_result.status().message()}")
             return None
@@ -161,7 +170,7 @@ cdef class TCache:
         Parameters
            name: name of table
            table: arrow table to be added in liten cache
-           ttype: type of table must be DimTable or FactTable
+           ttype: type of table must be DimensionTable or FactTable
         Returns
            Added Liten TTable
         """
@@ -173,12 +182,12 @@ cdef class TCache:
            TableType tc_ttype 
         
         sp_pa_table = pyarrow_unwrap_table(pa_table)
-        if ttype != TTable.Dimension and ttype != TTable.Fact:
+        if ttype != self.DimensionTable and ttype != self.FactTable:
             print(f"Table type must be Dimension or Fact")
             return None
         
         tc_ttype = <TableType>ttype
-        sp_ttable_result = self.tcache.AddTable(ten.litenutils.to_bytes(name), tc_ttype, sp_pa_table, schema_name)
+        sp_ttable_result = self.tcache.AddTable(liten.litenutils.to_bytes(name), tc_ttype, sp_pa_table, schema_name)
         if (not sp_ttable_result.ok()):
             print (f"Failed to add table {name} {sp_ttable_result.status().message()}")
             return None
@@ -202,3 +211,7 @@ cdef class TCache:
         table = self.nameToTTable[name]
         return table
         
+
+    def make_dtensor(self):
+        tensor_result = self.tache.MakeMaps()
+        return tensor_result

@@ -16,17 +16,14 @@ from graphviz import Source
 import sys
 import codecs
 
-import liten as ten
-from liten import litenutils
-
 cdef class TSchema:
     """
     Liten Schema Class
     """
-    ttype = ten.TTable.Fact
+    ttype = TCache.FactTable
     
     def __cinit__(self):
-        ttype = ten.TTable.Fact
+        self.ttype = TCache.FactTable
         
     def get_pyarrow_schema(self):
         """
@@ -41,7 +38,7 @@ cdef class TSchema:
           unique name of the table
         """
         name = self.sp_tschema.get().GetName()
-        return ten.litenutils.to_bytes(name)
+        return cliten.litenutils.to_bytes(name)
 
     def get_info(self):
         """
@@ -49,7 +46,7 @@ cdef class TSchema:
           unique name of the table
         """
         schema_str = self.p_tschema.ToString()
-        return ten.litenutils.to_bytes(schema_str)
+        return cliten.litenutils.to_bytes(schema_str)
     
     def get_type(self):
         """
