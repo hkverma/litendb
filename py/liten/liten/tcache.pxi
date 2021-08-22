@@ -151,11 +151,10 @@ cdef class TCache:
             print (f"Failed to add schema {name}")
             return None
 
-        tschema = TSchema()
+        tschema = TSchema(self)
         tschema.sp_tschema = sp_tschema
         tschema.p_tschema = p_tschema
         tschema.sp_pa_schema = sp_pa_schema
-        tschema.ttype = ttype
         
         self.nameToTSchema[name] = tschema
         return tschema
@@ -187,7 +186,7 @@ cdef class TCache:
             return None
         
         tc_ttype = <TableType>ttype
-        sp_ttable_result = self.tcache.AddTable(liten.litenutils.to_bytes(name), tc_ttype, sp_pa_table, schema_name)
+        sp_ttable_result = self.tcache.AddTable(liten.litenutils.to_bytes(name), tc_ttype, sp_pa_table, liten.litenutils.to_bytes(schema_name))
         if (not sp_ttable_result.ok()):
             print (f"Failed to add table {name} {sp_ttable_result.status().message()}")
             return None
@@ -198,11 +197,10 @@ cdef class TCache:
             print (f"Failed to build table {name}")
             return None
 
-        ttable = TTable()
+        ttable = TTable(self)
         ttable.sp_pa_table = sp_pa_table
         ttable.sp_ttable = sp_ttable
         ttable.p_ttable = p_ttable
-        ttable.ttype = ttype
         
         self.nameToTTable[name] = ttable
         return ttable
@@ -211,7 +209,127 @@ cdef class TCache:
         table = self.nameToTTable[name]
         return table
         
+    def make_dtensor_table(self, name):
+        """
+        Create data-tensor for name table
+        Parameters
+           name: Name of table 
+        Returns
+           true if create successfully else false
+        """
+        result = self.tcache.MakeMaps(name)
+        if (result):
+            print ("Failed to create data-tensor for ", name)
+        return result
 
     def make_dtensor(self):
-        tensor_result = self.tache.MakeMaps()
-        return tensor_result
+        """
+        Create n-dimensional data tensor for all n dimension tables in cache
+        Returns
+           true if create successfully else false
+        """
+        result = self.tcache.MakeMaps()
+        if (result):
+            print ("Failed to create data-tensor")
+        return result
+    
+    def query6(self):
+        """
+        Run Tpch query 6
+        Returns
+           query 6 result
+        """
+        cdef:
+            shared_ptr[CTpchDemo] sp_tpch_demo
+            CTpchDemo* p_tpch_demo
+        sp_tpch_demo = CTpchDemo.GetInstance(self.sp_tcache)
+        p_tpch_demo = sp_tpch_demo.get()
+        print (""" TPCH QUERY 6 
+SELECT 
+  SUM(L_EXTENDEDPRICE * L_DISCOUNT) AS REVENUE 
+FROM 
+  LINEITEM
+WHERE
+  L_SHIPDATE >= DATE '1997-01-01'
+  AND L_SHIPDATE < DATE '1997-01-01' + INTERVAL '1' YEAR
+  AND L_DISCOUNT BETWEEN 0.07 - 0.01 AND 0.07 + 0.01
+  AND L_QUANTITY < 25;
+""")
+        result = p_tpch_demo.Query6()
+        print("Revenue=",result);
+        print("")
+        q6di = Source(q6diggraphcmd, filename="_temp.gv", format="png")
+        return q6di
+
+    def query5(self):
+        """
+        Run Tpch query 5
+        Returns
+           query 5 result
+        """
+        cdef:
+            shared_ptr[CTpchDemo] sp_tpch_demo
+            CTpchDemo* p_tpch_demo
+            shared_ptr[unordered_map[c_string, double]] sp_result
+            unordered_map[c_string, double]* p_result
+        sp_tpch_demo = CTpchDemo.GetInstance(self.sp_tcache)
+        p_tpch_demo = sp_tpch_demo.get()
+        print (""" 
+SELECT
+	N_NAME,
+	SUM(L_EXTENDEDPRICE * (1 - L_DISCOUNT)) AS REVENUE
+FROM
+	CUSTOMER,
+	ORDERS,
+	LINEITEM,
+	SUPPLIER,
+	NATION,
+	REGION
+WHERE
+	C_CUSTKEY = O_CUSTKEY
+	AND L_ORDERKEY = O_ORDERKEY
+	AND L_SUPPKEY = S_SUPPKEY
+	AND C_NATIONKEY = S_NATIONKEY
+	AND S_NATIONKEY = N_NATIONKEY
+	AND N_REGIONKEY = R_REGIONKEY
+	AND R_NAME = 'EUROPE'
+	AND O_ORDERDATE >= DATE '1995-01-01'
+	AND O_ORDERDATE < DATE '1995-01-01' + INTERVAL '1' YEAR
+GROUP BY
+	N_NAME
+ORDER BY
+	REVENUE DESC;
+""")
+        sp_result = p_tpch_demo.Query5()
+        p_result = sp_result.get()
+        q5result = { }        
+        if (NULL == p_result):
+            print("Failed to run Query5")
+            return q5result
+        cdef unordered_map[c_string, double].iterator it = p_result.begin()
+        while (it != p_result.end()):
+            key = deref(it).first
+            value = deref(it).second
+            q5result[key] = value
+            print(key,"=",value)
+            postincrement(it)
+        print("")
+        q5di = Source(q5diggraphcmd, filename="_temp.gv", format="png")
+        return q5di
+
+    def slice(self, table_name, offset, length):
+        """
+        Parameters
+          table_name: name of table
+          offset: offset from beginning
+          length: number for rows to be sliced
+        Returns:
+          arrow table with the given slice, None if table not found
+        """
+        sp_table = self.tcache.Slice(litenutils.to_bytes(table_name), offset, length)
+        if (NULL == sp_table.get()):
+            print ("Failed to get table=", table_name)
+            return None
+        arr_table = pyarrow_wrap_table(sp_table)        
+        return arr_table
+    

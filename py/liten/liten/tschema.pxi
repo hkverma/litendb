@@ -20,11 +20,13 @@ cdef class TSchema:
     """
     Liten Schema Class
     """
-    ttype = TCache.FactTable
     
-    def __cinit__(self):
-        self.ttype = TCache.FactTable
-        
+    def __init__(self):
+        raise RuntimeError("Error: Always create liten ttable using TCache::add_schema")
+
+    def __init__(self, tc):
+        self.tcache = tc
+    
     def get_pyarrow_schema(self):
         """
         Get pyarrow schema from Liten schema
@@ -55,6 +57,17 @@ cdef class TSchema:
         """
         return self.ttype
 
+    def get_type(self):
+        """
+        Returns
+          Dimension or Fact Table
+        """
+        ttype = self.p_tschema.GetType()
+        if (ttype == DimensionTable):
+            return self.tcache.DimensionTable
+        else:
+            return self.tcache.FactTable
+        
     def join(self, field_name, parent_schema, parent_field_name):
         if (not type(parent_schema) is TSchema):
             print(f"parent_schema {type(parent_schema)} must be TSchema")

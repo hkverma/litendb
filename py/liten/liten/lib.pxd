@@ -24,6 +24,7 @@ cdef class TSchema:
          shared_ptr[CSchema] sp_pa_schema
          shared_ptr[CTSchema] sp_tschema
          CTSchema* p_tschema
+         object tcache
        
 cdef class TTable:
      """
@@ -33,6 +34,7 @@ cdef class TTable:
         shared_ptr[CTable] sp_pa_table
         shared_ptr[CTTable] sp_ttable
         CTTable* p_ttable
+        object tcache
 
 cdef class TCache:
    """

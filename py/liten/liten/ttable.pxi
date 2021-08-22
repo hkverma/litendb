@@ -20,11 +20,13 @@ cdef class TTable:
     """
     Liten Table Class
     """
-    ttype = TCache.FactTable
     
-    def __cinit__(self):
-       self.ttype = TCache.FactTable
-        
+    def __init__(self):
+        raise RuntimeError("Error: Always create liten ttable using TCache::add_table")
+
+    def __init__(self, tc):
+        self.tcache = tc
+    
     def get_pyarrow_table(self):
         """
         Returns
@@ -46,4 +48,8 @@ cdef class TTable:
         Returns
           Dimension or Fact Table
         """
-        return self.ttype
+        ttype = self.p_ttable.GetType()
+        if (ttype == DimensionTable):
+            return self.tcache.DimensionTable
+        else:
+            return self.tcache.FactTable
