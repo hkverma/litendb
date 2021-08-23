@@ -69,10 +69,9 @@ TStatus TSchema::Join(std::string fieldName,
   }
 
   AddParentField(field, parentSchema, parentField);
-  AddChildField(parentField, shared_from_this(), field);
+  parentSchema->AddChildField(parentField, shared_from_this(), field);
   
   typeFields_[field] = DimensionField;
-  parentSchema->typeFields_[parentField] = DimensionField;
   
   return TStatus::OK();
 }

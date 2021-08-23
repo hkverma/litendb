@@ -120,6 +120,39 @@ cdef class TCache:
         cache_info = self.tcache.GetInfo()
         return cache_info
 
+    def compute_info(self):
+        """
+        return cache information including compute and storage 
+        Returns
+          string containing cache information
+        """
+        cdef:
+           c_string info
+        info = self.tcache.GetComputeInfo()
+        return info
+
+    def table_info(self):
+        """
+        return cache information including compute and storage 
+        Returns
+          string containing cache information
+        """
+        cdef:
+           c_string info
+        info = self.tcache.GetTableInfo()
+        return info
+
+    def schema_info(self):
+        """
+        return cache information including compute and storage 
+        Returns
+          string containing cache information
+        """
+        cdef:
+           c_string info
+        info = self.tcache.GetSchemaInfo()
+        return info
+    
     def add_schema(self, name, ttype, pa_schema):
         """
         Add arrow table in cache by name
@@ -174,9 +207,11 @@ cdef class TCache:
         Returns
            Liten schema TSchema if exists else None
         """
-        if name in self.nameToTSchema:
-            tschema = self.nameToTSchema[name]
+        schema_name = liten.litenutils.to_bytes(name)
+        if schema_name in self.nameToTSchema:
+            tschema = self.nameToTSchema[schema_name]
             return tschema        
+        print(f"No schema by name {name}")
         return None
 
     def add_schema_from_ttable(self, ttable):
@@ -255,8 +290,19 @@ cdef class TCache:
         return ttable
 
     def get_table(self, name):
-        table = self.nameToTTable[name]
-        return table
+        """
+        Get table by name
+        Parameters
+           name: name of table
+        Returns
+           Liten table TTable if exists else None
+        """
+        table_name = liten.litenutils.to_bytes(name)
+        if table_name in self.nameToTTable:
+            ttable = self.nameToTTable[table_name]
+            return ttable
+        print(f"No table by name {name}")
+        return None
         
     def make_dtensor_table(self, name):
         """
@@ -366,6 +412,26 @@ ORDER BY
         q5di = Source(q5diggraphcmd, filename="_temp.gv", format="png")
         return q5di
 
+    def join(self, child_schema_name, child_field_name, parent_schema_name, parent_field_name):
+        """
+        joints child field with parent field which creates data tensor dimensionality
+        Parameters
+           child_schema name of child schema
+           child_field_name name of child field
+           parent_schema TSchema of parent
+           parent_field_name name of parent field
+        Returns
+           True if success else False
+        """
+        child_schema = self.get_schema(child_schema_name)
+        if (None == child_schema):
+            return False
+        parent_schema = self.get_schema(parent_schema_name)
+        if (None == parent_schema):
+            return False
+        result = child_schema.join(child_field_name, parent_schema, parent_field_name)
+        return result
+        
     def slice(self, table_name, offset, length):
         """
         Parameters
@@ -381,4 +447,3 @@ ORDER BY
             return None
         arr_table = pyarrow_wrap_table(sp_table)        
         return arr_table
-    

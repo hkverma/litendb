@@ -49,13 +49,6 @@ cdef class TSchema:
         Returns
           Dimension or Fact Table
         """
-        return self.ttype
-
-    def get_type(self):
-        """
-        Returns
-          Dimension or Fact Table
-        """
         ttype = self.p_tschema.GetType()
         if (ttype == DimensionTable):
             return self.tcache.DimensionTable
@@ -63,11 +56,20 @@ cdef class TSchema:
             return self.tcache.FactTable
         
     def join(self, field_name, parent_schema, parent_field_name):
+        """
+        joints child field with parent field which creates data tensor dimensionality
+        Parameters
+           field_name name of child field
+           parent_schema TSchema of parent
+           parent_field_name name of parent field
+        Returns
+           True if success else False
+        """
         if (not type(parent_schema) is TSchema):
             print(f"parent_schema {type(parent_schema)} must be TSchema")
             return False
         p_parent_schema = <TSchema>parent_schema
-        status = self.p_tschema.Join(field_name, p_parent_schema.sp_tschema, parent_field_name)
+        status = self.p_tschema.Join(liten.litenutils.to_bytes(field_name), p_parent_schema.sp_tschema, liten.litenutils.to_bytes(parent_field_name))
         if (status.ok()):
             return True
         else:

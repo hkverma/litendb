@@ -57,14 +57,41 @@ std::string TCache::GetInfo()
   std::stringstream ss;
   ss << "{\"Compute\":";
   ss << TConfigs::GetInstance()->GetComputeInfo();
-  ss << "},{\"Table\":";
+  ss << ",\"Table\":";
   ss << TCatalog::GetInstance()->GetTableInfo();
-  ss << "},{\"Schema\":";
+  ss << ",\"Schema\":";
   ss << TCatalog::GetInstance()->GetSchemaInfo();
   ss << "}";
-  TLog::GetInstance()->FlushLogFiles(TLog::Info);
   return std::move(ss.str());
 }
+
+std::string TCache::GetComputeInfo()
+{
+  std::stringstream ss;
+  ss << "{\"Compute\":";
+  ss << TConfigs::GetInstance()->GetComputeInfo();
+  ss << "}";
+  return std::move(ss.str());
+}
+
+std::string TCache::GetTableInfo()
+{
+  std::stringstream ss;
+  ss << "{\"Table\":";
+  ss << TCatalog::GetInstance()->GetTableInfo();
+  ss << "}";
+  return std::move(ss.str());
+}
+
+std::string TCache::GetSchemaInfo()
+{
+  std::stringstream ss;
+  ss << "{\"Schema\":";
+  ss << TCatalog::GetInstance()->GetSchemaInfo();
+  ss << "}";
+  return std::move(ss.str());
+}
+
 
 /// Read csv file in a new table tableName. tableName should be unique
 TResult<std::shared_ptr<TTable>> TCache::ReadCsv(std::string tableName,

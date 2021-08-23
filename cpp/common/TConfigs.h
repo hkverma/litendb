@@ -22,8 +22,8 @@ public:
   /// Return information with compute information
   std::string GetComputeInfo()
   {
-    std::string str("\"WorkerThreads\":");
-    str.append(std::to_string(numWorkerThreads_));
+    std::string str("{\"WorkerThreads\":");
+    str.append(std::to_string(numWorkerThreads_)).append("}");
     return std::move(str);
   }
         

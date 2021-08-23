@@ -59,6 +59,9 @@ cdef extern from "cache.h" namespace "liten" nogil:
       @staticmethod
       shared_ptr[CTCache] GetInstance()
       c_string GetInfo()
+      c_string GetComputeInfo()
+      c_string GetTableInfo()
+      c_string GetSchemaInfo()      
       
       CTResultCTTable AddTable(c_string tableName, TableType type, shared_ptr[CTable] table, c_string schemaName)
       shared_ptr[CTTable] GetTable(c_string name) const

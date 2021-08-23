@@ -41,7 +41,10 @@ public:
   static std::shared_ptr<TCache> GetInstance();
     
   /// Get Cache info
-  std::string GetInfo();
+  std::string GetInfo(); 
+  std::string GetComputeInfo();
+  std::string GetTableInfo();
+  std::string GetSchemaInfo();
 
   /// Construct a table in cache from csv
   /// @param name of the table
