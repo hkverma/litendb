@@ -17,7 +17,7 @@ import sys
 import codecs
 
 import liten
-from liten import litenutils
+from liten import utils
 import liten.lib as cliten
 
 _version = "0.0.2"

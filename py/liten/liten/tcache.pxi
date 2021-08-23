@@ -180,7 +180,7 @@ cdef class TCache:
         if ttype != self.DimensionTable and ttype != self.FactTable:
             raise TypeError("Type ttype must be Dimension or Fact")
         tc_ttype = <TableType>ttype
-        sp_tschema_result = self.tcache.AddSchema(liten.litenutils.to_bytes(name), ttype, sp_pa_schema)
+        sp_tschema_result = self.tcache.AddSchema(liten.utils.to_bytes(name), ttype, sp_pa_schema)
         if (not sp_tschema_result.ok()):
             print(f"Failed to add schema {name}. {sp_tschema_result.status().message()}")
             return None
@@ -207,7 +207,7 @@ cdef class TCache:
         Returns
            Liten schema TSchema if exists else None
         """
-        schema_name = liten.litenutils.to_bytes(name)
+        schema_name = liten.utils.to_bytes(name)
         if schema_name in self.nameToTSchema:
             tschema = self.nameToTSchema[schema_name]
             return tschema        
@@ -230,7 +230,7 @@ cdef class TCache:
         sp_tschema = p_ttable.p_ttable.GetSchema()
         p_tschema = sp_tschema.get()
 
-        schema_name = liten.litenutils.to_bytes(p_tschema.GetName())
+        schema_name = liten.utils.to_bytes(p_tschema.GetName())
         if schema_name in self.nameToTSchema:
             ex_tschema = self.nameToTSchema[schema_name]
             return ex_tschema
@@ -268,7 +268,7 @@ cdef class TCache:
             return None
         
         tc_ttype = <TableType>ttype
-        sp_ttable_result = self.tcache.AddTable(liten.litenutils.to_bytes(name), tc_ttype, sp_pa_table, liten.litenutils.to_bytes(schema_name))
+        sp_ttable_result = self.tcache.AddTable(liten.utils.to_bytes(name), tc_ttype, sp_pa_table, liten.utils.to_bytes(schema_name))
         if (not sp_ttable_result.ok()):
             print (f"Failed to add table {name} {sp_ttable_result.status().message()}")
             return None
@@ -297,7 +297,7 @@ cdef class TCache:
         Returns
            Liten table TTable if exists else None
         """
-        table_name = liten.litenutils.to_bytes(name)
+        table_name = liten.utils.to_bytes(name)
         if table_name in self.nameToTTable:
             ttable = self.nameToTTable[table_name]
             return ttable
@@ -441,7 +441,7 @@ ORDER BY
         Returns:
           arrow table with the given slice, None if table not found
         """
-        sp_table = self.tcache.Slice(litenutils.to_bytes(table_name), offset, length)
+        sp_table = self.tcache.Slice(liten.utils.to_bytes(table_name), offset, length)
         if (NULL == sp_table.get()):
             print ("Failed to get table=", table_name)
             return None

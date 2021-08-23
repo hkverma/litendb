@@ -35,7 +35,7 @@ cdef class TTable:
           unique name of the table
         """
         name = self.p_ttable.GetName()
-        return cliten.litenutils.to_bytes(name)
+        return liten.utils.to_bytes(name)
     
     def get_type(self):
         """

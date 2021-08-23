@@ -8,7 +8,7 @@ import pyarrow as pa
 from pyarrow import csv
 
 import liten._liten as cliten
-import liten.litenutils as litenutils
+import liten.utils as litenutils
 
 import sys
 import codecs

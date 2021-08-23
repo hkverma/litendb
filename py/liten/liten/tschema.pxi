@@ -34,7 +34,7 @@ cdef class TSchema:
           unique name of the table
         """
         name = self.sp_tschema.get().GetName()
-        return cliten.litenutils.to_bytes(name)
+        return liten.utils.to_bytes(name)
 
     def get_info(self):
         """
@@ -42,7 +42,7 @@ cdef class TSchema:
           unique name of the table
         """
         schema_str = self.p_tschema.ToString()
-        return cliten.litenutils.to_bytes(schema_str)
+        return liten.utils.to_bytes(schema_str)
     
     def get_type(self):
         """
@@ -69,7 +69,7 @@ cdef class TSchema:
             print(f"parent_schema {type(parent_schema)} must be TSchema")
             return False
         p_parent_schema = <TSchema>parent_schema
-        status = self.p_tschema.Join(liten.litenutils.to_bytes(field_name), p_parent_schema.sp_tschema, liten.litenutils.to_bytes(parent_field_name))
+        status = self.p_tschema.Join(liten.utils.to_bytes(field_name), p_parent_schema.sp_tschema, liten.utils.to_bytes(parent_field_name))
         if (status.ok()):
             return True
         else:

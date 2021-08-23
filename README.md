@@ -648,6 +648,10 @@ These are some of the techniques being used in Liten code.
 
 #### TODO
 
+  Use property instead of get_* functions in python  
+  Enhance make_dtensor to replace only dimensional columns and replace fact table completely
+  Clean and rerun all the other demo python codes
+
   Explore Splunk addition
   
   Reading logs from multiple database systems and doing performance analysis (say between Oracle and SQL-Server)
