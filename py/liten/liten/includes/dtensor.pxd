@@ -32,11 +32,16 @@ cdef extern from "common.h" namespace "liten" nogil:
      const shared_ptr[CTSchema]& ValueOrDie() const
      const CTStatus& status() const
 
+  cdef cppclass CTResultFieldType" liten::TResult<liten::FieldType>":
+     bool ok() const
+     const FieldType& ValueOrDie() const
+     const CTStatus& status() const
+     
 cdef extern from "cache.h" namespace "liten" nogil:
 
    ctypedef enum TableType: DimensionTable, FactTable
 
-   ctypedef enum FieldType: DimensionField, MetricField
+   ctypedef enum FieldType: DimensionField, MetricField, FeatureField, DerivedFeatureField
    
 # CTTable is liten::TTable in Cython. CTable is arrow::Table cython from pyarrow.
    cdef cppclass CTTable" liten::TTable":
@@ -53,6 +58,8 @@ cdef extern from "cache.h" namespace "liten" nogil:
       TableType GetType()
       shared_ptr[CSchema] GetSchema()
       CTStatus Join(c_string fieldName, shared_ptr[CTSchema] parentSchema, c_string parentFieldName)
+      CTResultFieldType GetFieldType(c_string fieldName)
+      CTStatus SetFieldType(c_string fieldName, FieldType fieldType)
       
 # CTCache is liten::TCache      
    cdef cppclass CTCache" liten::TCache":

@@ -25,6 +25,12 @@ public:
   /// Get the name of the schema
   std::string GetName() const { return name_; }
 
+  /// Set field type for the new field
+  TStatus SetFieldType(std::string fieldName, FieldType fieldType);
+
+  /// Get the field type
+  TResult<FieldType> GetFieldType(std::string fieldName) const;
+  
   /// Get the table type
   TableType GetType() const { return type_; }
 

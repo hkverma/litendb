@@ -4,7 +4,7 @@
 namespace liten
 {
 
-std::vector<std::string> FieldTypeString = {"DimensionField", "MetricField"};
+std::vector<std::string> FieldTypeString = {"DimensionField", "MetricField", "FeatureField", "DerivedFeatureField"};
 
 TResult<std::shared_ptr<TSchema>> TSchema::Create(std::string name,
                                                   TableType type,
@@ -39,7 +39,7 @@ TResult<std::shared_ptr<TSchema>> TSchema::Create(std::string name,
   const arrow::FieldVector& fv = schema->fields();
   for (auto field: fv)
   {
-    tschema->typeFields_[field] = MetricField;
+    tschema->typeFields_[field] = (DimensionTable == tschema->type_)?FeatureField:MetricField;
   }
   return TResult<std::shared_ptr<TSchema>>(tschema);
 }
@@ -98,6 +98,32 @@ void TSchema::AddChildField(std::shared_ptr<arrow::Field> field,
     TLOG(INFO) << "Field name " << field->name() << " for schema " << name_ << " already exists. Will be overwritten";
   }
   childFields_[field] = std::make_pair(childSchema, childField);
+}
+
+TStatus TSchema::SetFieldType(std::string fieldName, FieldType fieldType)
+{
+  std::shared_ptr<arrow::Field> field = schema_->GetFieldByName(fieldName);
+  if (nullptr == field)
+  {
+    return TStatus::Invalid("No field found by name=", fieldName);
+  }
+  typeFields_[field] = fieldType;
+  return TStatus::OK();
+}
+
+TResult<FieldType> TSchema::GetFieldType(std::string fieldName) const
+{
+  std::shared_ptr<arrow::Field> field = schema_->GetFieldByName(fieldName);
+  if (nullptr == field)
+  {
+    return TStatus::Invalid("No field found by name=", fieldName);
+  }
+  auto fieldItr = typeFields_.find(field);
+  if (typeFields_.end() == fieldItr)
+  {
+    return TStatus::UnknownError("No field in liten schema found by name=", fieldName);
+  }
+  return TResult<FieldType>(fieldItr->second);
 }
 
 // Schema Json representation

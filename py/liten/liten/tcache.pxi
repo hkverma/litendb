@@ -109,6 +109,22 @@ cdef class TCache:
     def DimensionTable(self):
         return 0
     
+    @property
+    def DimensionField(self):
+        return 0
+
+    @property
+    def MetricField(self):
+        return 1
+
+    @property
+    def FeatureField(self):
+        return 2
+
+    @property
+    def DerivedFeatureField(self):
+        return 3
+
     def info(self):
         """
         return cache information including compute and storage 

@@ -54,7 +54,57 @@ cdef class TSchema:
             return self.tcache.DimensionTable
         else:
             return self.tcache.FactTable
-        
+
+    def get_field_type(self, field_name):
+        """
+        Get field type for field_name
+        Parameters
+          field_name name of field
+        Returns
+          Dimension or Metric or Feature or DerivedFeature Field types. None if failed to get it.
+        """
+        cdef:
+           CTResultFieldType ftype_result
+           FieldType ftype
+        ftype_result = self.p_tschema.GetFieldType(liten.utils.to_bytes(field_name))
+        if (not ftype_result.ok()):
+            print("Failed to get field by msg={ftype_result.status.message()}")
+            return None
+        ftype = ftype_result.ValueOrDie()        
+        if (ftype == DimensionField):
+            return self.tcache.DimensionField
+        elif (FeatureField == ftype):
+            return self.tcache.FeatureField
+        elif (DerivedFeatureField == ftype):
+            return self.tcache.DerivedFeatureField
+        else:
+            return self.tcache.MetricField
+
+    def set_field_type(self, field_name, field_type):
+        """
+        Get field type for field_name
+        Parameters
+          field_name name of field
+          field_type Dimension or Metric or Feature or DerivedFeature Field types
+        Returns
+          True if set else False
+        """
+        cdef:
+           FieldType ftype
+           CTStatus status
+        ftype = MetricField
+        if (field_type == self.tcache.DimensionField):
+            ftype = DimensionField
+        elif (field_type == self.tcache.FeatureField):
+            ftype = FeatureField
+        if (field_type == self.tcache.DerivedFeatureField):
+            ftype = DerivedFeatureField
+        status = self.p_tschema.SetFieldType(liten.utils.to_bytes(field_name), ftype)
+        if ( not status.ok()):
+            print(f"Failed to set field with msg={status.message()}")
+            return False
+        return True
+            
     def join(self, field_name, parent_schema, parent_field_name):
         """
         joints child field with parent field which creates data tensor dimensionality
