@@ -8,7 +8,7 @@ CLiten Cache System
 from cython.operator cimport dereference as deref, postincrement
 from pyarrow.includes.libarrow cimport *
 from pyarrow.lib cimport *
-from liten.includes.dtensor cimport *
+from liten.includes.ctcache cimport *
 
 from graphviz import Digraph
 from graphviz import Source

@@ -8,7 +8,7 @@ Cache System
 from cython.operator cimport dereference as deref, postincrement
 from pyarrow.includes.libarrow cimport *
 from pyarrow.lib cimport *
-from liten.includes.dtensor cimport *
+from liten.includes.ctcache cimport *
 
 from graphviz import Digraph
 from graphviz import Source
@@ -69,9 +69,9 @@ digraph Q5{
     edge [arrowhead=vee, arrowsize=1]
     node [shape=rect, fontname=Arial, fontcolor=blue, fontsize=12]
     0 [label="Scan\n(lineitem)"]
-    1 [label="DTensor\n[l_orderkey]"]
+    1 [label="Tensor\n[l_orderkey]"]
     2 [label="Filter\n(orders)"]
-    3 [label="DTensor\n[l_suppkey][s_nationkey][n_regionkey]"]
+    3 [label="Tensor\n[l_suppkey][s_nationkey][n_regionkey]"]
     4 [label="Filter\n(region)"]
     5 [label="Aggregate\n(lineitem)"]
     0 -> 1
@@ -320,7 +320,7 @@ cdef class TCache:
         print(f"No table by name {name}")
         return None
         
-    def make_dtensor_table(self, name):
+    def make_tensor_table(self, name):
         """
         Create data-tensor for name table
         Parameters
@@ -333,7 +333,7 @@ cdef class TCache:
             print ("Failed to create data-tensor for ", name)
         return result
 
-    def make_dtensor(self):
+    def make_tensor(self):
         """
         Create n-dimensional data tensor for all n dimension tables in cache
         Returns

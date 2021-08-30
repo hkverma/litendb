@@ -14,7 +14,7 @@ from libcpp.unordered_map cimport unordered_map
 from libcpp.unordered_set cimport unordered_set
 
 from pyarrow.includes.libarrow cimport *
-from liten.includes.dtensor cimport *
+from liten.includes.ctcache cimport *
 
 cdef class TSchema:
      """

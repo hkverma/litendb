@@ -7,8 +7,9 @@ from functools import wraps
 import pyarrow as pa
 from pyarrow import csv
 
-import liten._liten as cliten
-import liten.utils as litenutils
+import liten
+from liten import utils
+import liten.lib as cliten
 
 import sys
 import codecs
@@ -42,7 +43,6 @@ class RCLiten:
     
     def set_table(self, table_name, table_type):
         """
-        set_table(table_name, table_type):
         Set table_name and its table_type as DimTable or FactTabls
         Parameters
           table_name: table name to be used
@@ -55,7 +55,6 @@ class RCLiten:
     
     def read_csv(self, *args, **kwargs):
         """
-        read_csv(*args, **kwargs)
         read csv file with the table set by set_table. It table_name is not set it picks a table
         name like _t0 where 0 is a number uniqifying table names
         It uses pyarrow.csv.read_csv and passes arguments to this function
@@ -75,7 +74,6 @@ class RCLiten:
 
     def info(self):
         """
-        info()
         return cache information including compute and storage 
         Returns
           string containing cache information
@@ -84,7 +82,6 @@ class RCLiten:
 
     def get_table(self, name):
         """
-        get_table(name)
         get arrow table by name name
         Parameters
           name: name of table
@@ -93,25 +90,23 @@ class RCLiten:
         """
         return self.tc.get_table(name)
 
-    def make_dtensor_table(self, name):
+    def make_tensor_table(self, name):
         """
-        make_dtensor_table(name)
         Create data-tensor for name table
         Parameters
            name: Name of table 
         Returns
            true if create successfully else false
         """
-        return self.tc.make_dtensor_table(name)
+        return self.tc.make_tensor_table(name)
 
-    def make_dtensor(self):
+    def make_tensor(self):
         """
-        make_dtensor(name)
         Create n-dimensional data tensor for all n dimension tables in cache
         Returns
            true if create successfully else false
         """
-        return self.tc.make_dtensor()
+        return self.tc.make_tensor()
 
     def query6(self):
         """
