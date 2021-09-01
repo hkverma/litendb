@@ -8,6 +8,9 @@ import liten.lib as cliten
 from liten.schema import Schema
 from liten.table import Table
 
+import pyarrow as pa
+from pyarrow import csv
+
 import sys
 import codecs
 
@@ -194,3 +197,20 @@ class Cache:
           arrow table with the given slice, None if table not found
         """
         return Cache.tcache.slice(table_name, offset, length)
+
+    def read_csv(self, input_file, parse_options, table_name, ttype, schema_name=""):
+        """
+        read csv file input_file using pyarrow reader. Add it as a table_name in Liten.
+        Create arrow table in cache by name
+        Parameters
+           input_file: Name of input_file to be passed to arrow
+           parse_options: parse_options for arrow reader
+           table_name: name of table
+           ttype: type of table must be DimensionTable or FactTable
+           schema_name: if schema already exists
+        Returns
+           Added table_name
+        """
+        pa_table = pa.csv.read_csv(input_file=input_file, parse_options=parse_options)
+        ttable = Cache.tcache.add_table(table_name, pa_table, ttype, schema_name)
+        return table_name

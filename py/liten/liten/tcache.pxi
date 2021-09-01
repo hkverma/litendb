@@ -280,20 +280,17 @@ cdef class TCache:
         
         sp_pa_table = pyarrow_unwrap_table(pa_table)
         if ttype != self.DimensionTable and ttype != self.FactTable:
-            print(f"Table type must be Dimension or Fact")
-            return None
+            raise ValueError(f"Table type must be Dimension or Fact")
         
         tc_ttype = <TableType>ttype
         sp_ttable_result = self.tcache.AddTable(liten.utils.to_bytes(name), tc_ttype, sp_pa_table, liten.utils.to_bytes(schema_name))
         if (not sp_ttable_result.ok()):
-            print (f"Failed to add table {name} {sp_ttable_result.status().message()}")
-            return None
+            raise ValueError(f"Failed to add table {name} {sp_ttable_result.status().message()}")
         
         sp_ttable = sp_ttable_result.ValueOrDie()
         p_ttable = sp_ttable.get()
         if (NULL == p_ttable):
-            print (f"Failed to build table {name}")
-            return None
+            raise ValueError(f"Failed to build table {name}")
 
         ttable = TTable()
         ttable.sp_pa_table = sp_pa_table
