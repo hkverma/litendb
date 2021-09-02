@@ -61,15 +61,15 @@ cdef class TSchema:
         Parameters
           field_name name of field
         Returns
-          Dimension or Metric or Feature or DerivedFeature Field types. None if failed to get it.
+          Dimension or Metric or Feature or DerivedFeature Field types. exception if failed to get it.
         """
         cdef:
            CTResultFieldType ftype_result
            FieldType ftype
         ftype_result = self.p_tschema.GetFieldType(liten.utils.to_bytes(field_name))
         if (not ftype_result.ok()):
-            print("Failed to get field by msg={ftype_result.status.message()}")
-            return None
+            raise ValueError("Failed to get field by msg={ftype_result.status.message()}")
+
         ftype = ftype_result.ValueOrDie()        
         if (ftype == DimensionField):
             return self.tcache.DimensionField

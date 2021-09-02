@@ -126,60 +126,68 @@ cdef class TCache:
         return 3
 
     def info(self):
-        """
-        return cache information including compute and storage 
-        Returns
-          string containing cache information
-        """
         cdef:
            c_string cache_info
         cache_info = self.tcache.GetInfo()
         return cache_info
 
     def compute_info(self):
-        """
-        return cache information including compute and storage 
-        Returns
-          string containing cache information
-        """
         cdef:
            c_string info
         info = self.tcache.GetComputeInfo()
         return info
 
     def table_info(self):
-        """
-        return cache information including compute and storage 
-        Returns
-          string containing cache information
-        """
         cdef:
            c_string info
         info = self.tcache.GetTableInfo()
         return info
 
+    def get_table_exc(self, name):
+        table_name = liten.utils.to_bytes(name)
+        if table_name in self.nameToTTable:
+            ttable = self.nameToTTable[table_name]
+            return ttable
+        raise ValueError(f"No existing schema {name} in cache.")
+    
+    def get_table_pyarrow(self, name):
+        ttable = self.get_table_exc(name)
+        return ttable.get_pyarrow_table()
+    
+    def get_table_type(self, name):
+        ttable = self.get_table_exc(name)
+        return ttable.get_type()
+
     def schema_info(self):
-        """
-        return cache information including compute and storage 
-        Returns
-          string containing cache information
-        """
         cdef:
            c_string info
         info = self.tcache.GetSchemaInfo()
         return info
-    
-    def add_schema(self, name, ttype, pa_schema):
-        """
-        Add arrow table in cache by name
-        Parameters
-           name: name of schema
-           ttype: type of table must be DimensionTable or FactTable
-           schema: arrow schema to be added in liten cache
-        Returns
-           Newly added TSchema or None if failed to add
-        """
 
+    def get_schema_exc(self, name):
+        schema_name = liten.utils.to_bytes(name)
+        if schema_name in self.nameToTSchema:
+            tschema = self.nameToTSchema[schema_name]
+            return tschema
+        raise ValueError(f"No existing schema {name} in cache.")
+    
+    def get_schema_info(self, name):
+        tschema = self.get_schema_exc(name)
+        return tschema.get_info()            
+
+    def get_schema_pyarrow(self, name):
+        tschema = self.get_schema_exc(name)
+        return tschema.get_pyarrow_schema()
+    
+    def get_schema_type(self, name):
+        tschema = self.get_schema_exc(name)
+        return tschema.get_type()
+
+    def get_schema_field_type(self, name, field_name):
+        tschema = self.get_schema_exc(name)
+        return tschema.get_field_type(field_name)
+
+    def add_schema(self, name, ttype, pa_schema):
         cdef:
            shared_ptr[CSchema] sp_schema
            CTResultCTSchema sp_tschema_result
@@ -189,8 +197,8 @@ cdef class TCache:
 
         # TBD Check if the name has the same pa_schema
         if name in self.nameToTSchema:
-            ex_tschema = self.nameToTSchema[name]
-            return ex_tschema
+            print(f"Found already existing schema {name} in cache.")
+            return name
         
         sp_pa_schema = pyarrow_unwrap_schema(pa_schema)
         if ttype != self.DimensionTable and ttype != self.FactTable:
@@ -198,13 +206,12 @@ cdef class TCache:
         tc_ttype = <TableType>ttype
         sp_tschema_result = self.tcache.AddSchema(liten.utils.to_bytes(name), ttype, sp_pa_schema)
         if (not sp_tschema_result.ok()):
-            print(f"Failed to add schema {name}. {sp_tschema_result.status().message()}")
-            return None
+            raise TypeError(f"Failed to add schema {name}. {sp_tschema_result.status().message()}")
+
         sp_tschema = sp_tschema_result.ValueOrDie()
         p_tschema = sp_tschema.get()
         if (NULL == p_tschema):
-            print (f"Failed to add schema {name}")
-            return None
+            raise TypeError (f"Failed to add schema {name}")
 
         tschema = TSchema()
         tschema.sp_tschema = sp_tschema
@@ -213,31 +220,46 @@ cdef class TCache:
         tschema.tcache = self
         
         self.nameToTSchema[name] = tschema
-        return tschema
+        return name
     
-    def get_schema(self, name):
-        """
-        Get schema by bame
-        Parameters
-           name: name of schema
-        Returns
-           Liten schema TSchema if exists else None
-        """
+    def set_schema_field_type(self, schema_name, field_name, field_type):
+        tschema = self.get_schema(schema_name)
+        if (None == tschema):
+            raise ValueError(f"Invalid schema name {schema_name}")
+        
+        field_names = []
+        field_types = []
+        if (list == type(field_name)):
+            field_names = field_name
+        else:
+            field_names = [field_name]
+        if (list != field_type):
+            field_types = [field_type] * len(field_names)
+            
+        if (len(field_names) != len(field_types)):
+            raise ValueError(f"Incorrect size for field names {len(field_names)} and types {len(field_types)}")
+
+        for i in range(0, len(field_names)):
+            if (not tschema.set_field_type(field_names[i], field_types[i])):
+                raise ValueError(f"Failed to set field name {field_names[i]} to type {field_types[i]} for schema {schema_name}")
+            
+        return True
+
+    def if_valid_schema(self, name):
         schema_name = liten.utils.to_bytes(name)
         if schema_name in self.nameToTSchema:
             tschema = self.nameToTSchema[schema_name]
-            return tschema        
-        print(f"No schema by name {name}")
-        return None
+            return True
+        return False
 
+    def get_schema(self, name):
+        schema_name = liten.utils.to_bytes(name)
+        if schema_name in self.nameToTSchema:
+            tschema = self.nameToTSchema[schema_name]
+            return tschema
+        return None
+    
     def add_schema_from_ttable(self, ttable):
-        """
-        Add schema associated with ttable by name. If a schema exists by name, that is returned
-        Parameters
-           ttable: schema in liten table ttable
-        Returns
-           Liten schema TSchema
-        """
         cdef:
            shared_ptr[CTSchema] sp_tschema
            CTSchema* p_tschema
@@ -248,8 +270,8 @@ cdef class TCache:
 
         schema_name = liten.utils.to_bytes(p_tschema.GetName())
         if schema_name in self.nameToTSchema:
-            ex_tschema = self.nameToTSchema[schema_name]
-            return ex_tschema
+            print(f"Found already existing schema {schema_name} in cache.")            
+            return schema_name
         
         tschema = TSchema()
         tschema.sp_tschema = sp_tschema
@@ -258,19 +280,9 @@ cdef class TCache:
         tschema.tcache = self
         
         self.nameToTSchema[schema_name] = tschema
-        return tschema
-        
-
+        return schema_name        
+    
     def add_table(self, name, pa_table, ttype, schema_name=""):
-        """
-        Create arrow table in cache by name
-        Parameters
-           name: name of table
-           table: arrow table to be added in liten cache
-           ttype: type of table must be DimensionTable or FactTable
-        Returns
-           Added Liten TTable
-        """
         cdef:
            shared_ptr[CTable] sp_pa_table
            CTResultCTTable sp_ttable_result
@@ -300,53 +312,27 @@ cdef class TCache:
 
         self.nameToTTable[name] = ttable
         self.add_schema_from_ttable(ttable)        
-        return ttable
+        return name
 
-    def get_table(self, name):
-        """
-        Get table by name
-        Parameters
-           name: name of table
-        Returns
-           Liten table TTable if exists else None
-        """
+    def if_valid_table(self, name):
         table_name = liten.utils.to_bytes(name)
         if table_name in self.nameToTTable:
-            ttable = self.nameToTTable[table_name]
-            return ttable
-        print(f"No table by name {name}")
-        return None
+            return True
+        return False
         
     def make_tensor_table(self, name):
-        """
-        Create data-tensor for name table
-        Parameters
-           name: Name of table 
-        Returns
-           true if create successfully else false
-        """
         result = self.tcache.MakeMaps(name)
         if (result):
             print ("Failed to create data-tensor for ", name)
         return result
 
     def make_tensor(self):
-        """
-        Create n-dimensional data tensor for all n dimension tables in cache
-        Returns
-           true if create successfully else false
-        """
         result = self.tcache.MakeMaps()
         if (result):
             print ("Failed to create data-tensor")
         return result
     
     def query6(self):
-        """
-        Run Tpch query 6
-        Returns
-           query 6 result
-        """
         cdef:
             shared_ptr[CTpchDemo] sp_tpch_demo
             CTpchDemo* p_tpch_demo
@@ -370,11 +356,6 @@ WHERE
         return q6di
 
     def query5(self):
-        """
-        Run Tpch query 5
-        Returns
-           query 5 result
-        """
         cdef:
             shared_ptr[CTpchDemo] sp_tpch_demo
             CTpchDemo* p_tpch_demo
@@ -426,16 +407,6 @@ ORDER BY
         return q5di
 
     def join(self, child_schema_name, child_field_name, parent_schema_name, parent_field_name):
-        """
-        joints child field with parent field which creates data tensor dimensionality
-        Parameters
-           child_schema name of child schema
-           child_field_name name of child field
-           parent_schema TSchema of parent
-           parent_field_name name of parent field
-        Returns
-           True if success else False
-        """
         child_schema = self.get_schema(child_schema_name)
         if (None == child_schema):
             return False

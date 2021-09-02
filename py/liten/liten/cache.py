@@ -78,6 +78,20 @@ class Cache:
         """
         return Cache.tcache.table_info()
 
+    def get_table_pyarrow(self, name):
+        """
+        Returns
+          Arrow table
+        """
+        return Cache.tcache.get_table_pyarrow(name)
+
+    def get_table_type(self, name):
+        """
+        Returns
+          Dimension or Fact Table
+        """
+        return Cache.tcache.get_table_type(name)
+
     def schema_info(self):
         """
         return cache information including compute and storage 
@@ -86,6 +100,16 @@ class Cache:
         """
         return Cache.tcache.schema_info()
     
+    def get_schema_info(self, name):
+        """
+        return schema information
+        Parameter
+          name schema name
+        Returns
+          string containing schema information
+        """
+        return Cache.tcache.get_schema_info(name)
+
     def add_schema(self, name, ttype, pa_schema):
         """
         Add arrow table in cache by name
@@ -94,19 +118,19 @@ class Cache:
            ttype: type of table must be DimensionTable or FactTable
            schema: arrow schema to be added in liten cache
         Returns
-           Liten Schema or ValueError if failed to add
+           schema name or exception if failed to add
         """
-        return Schema(Cache.tcache.add_schema(name, ttype, pa_schema))
+        return Cache.tcache.add_schema(name, ttype, pa_schema)
     
-    def get_schema(self, name):
+    def if_valid_schema(self, name):
         """
-        Get schema by bame
+        Is a valid schema by name
         Parameters
            name: name of schema
         Returns
-           Liten Schema if exists else None
+           True if valid, else false
         """
-        return Schema(Cache.tcache.get_schema(name))
+        return Cache.tcache.if_valid_schema(name)
 
     def add_schema_from_ttable(self, table):
         """
@@ -114,10 +138,45 @@ class Cache:
         Parameters
            ttable: schema in liten table ttable
         Returns
-           Liten schema TSchema
+           schema name
         """
-        return Schema(Cache.tcache.add_schema_from_ttable(table.ttable))
+        return Cache.tcache.add_schema_from_ttable(table.ttable)
 
+    def get_schema_pyarrow(self, name):
+        """
+        Get pyarrow schema from Liten schema
+        """
+        return self.tcache.get_schema_pyarrow(name)
+    
+    def get_schema_type(self, name):
+        """
+        Returns
+          Dimension or Fact Table
+        """
+        return self.tcache.get_schema_type(name)
+
+    def get_schema_field_type(self, name, field_name):
+        """
+        Get field type for field_name
+        Parameters
+          field_name name of field
+        Returns
+          Dimension or Metric or Feature or DerivedFeature Field types. None if failed to get it.
+        """
+        return self.tcache.get_schema_field_type(name, field_name)
+
+    def set_schema_field_type(self, schema_name, field_name, field_type):
+        """
+        Get field type for field_name
+        Parameters
+          schema_name
+          field_names name of field can be list or a value
+          field_types can be list or value, Dimension or Metric or Feature or DerivedFeature Field types
+        Returns
+          True if set else False or exceptions
+        """
+        return Cache.tcache.set_schema_field_type(schema_name, field_name, field_type)
+    
     def add_table(self, name, pa_table, ttype, schema_name=""):
         """
         Create arrow table in cache by name
@@ -126,19 +185,19 @@ class Cache:
            table: arrow table to be added in liten cache
            ttype: type of table must be DimensionTable or FactTable
         Returns
-           Added Liten TTable
+           table name or exception if not added
         """
-        return Table(Cache.tcache.add_table(name, pa_table, ttype, schema_name))
+        return Cache.tcache.add_table(name, pa_table, ttype, schema_name)
 
-    def get_table(self, name):
+    def if_valid_table(self, name):
         """
-        Get table by name
+        if table by name exists
         Parameters
            name: name of table
         Returns
-           Liten table TTable if exists else None
+           True if exists else False
         """
-        return Table(Cache.tcache.get_table(name))
+        return Cache.tcache.if_valid_table(name)
         
     def make_tensor_table(self, name):
         """
