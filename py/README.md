@@ -77,6 +77,10 @@ https://docs.python.org/3/distutils/setupscript.html
 https://packaging.python.org/guides/distributing-packages-using-setuptools/#package-data
 https://cython.readthedocs.io/en/latest/src/userguide/wrapping_CPlusPlus.html
 
+To save environments
+```bash
+conda env export > environment.yml
+```
 TODO - Clean notebooks. Reproduce on Azure web.
        Draw query plan, print query and result for each query.
        Complete ML and NLP training data predictions

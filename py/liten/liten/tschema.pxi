@@ -61,7 +61,7 @@ cdef class TSchema:
         Parameters
           field_name name of field
         Returns
-          Dimension or Metric or Feature or DerivedFeature Field types. exception if failed to get it.
+          Dimension or Metric or Feature or Embedding Field types. exception if failed to get it.
         """
         cdef:
            CTResultFieldType ftype_result
@@ -75,8 +75,8 @@ cdef class TSchema:
             return self.tcache.DimensionField
         elif (FeatureField == ftype):
             return self.tcache.FeatureField
-        elif (DerivedFeatureField == ftype):
-            return self.tcache.DerivedFeatureField
+        elif (EmbeddingField == ftype):
+            return self.tcache.EmbeddingField
         else:
             return self.tcache.MetricField
 
@@ -85,7 +85,7 @@ cdef class TSchema:
         Get field type for field_name
         Parameters
           field_name name of field
-          field_type Dimension or Metric or Feature or DerivedFeature Field types
+          field_type Dimension or Metric or Feature or Embedding Field types
         Returns
           True if set else False
         """
@@ -97,8 +97,8 @@ cdef class TSchema:
             ftype = DimensionField
         elif (field_type == self.tcache.FeatureField):
             ftype = FeatureField
-        if (field_type == self.tcache.DerivedFeatureField):
-            ftype = DerivedFeatureField
+        if (field_type == self.tcache.EmbeddingField):
+            ftype = EmbeddingField
         status = self.p_tschema.SetFieldType(liten.utils.to_bytes(field_name), ftype)
         if ( not status.ok()):
             print(f"Failed to set field with msg={status.message()}")

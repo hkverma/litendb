@@ -122,7 +122,7 @@ cdef class TCache:
         return 2
 
     @property
-    def DerivedFeatureField(self):
+    def EmbeddingField(self):
         return 3
 
     def info(self):

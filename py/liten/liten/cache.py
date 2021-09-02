@@ -51,8 +51,8 @@ class Cache:
         return Cache.tcache.FeatureField
 
     @property
-    def DerivedFeatureField(self):
-        return Cache.tcache.DerivedFeatureField
+    def EmbeddingField(self):
+        return Cache.tcache.EmbeddingField
 
     def info(self):
         """
@@ -161,7 +161,7 @@ class Cache:
         Parameters
           field_name name of field
         Returns
-          Dimension or Metric or Feature or DerivedFeature Field types. None if failed to get it.
+          Dimension or Metric or Feature or Embedding Field types. None if failed to get it.
         """
         return self.tcache.get_schema_field_type(name, field_name)
 
@@ -171,7 +171,7 @@ class Cache:
         Parameters
           schema_name
           field_names name of field can be list or a value
-          field_types can be list or value, Dimension or Metric or Feature or DerivedFeature Field types
+          field_types can be list or value, Dimension or Metric or Feature or Embedding Field types
         Returns
           True if set else False or exceptions
         """

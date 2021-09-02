@@ -41,7 +41,7 @@ cdef extern from "cache.h" namespace "liten" nogil:
 
    ctypedef enum TableType: DimensionTable, FactTable
 
-   ctypedef enum FieldType: DimensionField, MetricField, FeatureField, DerivedFeatureField
+   ctypedef enum FieldType: DimensionField, MetricField, FeatureField, EmbeddingField
    
 # CTTable is liten::TTable in Cython. CTable is arrow::Table cython from pyarrow.
    cdef cppclass CTTable" liten::TTable":

@@ -4,7 +4,7 @@
 namespace liten
 {
 
-std::vector<std::string> FieldTypeString = {"DimensionField", "MetricField", "FeatureField", "DerivedFeatureField"};
+std::vector<std::string> FieldTypeString = {"DimensionField", "MetricField", "FeatureField", "EmbeddingField"};
 
 TResult<std::shared_ptr<TSchema>> TSchema::Create(std::string name,
                                                   TableType type,
