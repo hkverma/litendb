@@ -6,6 +6,7 @@ namespace liten
 {
 
 // Add all blocks to catalog
+/* TBD
 TStatus TColumn::AddToCatalog() {
   for (int arrNum = 0; arrNum<chunkedArray_->num_chunks(); arrNum++)
   {
@@ -18,5 +19,5 @@ TStatus TColumn::AddToCatalog() {
   }
   return TStatus::OK();
 }
-
+*/
 }

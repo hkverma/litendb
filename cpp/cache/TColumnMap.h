@@ -1,6 +1,7 @@
 #pragma once
 
 #include <common.h>
+#include <cache_fwd.h>
 
 //
 // Liten Columnar Storage Node
@@ -20,17 +21,10 @@ namespace liten
 class TColumnMap
 {
 public:
-  TColumnMap(std::shared_ptr<arrow::ChunkedArray> chunkedArray) :
-    chunkedArray_(chunkedArray)
-  {  }
-  virtual ~TColumnMap() { }
-
-  // Column Map from Arrow Chunked Array
-  static std::shared_ptr<TColumnMap> Make(std::shared_ptr<arrow::ChunkedArray> chunkedArray);
-  // Copy into another map structure
-  virtual std::shared_ptr<TColumnMap> Copy();
-
-  // TODO needs to be templated for min-max types
+  /// Use Create to get the correct ColumnMap for the given type
+  static TResult<std::shared_ptr<TColumnMap>> Create(std::shared_ptr<TColumn> tColumn);
+  
+  // TBD needs to be templated for min-max types
   virtual bool GetMin(int64_t arrNum, int64_t& minVal)
   {
     return false;
@@ -45,36 +39,46 @@ public:
   {
     return false;
   }
+  
   virtual bool GetReverseMap(int64_t& rowVal, int64_t& arrId, int64_t& rowId)
   {
     return false;
   }
+  
   virtual bool GetReverseMap(std::stringstream& ss)
   {
     return false;
   }
+  
   virtual bool IfValidMap()
   {
     return false;
   }
+  
+  /// Use named constructor Create instead
+  TColumnMap(std::shared_ptr<TColumn> tColumn) :
+    tColumn_(tColumn)
+  {  }
+  
+  virtual ~TColumnMap() { }
 
-  // arrow chunked array for which map is built
-  std::shared_ptr<arrow::ChunkedArray> chunkedArray_;
-  //TODO arrow::Status status_;
+private:
+  
+  /// arrow chunked array for which map is built
+  std::shared_ptr<TColumn> tColumn_;
+
 };
+
+/// TBD Currently make it only for int64_t, enhance it later with other types
 
 // zone maps for comparable types currently only range type
 // Create a MinMax template class here
-// TODO Currently make it only for int64_t, enhance it later with other types
 class TInt64ColumnMap : public TColumnMap
 {
 public:
-  TInt64ColumnMap(std::shared_ptr<arrow::ChunkedArray> chunkedArray);
     
-  static std::shared_ptr<TInt64ColumnMap> Make(std::shared_ptr<arrow::ChunkedArray> chunkedArray);
+  static TResult<std::shared_ptr<TInt64ColumnMap>> Create(std::shared_ptr<TColumn> tColumn);
 
-  virtual std::shared_ptr<TColumnMap> Copy();
-    
   virtual bool GetMin(int64_t arrNum, int64_t& minVal)
   {
     minVal = min_[arrNum];
@@ -95,9 +99,15 @@ public:
 
   virtual bool GetReverseMap(std::stringstream& ss);
 
-  // min, max
+  /// Use named constructor Create instead
+  TInt64ColumnMap(std::shared_ptr<TColumn> tColumn);
+
+private:
+  /// min, max
   std::vector<int64_t> min_, max_;
-  // Inverse maps from rowId to arrow::Array and offset within that array
+  
+  /// Inverse maps from rowId to arrow::Array and offset within the array
+  /// TBD can map to mulitple rows
   std::map<int64_t, std::pair<int64_t, int64_t>> reverseMap_;
     
 };

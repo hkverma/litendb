@@ -11,13 +11,26 @@ namespace liten
 // go through the list and collect min & max
 // arrow::builder.cc check L22 for the types shown below
 //
-std::shared_ptr<TColumnMap> TColumnMap::Make(std::shared_ptr<arrow::ChunkedArray> chunkedArray)
+TResult<std::shared_ptr<TColumnMap>> TColumnMap::Create(std::shared_ptr<TColumn> tColumn)
 {
-  std::shared_ptr<TColumnMap> chunkArrMap = std::make_shared<TColumnMap>(chunkedArray);
-
-  switch (chunkedArray->type()->id())
+  if (0 == tColumn.NumBlocks())
   {
-    /* TODO
+    return Status::Invalid("Empty Columnar data");
+  }
+  
+  std::shared_ptr<TColumnMap> colMap = std::make_shared<TColumnMap>(tColumn);
+
+  auto idType = tColumn->GetBlock(0)->GetArray()->type()->id();
+  for (auto i=0; i<tColumn->NumBlocks(); i++)
+  {
+    if (idType != tColumn->GetBlock(i)->GetArray()->type()->id())
+    {
+      return Status::Invalid("Different type of data in the same column");
+    }
+  }
+  switch (idType)
+  {
+    /* TBD
        case UInt8: case Int8: case UInt16:  case Int16:
        case UInt32:
        case Int32:
@@ -25,10 +38,10 @@ std::shared_ptr<TColumnMap> TColumnMap::Make(std::shared_ptr<arrow::ChunkedArray
     */
   case arrow::Int64Type::type_id:
     {
-      chunkArrMap = TInt64ColumnMap::Make(chunkedArray);
+      colMap = TInt64ColumnMap::Create(tColumn);
       break;
     }
-    /* TODO
+    /* TBD
        case Date32:
        case Date64:
        case Duration:
@@ -50,34 +63,27 @@ std::shared_ptr<TColumnMap> TColumnMap::Make(std::shared_ptr<arrow::ChunkedArray
     */
   default:
     {
-      chunkArrMap = std::make_shared<TColumnMap>(chunkedArray);
       break ;
     }
   }
-  return chunkArrMap;
-}
-
-std::shared_ptr<TColumnMap> TColumnMap::Copy()
-{
-  auto colMap = std::make_shared<TColumnMap>(chunkedArray_);
   return colMap;
 }
 
-TInt64ColumnMap::TInt64ColumnMap(std::shared_ptr<arrow::ChunkedArray> chunkedArray)
-  : TColumnMap(chunkedArray)
+TInt64ColumnMap::TInt64ColumnMap(std::shared_ptr<TColumn> tColumn)
+  : TColumnMap(colMap)
 {
-  min_.resize(chunkedArray->num_chunks(), std::numeric_limits<int64_t>::min());
-  max_.resize(chunkedArray->num_chunks(), std::numeric_limits<int64_t>::max());
+  min_.resize(tColumn->NumBlocks(), std::numeric_limits<int64_t>::min());
+  max_.resize(tColumn->NumBlocks(), std::numeric_limits<int64_t>::max());
 }
 
-std::shared_ptr<TInt64ColumnMap> TInt64ColumnMap::Make(std::shared_ptr<arrow::ChunkedArray> chunkedArray)
+TResult<std::shared_ptr<TInt64ColumnMap>> TInt64ColumnMap::Create(std::shared_ptr<TColumn> tColumn)
 {
-  std::shared_ptr<TInt64ColumnMap> mapArr = std::make_shared<TInt64ColumnMap>(chunkedArray);
-  for (int64_t arrNum=0; arrNum<chunkedArray->num_chunks(); arrNum++)
+  std::shared_ptr<TInt64ColumnMap> mapArr = std::make_shared<TInt64ColumnMap>(tColumn);
+  for (int64_t blkNum=0; blkNum<tColumn->NumBlocks(); blkNum++)
   {
     int64_t& minVal = mapArr->min_[arrNum];
     int64_t& maxVal = mapArr->max_[arrNum];
-    std::shared_ptr<arrow::Array> arr = chunkedArray->chunk(arrNum);
+    std::shared_ptr<arrow::Array> arr = tColumn->GetBlock(blkNum)->GetArray();
 
     std::shared_ptr<arrow::Int64Array> numArr = std::static_pointer_cast<arrow::Int64Array>(arr);
     if (numArr == nullptr)
@@ -106,15 +112,6 @@ std::shared_ptr<TInt64ColumnMap> TInt64ColumnMap::Make(std::shared_ptr<arrow::Ch
   return mapArr;
 }
 
-std::shared_ptr<TColumnMap> TInt64ColumnMap::Copy()
-{
-  std::shared_ptr<TInt64ColumnMap> colMap = std::make_shared<TInt64ColumnMap>(chunkedArray_);
-  colMap->min_ = min_;
-  colMap->max_ = max_;
-  colMap->reverseMap_ = reverseMap_;
-  return colMap;
-}
-
 bool TInt64ColumnMap::GetReverseMap(int64_t& rowVal, int64_t& arrId, int64_t& rowId)
 {
   auto revMapItr = reverseMap_.find(rowVal);
@@ -123,7 +120,7 @@ bool TInt64ColumnMap::GetReverseMap(int64_t& rowVal, int64_t& arrId, int64_t& ro
     return false;
   }
   // For now return only one
-  // TODO Use equal_range in future to return a vector of matched rowIds
+  // TBD Use equal_range in future to return a vector of matched rowIds
   arrId = (revMapItr->second).first;
   rowId = (revMapItr->second).second;
   return true;

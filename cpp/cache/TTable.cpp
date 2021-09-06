@@ -12,47 +12,20 @@ namespace liten
 std::vector<std::string> TableTypeString = {"DimensionTable","FactTable"};
 
 // Create a new TTable
-TResult<std::shared_ptr<TTable>> TTable::Create(std::string tableName,
-                                                TableType type,
-                                                std::shared_ptr<arrow::Table> table,
-                                                std::string schemaName)
+inline TResult<std::shared_ptr<TTable>> Create(std::string tableName,
+                                               TableType type,
+                                               std::string schemaName) :
+  name_(tableName), ttype_(type), schemaName_(schemaName)
 {
-  auto ttable = TCatalog::GetInstance()->GetTable(tableName);
-  if (nullptr != ttable)
-  {
-    return TResult<std::shared_ptr<TTable>>(TStatus::AlreadyExists("Table=",tableName," is already in catalog"));
-  }
   if (schemaName.empty()) {
     schemaName = tableName+"_schema";
   }
-  std::shared_ptr<TSchema> tschema = TCatalog::GetInstance()->GetSchema(schemaName);
-  if (nullptr == tschema)
-  {
-    auto tschemaResult = TSchema::Create(schemaName, type, table->schema());
-    if (!tschemaResult.ok())
-    {
-      return TResult<std::shared_ptr<TTable>>(TStatus::AlreadyExists("Table=",tableName," could not be created because schema=", schemaName, "failed to create with msg=", tschemaResult.status().message()));
-    }
-    tschema = tschemaResult.ValueOrDie();
-  }
-  else
-  {
-    if (tschema->GetSchema() != table->schema())
-    {
-      return TResult<std::shared_ptr<TTable>>(TStatus::KeyError("Table=",tableName," could not be created because schema name=", schemaName, " has different arrow schema than given table's schema"));
-    }
-  }
   ttable = std::make_shared<MakeSharedEnabler>();
-  ttable->schema_ = tschema;
   ttable->name_ = std::move(tableName);
-  ttable->table_ = table;
+  ttable->schema_ = nullptr;
+  ttable->schemaName_ = schemaName;
   ttable->type_ = type;
-  TStatus status = std::move(ttable->AddToCatalog());
-  if (!status.ok())
-  {
-    return TResult<std::shared_ptr<TTable>>(status);
-  }
-  return TResult<std::shared_ptr<TTable>>(ttable);
+  return ttable;
 }
 
 // Add all blocks to catalog
@@ -60,6 +33,7 @@ TResult<std::shared_ptr<TTable>> TTable::Create(std::string tableName,
 // TBD remove all the Arrow pointers once the blocks are created
 // TBD maintain a local vector of rowblocks as well
 // TBD move addToCatalog to Rowblock and use that instead
+/* TODO
 TStatus TTable::AddToCatalog() {
   const std::vector<std::string>& colNames = schema_->GetSchema()->field_names();
   assert(colNames.size() == table_->num_columns());
@@ -100,7 +74,7 @@ TStatus TTable::AddToCatalog() {
   TStatus status = TCatalog::GetInstance()->AddTable(shared_from_this());
   return std::move(status);
 }
-  
+*/  
 // Print Schema in logfile
 void TTable::PrintSchema()
 {
@@ -113,21 +87,21 @@ void TTable::PrintTable()
 {
   std::stringstream ss;
   ss << "NumCols=" << NumColumns();
-  ss << " NumRows=" << NumRows() << " Data=";
+  ss << " NumRows=" << numRows << " Data=";
 
   // Print the table
-  for (int64_t i=0; i<NumColumns(); i++)
+  for (int64_t i=0; i<NumRowBlocks(); i++)
   {
-    auto chunkedArray = table_->column(i);
-    const std::shared_ptr<arrow::Field>& colField = schema_->GetSchema()->field(i);
-    const std::shared_ptr<arrow::DataType>& colFieldType = colField->type();
-       
-    for (int64_t j=0; j<chunkedArray->num_chunks(); j++)
+    auto rb = GetRowBlock(i);
+    for (int64_t j=0; i<NumColumns(); i++)
     {
-      auto aray = chunkedArray->chunk(j);
-      for (int64_t k=0; k<aray->length(); k++)
+      auto tblk = rb->GetBlock(j);
+      auto numRows = tb->NumRows();
+      auto arr = rb->GetArray();
+      assert (numRows <= arr->length());
+      for (int64_t k=0; k<numRows; k++)
       {
-        arrow::Result<std::shared_ptr<arrow::Scalar>> dataResult = aray->GetScalar(k);
+        arrow::Result<std::shared_ptr<arrow::Scalar>> dataResult = arr->GetScalar(k);
         if ( !dataResult.ok() )
         {
           ss << ",";
@@ -149,15 +123,6 @@ void TTable::PrintTable()
 // Returns non-zero code if fails to make map
 int TTable::MakeMaps(int32_t numCopies)
 {
-  if (nullptr == table_)
-  {
-    return 1;
-  }
-  if (numCopies < 1)
-  {
-    return 1;
-  }
-  numMapCopies_ = numCopies;
   maps_.resize(numCopies);
   for (auto nc = 0; nc < numCopies; nc++)
   {
@@ -203,10 +168,70 @@ void TTable::PrintMaps()
   TLOG(INFO) << ss.str();
 }
 
-// This gives a slice from offset from beginning of length length
-std::shared_ptr<arrow::Table> TTable::Slice(int64_t offset, int64_t length) {
-  auto arrTable = table_->Slice(offset, length);
-  return arrTable;
+/// Append the rowblock to the table
+TResult<std::shared_ptr<TRowBlock>> TTable::AppendRowBlock(std::shared_ptr<arrow::RecordBatch> rb,
+                                                           int64_t numRows=-1)
+{
+  // Create rowblock
+  auto rb_result = std::move(TRowBlock::Create(std::make_shared_enable(this), tb, numRows));
+  if (!rb.ok())
+  {
+    return std::move(rb);
+  }
+  auto rb = rb_result->ValueOrDie();
+  if (rb->NumColumns() != columns_.size())
+  {
+    return TStatus::Invalid("Different number of columns in rowblock=", rb.NumColumns(),
+                            "and table columns=", columns_.size, " in table ", name_);
+  }
+
+  // Check and create schema
+  if (nullptr == schema_)
+  {
+    auto tschResult = AddSchema(rb->schema(), schemaName);
+    if (!tschResult.ok())
+    {
+      return TResult<std::shared_ptr<TTable>>(TStatus::KeyError("Table=",tableName," could not be created because schema=", schemaName, " failed to create with msg=", tschResult.message()));
+    }
+  }
+  else
+  {
+    if (tschema->GetSchema() != table->schema())
+    {
+      return TResult<std::shared_ptr<TTable>>(TStatus::KeyError("Table=",tableName," could not be created because schema name=", schemaName, " has different arrow schema than given table's schema"));
+    }
+  }
+
+  // Now add all blocks to the columns
+  for (auto i=0; i<rb.NumColumns(); i++)
+  {
+    auto status = columns_[i].Add(rb->GetBlock(i));
+    if (!status.ok())
+        return status;
+  }
+
+  // Now add the rowblocks
+  rowBlocks_.push_back(rb);
+  numRows += rb->NumRows();
+  
+  return rb_result;
 }
 
+// Add Schema to the table
+TResult<std::shared_ptr<TSchema>> TTable::AddSchema(arrow::Schema schema, std::string schemaName)
+{
+  if (schemaName.empty()) {
+    schemaName = tableName+"_schema";
+  }
+  std::shared_ptr<TSchema> tschema = TCatalog::GetInstance()->GetSchema(schemaName);
+  if (nullptr == tschema)
+  {
+    auto tschemaResult = TSchema::Create(schemaName, type, table->schema());
+    if (!tschemaResult.ok())
+    {
+      return TResult<std::shared_ptr<TSchema>>(TStatus::AlreadyExists("In Table=",tableName," schema=", schemaName, " failed to create with msg=", tschemaResult.status().message()));
+    }
+    tschema = tschemaResult.ValueOrDie();
+  }
+  schema_ = tschema;
 }
