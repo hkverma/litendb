@@ -136,7 +136,7 @@ TResult<std::shared_ptr<TTable>> TCache::ReadCsv(std::string tableName,
 
   // Instantiate TableReader from input stream and options
   arrow::io::IOContext ioContext = arrow::io::default_io_context();
-  arrow::Result<std::shared_ptr<arrow::csv::TableReader>> readerResult
+  arrow::Result<std::shared_ptr<arrow::csv::StreamingReader>> readerResult
     = arrow::csv::StreamingReader::Make(ioContext, inputStream, readOptions,
                                     parseOptions, convertOptions);
   if (!readerResult.ok()) {
@@ -158,18 +158,18 @@ TResult<std::shared_ptr<TTable>> TCache::ReadCsv(std::string tableName,
   if (!ttableResult.ok()) {
     // Handle CSV read error
     // (for example a CSV syntax error or failed type conversion)
-    TLOG(ERROR) << "Creating TTable from csv= " << tableResult.status().ToString();
-    return TResult<std::shared_ptr<TTable>>(TStatus::IOError("Reading csv table= ", tableResult.status().ToString()));
+    TLOG(ERROR) << "Creating TTable from csv= " << ttableResult.status().ToString();
+    return TResult<std::shared_ptr<TTable>>(TStatus::IOError("Reading csv table= ", ttableResult.status().ToString()));
   }
-  auto ttable = ttableResult.ValueOrDie();
+  ttable = ttableResult.ValueOrDie();
   while (rbResult.ok()) {
     auto rb = rbResult.ValueOrDie();
-    trbResult = std::move(AddRowBlock(ttable, rb));
+    auto trbResult = std::move(AddRowBlock(ttable, rb));
     if (!trbResult.ok()) {
       // Handle CSV read error
       // (for example a CSV syntax error or failed type conversion)
-      TLOG(ERROR) << "Creating RowBlock from csv= " << tableResult.status().ToString();
-      return TResult<std::shared_ptr<TTable>>(TStatus::IOError("Reading csv table= ", tableResult.status().ToString()));
+      TLOG(ERROR) << "Creating RowBlock from csv= " << trbResult.status().ToString();
+      return TResult<std::shared_ptr<TTable>>(TStatus::IOError("Reading csv table= ", trbResult.status().ToString()));
     }
   }
 
@@ -195,7 +195,7 @@ int TCache::MakeMaps(std::shared_ptr<TTable> ttable)
     return 1;
   }
   // TBD Are numCopies needed? remove it.
-  int result = ttable->MakeMaps(1);
+  int result = ttable->MakeMaps();
   if (result)
   {
     TLOG(ERROR) << "Found table " << ttable->GetName() << " but failed to create data tensor";

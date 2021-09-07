@@ -1,10 +1,10 @@
-#include <TTable.h>
-#include <TColumn.h>
 #include <TColumnMap.h>
 #include <TCatalog.h>
 #include <TBlock.h>
 #include <TRowBlock.h>
 #include <TSchema.h>
+#include <TColumn.h>
+#include <TTable.h>
 
 namespace liten
 {
@@ -12,18 +12,16 @@ namespace liten
 std::vector<std::string> TableTypeString = {"DimensionTable","FactTable"};
 
 // Create a new TTable
-inline TResult<std::shared_ptr<TTable>> Create(std::string tableName,
-                                               TableType type,
-                                               std::string schemaName) :
-  name_(tableName), ttype_(type), schemaName_(schemaName)
+TResult<std::shared_ptr<TTable>> TTable::Create(std::string tableName,
+                                                TableType type,
+                                                std::string schemaName)
 {
   if (schemaName.empty()) {
     schemaName = tableName+"_schema";
   }
-  ttable = std::make_shared<MakeSharedEnabler>();
+  auto ttable = std::make_shared<MakeSharedEnabler>();
   ttable->name_ = std::move(tableName);
   ttable->schema_ = nullptr;
-  ttable->schemaName_ = schemaName;
   ttable->type_ = type;
   return ttable;
 }
@@ -87,7 +85,7 @@ void TTable::PrintTable()
 {
   std::stringstream ss;
   ss << "NumCols=" << NumColumns();
-  ss << " NumRows=" << numRows << " Data=";
+  ss << " NumRows=" << NumRows() << " Data=";
 
   // Print the table
   for (int64_t i=0; i<NumRowBlocks(); i++)
@@ -95,9 +93,16 @@ void TTable::PrintTable()
     auto rb = GetRowBlock(i);
     for (int64_t j=0; i<NumColumns(); i++)
     {
-      auto tblk = rb->GetBlock(j);
-      auto numRows = tb->NumRows();
-      auto arr = rb->GetArray();
+      auto numRows = rb->NumRows();
+      
+      auto tblkResult = std::move(rb->GetBlock(j));
+      if (!tblkResult.ok())
+      {
+        ss << "Error Msg:" << tblkResult.status().ToString();
+        continue;
+      }
+      auto arr = tblkResult.ValueOrDie().GetArray();
+      
       assert (numRows <= arr->length());
       for (int64_t k=0; k<numRows; k++)
       {
@@ -121,24 +126,20 @@ void TTable::PrintTable()
 }
 
 // Returns non-zero code if fails to make map
-int TTable::MakeMaps(int32_t numCopies)
+// TBD move to TColumn
+int TTable::MakeMaps()
 {
-  maps_.resize(numCopies);
-  for (auto nc = 0; nc < numCopies; nc++)
+  maps_.resize(NumColumns());
+  for (int64_t cnum=0; cnum<NumColumns(); cnum++)
   {
-    maps_[nc].resize(table_->num_columns());
-  }    
-  for (int64_t cnum=0; cnum<table_->num_columns(); cnum++)
-  {
-    std::shared_ptr<arrow::ChunkedArray> chunkedArray = table_->column(cnum);
-    maps_[0][cnum] = TColumnMap::Make(chunkedArray);
-  }
-  for (auto nc = 1; nc<numCopies; nc++)
-  {
-    for (auto cnum=0; cnum<table_->num_columns(); cnum++)
+    std::shared_ptr<TColumn> col = GetColumn(cnum);
+    auto colResult = TColumnMap::Create(col);
+    if (!colResult.ok())
     {
-      maps_[nc][cnum] = maps_[0][cnum]->Copy();
+      TLOG(ERROR) << "Could not create maps" ;
+      return -1;
     }
+    maps_[cnum] = colResult.ValueOrDie();
   }
   return 0;
 }
@@ -146,9 +147,10 @@ int TTable::MakeMaps(int32_t numCopies)
 void TTable::PrintMaps()
 {
   std::stringstream ss;
-  for (int colNum = 0; colNum < table_->num_columns(); colNum++) {
-    auto colMap = maps_[0][colNum];
+  for (int colNum = 0; colNum < NumColumns(); colNum++) {
+    auto colMap = maps_[colNum];
     ss << "Col " << colNum;
+    /* TBD Do proper printing move to TColumn
     auto chArr = colMap->chunkedArray_;
     for (int arrNum = 0; arrNum<chArr->num_chunks(); arrNum++)
     {
@@ -161,7 +163,7 @@ void TTable::PrintMaps()
       ss << " Max=";
       colMap->GetMax(arrNum,maxVal)?(ss << maxVal):(ss << "None");
       ss << ";" ;
-    }
+      }*/
     //colMap->GetReverseMap(ss);
     //ss << "; ";
   }
@@ -169,43 +171,50 @@ void TTable::PrintMaps()
 }
 
 /// Append the rowblock to the table
-TResult<std::shared_ptr<TRowBlock>> TTable::AppendRowBlock(std::shared_ptr<arrow::RecordBatch> rb,
-                                                           int64_t numRows=-1)
+TResult<std::shared_ptr<TRowBlock>> TTable::AppendRowBlock(std::shared_ptr<arrow::RecordBatch> arrb,
+                                                           int64_t numRows)
 {
   // Create rowblock
-  auto rb_result = std::move(TRowBlock::Create(std::make_shared_enable(this), tb, numRows));
-  if (!rb.ok())
+  auto rb_result = std::move(TRowBlock::Create(shared_from_this(), arrb, numRows));
+  if (!rb_result.ok())
   {
-    return std::move(rb);
+    return std::move(rb_result);
   }
-  auto rb = rb_result->ValueOrDie();
+  auto rb = rb_result.ValueOrDie();
   if (rb->NumColumns() != columns_.size())
   {
-    return TStatus::Invalid("Different number of columns in rowblock=", rb.NumColumns(),
-                            "and table columns=", columns_.size, " in table ", name_);
+    return TStatus::Invalid("Different number of columns in rowblock=", rb->NumColumns(),
+                            "and table columns=", columns_.size(), " in table ", name_);
   }
 
   // Check and create schema
   if (nullptr == schema_)
   {
-    auto tschResult = AddSchema(rb->schema(), schemaName);
+    auto tschResult = AddSchema(arrb->schema(), schema_->GetName());
     if (!tschResult.ok())
     {
-      return TResult<std::shared_ptr<TTable>>(TStatus::KeyError("Table=",tableName," could not be created because schema=", schemaName, " failed to create with msg=", tschResult.message()));
+      return TStatus::KeyError("Table=",name_," could not be created because schema=", schema_->GetName(), " failed to create with msg=", tschResult.status().ToString());
     }
   }
   else
   {
-    if (tschema->GetSchema() != table->schema())
+    if (schema_->GetSchema() != arrb->schema())
     {
-      return TResult<std::shared_ptr<TTable>>(TStatus::KeyError("Table=",tableName," could not be created because schema name=", schemaName, " has different arrow schema than given table's schema"));
+      return TStatus::KeyError("Table=",name_," could not be created because schema name=", schema_->GetName(), " has different arrow schema than given table's schema");
     }
   }
 
   // Now add all blocks to the columns
-  for (auto i=0; i<rb.NumColumns(); i++)
+  for (auto i=0; i<rb->NumColumns(); i++)
   {
-    auto status = columns_[i].Add(rb->GetBlock(i));
+    auto rblkResult = std::move(rb->GetBlock(i));
+    if (!rblkResult.ok())
+      return (rblkResult.status());
+    auto rblk = rblkResult.ValueOrDie();
+    auto blkResult = std::move(rblk->GetArray());
+    if (!blkResult.ok())
+      return blkResult.status();
+    auto status = columns_[i]->Add(blkResult.ValueOrDie());
     if (!status.ok())
         return status;
   }
@@ -218,20 +227,23 @@ TResult<std::shared_ptr<TRowBlock>> TTable::AppendRowBlock(std::shared_ptr<arrow
 }
 
 // Add Schema to the table
-TResult<std::shared_ptr<TSchema>> TTable::AddSchema(arrow::Schema schema, std::string schemaName)
+TResult<std::shared_ptr<TSchema>> TTable::AddSchema(std::shared_ptr<arrow::Schema> schema, std::string schemaName)
 {
   if (schemaName.empty()) {
-    schemaName = tableName+"_schema";
+    schemaName = name_+"_schema";
   }
   std::shared_ptr<TSchema> tschema = TCatalog::GetInstance()->GetSchema(schemaName);
   if (nullptr == tschema)
   {
-    auto tschemaResult = TSchema::Create(schemaName, type, table->schema());
+    auto tschemaResult = TSchema::Create(schemaName, type_, schema);
     if (!tschemaResult.ok())
     {
-      return TResult<std::shared_ptr<TSchema>>(TStatus::AlreadyExists("In Table=",tableName," schema=", schemaName, " failed to create with msg=", tschemaResult.status().message()));
+      return TStatus::AlreadyExists("In Table=",name_," schema=", schema_->GetName(), " failed to create with msg=", tschemaResult.status().message());
     }
     tschema = tschemaResult.ValueOrDie();
   }
   schema_ = tschema;
+  return schema_;
+}
+
 }

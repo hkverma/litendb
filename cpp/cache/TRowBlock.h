@@ -18,13 +18,15 @@ public:
   // @param schema schema of the row
   // @num_row number of rows, must be same rows across all Blocks
   // @columns vector of all blocks to be added
-  static std::shared_ptr<TRowBlock> Create(std::shared_ptr<TTable> ttable,
-                                           std::vector<std::shared_ptr<TBlock>>& blocks,
-                                           int64_t numRows=-1);                                           
+  static TResult<std::shared_ptr<TRowBlock>> Create(std::shared_ptr<TTable> ttable,
+                                                    std::vector<std::shared_ptr<TBlock>>& blocks,
+                                                    int64_t numRows=-1);                                           
   
-  static std::shared_ptr<TRowBlock> Create(std::shared_ptr<TTable> ttable,
-                                           std::shared_ptr<arrow::RecordBatch> rb,
-                                           int64_t numRows=-1);
+  static TResult<std::shared_ptr<TRowBlock>> Create(std::shared_ptr<TTable> ttable,
+                                                    std::shared_ptr<arrow::RecordBatch> rb,
+                                                    int64_t numRows=-1);
+
+  TResult<std::shared_ptr<TBlock>> GetBlock(int colNum);
   
   ~TRowBlock() { }
 

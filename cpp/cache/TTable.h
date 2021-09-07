@@ -45,7 +45,7 @@ public:
   TResult<std::shared_ptr<TRowBlock>> AppendRowBlock(std::shared_ptr<arrow::RecordBatch> rb, int64_t numRows=-1);
 
   /// Add Schema 
-  TResult<std::shared_ptr<TSchema>> AddSchema(arrow::Schema schema, std::string schemaName);
+  TResult<std::shared_ptr<TSchema>> AddSchema(std::shared_ptr<arrow::Schema> schema, std::string schemaName);
   
   /// get schema of the table
   std::shared_ptr<TSchema> GetSchema();
@@ -58,9 +58,11 @@ public:
 
   /// TBD Clean these up with tensor values
   /// Inverted maps and min-max zones
-  int MakeMaps(int32_t numCopies);
+  int MakeMaps();
+  
   void PrintMaps();
-  std::shared_ptr<TColumnMap> GetColMap(int mapNum, int colNum);
+  // TBD get it from columns
+  std::shared_ptr<TColumnMap> GetColMap(int colNum);
   std::shared_ptr<arrow::Array> GetArray(int64_t rowNum, int64_t colNum);
   std::string GetName();
 
@@ -68,7 +70,7 @@ public:
   TableType GetType();
     
   int64_t NumRows();
-
+  
   // Get different cuts. For now it is a simple index cut - minIndex <= index <= maxIndex
   // TODO do point, range, set cuts 
   std::shared_ptr<arrow::Table> Slice(int64_t offset, int64_t length);
@@ -83,14 +85,13 @@ public:
                  int64_t& leftRowIdInMicroseconds,   // time taken to look for leftValue
                  TypeRight& rightValue,    // rightValue output
                  int64_t rightColNum,     // right Col Num
-                 int64_t& rightValueInMicroseconds,  // time taken to look for rightValue
-                 int32_t mapNum)               // worker Number
+                 int64_t& rightValueInMicroseconds)  // time taken to look for rightValue
   {
     int64_t rowId, arrId;
     TStopWatch timer;
     timer.Start();
-    bool result = GetColumn(leftColNum)->GetRowId<TypeLeft, ArrayTypeLeft>(arrId, rowId, leftValue)
-      timer.Stop();
+    bool result = GetColumn(leftColNum)->GetRowId<TypeLeft, ArrayTypeLeft>(arrId, rowId, leftValue);
+    timer.Stop();
     leftRowIdInMicroseconds += timer.ElapsedInMicroseconds();
     if (!result)
     {
@@ -135,7 +136,6 @@ private:
   
   /// Schema of the table
   std::shared_ptr<TSchema> schema_;
-  std::string schemaName_;
   
   // Add all columns to catalog TBD Catalog cleanups
   TStatus AddToCatalog();
@@ -143,7 +143,7 @@ private:
   // Table Maps
   // TODO One copy should be sufficient, multiple copies will not make it faster
   int32_t numMapCopies_ = 0;
-  std::vector<std::vector<std::shared_ptr<TColumnMap>>> maps_;
+  std::vector<std::shared_ptr<TColumnMap>> maps_;
     
 };
 
@@ -158,9 +158,9 @@ inline std::shared_ptr<TSchema> TTable::GetSchema()
   return schema_;
 }
 
-inline std::shared_ptr<TColumnMap> TTable::GetColMap(int mapNum, int colNum)
+inline std::shared_ptr<TColumnMap> TTable::GetColMap(int colNum)
 {
-  return maps_[mapNum][colNum];
+  return maps_[colNum];
 }
 
 inline std::string TTable::GetName()

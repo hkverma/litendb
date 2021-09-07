@@ -18,22 +18,22 @@ TResult<std::shared_ptr<TRowBlock>> TRowBlock::Create(std::shared_ptr<TTable> tt
   assert(ttable);
   
   auto trb = std::make_shared<MakeSharedEnabler>();
-  trb->ttable_ = ttable_;
+  trb->ttable_ = ttable;
   trb->numRows_ = numRows;
     
   for (auto blk : blocks)
   {
-    blocks_.push_back(blk);
-    assert(num_rows <= blk->GetArray()->length());
+    trb->blocks_.push_back(blk);
+    assert(numRows <= blk->GetArray()->length());
   }
 
   return trb;
 }
 
 // Construct a rowblock from arrow rowblocks
-std::shared_ptr<TRowBlock> TRowBlock::Create(std::shared_ptr<TTable> ttable,
-                                             std::shared_ptr<arrow::RecordBatch> recordBatch,
-                                             int64_t num_rows)
+TResult<std::shared_ptr<TRowBlock>> TRowBlock::Create(std::shared_ptr<TTable> ttable,
+                                                      std::shared_ptr<arrow::RecordBatch> recordBatch,
+                                                      int64_t numRows)
 
 {
   std::vector<std::shared_ptr<arrow::Array>> arrs = std::move(recordBatch->columns());
@@ -51,8 +51,8 @@ std::shared_ptr<TRowBlock> TRowBlock::Create(std::shared_ptr<TTable> ttable,
   for (auto arr : arrs)
   {
     auto blk = TBlock::Create(arr);
-    blocks_.push_back(blk);
-    assert(num_rows <= blk->GetArray()->length());
+    trb->blocks_.push_back(blk);
+    assert(numRows <= blk->GetArray()->length());
   }
   return trb;
 }

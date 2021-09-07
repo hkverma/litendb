@@ -107,12 +107,12 @@ void TpchDemo::InitTpchTables()
   else
   {
     // Populate lineitem columns
-    lShipdate = tables_[lineitem]->GetTable()->column(l_shipdate);
-    lDiscount = tables_[lineitem]->GetTable()->column(l_discount);
-    lQuantity = tables_[lineitem]->GetTable()->column(l_quantity);
-    lExtendedprice = tables_[lineitem]->GetTable()->column(l_extendedprice);
-    lOrderkey = tables_[lineitem]->GetTable()->column(l_orderkey);
-    lSuppkey = tables_[lineitem]->GetTable()->column(l_suppkey);
+    lShipdate = tables_[lineitem]->GetColumn(l_shipdate);
+    lDiscount = tables_[lineitem]->GetColumn(l_discount);
+    lQuantity = tables_[lineitem]->GetColumn(l_quantity);
+    lExtendedprice = tables_[lineitem]->GetColumn(l_extendedprice);
+    lOrderkey = tables_[lineitem]->GetColumn(l_orderkey);
+    lSuppkey = tables_[lineitem]->GetColumn(l_suppkey);
   }
 }
 
@@ -135,15 +135,15 @@ double TpchDemo::Query6Serial()
     return 0;
   }
   int shipdateChunkNum=0, discountChunkNum=0, quantityChunkNum=0, extendedpriceChunkNum=0;
-  TColumnIterator<int32_t, arrow::Int32Array> shipdateIter(lShipdate);
-  TColumnIterator<double, arrow::DoubleArray> discountIter(lDiscount);
-  TColumnIterator<int64_t, arrow::Int64Array> quantityIter(lQuantity);
-  TColumnIterator<double, arrow::DoubleArray> extendedpriceIter(lExtendedprice);
+  TColumn::Iterator<int32_t, arrow::Int32Array> shipdateIter(lShipdate);
+  TColumn::Iterator<double, arrow::DoubleArray> discountIter(lDiscount);
+  TColumn::Iterator<int64_t, arrow::Int64Array> quantityIter(lQuantity);
+  TColumn::Iterator<double, arrow::DoubleArray> extendedpriceIter(lExtendedprice);
 
-  int64_t length = lShipdate->length();
-  if (length != lDiscount->length() ||
-      length != lQuantity->length() ||
-      length != lExtendedprice->length())
+  int64_t length = lShipdate->NumRows();
+  if (length != lDiscount->NumRows() ||
+      length != lQuantity->NumRows() ||
+      length != lExtendedprice->NumRows())
   {
     LOG(ERROR) << "Length should be the same";
     return 0;
@@ -157,10 +157,10 @@ double TpchDemo::Query6Serial()
   // for now do a full table scan need to build filtering metadata per column chunk
   for (int64_t rowId=0; rowId<length; rowId++)
   {
-    if (!shipdateIter.next(shipdateValue)) break;
-    if (!discountIter.next(discountValue)) break;
-    if (!quantityIter.next(quantityValue)) break;
-    if (!extendedpriceIter.next(extendedpriceValue)) break;
+    if (!shipdateIter.Next(shipdateValue)) break;
+    if (!discountIter.Next(discountValue)) break;
+    if (!quantityIter.Next(quantityValue)) break;
+    if (!extendedpriceIter.Next(extendedpriceValue)) break;
     if (shipdateValue < date19970101Value || shipdateValue > date19971231Value)
       continue;
     if (quantityValue >= 25)
@@ -174,10 +174,10 @@ double TpchDemo::Query6Serial()
 
 void TpchDemo::GetQuery6Revenue(int64_t chunkNum, double& revenue)
 {
-  auto shipdate = std::static_pointer_cast<arrow::Int32Array>(lShipdate->chunk(chunkNum));
-  auto discount = std::static_pointer_cast<arrow::DoubleArray>(lDiscount->chunk(chunkNum));
-  auto quantity = std::static_pointer_cast<arrow::Int64Array>(lQuantity->chunk(chunkNum));
-  auto extendedprice = std::static_pointer_cast<arrow::DoubleArray>(lExtendedprice->chunk(chunkNum));
+  auto shipdate = std::static_pointer_cast<arrow::Int32Array>(lShipdate->GetBlock(chunkNum)->GetArray());
+  auto discount = std::static_pointer_cast<arrow::DoubleArray>(lDiscount->GetBlock(chunkNum)->GetArray());
+  auto quantity = std::static_pointer_cast<arrow::Int64Array>(lQuantity->GetBlock(chunkNum)->GetArray());
+  auto extendedprice = std::static_pointer_cast<arrow::DoubleArray>(lExtendedprice->GetBlock(chunkNum)->GetArray());
   revenue = 0;
 
   for (int64_t rowNum=0; rowNum<extendedprice->length(); rowNum++)
@@ -214,8 +214,8 @@ double TpchDemo::Query6()
   timer.Start();
 
   // for now do a full table scan need to build filtering metadata per column chunk
-  int64_t numChunks = lExtendedprice->num_chunks();
-  std::vector<double> revenues(lExtendedprice->num_chunks());
+  int64_t numChunks = lExtendedprice->NumBlocks();
+  std::vector<double> revenues(lExtendedprice->NumBlocks());
 
   int64_t pnum=0;
   for (int64_t chunkNum = 0; chunkNum < numChunks; chunkNum++)
@@ -301,13 +301,13 @@ std::shared_ptr<std::unordered_map<std::string, double>> TpchDemo::Query5Serial(
     return nullptr;
   }
 
-  TColumnIterator<double, arrow::DoubleArray> lDiscountIter(lDiscount);
-  TColumnIterator<double, arrow::DoubleArray> lExtendedpriceIter(lExtendedprice);
-  TColumnIterator<int64_t, arrow::Int64Array> lOrderkeyIter(lOrderkey);
-  TColumnIterator<int64_t, arrow::Int64Array> lSuppkeyIter(lSuppkey);
+  TColumn::Iterator<double, arrow::DoubleArray> lDiscountIter(lDiscount);
+  TColumn::Iterator<double, arrow::DoubleArray> lExtendedpriceIter(lExtendedprice);
+  TColumn::Iterator<int64_t, arrow::Int64Array> lOrderkeyIter(lOrderkey);
+  TColumn::Iterator<int64_t, arrow::Int64Array> lSuppkeyIter(lSuppkey);
 
-  int64_t length = lDiscount->length();
-  if (length != lExtendedprice->length())
+  int64_t length = lDiscount->NumRows();
+  if (length != lExtendedprice->NumRows())
   {
     LOG(ERROR) << "Length should be the same";
     return nullptr;
@@ -377,22 +377,22 @@ std::shared_ptr<std::unordered_map<std::string, double>> TpchDemo::Query5Serial(
 
     scanTimer.Start();
     // Get all values for the row first
-    if (!lOrderkeyIter.next(lOrderkeyValue))
+    if (!lOrderkeyIter.Next(lOrderkeyValue))
     {
       LOG(ERROR) << "Missing order key" ;
       break;
     }
-    if (!lSuppkeyIter.next(lSuppkeyValue))
+    if (!lSuppkeyIter.Next(lSuppkeyValue))
     {
       LOG(ERROR) << "Missing supply key" ;
       break;
     }
-    if (!lExtendedpriceIter.next(lExtendedpriceValue))
+    if (!lExtendedpriceIter.Next(lExtendedpriceValue))
     {
       LOG(ERROR) << "Missing extended price key" ;
       break;
     }
-    if (!lDiscountIter.next(lDiscountValue))
+    if (!lDiscountIter.Next(lDiscountValue))
     {
       LOG(ERROR) << "Missing discount Value" ;
       break;
@@ -404,27 +404,24 @@ std::shared_ptr<std::unordered_map<std::string, double>> TpchDemo::Query5Serial(
     // l_orderkey = o_orderkey
     // and o_orderdate >= date '1995-01-01'
     // and o_orderdate < date '1995-01-01' + interval '1' year
-    if (!JoinInner<int64_t, arrow::Int64Array, int32_t, arrow::Int32Array>
-        (tables_[orders],
-         lOrderkeyValue, o_orderkey, ordersGetRowIdTime,
-         oOrderdateValue, o_orderdate, ordersGetValTime, 0))
+    if (!tables_[orders]->JoinInner<int64_t, arrow::Int64Array, int32_t, arrow::Int32Array>
+        (lOrderkeyValue, o_orderkey, ordersGetRowIdTime,
+         oOrderdateValue, o_orderdate, ordersGetValTime))
       continue;
     if (oOrderdateValue < date19950101Value || oOrderdateValue > date19951231Value)
       continue;
 
     // Filter on r_name
     // l_suppkey = s_suppkey,
-    if ( !JoinInner<int64_t, arrow::Int64Array>
-         (tables_[supplier],
-          lSuppkeyValue, s_suppkey, supplierGetRowIdTime,
-          sNationkeyValue, s_nationkey, supplierGetValTime, 0))
+    if ( !tables_[supplier]->JoinInner<int64_t, arrow::Int64Array>
+         (lSuppkeyValue, s_suppkey, supplierGetRowIdTime,
+          sNationkeyValue, s_nationkey, supplierGetValTime))
       continue;
 
     // s_nationkey = n_nationkey also get nation name
-    if ( !JoinInner<int64_t, arrow::Int64Array>
-         (tables_[nation],
-          sNationkeyValue, n_nationkey, nationGetRowIdTime,
-          nRegionkeyValue, n_regionkey, nationGetValTime, 0))
+    if ( !tables_[nation]->JoinInner<int64_t, arrow::Int64Array>
+         (sNationkeyValue, n_nationkey, nationGetRowIdTime,
+          nRegionkeyValue, n_regionkey, nationGetValTime))
       continue;
 
     // n_regionkey = r_regionkey
@@ -458,11 +455,11 @@ std::shared_ptr<std::unordered_map<std::string, double>> TpchDemo::Query5Serial(
 
 void TpchDemo::GetQuery5Revenue(int64_t chunkNum, double revenue[], int32_t mapNum)
 {
-  auto orderkey = std::static_pointer_cast<arrow::Int64Array>(lOrderkey->chunk(chunkNum));
-  auto suppkey = std::static_pointer_cast<arrow::Int64Array>(lSuppkey->chunk(chunkNum));
-  auto discount = std::static_pointer_cast<arrow::DoubleArray>(lDiscount->chunk(chunkNum));
-  auto quantity = std::static_pointer_cast<arrow::Int64Array>(lQuantity->chunk(chunkNum));
-  auto extendedprice = std::static_pointer_cast<arrow::DoubleArray>(lExtendedprice->chunk(chunkNum));
+  auto orderkey = std::static_pointer_cast<arrow::Int64Array>(lOrderkey->GetBlock(chunkNum)->GetArray());
+  auto suppkey = std::static_pointer_cast<arrow::Int64Array>(lSuppkey->GetBlock(chunkNum)->GetArray());
+  auto discount = std::static_pointer_cast<arrow::DoubleArray>(lDiscount->GetBlock(chunkNum)->GetArray());
+  auto quantity = std::static_pointer_cast<arrow::Int64Array>(lQuantity->GetBlock(chunkNum)->GetArray());
+  auto extendedprice = std::static_pointer_cast<arrow::DoubleArray>(lExtendedprice->GetBlock(chunkNum)->GetArray());
   TStopWatch timer;
   timer.Start();
 
@@ -483,30 +480,24 @@ void TpchDemo::GetQuery5Revenue(int64_t chunkNum, double revenue[], int32_t mapN
     // l_orderkey = o_orderkey
     // and o_orderdate >= date '1995-01-01'
     // and o_orderdate < date '1995-01-01' + interval '1' year
-    if (!JoinInner<int64_t, arrow::Int64Array>
-        (tables_[orders],
-         lOrderkeyValue, o_orderkey, ordersGetRowIdTime,
-         oOrderdateValue, o_orderdate, ordersGetValTime,
-         mapNum))
+    if (!tables_[orders]->JoinInner<int64_t, arrow::Int64Array>
+        (lOrderkeyValue, o_orderkey, ordersGetRowIdTime,
+         oOrderdateValue, o_orderdate, ordersGetValTime))
       continue;
     if (oOrderdateValue < date19950101Value || oOrderdateValue > date19951231Value)
       continue;
 
     // Filter on r_name
     // l_suppkey = s_suppkey,
-    if ( !JoinInner<int64_t, arrow::Int64Array>
-         (tables_[supplier],
-          lSuppkeyValue, s_suppkey, supplierGetRowIdTime,
-          sNationkeyValue, s_nationkey, supplierGetValTime,
-          mapNum))
+    if ( !tables_[supplier]->JoinInner<int64_t, arrow::Int64Array>
+         (lSuppkeyValue, s_suppkey, supplierGetRowIdTime,
+          sNationkeyValue, s_nationkey, supplierGetValTime))
       continue;
 
     // s_nationkey = n_nationkey also get nation name
-    if ( !JoinInner<int64_t, arrow::Int64Array>
-         (tables_[nation],
-          sNationkeyValue, n_nationkey, nationGetRowIdTime,
-          nRegionkeyValue, n_regionkey, nationGetValTime,
-          mapNum))
+    if ( !tables_[nation]->JoinInner<int64_t, arrow::Int64Array>
+         (sNationkeyValue, n_nationkey, nationGetRowIdTime,
+          nRegionkeyValue, n_regionkey, nationGetValTime))
       continue;
 
     // n_regionkey = r_regionkey
@@ -542,7 +533,7 @@ std::shared_ptr<std::unordered_map<std::string, double>> TpchDemo::Query5()
     return nullptr;
   }
 
-  int64_t numChunks = lExtendedprice->num_chunks();
+  int64_t numChunks = lExtendedprice->NumBlocks();
 
   // revenue for each chunk initialize
   ClearQ5Revenues();

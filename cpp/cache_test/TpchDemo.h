@@ -37,8 +37,8 @@ public:
   const static int32_t r_regionkey=0, r_name=1;
 
   // lineitem tables
-  std::shared_ptr<arrow::ChunkedArray> lShipdate, lDiscount, lQuantity, lExtendedprice;
-  std::shared_ptr<arrow::ChunkedArray> lOrderkey, lSuppkey;
+  std::shared_ptr<TColumn> lShipdate, lDiscount, lQuantity, lExtendedprice;
+  std::shared_ptr<TColumn> lOrderkey, lSuppkey;
 
   // Read tables for Query6 and Query5
   void ReadTables(std::string tpchDir);

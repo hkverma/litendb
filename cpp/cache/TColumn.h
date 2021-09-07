@@ -2,6 +2,7 @@
 
 #include <common.h>
 #include <cache_fwd.h>
+#include <TBlock.h>
 #include <TColumnMap.h>
 
 //TBD See which shared pointers can be unique
@@ -35,9 +36,11 @@ public:
   class Iterator
   {
   public:
-    Iterator() : currentBlockRowId_(0), lastBlockRowId_(0), blockNum_(0)
+    
+    Iterator(std::shared_ptr<TColumn> tcolumn) :
+      tcolumn_(tcolumn), currentBlockRowId_(0), lastBlockRowId_(0), blockNum_(0)
     {
-      array_ = std::static_pointer_cast<ArrayType>(blocks_(blockNum_)->GetArray());
+      array_ = std::static_pointer_cast<ArrayType>(tcolumn_->blocks_[blockNum_]->GetArray());
       blockNum_++;
     }
 
@@ -46,14 +49,14 @@ public:
       currentBlockRowId_=0;
       lastBlockRowId_=0;
       blockNum_=0;
-      array_ = std::static_pointer_cast<ArrayType>(blocks_(blockNum_)->GetArray());
+      array_ = std::static_pointer_cast<ArrayType>(tcolumn_->blocks_[blockNum_]->GetArray());
       blockNum_++;
     }
 
     bool Next(Type& data)
     {
       int64_t rowId = currentBlockRowId_+lastBlockRowId_;
-      if (rowId >= NumRows())
+      if (rowId >= tcolumn_->NumRows())
         return false;
 
       if (currentBlockRowId_ >= array_->length())
@@ -75,42 +78,39 @@ public:
     int64_t lastBlockRowId_;
     int64_t blockNum_;
     std::shared_ptr<ArrayType> array_;
+    std::shared_ptr<TColumn> tcolumn_;
     
     bool NextBlock()
     {
       blockNum_++;
-      if (blockNum_ >= blocks_.size())
+      if (blockNum_ >= tcolumn_->blocks_.size())
       {
         return false;
       }
-      array_ = std::static_pointer_cast<ArrayType>(blocks_(blockNum_)->GetArray());
+      array_ = std::static_pointer_cast<ArrayType>(tcolumn_->blocks_[blockNum_]->GetArray());
       return true;
     }
     
   };
 
   // first rowId for a given value in chunkedArray
-  // TODO under progress needs to define Table such that we can skip the columns in the table
+  // TBD under progress needs to define Table such that we can skip the columns in the table
   // It leads to issues currently
-  // TODO currently assumes return first match it can be a set
+  // TBD currently assumes return first match it can be a set
+  // TBD Use zone map here min-max here diferentiate using what has been built
   //
   template<class Type, class ArrayType> 
   bool GetRowId(int64_t& arrId,            // Output array Id
                 int64_t& rowId,             // output Row Id
                 Type& value)                // Input Value
   {
-    std::shared_ptr<arrow::ChunkedArray> chunkedArray = table->GetTable()->column(colNum);
-
-    if (map_ || map_->IfValidMap)
+    if (map_ && map_->IfValidMap())
     {
-      bool found = colMap->GetReverseMap(value, arrId, rowId);
+      bool found = map_->GetReverseMap(value, arrId, rowId);
       return found;
     }
 
-    // TODO Use zone map here min-max here diferentiate using what has been built
-    
-    // Do this if no map found
-    int64_t chunkNum = 0;
+    // Linear search if no map found
     for (arrId=0; arrId <blocks_.size(); arrId++)
     {
       std::shared_ptr<ArrayType> arr = std::static_pointer_cast<ArrayType>(blocks_[arrId]->GetArray());
@@ -125,13 +125,13 @@ public:
     return false;
   };
 
-  // Get value from a rowId for a given chunkedArray
+  // Get value from a rowId 
   template<class Type, class ArrayType>
   bool GetValue(int64_t& rowId,  // rowId input
                 Type& value)      // output value
   {
     int64_t blkId=0;
-    for (int64_t blkNum=0; blkNum<=blocks_->size(); blkNum++)
+    for (int64_t blkNum=0; blkNum<=blocks_.size(); blkNum++)
     {
       std::shared_ptr<ArrayType> array =
         std::static_pointer_cast<ArrayType>(blocks_[blkNum]);
@@ -168,7 +168,9 @@ public:
                 Type& value)      // output value
   {
     if (blkId >= blocks_.size() || blkId < 0 )
+    {
       return false;
+    }
     std::shared_ptr<ArrayType> array =
       std::static_pointer_cast<ArrayType>(blocks_[blkId]->GetArray());
     if (rowId >= array->length())
