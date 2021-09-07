@@ -1,5 +1,6 @@
+#include <TColumn.h>
 #include <TColumnMap.h>
-
+// TBD All ValueOrDie type returns should be made macros
 namespace liten
 {
 
@@ -13,9 +14,9 @@ namespace liten
 //
 TResult<std::shared_ptr<TColumnMap>> TColumnMap::Create(std::shared_ptr<TColumn> tColumn)
 {
-  if (0 == tColumn.NumBlocks())
+  if (0 == tColumn->NumBlocks())
   {
-    return Status::Invalid("Empty Columnar data");
+    return TStatus::Invalid("Empty Columnar data");
   }
   
   std::shared_ptr<TColumnMap> colMap = std::make_shared<TColumnMap>(tColumn);
@@ -25,7 +26,7 @@ TResult<std::shared_ptr<TColumnMap>> TColumnMap::Create(std::shared_ptr<TColumn>
   {
     if (idType != tColumn->GetBlock(i)->GetArray()->type()->id())
     {
-      return Status::Invalid("Different type of data in the same column");
+      return TStatus::Invalid("Different type of data in the same column");
     }
   }
   switch (idType)
@@ -38,7 +39,13 @@ TResult<std::shared_ptr<TColumnMap>> TColumnMap::Create(std::shared_ptr<TColumn>
     */
   case arrow::Int64Type::type_id:
     {
-      colMap = TInt64ColumnMap::Create(tColumn);
+      auto colMapResult = TInt64ColumnMap::Create(tColumn);
+      if (!colMapResult.ok())
+      {
+        return colMapResult.status();
+      }
+      colMap = colMapResult.ValueOrDie();
+      
       break;
     }
     /* TBD
@@ -70,7 +77,7 @@ TResult<std::shared_ptr<TColumnMap>> TColumnMap::Create(std::shared_ptr<TColumn>
 }
 
 TInt64ColumnMap::TInt64ColumnMap(std::shared_ptr<TColumn> tColumn)
-  : TColumnMap(colMap)
+  : TColumnMap(tColumn)
 {
   min_.resize(tColumn->NumBlocks(), std::numeric_limits<int64_t>::min());
   max_.resize(tColumn->NumBlocks(), std::numeric_limits<int64_t>::max());
@@ -81,14 +88,15 @@ TResult<std::shared_ptr<TInt64ColumnMap>> TInt64ColumnMap::Create(std::shared_pt
   std::shared_ptr<TInt64ColumnMap> mapArr = std::make_shared<TInt64ColumnMap>(tColumn);
   for (int64_t blkNum=0; blkNum<tColumn->NumBlocks(); blkNum++)
   {
-    int64_t& minVal = mapArr->min_[arrNum];
-    int64_t& maxVal = mapArr->max_[arrNum];
+    int64_t& minVal = mapArr->min_[blkNum];
+    int64_t& maxVal = mapArr->max_[blkNum];
     std::shared_ptr<arrow::Array> arr = tColumn->GetBlock(blkNum)->GetArray();
 
     std::shared_ptr<arrow::Int64Array> numArr = std::static_pointer_cast<arrow::Int64Array>(arr);
     if (numArr == nullptr)
     {
       LOG(ERROR) << "Internal error - cannot convert to Int64Array." ;
+      // TBD return internal error result
       continue;
     }
 
@@ -106,7 +114,7 @@ TResult<std::shared_ptr<TInt64ColumnMap>> TInt64ColumnMap::Create(std::shared_pt
       minVal = (rowVal < minVal)?rowVal:minVal;
       maxVal = (rowVal > maxVal)?rowVal:maxVal;
       // Create an inverted index
-      mapArr->reverseMap_.insert(std::make_pair(rowVal, std::make_pair(arrNum, rowId)));
+      mapArr->reverseMap_.insert(std::make_pair(rowVal, std::make_pair(blkNum, rowId)));
     }
   }
   return mapArr;

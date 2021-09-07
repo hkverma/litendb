@@ -101,7 +101,8 @@ void TTable::PrintTable()
         ss << "Error Msg:" << tblkResult.status().ToString();
         continue;
       }
-      auto arr = tblkResult.ValueOrDie().GetArray();
+      std::shared_ptr<TBlock> tblk = tblkResult.ValueOrDie();
+      auto arr = tblk->GetArray();
       
       assert (numRows <= arr->length());
       for (int64_t k=0; k<numRows; k++)
@@ -210,11 +211,8 @@ TResult<std::shared_ptr<TRowBlock>> TTable::AppendRowBlock(std::shared_ptr<arrow
     auto rblkResult = std::move(rb->GetBlock(i));
     if (!rblkResult.ok())
       return (rblkResult.status());
-    auto rblk = rblkResult.ValueOrDie();
-    auto blkResult = std::move(rblk->GetArray());
-    if (!blkResult.ok())
-      return blkResult.status();
-    auto status = columns_[i]->Add(blkResult.ValueOrDie());
+    std::shared_ptr<TBlock> tblk = rblkResult.ValueOrDie();
+    auto status = columns_[i]->Add(tblk);
     if (!status.ok())
         return status;
   }
