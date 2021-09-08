@@ -45,7 +45,7 @@ public:
   std::shared_ptr<TRowBlock> GetRowBlock(int32_t rbNum);
 
   /// Append the rowblock to the table
-  TResult<std::shared_ptr<TRowBlock>> AppendRowBlock(std::shared_ptr<arrow::RecordBatch> rb, int64_t numRows=-1);
+  TResult<std::shared_ptr<TRowBlock>> AddRowBlock(std::shared_ptr<arrow::RecordBatch> rb, int64_t numRows=-1);
 
   /// Add Schema 
   TResult<std::shared_ptr<TSchema>> AddSchema(std::shared_ptr<arrow::Schema> schema, std::string schemaName);

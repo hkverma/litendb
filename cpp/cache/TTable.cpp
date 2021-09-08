@@ -169,7 +169,7 @@ void TTable::PrintMaps()
 }
 
 /// Append the rowblock to the table
-TResult<std::shared_ptr<TRowBlock>> TTable::AppendRowBlock(std::shared_ptr<arrow::RecordBatch> arrb,
+TResult<std::shared_ptr<TRowBlock>> TTable::AddRowBlock(std::shared_ptr<arrow::RecordBatch> arrb,
                                                            int64_t numRows)
 {
   // Create rowblock

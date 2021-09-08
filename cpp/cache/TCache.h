@@ -70,7 +70,6 @@ public:
   /// @returns Result with TTable
   TResult<std::shared_ptr<TTable>> AddTable(std::string tableName,
                                             TableType type,
-                                            std::shared_ptr<arrow::Table> table,
                                             std::string schemaName);
 
   /// Add table to cache
@@ -78,7 +77,7 @@ public:
   /// @param recordBatch recordBatch to be added
   /// @returns Result with TRowBlock
   TResult<std::shared_ptr<TRowBlock>> AddRowBlock(std::shared_ptr<TTable> ttable,
-                                                  std::shared_ptr<arrow::RecordBatch> recordBatch);
+                                                   std::shared_ptr<arrow::RecordBatch> recordBatch);
 
   /// Get table or given table name
   /// @param tableName name of the table

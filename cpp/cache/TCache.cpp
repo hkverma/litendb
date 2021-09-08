@@ -28,10 +28,15 @@ std::shared_ptr<TCache> TCache::GetInstance()
 
 TResult<std::shared_ptr<TTable>> TCache::AddTable(std::string tableName,
                                                   TableType type,
-                                                  std::shared_ptr<arrow::Table> table,
                                                   std::string schemaName)
 {
-  return std::move(TTable::Create(tableName, type, table, schemaName));
+  return std::move(TTable::Create(tableName, type, schemaName));
+}
+
+TResult<std::shared_ptr<TRowBlock>> TCache::AddRowBlock(std::shared_ptr<TTable> ttable,
+                                                std::shared_ptr<arrow::RecordBatch> recordBatch)
+{
+  return std::move(ttable->AddRowBlock(recordBatch));
 }
 
 TResult<std::shared_ptr<TSchema>> TCache::AddSchema(std::string schemaName,
@@ -154,7 +159,7 @@ TResult<std::shared_ptr<TTable>> TCache::ReadCsv(std::string tableName,
   }
   auto rb = rbResult.ValueOrDie();
   
-  auto ttableResult = std::move(AddTable(tableName, type, nullptr, ""));
+  auto ttableResult = std::move(AddTable(tableName, type, ""));
   if (!ttableResult.ok()) {
     // Handle CSV read error
     // (for example a CSV syntax error or failed type conversion)
@@ -222,14 +227,15 @@ int TCache::MakeMaps()
 // TBD do it using tensor
 std::shared_ptr<arrow::Table> TCache::Slice(std::string tableName, int64_t offset, int64_t length)
 {
-  auto arrTable = GetTable(tableName);
+  auto ttable = GetTable(tableName);
   // No table by this name
-  if (nullptr == arrTable) {
+  if (nullptr == ttable) {
     return nullptr;
   }
-  
-  auto slicedTable = arrTable->Slice(offset, length);
-  return slicedTable;
-  
+
+  // TBD does not work
+  //auto slicedTable = arrTable->Slice(offset, length);
+  //return slicedTable;
+  return nullptr;
 }
 }

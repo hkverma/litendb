@@ -96,6 +96,10 @@ private:
 
 };
 
+inline int64_t TColumn::NumRows()
+{
+  return numRows_;
+}
 
 /// Get number of blocks
 inline int64_t TColumn::NumBlocks()
