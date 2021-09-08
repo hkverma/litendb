@@ -26,7 +26,7 @@ public:
                                                     std::shared_ptr<arrow::RecordBatch> rb,
                                                     int64_t numRows=-1);
 
-  TResult<std::shared_ptr<TBlock>> GetBlock(int colNum);
+  std::shared_ptr<TBlock> GetBlock(int colNum);
   
   ~TRowBlock() { }
 
@@ -57,5 +57,22 @@ struct TRowBlock::MakeSharedEnabler : public TRowBlock
 {
   MakeSharedEnabler() : TRowBlock() { }
 };
-  
+
+inline std::shared_ptr<TBlock> TRowBlock::GetBlock(int colNum)
+{
+  if (colNum < 0 || colNum >= blocks_.size())
+    return nullptr;
+  return blocks_[colNum];
+}
+
+inline int64_t TRowBlock::NumColumns()
+{
+  return blocks_.size();
+}
+
+inline int64_t TRowBlock::NumRows()
+{
+  return numRows_;
+}
+
 }

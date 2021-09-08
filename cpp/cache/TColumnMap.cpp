@@ -73,6 +73,7 @@ TResult<std::shared_ptr<TColumnMap>> TColumnMap::Create(std::shared_ptr<TColumn>
       break ;
     }
   }
+  tColumn->SetMap(colMap);
   return colMap;
 }
 

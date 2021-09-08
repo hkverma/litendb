@@ -50,7 +50,9 @@ TResult<std::shared_ptr<TRowBlock>> TRowBlock::Create(std::shared_ptr<TTable> tt
   
   for (auto arr : arrs)
   {
-    auto blk = TBlock::Create(arr);
+    auto blkResult = TBlock::Create(arr);
+    LITEN_RETURN_IF(!blkResult.status().ok(), blkResult.status());
+    auto blk = blkResult.ValueOrDie();
     trb->blocks_.push_back(blk);
     assert(numRows <= blk->GetArray()->length());
   }

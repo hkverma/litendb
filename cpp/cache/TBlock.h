@@ -11,7 +11,7 @@ public:
   /// Wrap Arrow array in TBlock
   /// Create a TBlock, if one already exists with the given arr, return that
   /// @param arr arrow::Array for which we need to create TBlock
-  static std::shared_ptr<TBlock> Create(std::shared_ptr<arrow::Array> arr);
+  static TResult<std::shared_ptr<TBlock>> Create(std::shared_ptr<arrow::Array> arr);
     
   /// Destruct the array, nothing here for now
   ~TBlock() { }
@@ -19,11 +19,11 @@ public:
   /// Get Raw Array, Use it judiciously, prefer to add an access method
   std::shared_ptr<arrow::Array> GetArray();
 
-  /// Get TBlock for a given array
+  /// Get TBlock for a given array, return nullptr if not found
   static std::shared_ptr<TBlock> GetTBlock(std::shared_ptr<arrow::Array> arr);
     
   /// Add TBlock to the lookup list
-  static TStatus  AddTBlock(std::shared_ptr<TBlock> blk);
+  static TStatus AddTBlock(std::shared_ptr<TBlock> blk);
     
 private:
 

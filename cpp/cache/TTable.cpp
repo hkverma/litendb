@@ -95,13 +95,12 @@ void TTable::PrintTable()
     {
       auto numRows = rb->NumRows();
       
-      auto tblkResult = std::move(rb->GetBlock(j));
-      if (!tblkResult.ok())
+      auto tblk = rb->GetBlock(j);
+      if (!tblk)
       {
-        ss << "Error Msg:" << tblkResult.status().ToString();
+        ss << "Error Getting block for rowblock";
         continue;
       }
-      std::shared_ptr<TBlock> tblk = tblkResult.ValueOrDie();
       auto arr = tblk->GetArray();
       
       assert (numRows <= arr->length());
@@ -130,7 +129,6 @@ void TTable::PrintTable()
 // TBD move to TColumn
 int TTable::MakeMaps()
 {
-  maps_.resize(NumColumns());
   for (int64_t cnum=0; cnum<NumColumns(); cnum++)
   {
     std::shared_ptr<TColumn> col = GetColumn(cnum);
@@ -140,7 +138,6 @@ int TTable::MakeMaps()
       TLOG(ERROR) << "Could not create maps" ;
       return -1;
     }
-    maps_[cnum] = colResult.ValueOrDie();
   }
   return 0;
 }
@@ -149,9 +146,9 @@ void TTable::PrintMaps()
 {
   std::stringstream ss;
   for (int colNum = 0; colNum < NumColumns(); colNum++) {
-    auto colMap = maps_[colNum];
+    /*    auto colMap = maps_[colNum];
     ss << "Col " << colNum;
-    /* TBD Do proper printing move to TColumn
+     TBD Do proper printing move to TColumn
     auto chArr = colMap->chunkedArray_;
     for (int arrNum = 0; arrNum<chArr->num_chunks(); arrNum++)
     {
@@ -208,10 +205,10 @@ TResult<std::shared_ptr<TRowBlock>> TTable::AppendRowBlock(std::shared_ptr<arrow
   // Now add all blocks to the columns
   for (auto i=0; i<rb->NumColumns(); i++)
   {
-    auto rblkResult = std::move(rb->GetBlock(i));
-    if (!rblkResult.ok())
-      return (rblkResult.status());
-    std::shared_ptr<TBlock> tblk = rblkResult.ValueOrDie();
+    auto tblk = rb->GetBlock(i);
+    if (!tblk) {
+      return TStatus::Invalid("GetBlock was not valid");
+    }
     auto status = columns_[i]->Add(tblk);
     if (!status.ok())
         return status;
@@ -242,6 +239,14 @@ TResult<std::shared_ptr<TSchema>> TTable::AddSchema(std::shared_ptr<arrow::Schem
   }
   schema_ = tschema;
   return schema_;
+}
+
+std::shared_ptr<TBlock> TTable::GetBlock(int64_t rbNum, int64_t colNum)
+{
+  auto rblk = GetRowBlock(rbNum);
+  if (!rblk) return nullptr;
+  auto blk = rblk->GetBlock(colNum);
+  return blk;
 }
 
 }

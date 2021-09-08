@@ -33,7 +33,10 @@ public:
   int64_t NumColumns();
 
   /// Get Columns for colNum
-  std::shared_ptr<TColumn> GetColumn(int32_t colNum);
+  std::shared_ptr<TColumn> GetColumn(int64_t colNum);
+
+  // GetBlock for given row and column
+  std::shared_ptr<TBlock> GetBlock(int64_t rbNum, int64_t colNum);
   
   /// Get row block numbers
   int64_t NumRowBlocks();
@@ -61,9 +64,7 @@ public:
   int MakeMaps();
   
   void PrintMaps();
-  // TBD get it from columns
-  std::shared_ptr<TColumnMap> GetColMap(int colNum);
-  std::shared_ptr<arrow::Array> GetArray(int64_t rowNum, int64_t colNum);
+
   std::string GetName();
 
   /// Type of table - dim or fact
@@ -140,11 +141,6 @@ private:
   // Add all columns to catalog TBD Catalog cleanups
   TStatus AddToCatalog();
       
-  // Table Maps
-  // TODO One copy should be sufficient, multiple copies will not make it faster
-  int32_t numMapCopies_ = 0;
-  std::vector<std::shared_ptr<TColumnMap>> maps_;
-    
 };
 
 // Enable shared_ptr with private constructors
@@ -156,11 +152,6 @@ struct TTable::MakeSharedEnabler : public TTable {
 inline std::shared_ptr<TSchema> TTable::GetSchema()
 {
   return schema_;
-}
-
-inline std::shared_ptr<TColumnMap> TTable::GetColMap(int colNum)
-{
-  return maps_[colNum];
 }
 
 inline std::string TTable::GetName()
@@ -178,7 +169,7 @@ inline int64_t TTable::NumColumns()
   return columns_.size();
 }
   
-inline std::shared_ptr<TColumn> TTable::GetColumn(int32_t colNum)
+inline std::shared_ptr<TColumn> TTable::GetColumn(int64_t colNum)
 {
   if (colNum < 0 || colNum > columns_.size())
     return nullptr;
@@ -201,5 +192,5 @@ inline int64_t TTable::NumRows()
 {
   return numRows_;
 }
-
+  
 }
