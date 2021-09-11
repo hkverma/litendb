@@ -151,13 +151,12 @@ TResult<std::shared_ptr<TTable>> TCache::ReadCsv(std::string tableName,
   std::shared_ptr<arrow::csv::StreamingReader> reader = readerResult.ValueOrDie();
 
   // Schema is read from first batch, so should be same in all batches
-  arrow::Result<std::shared_ptr<arrow::RecordBatch>> rbResult = reader->Next();
+  std::shared_ptr<arrow::RecordBatch> rb;
+  auto rbResult = reader->ReadNext(&rb);
   if (!rbResult.ok()) {
-    TLOG(ERROR) << "Reading csv table= " << rbResult.status().ToString();
-    return TResult<std::shared_ptr<TTable>>(TStatus::IOError("Reading csv table= ", rbResult.status().ToString()));
-    std::cout << "Error: No data read in record batch" << std::endl;
+    TLOG(ERROR) << "Reading csv table= " << rbResult.ToString();
+    return TResult<std::shared_ptr<TTable>>(TStatus::IOError("Reading csv table= ", rbResult.ToString()));
   }
-  auto rb = rbResult.ValueOrDie();
   
   auto ttableResult = std::move(AddTable(tableName, type, ""));
   if (!ttableResult.ok()) {
@@ -167,8 +166,8 @@ TResult<std::shared_ptr<TTable>> TCache::ReadCsv(std::string tableName,
     return TResult<std::shared_ptr<TTable>>(TStatus::IOError("Reading csv table= ", ttableResult.status().ToString()));
   }
   ttable = ttableResult.ValueOrDie();
-  while (rbResult.ok()) {
-    auto rb = rbResult.ValueOrDie();
+
+  while (rb) {
     auto trbResult = std::move(AddRowBlock(ttable, rb));
     if (!trbResult.ok()) {
       // Handle CSV read error
@@ -176,6 +175,7 @@ TResult<std::shared_ptr<TTable>> TCache::ReadCsv(std::string tableName,
       TLOG(ERROR) << "Creating RowBlock from csv= " << trbResult.status().ToString();
       return TResult<std::shared_ptr<TTable>>(TStatus::IOError("Reading csv table= ", trbResult.status().ToString()));
     }
+    reader->ReadNext(&rb);
   }
 
   // Log table information

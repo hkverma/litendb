@@ -20,8 +20,8 @@ TResult<std::shared_ptr<TSchema>> TSchema::Create(std::string name,
         tschema->type_ == type &&
         tschema->name_ == name)
     {
-      TLOG(INFO) << "Creating an already existing schema by name=" << name;
-      return TResult<std::shared_ptr<TSchema>>(tschema);
+      TLOG(INFO) << "Created using an already existing schema by name=" << name;
+      return tschema;
     }
     return TStatus::AlreadyExists("Schema name=", name, " is already in use.");
   }
@@ -33,7 +33,7 @@ TResult<std::shared_ptr<TSchema>> TSchema::Create(std::string name,
   TStatus status = catalog->AddSchema(tschema);
   if (!status.ok())
   {
-    return TResult<std::shared_ptr<TSchema>>(status);
+    return status;
   }
   // By default all fields are metric, Join fields to create dim fields
   const arrow::FieldVector& fv = schema->fields();
@@ -41,7 +41,7 @@ TResult<std::shared_ptr<TSchema>> TSchema::Create(std::string name,
   {
     tschema->typeFields_[field] = (DimensionTable == tschema->type_)?FeatureField:MetricField;
   }
-  return TResult<std::shared_ptr<TSchema>>(tschema);
+  return tschema;
 }
 
 std::shared_ptr<arrow::Schema> TSchema::GetSchema()

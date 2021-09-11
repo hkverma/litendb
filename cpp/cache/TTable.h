@@ -48,7 +48,7 @@ public:
   TResult<std::shared_ptr<TRowBlock>> AddRowBlock(std::shared_ptr<arrow::RecordBatch> rb, int64_t numRows=-1);
 
   /// Add Schema 
-  TResult<std::shared_ptr<TSchema>> AddSchema(std::shared_ptr<arrow::Schema> schema, std::string schemaName);
+  TResult<std::shared_ptr<TSchema>> AddSchema(std::shared_ptr<arrow::Schema> schema);
   
   /// get schema of the table
   std::shared_ptr<TSchema> GetSchema();
@@ -115,14 +115,17 @@ public:
 private:
 
   /// Use named constructor only
-  TTable() : type_(FactTable), numRows_(0) { }
+  TTable() : type_(FactTable), numRows_(0), schema_(nullptr) { }
 
   /// Enable shared constructor
   struct MakeSharedEnabler;
     
-  /// Arrow table name, must be unique
+  /// table name, must be unique
   std::string name_;
     
+  /// Schema name associated with this table
+  std::string schemaName_;
+  
   /// Type of table -fact or dimension
   TableType type_;
     
