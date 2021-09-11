@@ -138,13 +138,13 @@ void TTable::PrintTable()
 }
 
 // Returns non-zero code if fails to make map
-// TBD move to TColumn
 int TTable::MakeMaps()
 {
   for (int64_t cnum=0; cnum<NumColumns(); cnum++)
   {
     std::shared_ptr<TColumn> col = GetColumn(cnum);
-    auto colResult = TColumnMap::Create(col);
+    // TBD reverseMap only for dimension tables
+    auto colResult = TColumnMap::Create(col, true, true);
     if (!colResult.ok())
     {
       TLOG(ERROR) << "Could not create maps" ;
@@ -255,7 +255,7 @@ TResult<std::shared_ptr<TSchema>> TTable::AddSchema(std::shared_ptr<arrow::Schem
   schema_ = tschema;
   columns_.resize(schema->num_fields());
   for (auto i=0; i<schema->num_fields(); i++) {
-    columns_[i] = std::make_shared<TColumn>(shared_from_this());
+    columns_[i] = std::make_shared<TColumn>(shared_from_this(), schema->field(i));
   }
   return schema_;
 }

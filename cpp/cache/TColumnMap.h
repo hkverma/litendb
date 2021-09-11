@@ -22,7 +22,9 @@ class TColumnMap
 {
 public:
   /// Use Create to get the correct ColumnMap for the given type
-  static TResult<std::shared_ptr<TColumnMap>> Create(std::shared_ptr<TColumn> tColumn);
+  static TResult<std::shared_ptr<TColumnMap>> Create(std::shared_ptr<TColumn> tColumn,
+                                                     bool ifZoneMap,
+                                                     bool ifReverseMap);
   
   // TBD needs to be templated for min-max types
   virtual bool GetMin(int64_t arrNum, int64_t& minVal)
@@ -50,22 +52,33 @@ public:
     return false;
   }
   
-  virtual bool IfValidMap()
+  virtual bool IfValidZoneMap()
+  {
+    return false;
+  }
+  
+  virtual bool IfValidReverseMap()
   {
     return false;
   }
   
   /// Use named constructor Create instead
-  TColumnMap(std::shared_ptr<TColumn> tColumn) :
-    tColumn_(tColumn)
+  TColumnMap(std::shared_ptr<TColumn> tColumn, bool ifZoneMap, bool ifReverseMap) :
+    tColumn_(tColumn), ifZoneMap_(ifZoneMap), ifReverseMap_(ifReverseMap)
   {  }
   
   virtual ~TColumnMap() { }
 
-private:
+protected:
   
   /// arrow chunked array for which map is built
   std::shared_ptr<TColumn> tColumn_;
+
+  /// Create zoneMap if true
+  bool ifZoneMap_;
+
+  /// Create reverseMap if true
+  bool ifReverseMap_;
 
 };
 
@@ -77,7 +90,9 @@ class TInt64ColumnMap : public TColumnMap
 {
 public:
     
-  static TResult<std::shared_ptr<TInt64ColumnMap>> Create(std::shared_ptr<TColumn> tColumn);
+  static TResult<std::shared_ptr<TInt64ColumnMap>> Create(std::shared_ptr<TColumn> tColumn,
+                                                          bool ifZoneMap,
+                                                          bool ifReverseMap);
 
   virtual bool GetMin(int64_t arrNum, int64_t& minVal)
   {
@@ -90,26 +105,32 @@ public:
     maxVal = max_[arrNum];
     return true;
   }
-  virtual bool IfValidMap()
+  virtual bool IfValidZoneMap()
   {
-    return true;
+    return ifZoneMap_;
   }
 
+  virtual bool IfValidReverseMap()
+  {
+    return ifReverseMap_;
+  }
+  
   virtual bool GetReverseMap(int64_t& rowVal, int64_t& arrId, int64_t& rowId);
 
   virtual bool GetReverseMap(std::stringstream& ss);
 
   /// Use named constructor Create instead
-  TInt64ColumnMap(std::shared_ptr<TColumn> tColumn);
+  TInt64ColumnMap(std::shared_ptr<TColumn> tColumn, bool ifZoneMap, bool ifReverseMap);
 
 private:
   /// min, max
   std::vector<int64_t> min_, max_;
+  TStatus CreateZoneMap();
   
   /// Inverse maps from rowId to arrow::Array and offset within the array
   /// TBD can map to mulitple rows
   std::map<int64_t, std::pair<int64_t, int64_t>> reverseMap_;
-    
+  TStatus CreateReverseMap();
 };
 
   

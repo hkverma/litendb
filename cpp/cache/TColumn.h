@@ -15,7 +15,7 @@ class TColumn : public std::enable_shared_from_this<TColumn>
 public:
 
   /// Construct a column
-  TColumn(std::shared_ptr<TTable> table) : table_(table), map_(nullptr), numRows_(0) { }
+  TColumn(std::shared_ptr<TTable> table, std::shared_ptr<arrow::Field> field) : table_(table), map_(nullptr), numRows_(0), field_(field) { }
 
   /// Add TBlock to Column
   TStatus Add(std::shared_ptr<TBlock> tBlock);
@@ -30,10 +30,10 @@ public:
   std::shared_ptr<TBlock> GetBlock(int64_t blkNum);
 
   /// Create a column map - this includes min-max and reverse index
-  TStatus CreateMap();
+  TStatus CreateMap(bool zoneMap, bool reverseMap);
 
   /// Get map for this column
-  std::shared_ptr<TColumnMap> GetMap();
+  std::shared_ptr<TColumnMap> GetMap() { return map_; }
 
   /// Get map for this column, only done by TColumnMap::Create
   void SetMap(std::shared_ptr<TColumnMap> map) { map_=map; }
@@ -87,6 +87,9 @@ private:
 
   /// total rows in columns
   int64_t numRows_;
+
+  /// field associated with this column
+  std::shared_ptr<arrow::Field> field_;
 
   /// Table to which this column belongs
   std::shared_ptr<TTable> table_;
@@ -171,7 +174,7 @@ bool TColumn::GetRowId(int64_t& arrId,            // Output array Id
                        int64_t& rowId,             // output Row Id
                        Type& value)                // Input Value
 {
-  if (map_ && map_->IfValidMap())
+  if (map_ && map_->IfValidReverseMap())
   {
     bool found = map_->GetReverseMap(value, arrId, rowId);
     return found;

@@ -16,9 +16,9 @@ TStatus TColumn::Add(std::shared_ptr<TBlock> tBlock)
   return TStatus::OK();
 }
 
-TStatus TColumn::CreateMap()
+TStatus TColumn::CreateMap(bool zoneMap, bool reverseMap)
 {
-  auto colMapResult = TColumnMap::Create(shared_from_this());
+  auto colMapResult = TColumnMap::Create(shared_from_this(), zoneMap, reverseMap);
   return colMapResult.status();
 }
 
