@@ -38,6 +38,14 @@ public:
   std::shared_ptr<arrow::Schema> GetSchema();
 
   using SchemaField = std::pair<std::shared_ptr<TSchema>, std::shared_ptr<arrow::Field>>;
+  
+  /// Get Parent Schema and Field
+  TResult<SchemaField> GetParentField(int i);
+  TResult<TSchema::SchemaField> GetParentField(const std::string& fieldName) const;
+  
+  /// Get child schema and field
+  TResult<SchemaField> GetChildField(int i) const;
+  TResult<TSchema::SchemaField> GetChildField(const std::string& fieldName) const;
 
   /// joins this schema (child) field_id to parent[schema, field_id]
   TStatus Join(std::string fieldName,

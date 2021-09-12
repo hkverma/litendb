@@ -131,6 +131,10 @@ private:
     
   /// Tables consist of columnar series
   std::vector<std::shared_ptr<TColumn>> columns_;
+
+  /// Joined parent tables of the tensor
+  std::vector<std::shared_ptr<TColumn>> parentColumns_;
+  std::vector<int64_t> parentColumnId_;
     
   /// Tables consist of columnar series
   std::vector<std::shared_ptr<TRowBlock>> rowBlocks_;

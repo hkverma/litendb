@@ -142,6 +142,26 @@ int TTable::MakeMaps()
 {
   for (int64_t cnum=0; cnum<NumColumns(); cnum++)
   {
+    auto schemaFieldResult = std::move(schema_->GetParentField(cnum));
+    if (!schemaFieldResult.ok())
+    {
+      TLOG(ERROR) << "Invalid parent schema field";
+    }
+    else
+    {
+      auto schemaField = schemaFieldResult.ValueOrDie();
+      auto tschema = schemaField.first;
+      auto field = schemaField.second;
+      if (nullptr != tschema && nullptr != field)
+      {
+        int fieldId = tschema->GetSchema()->GetFieldIndex(field->name());
+        if (fieldId != -1)
+        {
+          // TBD
+          continue;
+        }
+      }
+    }
     std::shared_ptr<TColumn> col = GetColumn(cnum);
     // TBD reverseMap only for dimension tables
     auto colResult = TColumnMap::Create(col, true, true);
@@ -238,6 +258,7 @@ TResult<std::shared_ptr<TRowBlock>> TTable::AddRowBlock(std::shared_ptr<arrow::R
 // Add Schema to the table
 TResult<std::shared_ptr<TSchema>> TTable::AddSchema(std::shared_ptr<arrow::Schema> schema)
 {
+  
   if (schemaName_.empty()) {
     schemaName_ = name_+"_schema";
   }
@@ -251,13 +272,19 @@ TResult<std::shared_ptr<TSchema>> TTable::AddSchema(std::shared_ptr<arrow::Schem
     }
     tschema = tschemaResult.ValueOrDie();
   }
+  
   // TBD what if schema is not null
   schema_ = tschema;
   columns_.resize(schema->num_fields());
+  parentColumns_.resize(schema->num_fields());
+  parentColumnId_.resize(schema->num_fields());
   for (auto i=0; i<schema->num_fields(); i++) {
     columns_[i] = std::make_shared<TColumn>(shared_from_this(), schema->field(i));
+    parentColumns_[i] = nullptr;
+    parentColumnId_[i] = 0;
   }
   return schema_;
+  
 }
 
 std::shared_ptr<TBlock> TTable::GetBlock(int64_t rbNum, int64_t colNum)

@@ -174,4 +174,62 @@ std::string TSchema::ToString()
   }
 }
 
+TResult<TSchema::SchemaField> TSchema::GetParentField(int i)
+{
+  if (i < 0 || i > schema_->num_fields())
+  {
+    return TStatus::IndexError("Schema out of index=", i);
+  }
+  auto itr = parentFields_.find(schema_->field(i));
+  if (parentFields_.end() != itr)
+  {
+    return itr->second;
+  }
+  return std::make_pair(nullptr,nullptr);
+}
+
+TResult<TSchema::SchemaField> TSchema::GetParentField(const std::string& fieldName) const
+{
+  std::shared_ptr<arrow::Field> field = schema_->GetFieldByName(fieldName);
+  if (nullptr == field)
+  {
+    return TStatus::IndexError("Schema incorrect field name=", fieldName);
+  }
+  auto itr = parentFields_.find(field);
+  if (parentFields_.end() != itr)
+  {
+    return itr->second;
+  }
+  return std::make_pair(nullptr,nullptr);
+}
+
+TResult<TSchema::SchemaField> TSchema::GetChildField(int i) const
+{
+  if (i < 0 || i > schema_->num_fields())
+  {
+    return TStatus::IndexError("Schema out of index=", i);
+  }
+  auto itr = childFields_.find(schema_->field(i));
+  if (parentFields_.end() != itr)
+  {
+    return itr->second;
+  }
+  return std::make_pair(nullptr,nullptr);
+}
+
+TResult<TSchema::SchemaField> TSchema::GetChildField(const std::string& fieldName) const
+{
+  std::shared_ptr<arrow::Field> field = schema_->GetFieldByName(fieldName);
+  if (nullptr == field)
+  {
+    return TStatus::IndexError("Schema incorrect field name=", fieldName);
+  }
+  auto itr = childFields_.find(field);
+  if (childFields_.end() != itr)
+  {
+    return itr->second;
+  }
+  return std::make_pair(nullptr,nullptr);
+}
+
 }

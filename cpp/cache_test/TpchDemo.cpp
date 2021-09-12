@@ -401,6 +401,17 @@ std::shared_ptr<std::unordered_map<std::string, double>> TpchDemo::Query5Serial(
 
     countExtraTime = true;
     extraTimer.Start();
+    //
+    // oOrderdateValue = lineitem_table[lOrderKeyValue][o_orderdate]
+    // if (oOrderdateValue < date19950101Value || oOrderdateValue > date19951231Value)
+    //   continue;
+    //
+    // sNationKeyValue = lineitem_table[lSuppkeyValue][[s_nationkey]
+    // nRegionKeyValue = lineitem_table[sNationKeyValue][n_regionkey]
+    //
+    // if (nRegionKeyValue != 3)
+    //  continue;
+    //
     // l_orderkey = o_orderkey
     // and o_orderdate >= date '1995-01-01'
     // and o_orderdate < date '1995-01-01' + interval '1' year
