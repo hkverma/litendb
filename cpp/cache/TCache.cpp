@@ -185,42 +185,36 @@ TResult<std::shared_ptr<TTable>> TCache::ReadCsv(std::string tableName,
 }
 
 // TBD modify these
-int TCache::MakeMaps(std::string tableName)
+TStatus TCache::CreateMaps(std::string tableName)
 {
   auto ttable = TCatalog::GetInstance()->GetTable(tableName);
-  int result = MakeMaps(ttable);
+  auto result = CreateMaps(ttable);
   return result;
 }
 
-int TCache::MakeMaps(std::shared_ptr<TTable> ttable)
+TStatus TCache::CreateMaps(std::shared_ptr<TTable> ttable)
 {
   if (nullptr == ttable)
   {
-    TLOG(ERROR) << "Failed to create data-tensor. Did not find in cache table " << ttable->GetName();
-    return 1;
+    return TStatus::Invalid("Failed to create data-tensor. Did not find in cache table ", ttable->GetName());
   }
-  // TBD Are numCopies needed? remove it.
-  int result = ttable->MakeMaps();
-  if (result)
-  {
-    TLOG(ERROR) << "Found table " << ttable->GetName() << " but failed to create data tensor";
-  }
+  auto result = std::move(ttable->CreateMaps());
   return result;
 }
 
-int TCache::MakeMaps()
+TStatus TCache::CreateMaps()
 {
   auto& tables = TCatalog::GetInstance()->GetTableMap();
-  int result = 0;
   for (auto it=tables.begin(); it != tables.end(); it++)
   {
     auto table = it->second;
-    if (MakeMaps(table))
+    auto status = std::move(CreateMaps(table));
+    if (!status.ok())
     {
-      result = 1;
+      return status;
     }
   }
-  return result;
+  return TStatus::OK();
 }
 
 // This gives a slice from offset from beginning of length length

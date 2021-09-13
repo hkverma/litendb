@@ -61,7 +61,7 @@ public:
 
   /// TBD Clean these up with tensor values
   /// Inverted maps and min-max zones
-  int MakeMaps();
+  TStatus CreateMaps();
   
   void PrintMaps();
 

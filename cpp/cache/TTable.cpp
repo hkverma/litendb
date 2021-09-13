@@ -138,40 +138,42 @@ void TTable::PrintTable()
 }
 
 // Returns non-zero code if fails to make map
-int TTable::MakeMaps()
+TStatus TTable::CreateMaps()
 {
+  TStatus status;
   for (int64_t cnum=0; cnum<NumColumns(); cnum++)
   {
     auto schemaFieldResult = std::move(schema_->GetParentField(cnum));
     if (!schemaFieldResult.ok())
     {
-      TLOG(ERROR) << "Invalid parent schema field";
+      return TStatus::Invalid("Invalid parent schema field");
     }
-    else
+    auto schemaField = schemaFieldResult.ValueOrDie();
+    auto tschema = schemaField.first;
+    auto field = schemaField.second;
+    if (nullptr != tschema && nullptr != field)
     {
-      auto schemaField = schemaFieldResult.ValueOrDie();
-      auto tschema = schemaField.first;
-      auto field = schemaField.second;
-      if (nullptr != tschema && nullptr != field)
+      int fieldId = tschema->GetSchema()->GetFieldIndex(field->name());
+      if (fieldId != -1)
       {
-        int fieldId = tschema->GetSchema()->GetFieldIndex(field->name());
-        if (fieldId != -1)
-        {
-          // TBD
-          continue;
-        }
+        // TBD
+        continue;
       }
     }
+
     std::shared_ptr<TColumn> col = GetColumn(cnum);
-    // TBD reverseMap only for dimension tables
-    auto colResult = TColumnMap::Create(col, true, true);
+    auto colResult = TColumnMap::Create(col);
     if (!colResult.ok())
     {
-      TLOG(ERROR) << "Could not create maps" ;
-      return -1;
+      return colResult.status();
     }
+    auto colMap = colResult.ValueOrDie();
+    
+    status = colMap->CreateZoneMap();
+    // TBD reverseMap only for dimension tables
+    status = colMap->CreateReverseMap();
   }
-  return 0;
+  return status;
 }
 
 void TTable::PrintMaps()

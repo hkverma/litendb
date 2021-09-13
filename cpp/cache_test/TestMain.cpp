@@ -120,10 +120,10 @@ int main(int argc, char** argv) {
   for (int32_t i=1; i<TpchDemo::tableNames.size(); i++)
   {
     auto tableName = TpchDemo::tableNames[i];
-    int result = tCache->MakeMaps(tableName);
-    if (result)
+    auto result = tCache->CreateMaps(tableName);
+    if (!result.ok())
     {
-      LOG(ERROR) << "Failed to create maps for " << tableName;
+      LOG(ERROR) << "Failed to create maps for " << tableName << "with msg=" << result.message();
     }
     else
     {

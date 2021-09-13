@@ -18,8 +18,19 @@ TStatus TColumn::Add(std::shared_ptr<TBlock> tBlock)
 
 TStatus TColumn::CreateMap(bool zoneMap, bool reverseMap)
 {
-  auto colMapResult = TColumnMap::Create(shared_from_this(), zoneMap, reverseMap);
-  return colMapResult.status();
+  auto colMapResult = std::move(TColumnMap::Create(shared_from_this()));
+  LITEN_RETURN_IF(!colMapResult.status().ok(), colMapResult.status());
+  auto colMap = colMapResult.ValueOrDie();
+  TStatus status;
+  if (zoneMap)
+  {
+    status = colMap->CreateZoneMap();
+  }
+  if (reverseMap)
+  {
+    status = colMap->CreateReverseMap(); 
+  }
+  return status;
 }
 
 }

@@ -177,9 +177,13 @@ bool TColumn::GetRowId(int64_t& arrId,            // Output array Id
   if (map_ && map_->IfValidReverseMap())
   {
     bool found = map_->GetReverseMap(value, arrId, rowId);
+    if (!found)
+      TLOG(INFO) << "Not found value " << value << " for field=" << field_->name();
     return found;
   }
 
+  TLOG(INFO) << "No reverse map for field=" << field_->name();
+  
   // Linear search if no map found
   for (arrId=0; arrId <blocks_.size(); arrId++)
   {

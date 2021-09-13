@@ -98,11 +98,11 @@ public:
   std::shared_ptr<TSchema> GetSchema(std::string schemaName) const;  
   
   /// Make maps for a given schema name
-  int MakeMaps(std::string tableName);
-  int MakeMaps(std::shared_ptr<TTable> ttable);
+  TStatus CreateMaps(std::string tableName);
+  TStatus CreateMaps(std::shared_ptr<TTable> ttable);
     
   /// Make maps for all dimension tables
-  int MakeMaps();
+  TStatus CreateMaps();
 
 
   // TBD

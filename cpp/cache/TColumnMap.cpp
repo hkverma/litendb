@@ -12,17 +12,17 @@ namespace liten
 // go through the list and collect min & max
 // arrow::builder.cc check L22 for the types shown below
 //
-TResult<std::shared_ptr<TColumnMap>> TColumnMap::Create(std::shared_ptr<TColumn> tColumn,
-                                                        bool ifZoneMap,
-                                                        bool ifReverseMap)
+
+// By looking at the column ID type, it creates the correct ColumnMap.
+TResult<std::shared_ptr<TColumnMap>> TColumnMap::Create(std::shared_ptr<TColumn> tColumn)
 {
   if (0 == tColumn->NumBlocks())
   {
     return TStatus::Invalid("Empty Columnar data");
   }
   
-  std::shared_ptr<TColumnMap> colMap = std::make_shared<TColumnMap>(tColumn, ifZoneMap, ifReverseMap);
-
+  std::shared_ptr<TColumnMap> colMap = nullptr;
+  
   auto idType = tColumn->GetBlock(0)->GetArray()->type()->id();
   for (auto i=0; i<tColumn->NumBlocks(); i++)
   {
@@ -31,6 +31,7 @@ TResult<std::shared_ptr<TColumnMap>> TColumnMap::Create(std::shared_ptr<TColumn>
       return TStatus::Invalid("Different type of data in the same column");
     }
   }
+  
   switch (idType)
   {
     /* TBD
@@ -40,68 +41,46 @@ TResult<std::shared_ptr<TColumnMap>> TColumnMap::Create(std::shared_ptr<TColumn>
        case UInt64:
     */
   case arrow::Int64Type::type_id:
-    {
-      auto colMapResult = TInt64ColumnMap::Create(tColumn, ifZoneMap, ifReverseMap);
-      if (!colMapResult.ok())
-      {
-        return colMapResult.status();
-      }
-      colMap = colMapResult.ValueOrDie();
-      
-      break;
-    }
-    /* TBD
-       case Date32:
-       case Date64:
-       case Duration:
-       case Time32:
-       case Time64:
-       case Timestamp:
-       case MonthInterval:
-       case DayTimeInterval:
-       case Boolean:
-       case HalfFloat:
-       case Float:
-       case Double:
-       case String:
-       case Binary:
-       case LargeString:
-       case LargeBinary:
-       case FixedSizeBinary:
-       case Decimal128:
-    */
-  default:
-    {
-      break ;
-    }
+  {
+    colMap = std::make_shared<TInt64ColumnMap>(tColumn);
+    break;
   }
+  /* TBD
+     case Date32:
+     case Date64:
+     case Duration:
+     case Time32:
+     case Time64:
+     case Timestamp:
+     case MonthInterval:
+     case DayTimeInterval:
+     case Boolean:
+     case HalfFloat:
+     case Float:
+     case Double:
+     case String:
+     case Binary:
+     case LargeString:
+     case LargeBinary:
+     case FixedSizeBinary:
+     case Decimal128:
+  */
+  default:
+  {
+    colMap = std::make_shared<TColumnMap>(tColumn);
+    break ;
+  }
+  }
+  
   tColumn->SetMap(colMap);
   return colMap;
 }
 
-TInt64ColumnMap::TInt64ColumnMap(std::shared_ptr<TColumn> tColumn, bool ifZoneMap, bool ifReverseMap)
-  : TColumnMap(tColumn, ifZoneMap, ifReverseMap)
+TInt64ColumnMap::TInt64ColumnMap(std::shared_ptr<TColumn> tColumn)
+  : TColumnMap(tColumn)
 {
   min_.resize(tColumn->NumBlocks(), std::numeric_limits<int64_t>::min());
   max_.resize(tColumn->NumBlocks(), std::numeric_limits<int64_t>::max());
-}
-
-TResult<std::shared_ptr<TInt64ColumnMap>> TInt64ColumnMap::Create(std::shared_ptr<TColumn> tColumn,
-                                                                  bool ifZoneMap,
-                                                                  bool ifReverseMap)
-{
-  std::shared_ptr<TInt64ColumnMap> mapArr = std::make_shared<TInt64ColumnMap>(tColumn, ifZoneMap, ifReverseMap);
-  if (mapArr->ifZoneMap_)
-  {
-    TStatus status = mapArr->CreateZoneMap();
-    LITEN_RETURN_IF(!status.ok(), status);
-  }
-  if (mapArr->ifReverseMap_)
-  {
-    TStatus status = mapArr->CreateReverseMap();
-    LITEN_RETURN_IF(!status.ok(), status);
-  }
-  return mapArr;
 }
 
 TStatus TInt64ColumnMap::CreateZoneMap()
@@ -133,6 +112,7 @@ TStatus TInt64ColumnMap::CreateZoneMap()
       maxVal = (rowVal > maxVal)?rowVal:maxVal;
     }
   }
+  ifZoneMap_ = true;  
   return TStatus::OK();
 }
 
@@ -154,6 +134,7 @@ TStatus TInt64ColumnMap::CreateReverseMap()
       reverseMap_.insert(std::make_pair(rowVal, std::make_pair(blkNum, rowId)));
     }
   }
+  ifReverseMap_ = true;
   return TStatus::OK();
 }
 
