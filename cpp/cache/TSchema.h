@@ -55,6 +55,9 @@ public:
   /// JSon string represntation for schema
   std::string ToString();
 
+  /// Get the name of the schema
+  TStatus AddTable(std::shared_ptr<TTable> ttable);
+  
 private:
 
   /// Arrow array
@@ -63,6 +66,9 @@ private:
   /// Type of table defined by this schema
   TableType type_;
 
+  /// All tables associated with this schema
+  std::set<std::shared_ptr<TTable>> tables_;
+  
   /// Field types either dim or metric
   std::map<std::shared_ptr<arrow::Field>, FieldType> typeFields_;
 

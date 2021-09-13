@@ -232,4 +232,10 @@ TResult<TSchema::SchemaField> TSchema::GetChildField(const std::string& fieldNam
   return std::make_pair(nullptr,nullptr);
 }
 
+TStatus TSchema::AddTable(std::shared_ptr<TTable> ttable)
+{
+  tables_.insert(ttable);
+  return TStatus::OK();
+}
+
 }

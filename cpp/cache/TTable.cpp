@@ -283,6 +283,10 @@ TResult<std::shared_ptr<TSchema>> TTable::AddSchema(std::shared_ptr<arrow::Schem
     parentColumns_[i] = nullptr;
     parentColumnId_[i] = 0;
   }
+
+  // Add this table to schema
+  schema_->AddTable(shared_from_this());
+  
   return schema_;
   
 }
