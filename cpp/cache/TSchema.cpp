@@ -111,19 +111,35 @@ TStatus TSchema::SetFieldType(std::string fieldName, FieldType fieldType)
   return TStatus::OK();
 }
 
+TResult<FieldType> TSchema::GetFieldType(std::shared_ptr<arrow::Field> field) const
+{
+  auto fieldItr = typeFields_.find(field);
+  if (typeFields_.end() == fieldItr)
+  {
+    return TStatus::UnknownError("No field in liten schema found by name=", field->name());
+  }
+  return TResult<FieldType>(fieldItr->second);
+}
+
 TResult<FieldType> TSchema::GetFieldType(std::string fieldName) const
 {
-  std::shared_ptr<arrow::Field> field = schema_->GetFieldByName(fieldName);
+  std::shared_ptr<arrow::Field> field = std::move(schema_->GetFieldByName(fieldName));
   if (nullptr == field)
   {
     return TStatus::Invalid("No field found by name=", fieldName);
   }
-  auto fieldItr = typeFields_.find(field);
-  if (typeFields_.end() == fieldItr)
+  auto result = std::move(GetFieldType(field));
+  return result;
+}
+
+TResult<FieldType> TSchema::GetFieldType(int32_t colNum) const
+{
+  if (colNum < 0 || colNum>schema_->num_fields())
   {
-    return TStatus::UnknownError("No field in liten schema found by name=", fieldName);
+    return TStatus::Invalid("Incorrect column number=", colNum);
   }
-  return TResult<FieldType>(fieldItr->second);
+  auto result = std::move(GetFieldType(schema_->field(colNum)));
+  return result;
 }
 
 // Schema Json representation

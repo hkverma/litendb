@@ -24,13 +24,13 @@ public:
 
   static TResult<std::shared_ptr<TColumnMap>> Create(std::shared_ptr<TColumn> tColumn);
 
-  virtual TStatus CreateZoneMap()
+  virtual TStatus CreateZoneMap(bool forceCreate=false)
   {
     ifZoneMap_ = false;
     return TStatus::OK();
   }
   
-  virtual TStatus CreateReverseMap()
+  virtual TStatus CreateReverseMap(bool forceCreate=false)
   {
     ifReverseMap_ = false;
     return TStatus::OK();
@@ -103,9 +103,9 @@ public:
   /// Use named constructor Create instead
   TInt64ColumnMap(std::shared_ptr<TColumn> tColumn);
   
-  virtual TStatus CreateZoneMap();
+  virtual TStatus CreateZoneMap(bool forceCreate=false);
   
-  virtual TStatus CreateReverseMap();
+  virtual TStatus CreateReverseMap(bool forceCreate=false);
   
   virtual bool GetMin(int64_t arrNum, int64_t& minVal)
   {

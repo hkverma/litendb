@@ -301,4 +301,90 @@ std::shared_ptr<TBlock> TTable::GetBlock(int64_t rbNum, int64_t colNum)
   return blk;
 }
 
+// TBD
+TStatus TTable::CreateTensor()
+{
+  TStatus status;
+  std::string errmsg;
+  for (int64_t cnum=0; cnum<NumColumns(); cnum++)
+  {
+    auto schemaFieldResult = std::move(schema_->GetParentField(cnum));
+    if (!schemaFieldResult.ok())
+    {
+      return TStatus::Invalid("Invalid parent schema field");
+    }
+    auto schemaField = schemaFieldResult.ValueOrDie();
+    auto tschema = schemaField.first;
+    auto field = schemaField.second;
+    if (nullptr == tschema || nullptr == field)
+    {
+      errmsg.append("schema or field are null in schemaField pair; ");
+      continue;
+    }
+    auto resultField = tschema->GetFieldType(field);
+    if (!resultField.ok())
+    {
+      errmsg.append("Incorrect field in schemaField pair; ");
+      continue;
+    }
+    auto fieldType = resultField.ValueOrDie();
+    // Only for Dimension fields create tensors
+    if (DimensionField != fieldType)
+      continue;
+    
+    // Create the reverseIndex
+    std::shared_ptr<TColumn> col = GetColumn(cnum);
+    if (nullptr == col->GetMap())
+    {
+      auto colResult = TColumnMap::Create(col);
+      LITEN_RETURN_IF(!colResult.ok(), colResult.status());
+      auto colMap = colResult.ValueOrDie();
+      status = colMap->CreateReverseMap();
+      if (!status.ok())
+        continue;
+      
+      if (colMap->IfValidReverseMap())
+      {
+        errmsg.append("Could not create a valid reverse map; ");
+        continue;
+      }
+    }
+    
+    // Create the field lookup
+    status = CreateColumnLookUp(cnum, col, field);
+    if (!status.ok())
+    {
+      errmsg.append("column creation failed with msg=").append(status.message()).append("; ");
+    }
+  }
+
+  if (errmsg.empty())
+    return TStatus::OK();
+  return TStatus::Invalid(errmsg);
+}
+
+// TBD $$$$
+TStatus TTable::CreateColumnLookUp(int64_t cnum,
+                                   std::shared_ptr<TColumn> col,
+                                   std::shared_ptr<arrow::Field> field)
+{
+  
+  auto joinCol = std::make_shared<TColumn>(shared_from_this(), field);
+  for (auto i=0; i<col->NumBlocks(); i++)
+  {
+    auto arr = col->GetBlock(i)->GetArray();
+    //    std::unique_ptr<arrow::ArrayBuilder> arrBuild = std::make_unique(arrow::ArrayBuilder);
+    
+    //    auto arrBuilder = arrow::MakeBuilder(arrow::DefaultMemoryPool, arr->type(), &arr);
+
+    // $$$$$
+  // Iterate through the arrays of current column
+  // Look up reverse and create another array using MakeBuilder
+  // Add it to the column list now
+  // This is the pre-join step
+  //
+  }
+  return TStatus::OK();
+}
+
 }

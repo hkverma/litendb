@@ -83,8 +83,11 @@ TInt64ColumnMap::TInt64ColumnMap(std::shared_ptr<TColumn> tColumn)
   max_.resize(tColumn->NumBlocks(), std::numeric_limits<int64_t>::max());
 }
 
-TStatus TInt64ColumnMap::CreateZoneMap()
+TStatus TInt64ColumnMap::CreateZoneMap(bool forceCreate)
 {
+  if (!forceCreate && ifZoneMap_)
+    return TStatus::OK();
+  
   for (int64_t blkNum=0; blkNum<tColumn_->NumBlocks(); blkNum++)
   {
     int64_t& minVal = min_[blkNum];
@@ -116,8 +119,11 @@ TStatus TInt64ColumnMap::CreateZoneMap()
   return TStatus::OK();
 }
 
-TStatus TInt64ColumnMap::CreateReverseMap()
+TStatus TInt64ColumnMap::CreateReverseMap(bool forceCreate)
 {
+  if (!forceCreate && ifReverseMap_)
+    return TStatus::OK();
+  
   for (int64_t blkNum=0; blkNum<tColumn_->NumBlocks(); blkNum++)
   {
     std::shared_ptr<arrow::Array> arr = tColumn_->GetBlock(blkNum)->GetArray();

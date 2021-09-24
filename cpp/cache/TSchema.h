@@ -30,6 +30,8 @@ public:
 
   /// Get the field type
   TResult<FieldType> GetFieldType(std::string fieldName) const;
+  TResult<FieldType> GetFieldType(int32_t colNum) const;
+  TResult<FieldType> GetFieldType(std::shared_ptr<arrow::Field> field) const;
   
   /// Get the table type
   TableType GetType() const { return type_; }
