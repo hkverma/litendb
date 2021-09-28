@@ -32,7 +32,7 @@ public:
   TResult<FieldType> GetFieldType(std::string fieldName) const;
   TResult<FieldType> GetFieldType(int32_t colNum) const;
   TResult<FieldType> GetFieldType(std::shared_ptr<arrow::Field> field) const;
-  
+
   /// Get the table type
   TableType GetType() const { return type_; }
 
@@ -43,11 +43,11 @@ public:
   
   /// Get Parent Schema and Field
   TResult<SchemaField> GetParentField(int i);
-  TResult<TSchema::SchemaField> GetParentField(const std::string& fieldName) const;
+  TResult<SchemaField> GetParentField(const std::string& fieldName) const;
   
   /// Get child schema and field
   TResult<SchemaField> GetChildField(int i) const;
-  TResult<TSchema::SchemaField> GetChildField(const std::string& fieldName) const;
+  TResult<SchemaField> GetChildField(const std::string& fieldName) const;
 
   /// joins this schema (child) field_id to parent[schema, field_id]
   TStatus Join(std::string fieldName,

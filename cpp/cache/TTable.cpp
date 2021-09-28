@@ -84,7 +84,7 @@ TStatus TTable::AddToCatalog() {
   TStatus status = TCatalog::GetInstance()->AddTable(shared_from_this());
   return std::move(status);
 }
-*/  
+*/
 // Print Schema in logfile
 void TTable::PrintSchema()
 {
@@ -106,7 +106,7 @@ void TTable::PrintTable()
     for (int64_t j=0; i<NumColumns(); i++)
     {
       auto numRows = rb->NumRows();
-      
+
       auto tblk = rb->GetBlock(j);
       if (!tblk)
       {
@@ -114,7 +114,7 @@ void TTable::PrintTable()
         continue;
       }
       auto arr = tblk->GetArray();
-      
+
       assert (numRows <= arr->length());
       for (int64_t k=0; k<numRows; k++)
       {
@@ -168,7 +168,7 @@ TStatus TTable::CreateMaps()
       return colResult.status();
     }
     auto colMap = colResult.ValueOrDie();
-    
+
     status = colMap->CreateZoneMap();
     // TBD reverseMap only for dimension tables
     status = colMap->CreateReverseMap();
@@ -213,7 +213,7 @@ TResult<std::shared_ptr<TRowBlock>> TTable::AddRowBlock(std::shared_ptr<arrow::R
     return std::move(rb_result);
   }
   auto rb = rb_result.ValueOrDie();
-  
+
   // Check and create schema
   if (nullptr == schema_)
   {
@@ -253,14 +253,14 @@ TResult<std::shared_ptr<TRowBlock>> TTable::AddRowBlock(std::shared_ptr<arrow::R
   // Now add the rowblocks
   rowBlocks_.push_back(rb);
   numRows += rb->NumRows();
-  
+
   return rb_result;
 }
 
 // Add Schema to the table
 TResult<std::shared_ptr<TSchema>> TTable::AddSchema(std::shared_ptr<arrow::Schema> schema)
 {
-  
+
   if (schemaName_.empty()) {
     schemaName_ = name_+"_schema";
   }
@@ -274,7 +274,7 @@ TResult<std::shared_ptr<TSchema>> TTable::AddSchema(std::shared_ptr<arrow::Schem
     }
     tschema = tschemaResult.ValueOrDie();
   }
-  
+
   // TBD what if schema is not null
   schema_ = tschema;
   columns_.resize(schema->num_fields());
@@ -288,9 +288,9 @@ TResult<std::shared_ptr<TSchema>> TTable::AddSchema(std::shared_ptr<arrow::Schem
 
   // Add this table to schema
   schema_->AddTable(shared_from_this());
-  
+
   return schema_;
-  
+
 }
 
 std::shared_ptr<TBlock> TTable::GetBlock(int64_t rbNum, int64_t colNum)
@@ -301,63 +301,119 @@ std::shared_ptr<TBlock> TTable::GetBlock(int64_t rbNum, int64_t colNum)
   return blk;
 }
 
-// TBD
+// For this table - create all tensor structures
+//  If a column is of dimension type
+//    If child field exists - create reverseMap for all the dimension fields
+//    If parent field exists - create joinMap into the parent field table
 TStatus TTable::CreateTensor()
 {
   TStatus status;
   std::string errmsg;
-  for (int64_t cnum=0; cnum<NumColumns(); cnum++)
+
+  // Return field if field type is fieldType, adds any error message to errmsg
+  auto ifFieldType = [&](int32_t cnum, FieldType fieldType) -> bool
   {
-    auto schemaFieldResult = std::move(schema_->GetParentField(cnum));
+    if (nullptr == schema_)
+    {
+      errmsg.append("No schema with table=").append(name_);
+      return false;
+    }
+    auto fieldResultStatus = schema_->GetFieldType(cnum);
+    if (!fieldResultStatus.ok())
+    {
+      errmsg.append(StringBuilder("Invalid field type for col=", cnum, " msg=",
+                                  fieldResultStatus.status().message(), "; "));
+      return false;
+    }
+    auto curFieldType = fieldResultStatus.ValueOrDie();
+    if (curFieldType != fieldType)
+      return false;
+    return true;
+  };
+
+  auto ifValidFieldResult = [&](TResult<TSchema::SchemaField>& schemaFieldResult,
+                                std::shared_ptr<arrow::Field> field) -> bool
+  {
     if (!schemaFieldResult.ok())
     {
-      return TStatus::Invalid("Invalid parent schema field");
+      errmsg.append(StringBuilder("Invalid child schema field ",
+                                  schemaFieldResult.status().message(), "; "));
+      return false;
     }
     auto schemaField = schemaFieldResult.ValueOrDie();
     auto tschema = schemaField.first;
-    auto field = schemaField.second;
+    field = schemaField.second;
     if (nullptr == tschema || nullptr == field)
     {
       errmsg.append("schema or field are null in schemaField pair; ");
-      continue;
+      return false;
     }
     auto resultField = tschema->GetFieldType(field);
     if (!resultField.ok())
     {
       errmsg.append("Incorrect field in schemaField pair; ");
-      continue;
+      return false;
     }
     auto fieldType = resultField.ValueOrDie();
     // Only for Dimension fields create tensors
     if (DimensionField != fieldType)
-      continue;
-    
-    // Create the reverseIndex
+      return false;
+    return true;
+  };
+
+  for (int64_t cnum=0; cnum<NumColumns(); cnum++)
+  {
+
+
+    // Get current columns
     std::shared_ptr<TColumn> col = GetColumn(cnum);
-    if (nullptr == col->GetMap())
+    if (nullptr == col)
     {
-      auto colResult = TColumnMap::Create(col);
-      LITEN_RETURN_IF(!colResult.ok(), colResult.status());
-      auto colMap = colResult.ValueOrDie();
-      status = colMap->CreateReverseMap();
-      if (!status.ok())
-        continue;
-      
-      if (colMap->IfValidReverseMap())
+      errmsg.append("Null col in tensor creation; ");
+      continue;
+    }
+
+    // If not dimension field continue
+    if (!ifFieldType(cnum, DimensionField))
+      continue;
+
+   // If child field exists create a reverse lookup column
+    std::shared_ptr<arrow::Field> field;
+    auto schemaFieldResult = std::move(schema_->GetChildField(cnum));
+    if (ifValidFieldResult(schemaFieldResult, field))
+    {
+      if (nullptr == col->GetMap())
       {
-        errmsg.append("Could not create a valid reverse map; ");
-        continue;
+        auto colResult = TColumnMap::Create(col);
+        if (colResult.ok())
+        {
+          auto colMap = colResult.ValueOrDie();
+          status = colMap->CreateReverseMap();
+          if (colMap->IfValidReverseMap())
+          {
+            errmsg.append("Could not create a valid reverse map; ");
+          }
+        }
+        else
+        {
+          errmsg.append("Could not create column map; ");
+        }
       }
     }
-    
-    // Create the field lookup
-    status = CreateColumnLookUp(cnum, col, field);
-    if (!status.ok())
+
+    // If parent field exists, create a forward lookup column
+    schemaFieldResult = std::move(schema_->GetParentField(cnum));
+    if (ifValidFieldResult(schemaFieldResult, field))
     {
-      errmsg.append("column creation failed with msg=").append(status.message()).append("; ");
+      status = CreateColumnLookUp(cnum, col, field);
+      if (!status.ok())
+      {
+        errmsg.append("column creation failed with msg=").append(status.message()).append("; ");
+      }
     }
   }
 
+  // Non empty errmsg means that some tensors were not properly created
   if (errmsg.empty())
     return TStatus::OK();
   return TStatus::Invalid(errmsg);
@@ -368,21 +424,22 @@ TStatus TTable::CreateColumnLookUp(int64_t cnum,
                                    std::shared_ptr<TColumn> col,
                                    std::shared_ptr<arrow::Field> field)
 {
-  
+
   auto joinCol = std::make_shared<TColumn>(shared_from_this(), field);
   for (auto i=0; i<col->NumBlocks(); i++)
   {
     auto arr = col->GetBlock(i)->GetArray();
-    //    std::unique_ptr<arrow::ArrayBuilder> arrBuild = std::make_unique(arrow::ArrayBuilder);
-    
-    //    auto arrBuilder = arrow::MakeBuilder(arrow::DefaultMemoryPool, arr->type(), &arr);
+
+    // Build an array to join the data directly
+    //std::unique_ptr<arrow::ArrayBuilder> arrBuilder = std::make_unique(arrow::ArrayBuilder);
+    //auto arrBuilder = arrow::MakeBuilder(arrow::DefaultMemoryPool, arr->type(), &arrBuilder);
 
     // $$$$$
-  // Iterate through the arrays of current column
-  // Look up reverse and create another array using MakeBuilder
-  // Add it to the column list now
-  // This is the pre-join step
-  //
+    // Iterate through the arrays of current column
+    // Look up reverse and create another array using MakeBuilder
+    // Add it to the column list now
+    // This is the pre-join step
+    //
   }
   return TStatus::OK();
 }
