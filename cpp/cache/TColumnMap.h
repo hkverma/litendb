@@ -11,6 +11,8 @@
 // One column chunk stores numComponents of a single column of Liten
 // Arrow in memory, persistent in parquet format
 //
+// TBD Use Arrow Array to store Column Map data
+//
 
 namespace liten
 {

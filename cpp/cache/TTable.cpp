@@ -405,10 +405,13 @@ TStatus TTable::CreateTensor()
     schemaFieldResult = std::move(schema_->GetParentField(cnum));
     if (ifValidFieldResult(schemaFieldResult, field))
     {
-      status = CreateColumnLookUp(cnum, col, field);
-      if (!status.ok())
+      if (col->GetBlock(0)->GetArray()->type()->id() == arrow::Type::INT64)
       {
-        errmsg.append("column creation failed with msg=").append(status.message()).append("; ");
+        status = CreateColumnLookUp<int64_t, arrow::Int64Type, arrow::Int64Array>(cnum, col, field);
+        if (!status.ok())
+        {
+          errmsg.append("column creation failed with msg=").append(status.message()).append("; ");
+        }
       }
     }
   }
@@ -419,28 +422,74 @@ TStatus TTable::CreateTensor()
   return TStatus::Invalid(errmsg);
 }
 
-// TBD $$$$
+// Create a lookup column 
+template<class Type, class ValueType, class ArrayType>
 TStatus TTable::CreateColumnLookUp(int64_t cnum,
                                    std::shared_ptr<TColumn> col,
                                    std::shared_ptr<arrow::Field> field)
 {
 
   auto joinCol = std::make_shared<TColumn>(shared_from_this(), field);
+  
   for (auto i=0; i<col->NumBlocks(); i++)
   {
-    auto arr = col->GetBlock(i)->GetArray();
+    std::shared_ptr<arrow::NumericArray<ValueType>> arr =
+      std::dynamic_pointer_cast<arrow::NumericArray<ValueType>>(col->GetBlock(i)->GetArray());
+    if (nullptr == arr)
+    {
+      return TStatus::Invalid("Non numeric array not supported in Column lookups");
+    }
 
     // Build an array to join the data directly
-    //std::unique_ptr<arrow::ArrayBuilder> arrBuilder = std::make_unique(arrow::ArrayBuilder);
-    //auto arrBuilder = arrow::MakeBuilder(arrow::DefaultMemoryPool, arr->type(), &arrBuilder);
+    //    std::unique_ptr<arrow::<ValueType>> arrBaseBuilder;
+    //    auto status = arrow::MakeBuilder(arrow::default_memory_pool(), arr->type(), &arrBaseBuilder);
+    std::unique_ptr<arrow::NumericBuilder<ValueType>> arrBuilder = std::make_unique<arrow::NumericBuilder<ValueType>>(arr->type(), arrow::default_memory_pool());
 
-    // $$$$$
-    // Iterate through the arrays of current column
-    // Look up reverse and create another array using MakeBuilder
-    // Add it to the column list now
-    // This is the pre-join step
-    //
+    arrow::Status status = arrBuilder->Reserve(arr->length());
+    if (!status.ok())
+    {
+      return TStatus::Invalid(status.message());
+    }
+
+    for (auto rId=0; rId<arr->length(); rId++)
+    {
+      Type value = std::move(arr->Value(rId));
+      int64_t arrId, rowId;
+      arrow::Status status;
+      if (!col->GetRowId<Type,ArrayType>(arrId, rowId, value))
+      {
+        status = arrBuilder->AppendNull();
+      }
+      else
+      {
+        if (!col->GetValue<Type, ArrayType>(arrId, rowId, value))
+        {
+          status = arrBuilder->AppendNull();
+        }
+        else
+        {
+          status = arrBuilder->Append(value);
+        }
+      }
+      if (!status.ok())
+      {
+        return TStatus::Invalid(status.message());
+      }      
+    }
+    std::shared_ptr<arrow::Array> outArr;
+    status = arrBuilder->Finish(&outArr);
+    if (!status.ok())
+    {
+      return TStatus::Invalid(status.message());
+    }
+    auto blkResult = TBlock::Create(outArr);
+    if (!blkResult.ok())
+      return blkResult.status();
+    auto tStatus = joinCol->Add(blkResult.ValueOrDie());
+    if (!tStatus.ok())
+      return tStatus;
   }
+  parentColumns_[cnum] = joinCol;
   return TStatus::OK();
 }
 

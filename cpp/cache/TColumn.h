@@ -70,7 +70,8 @@ public:
                 int64_t& rowId,             // output Row Id
                 Type& value);                // Input Value
 
-  // Get value from a rowId 
+  // Get value from a rowId
+  // TBD Use TypeTraits<Type>::ArrayType to get to the array, builders, scalar etc.
   template<class Type, class ArrayType>
   bool GetValue(int64_t& rowId,  // rowId input
                 Type& value);      // output value

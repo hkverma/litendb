@@ -64,7 +64,9 @@ public:
   TStatus CreateMaps();
 
   /// This will create required maps and join columns for this table
-  TStatus CreateTensor();  
+  TStatus CreateTensor();
+
+  template<class Type, class ValueType, class ArrayType>
   TStatus CreateColumnLookUp(int64_t cnum,
                              std::shared_ptr<TColumn> col,
                              std::shared_ptr<arrow::Field> field);
