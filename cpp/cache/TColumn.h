@@ -14,7 +14,9 @@ class TColumn : public std::enable_shared_from_this<TColumn>
 {
 public:
 
-  /// Construct a column
+  /// Construct a column TBD
+  static TResult<std::shared_ptr<TColumn>> Create(std::shared_ptr<TTable> table, std::shared_ptr<arrow::Field> field);
+  
   TColumn(std::shared_ptr<TTable> table, std::shared_ptr<arrow::Field> field) : table_(table), map_(nullptr), numRows_(0), field_(field) { }
 
   /// Add TBlock to Column

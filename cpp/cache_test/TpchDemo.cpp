@@ -533,6 +533,78 @@ void TpchDemo::GetQuery5Revenue(int64_t chunkNum, double revenue[], int32_t mapN
   //  LOG(INFO) << ss.str() ;
 
 }
+// $$$$$$
+/*
+void TpchDemo::GetQuery5RevenueTensor(int64_t chunkNum, double revenue[])
+{
+  auto orderkey = std::static_pointer_cast<arrow::Int64Array>(lOrderkey->GetBlock(chunkNum)->GetArray());
+  auto suppkey = std::static_pointer_cast<arrow::Int64Array>(lSuppkey->GetBlock(chunkNum)->GetArray());
+  auto discount = std::static_pointer_cast<arrow::DoubleArray>(lDiscount->GetBlock(chunkNum)->GetArray());
+  auto quantity = std::static_pointer_cast<arrow::Int64Array>(lQuantity->GetBlock(chunkNum)->GetArray());
+  auto extendedprice = std::static_pointer_cast<arrow::DoubleArray>(lExtendedprice->GetBlock(chunkNum)->GetArray());
+  TStopWatch timer;
+  timer.Start();
+
+  int64_t ordersGetRowIdTime=0, ordersGetValTime=0, extraTime=0, scanTime=0, totalTime=0;
+  int64_t supplierGetRowIdTime=0, supplierGetValTime=0;
+  int64_t nationGetRowIdTime=0, nationGetValTime=0;
+
+  int64_t oOrderdateValue, sNationkeyValue, nRegionkeyValue;
+  int64_t rowId;
+  for (rowId=0; rowId<extendedprice->length(); rowId++)
+  {
+    // Get all values for the row first
+    auto lOrderkeyValue = orderkey->Value(rowId);
+    auto lSuppkeyValue = suppkey->Value(rowId);
+    auto lExtendedpriceValue = extendedprice->Value(rowId);
+    auto lDiscountValue = discount->Value(rowId);
+
+    // l_orderkey = o_orderkey
+    // and o_orderdate >= date '1995-01-01'
+    // and o_orderdate < date '1995-01-01' + interval '1' year
+    if (!tables_[orders]->JoinInner<int64_t, arrow::Int64Array>
+        (lOrderkeyValue, o_orderkey, ordersGetRowIdTime,
+         oOrderdateValue, o_orderdate, ordersGetValTime))
+      continue;
+    if (oOrderdateValue < date19950101Value || oOrderdateValue > date19951231Value)
+      continue;
+
+    // Filter on r_name
+    // l_suppkey = s_suppkey,
+    if ( !tables_[supplier]->JoinInner<int64_t, arrow::Int64Array>
+         (lSuppkeyValue, s_suppkey, supplierGetRowIdTime,
+          sNationkeyValue, s_nationkey, supplierGetValTime))
+      continue;
+
+    // s_nationkey = n_nationkey also get nation name
+    if ( !tables_[nation]->JoinInner<int64_t, arrow::Int64Array>
+         (sNationkeyValue, n_nationkey, nationGetRowIdTime,
+          nRegionkeyValue, n_regionkey, nationGetValTime))
+      continue;
+
+    // n_regionkey = r_regionkey
+    if (nRegionkeyValue != 3)
+      continue;
+
+    // add to revenue by nation key
+    revenue[sNationkeyValue] += (1-lDiscountValue)*lExtendedpriceValue;
+  }
+
+  timer.Stop();
+  std::stringstream ss;
+  ss << " " << "Query 5 Chunk " << chunkNum ;
+  ss << " " << "Rows = " << rowId << " Elapsed ms=" << timer.ElapsedInMicroseconds()/1000;
+  ss << " " << "Orders RowId Time ms= " << ordersGetRowIdTime/1000;
+  ss << " " << "Orders ValId Time ms= " << ordersGetValTime/1000;
+  ss << " " << "Supplier RowId Time ms= " << supplierGetRowIdTime/1000;
+  ss << " " << "Supplier ValId Time ms= " << supplierGetValTime/1000;
+  ss << " " << "Nation RowId Time ms= " << nationGetRowIdTime/1000;
+  ss << " " << "Nation ValId Time ms= " << nationGetValTime/1000;
+
+  //  LOG(INFO) << ss.str() ;
+
+  }*/
+// $$$$$$
 
 std::shared_ptr<std::unordered_map<std::string, double>> TpchDemo::Query5()
 {

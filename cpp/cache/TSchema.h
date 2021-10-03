@@ -39,15 +39,15 @@ public:
   /// Get Raw Array, Use it judiciously, prefer to add an access method
   std::shared_ptr<arrow::Schema> GetSchema();
 
-  using SchemaField = std::pair<std::shared_ptr<TSchema>, std::shared_ptr<arrow::Field>>;
+  using TSchemaField = std::pair<std::shared_ptr<TSchema>, std::shared_ptr<arrow::Field>>;
   
   /// Get Parent Schema and Field
-  TResult<SchemaField> GetParentField(int i);
-  TResult<SchemaField> GetParentField(const std::string& fieldName) const;
+  TResult<TSchemaField> GetParentField(int i);
+  TResult<TSchemaField> GetParentField(const std::string& fieldName) const;
   
   /// Get child schema and field
-  TResult<SchemaField> GetChildField(int i) const;
-  TResult<SchemaField> GetChildField(const std::string& fieldName) const;
+  TResult<TSchemaField> GetChildField(int i) const;
+  TResult<TSchemaField> GetChildField(const std::string& fieldName) const;
 
   /// joins this schema (child) field_id to parent[schema, field_id]
   TStatus Join(std::string fieldName,
@@ -75,7 +75,7 @@ private:
   std::map<std::shared_ptr<arrow::Field>, FieldType> typeFields_;
 
   /// Join columns - joins this schema (child) field_id to parent[schema, field_id]
-  std::map<std::shared_ptr<arrow::Field>, SchemaField> parentFields_;
+  std::map<std::shared_ptr<arrow::Field>, TSchemaField> parentFields_;
 
   /// Add parent fields to the schema
   void AddParentField(std::shared_ptr<arrow::Field> field,
@@ -83,7 +83,7 @@ private:
                       std::shared_ptr<arrow::Field> parentField);
 
   /// Join columns - list all child schema fields here
-  std::map<std::shared_ptr<arrow::Field>, SchemaField> childFields_;
+  std::map<std::shared_ptr<arrow::Field>, TSchemaField> childFields_;
 
   /// Add child fields to the schema
   void AddChildField(std::shared_ptr<arrow::Field> field,

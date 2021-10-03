@@ -171,7 +171,7 @@ TStatus TTable::CreateMaps()
 
     status = colMap->CreateZoneMap();
     // TBD reverseMap only for dimension tables
-    status = colMap->CreateReverseMap();
+    // status = colMap->CreateReverseMap();
   }
   return status;
 }
@@ -331,8 +331,8 @@ TStatus TTable::CreateTensor()
     return true;
   };
 
-  auto ifValidFieldResult = [&](TResult<TSchema::SchemaField>& schemaFieldResult,
-                                std::shared_ptr<arrow::Field> field) -> bool
+  auto ifValidFieldResult = [&](TResult<TSchema::TSchemaField>& schemaFieldResult,
+                                std::shared_ptr<arrow::Field>& field) -> bool
   {
     if (!schemaFieldResult.ok())
     {
@@ -357,14 +357,15 @@ TStatus TTable::CreateTensor()
     auto fieldType = resultField.ValueOrDie();
     // Only for Dimension fields create tensors
     if (DimensionField != fieldType)
+    {
+      errmsg.append("A child field must be dimension field; ");
       return false;
+    }
     return true;
   };
 
   for (int64_t cnum=0; cnum<NumColumns(); cnum++)
   {
-
-
     // Get current columns
     std::shared_ptr<TColumn> col = GetColumn(cnum);
     if (nullptr == col)

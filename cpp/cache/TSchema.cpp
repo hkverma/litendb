@@ -68,10 +68,12 @@ TStatus TSchema::Join(std::string fieldName,
     return TStatus::Invalid("Field name ", parentFieldName, " for schema ", parentSchema->GetName(), " does not exist.");
   }
 
+  // Mark the fields as dimension fields
+  typeFields_[field] = DimensionField;  
+  parentSchema->typeFields_[parentField] = DimensionField;
+  
   AddParentField(field, parentSchema, parentField);
   parentSchema->AddChildField(parentField, shared_from_this(), field);
-  
-  typeFields_[field] = DimensionField;
   
   return TStatus::OK();
 }
@@ -190,7 +192,7 @@ std::string TSchema::ToString()
   }
 }
 
-TResult<TSchema::SchemaField> TSchema::GetParentField(int i)
+TResult<TSchema::TSchemaField> TSchema::GetParentField(int i)
 {
   if (i < 0 || i > schema_->num_fields())
   {
@@ -204,7 +206,7 @@ TResult<TSchema::SchemaField> TSchema::GetParentField(int i)
   return std::make_pair(nullptr,nullptr);
 }
 
-TResult<TSchema::SchemaField> TSchema::GetParentField(const std::string& fieldName) const
+TResult<TSchema::TSchemaField> TSchema::GetParentField(const std::string& fieldName) const
 {
   std::shared_ptr<arrow::Field> field = schema_->GetFieldByName(fieldName);
   if (nullptr == field)
@@ -219,21 +221,21 @@ TResult<TSchema::SchemaField> TSchema::GetParentField(const std::string& fieldNa
   return std::make_pair(nullptr,nullptr);
 }
 
-TResult<TSchema::SchemaField> TSchema::GetChildField(int i) const
+TResult<TSchema::TSchemaField> TSchema::GetChildField(int i) const
 {
   if (i < 0 || i > schema_->num_fields())
   {
     return TStatus::IndexError("Schema out of index=", i);
   }
   auto itr = childFields_.find(schema_->field(i));
-  if (parentFields_.end() != itr)
+  if (childFields_.end() != itr)
   {
     return itr->second;
   }
   return std::make_pair(nullptr,nullptr);
 }
 
-TResult<TSchema::SchemaField> TSchema::GetChildField(const std::string& fieldName) const
+TResult<TSchema::TSchemaField> TSchema::GetChildField(const std::string& fieldName) const
 {
   std::shared_ptr<arrow::Field> field = schema_->GetFieldByName(fieldName);
   if (nullptr == field)

@@ -217,6 +217,21 @@ TStatus TCache::CreateMaps()
   return TStatus::OK();
 }
 
+TStatus TCache::CreateTensors()
+{
+  auto& tables = TCatalog::GetInstance()->GetTableMap();
+  for (auto it=tables.begin(); it != tables.end(); it++)
+  {
+    auto table = it->second;
+    auto status = std::move(table->CreateTensor());
+    if (!status.ok())
+    {
+      return status;
+    }
+  }
+  return TStatus::OK();
+}
+
 // This gives a slice from offset from beginning of length length
 // TBD do it using tensor
 std::shared_ptr<arrow::Table> TCache::Slice(std::string tableName, int64_t offset, int64_t length)

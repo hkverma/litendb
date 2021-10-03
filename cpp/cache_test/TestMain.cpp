@@ -89,6 +89,12 @@ int main(int argc, char** argv) {
   
   tpchDemo->PrintSchemas();
 
+  // Create Tensor
+  if (!tCache->CreateTensors().ok())
+  {
+    TLOG(ERROR) << "Unable to create tensors";
+  }
+  
   // Run Query6
   auto execQuery6 = [&]()
   {

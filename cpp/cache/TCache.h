@@ -104,6 +104,8 @@ public:
   /// Make maps for all dimension tables
   TStatus CreateMaps();
 
+  // Create tensors
+  TStatus CreateTensors();
 
   // TBD
   // Define various cuts here - slicing and dicing
