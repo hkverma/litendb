@@ -113,6 +113,40 @@ public:
     return result;
   }
   
+  template<class TypeLeft, class ArrayTypeLeft,
+           class TypeRight=TypeLeft, class ArrayTypeRight=ArrayTypeLeft> inline
+  bool GetValue(int64_t childColNum,                // childColNum
+                int64_t childRowId,                  // childRowId
+                int64_t& childRowIdInMicroseconds,   // time taken to look for leftValue
+                TypeRight& parentValue,              // rightValue output
+                int64_t parentColNum,                // right Col Num
+                int64_t& parentValueInMicroseconds)  // time taken to look for rightValue
+  {
+    int64_t rowId, arrId;
+    TStopWatch timer;
+    bool result = true;
+    timer.Start();
+    if (nullptr == parentArrId_[childColNum] || nullptr == parentRowId_[childColNum])
+    {
+      TLOG(ERROR) << "Invalid tensor representation";
+      result = false;
+    }
+    rowId = parentRowId_[childColNum]->at(childRowId);
+    arrId = parentArrId_[childColNum]->at(childRowId);
+    timer.Stop();
+    childRowIdInMicroseconds += timer.ElapsedInMicroseconds();
+    if (!result)
+    {
+      return result;
+    }
+
+    timer.Start();
+    result = parentTable_[childColNum]->GetColumn(parentColNum)->GetValue<TypeRight, ArrayTypeRight>(arrId, rowId, parentValue);
+    timer.Stop();
+    parentValueInMicroseconds += timer.ElapsedInMicroseconds();
+    return result;
+  }
+
   // TBD Add to the option class
   static const bool EnableColumnReverseMap = false;
 
@@ -139,10 +173,11 @@ private:
   /// Tables consist of columnar series
   std::vector<std::shared_ptr<TColumn>> columns_;
 
-  /// Joined parent tables of the tensor
-  std::vector<std::shared_ptr<TColumn>> parentColumns_;
-  std::vector<int64_t> parentColumnId_;
-    
+  /// Joined parent tables of the tensor TBD Use Arrow array builder
+  std::vector<std::shared_ptr<std::vector<int64_t>>> parentArrId_;
+  std::vector<std::shared_ptr<std::vector<int64_t>>> parentRowId_;
+  std::vector<std::shared_ptr<TTable>> parentTable_;
+  
   /// Tables consist of columnar series
   std::vector<std::shared_ptr<TRowBlock>> rowBlocks_;
 

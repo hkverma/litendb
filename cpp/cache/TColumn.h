@@ -30,6 +30,9 @@ public:
   /// Get blkNum block, null if out of range
   std::shared_ptr<TBlock> GetBlock(int64_t blkNum);
 
+  /// Get associated table
+  std::shared_ptr<TTable> GetTable();
+  
   /// Get the map if already exists, else create one
   TResult<std::shared_ptr<TColumnMap>>  GetMap();
 
@@ -117,6 +120,11 @@ inline std::shared_ptr<TBlock> TColumn::GetBlock(int64_t blkNum)
   if (blkNum < 0 || blkNum >= blocks_.size())
     return nullptr;
   return blocks_[blkNum];
+}
+
+inline std::shared_ptr<TTable> TColumn::GetTable()
+{
+  return table_;
 }
 
 template <class Type, class ArrayType>

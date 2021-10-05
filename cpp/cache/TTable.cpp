@@ -277,12 +277,14 @@ TResult<std::shared_ptr<TSchema>> TTable::AddSchema(std::shared_ptr<arrow::Schem
   // TBD what if schema is not null
   schema_ = tschema;
   columns_.resize(schema->num_fields());
-  parentColumns_.resize(schema->num_fields());
-  parentColumnId_.resize(schema->num_fields());
+  parentArrId_.resize(schema->num_fields());
+  parentRowId_.resize(schema->num_fields());
+  parentTable_.resize(schema->num_fields());
   for (auto i=0; i<schema->num_fields(); i++) {
     columns_[i] = std::make_shared<TColumn>(shared_from_this(), schema->field(i));
-    parentColumns_[i] = nullptr;
-    parentColumnId_[i] = 0;
+    parentArrId_[i] = nullptr;
+    parentRowId_[i] = nullptr;
+    parentTable_[i] = nullptr;
   }
 
   // Add this table to schema
@@ -401,18 +403,26 @@ TStatus TTable::CreateTensor()
   return TStatus::OK();
 }
 
-// Create a lookup column 
+// Create a lookup column
+// TBD Check all template classes
 template<class Type, class ValueType, class ArrayType>
 TStatus TTable::CreateColumnLookUp(int64_t cnum,
                                    std::shared_ptr<TColumn> col,
                                    std::shared_ptr<arrow::Field> field)
 {
 
-  if (nullptr != parentColumns_[cnum])
+  if (nullptr != parentArrId_[cnum])
     return TStatus::OK();
   
-  auto joinCol = std::make_shared<TColumn>(shared_from_this(), field);
-  
+  auto parentArrId = std::make_shared<std::vector<int64_t>>(col->NumRows());
+  auto parentRowId = std::make_shared<std::vector<int64_t>>(col->NumRows());
+  for (auto i=0; i<col->NumRows(); i++)
+  {
+    parentArrId->at(i) = -1;
+    parentRowId->at(i) = -1;
+  }
+
+  int64_t curRowId = 0;
   for (auto i=0; i<col->NumBlocks(); i++)
   {
     std::shared_ptr<arrow::NumericArray<ValueType>> arr =
@@ -422,42 +432,30 @@ TStatus TTable::CreateColumnLookUp(int64_t cnum,
       return TStatus::Invalid("Non numeric array not supported in Column lookups");
     }
 
+    // TBD
     // Build an array to join the data directly
-    //    std::unique_ptr<arrow::<ValueType>> arrBaseBuilder;
-    //    auto status = arrow::MakeBuilder(arrow::default_memory_pool(), arr->type(), &arrBaseBuilder);
-    std::unique_ptr<arrow::NumericBuilder<ValueType>> arrBuilder = std::make_unique<arrow::NumericBuilder<ValueType>>(arr->type(), arrow::default_memory_pool());
-
-    arrow::Status status = arrBuilder->Reserve(arr->length());
-    if (!status.ok())
-    {
-      return TStatus::Invalid(status.message());
-    }
+    // std::unique_ptr<arrow::<ValueType>> arrBaseBuilder;
+    // auto status = arrow::MakeBuilder(arrow::default_memory_pool(), arr->type(), &arrBaseBuilder);
+    // std::unique_ptr<arrow::NumericBuilder<ValueType>> arrBuilder = std::make_unique<arrow::NumericBuilder<ValueType>>(arr->type(), arrow::default_memory_pool());
+    // arrow::Status status = arrBuilder->Reserve(arr->length());
+    // if (!status.ok())
+    // {
+    // return TStatus::Invalid(status.message());
+    // }
 
     for (auto rId=0; rId<arr->length(); rId++)
     {
       Type value = std::move(arr->Value(rId));
       int64_t arrId, rowId;
       arrow::Status status;
-      if (!col->GetRowId<Type,ArrayType>(arrId, rowId, value))
+      if (col->GetRowId<Type,ArrayType>(arrId, rowId, value))
       {
-        status = arrBuilder->AppendNull();
+        parentArrId->at(curRowId) = arrId;
+        parentRowId->at(curRowId) = rowId;
       }
-      else
-      {
-        if (!col->GetValue<Type, ArrayType>(arrId, rowId, value))
-        {
-          status = arrBuilder->AppendNull();
-        }
-        else
-        {
-          status = arrBuilder->Append(value);
-        }
-      }
-      if (!status.ok())
-      {
-        return TStatus::Invalid(status.message());
-      }      
+      curRowId++;
     }
+    /* TBD
     std::shared_ptr<arrow::Array> outArr;
     status = arrBuilder->Finish(&outArr);
     if (!status.ok())
@@ -469,9 +467,12 @@ TStatus TTable::CreateColumnLookUp(int64_t cnum,
       return blkResult.status();
     auto tStatus = joinCol->Add(blkResult.ValueOrDie());
     if (!tStatus.ok())
-      return tStatus;
+    return tStatus; */
   }
-  parentColumns_[cnum] = joinCol;
+  parentArrId_[cnum] = parentArrId;
+  parentRowId_[cnum] = parentRowId;
+  parentTable_[cnum] = col->GetTable();
+  
   return TStatus::OK();
 }
 

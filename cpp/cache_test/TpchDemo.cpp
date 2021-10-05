@@ -464,7 +464,7 @@ std::shared_ptr<std::unordered_map<std::string, double>> TpchDemo::Query5Serial(
   return q5result;
 }
 
-void TpchDemo::GetQuery5Revenue(int64_t chunkNum, double revenue[], int32_t mapNum)
+void TpchDemo::GetQuery5Revenue(int64_t chunkNum, double revenue[])
 {
   auto orderkey = std::static_pointer_cast<arrow::Int64Array>(lOrderkey->GetBlock(chunkNum)->GetArray());
   auto suppkey = std::static_pointer_cast<arrow::Int64Array>(lSuppkey->GetBlock(chunkNum)->GetArray());
@@ -533,8 +533,7 @@ void TpchDemo::GetQuery5Revenue(int64_t chunkNum, double revenue[], int32_t mapN
   //  LOG(INFO) << ss.str() ;
 
 }
-// $$$$$$
-/*
+
 void TpchDemo::GetQuery5RevenueTensor(int64_t chunkNum, double revenue[])
 {
   auto orderkey = std::static_pointer_cast<arrow::Int64Array>(lOrderkey->GetBlock(chunkNum)->GetArray());
@@ -562,8 +561,8 @@ void TpchDemo::GetQuery5RevenueTensor(int64_t chunkNum, double revenue[])
     // l_orderkey = o_orderkey
     // and o_orderdate >= date '1995-01-01'
     // and o_orderdate < date '1995-01-01' + interval '1' year
-    if (!tables_[orders]->JoinInner<int64_t, arrow::Int64Array>
-        (lOrderkeyValue, o_orderkey, ordersGetRowIdTime,
+    if (!tables_[lineitem]->GetValue<int64_t, arrow::Int64Array>
+        (l_orderkey, rowId, ordersGetRowIdTime,
          oOrderdateValue, o_orderdate, ordersGetValTime))
       continue;
     if (oOrderdateValue < date19950101Value || oOrderdateValue > date19951231Value)
@@ -571,8 +570,8 @@ void TpchDemo::GetQuery5RevenueTensor(int64_t chunkNum, double revenue[])
 
     // Filter on r_name
     // l_suppkey = s_suppkey,
-    if ( !tables_[supplier]->JoinInner<int64_t, arrow::Int64Array>
-         (lSuppkeyValue, s_suppkey, supplierGetRowIdTime,
+    if ( !tables_[lineitem]->GetValue<int64_t, arrow::Int64Array>
+         (l_suppkey, rowId, supplierGetRowIdTime,
           sNationkeyValue, s_nationkey, supplierGetValTime))
       continue;
 
@@ -603,8 +602,7 @@ void TpchDemo::GetQuery5RevenueTensor(int64_t chunkNum, double revenue[])
 
   //  LOG(INFO) << ss.str() ;
 
-  }*/
-// $$$$$$
+}
 
 std::shared_ptr<std::unordered_map<std::string, double>> TpchDemo::Query5()
 {
@@ -638,7 +636,7 @@ std::shared_ptr<std::unordered_map<std::string, double>> TpchDemo::Query5()
   for (int64_t chunkNum = 0; chunkNum < numChunks; chunkNum++)
   {
     auto tf = std::bind(&TpchDemo::GetQuery5Revenue, this, chunkNum,
-                        std::ref(revenues[chunkNum]), pnum%numMaps_);
+                        std::ref(revenues[chunkNum]));
     tg.run(tf);
     pnum++;
     if (pnum == numWorkers_)

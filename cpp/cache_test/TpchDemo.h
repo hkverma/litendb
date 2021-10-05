@@ -53,7 +53,8 @@ public:
   std::shared_ptr<std::unordered_map<std::string, double>> Query5();
   std::shared_ptr<std::unordered_map<std::string, double>> Query5Serial();
   // Get Query5 revenue for chunk chunkNum
-  void GetQuery5Revenue(int64_t chunkNum, double revenue[], int32_t mapNum);
+  void GetQuery5Revenue(int64_t chunkNum, double revenue[]);
+  void GetQuery5RevenueTensor(int64_t chunkNum, double revenue[]);
 
   void PrintSchemas();
   void PrintMaps(int startAt=lineitem);
