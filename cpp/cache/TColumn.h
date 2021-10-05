@@ -14,10 +14,9 @@ class TColumn : public std::enable_shared_from_this<TColumn>
 {
 public:
 
-  /// Construct a column TBD
-  static TResult<std::shared_ptr<TColumn>> Create(std::shared_ptr<TTable> table, std::shared_ptr<arrow::Field> field);
-  
-  TColumn(std::shared_ptr<TTable> table, std::shared_ptr<arrow::Field> field) : table_(table), map_(nullptr), numRows_(0), field_(field) { }
+  /// Construct a column
+  TColumn(std::shared_ptr<TTable> table, std::shared_ptr<arrow::Field> field) :
+    table_(table), map_(nullptr), numRows_(0), field_(field) { }
 
   /// Add TBlock to Column
   TStatus Add(std::shared_ptr<TBlock> tBlock);
@@ -31,15 +30,12 @@ public:
   /// Get blkNum block, null if out of range
   std::shared_ptr<TBlock> GetBlock(int64_t blkNum);
 
-  /// Create a column map - this includes min-max and reverse index
-  TStatus CreateMap(bool zoneMap, bool reverseMap);
+  /// Get the map if already exists, else create one
+  TResult<std::shared_ptr<TColumnMap>>  GetMap();
 
   /// Get map for this column
-  std::shared_ptr<TColumnMap> GetMap() { return map_; }
+  std::shared_ptr<TColumnMap> GetCurMap() { return map_; }
 
-  /// Get map for this column, only done by TColumnMap::Create
-  void SetMap(std::shared_ptr<TColumnMap> map) { map_=map; }
-  
   /// A simple forward iterator for TColumn
   template <class Type, class ArrayType>
   class Iterator
@@ -83,8 +79,10 @@ public:
   bool GetValue(int64_t blkId,  // array Id
                 int64_t rowId,  // rowId input                
                 Type& value);    // output value
-  
+
 private:
+
+  
   /// chunkedArrows from which TCache was created
   std::vector<std::shared_ptr<TBlock>> blocks_;
 

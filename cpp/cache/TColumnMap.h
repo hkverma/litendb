@@ -19,12 +19,10 @@ namespace liten
 //
 // TODO Use Memory Pool to create an arrow memory pool liks  arrow::MemoryPool* pool_
 //      Use pool to store all the values
-//
 class TColumnMap
 {
 public:
 
-  static TResult<std::shared_ptr<TColumnMap>> Create(std::shared_ptr<TColumn> tColumn);
 
   virtual TStatus CreateZoneMap(bool forceCreate=false)
   {
@@ -82,6 +80,10 @@ public:
   virtual ~TColumnMap() { }
 
 protected:
+
+  // TBD Can only be created from TColumn
+  friend class TColumn;
+  static TResult<std::shared_ptr<TColumnMap>> Create(std::shared_ptr<TColumn> tColumn);
   
   /// arrow chunked array for which map is built
   std::shared_ptr<TColumn> tColumn_;

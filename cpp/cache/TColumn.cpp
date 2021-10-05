@@ -5,6 +5,7 @@
 
 namespace liten
 {
+
 TStatus TColumn::Add(std::shared_ptr<TBlock> tBlock)
 {
   if (nullptr == tBlock)
@@ -16,21 +17,21 @@ TStatus TColumn::Add(std::shared_ptr<TBlock> tBlock)
   return TStatus::OK();
 }
 
-TStatus TColumn::CreateMap(bool zoneMap, bool reverseMap)
+TResult<std::shared_ptr<TColumnMap>> TColumn::GetMap()
 {
+  // If map already exists, return it
+  if (nullptr != map_)
+  {
+    return map_;
+  }
+  
+  // Create a new one 
   auto colMapResult = std::move(TColumnMap::Create(shared_from_this()));
-  LITEN_RETURN_IF(!colMapResult.status().ok(), colMapResult.status());
-  auto colMap = colMapResult.ValueOrDie();
-  TStatus status;
-  if (zoneMap)
-  {
-    status = colMap->CreateZoneMap();
-  }
-  if (reverseMap)
-  {
-    status = colMap->CreateReverseMap(); 
-  }
-  return status;
+  if (!colMapResult.status().ok())
+    return colMapResult;
+  map_ = colMapResult.ValueOrDie();
+  return colMapResult;
+  
 }
 
 }
