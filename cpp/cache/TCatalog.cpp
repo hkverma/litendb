@@ -18,14 +18,14 @@ std::shared_ptr<TCatalog> TCatalog::GetInstance()
   return tCatalog_;
 }
 
-// Add Block to Cache  
+// Add Block to Cache
 TStatus TCatalog::AddBlock(std::shared_ptr<TBlock> block,
                            TGuid::Uuid& id)
 {
-  
+
   if (nullptr == block)
   {
-    return TStatus::KeyError("Catalog cannot add null Block");    
+    return TStatus::KeyError("Catalog cannot add null Block");
     return TStatus::OK();
   }
 
@@ -43,7 +43,7 @@ TStatus TCatalog::AddBlock(std::shared_ptr<TBlock> block,
       blockToId_[block] = id;
     }
   }
-  
+
   return TStatus::OK();
 }
 
@@ -78,7 +78,7 @@ std::string TCatalog::GetTableInfo() const
         str.append(",");
       }
       std::string tableName = tableId.first;
-      auto tTable = tableId.second;      
+      auto tTable = tableId.second;
       str.append("\"").append(tableName).append("\"");
       str.append(":\"").append(TableTypeString[tTable->GetType()]).append("\"");
     }
@@ -175,6 +175,26 @@ TStatus TCatalog::AddSchema(std::shared_ptr<TSchema> tschema)
     }
   }
   schemas_[schemaName] = tschema;
+  return TStatus::OK();
+}
+
+TStatus TCatalog::AddSchemaForTable(std::string schemaName, std::string tableName)
+{
+  std::unique_lock<std::shared_mutex> lk(mutex_);
+  auto itr = schemaToTables_.find(schemaName);
+  if (schemaToTables_.end() != itr)
+  {
+    if (tableName.compare(itr->second))
+    {
+      return TStatus::AlreadyExists("Only one table allowed per Schema name=", schemaName, " table=", tableName);
+    }
+    else
+    {
+      TLOG(INFO) << "Schema=" << schemaName << " already has table=" << tableName;
+      return TStatus::OK();
+    }
+  }
+  schemaToTables_[schemaName] = std::move(tableName);
   return TStatus::OK();
 }
 

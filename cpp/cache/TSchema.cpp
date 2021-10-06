@@ -1,5 +1,6 @@
 #include <TSchema.h>
 #include <TCatalog.h>
+#include <TTable.h>
 
 namespace liten
 {
@@ -250,10 +251,18 @@ TResult<TSchema::TSchemaField> TSchema::GetChildField(const std::string& fieldNa
   return std::make_pair(nullptr,nullptr);
 }
 
+/// TBD RemoveTable
+
 TStatus TSchema::AddTable(std::shared_ptr<TTable> ttable)
 {
-  tables_.insert(ttable);
-  return TStatus::OK();
+  if (table_)
+  {
+    return TStatus::AlreadyExists("Schema=", name_, " adding another table=", ttable->GetName());
+  }
+  table_ = ttable;
+  // add table name to this schema name
+  auto status = std::move(TCatalog::GetInstance()->AddSchemaForTable(name_, ttable->GetName()));
+  return status;
 }
 
 }

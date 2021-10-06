@@ -16,7 +16,7 @@ public:
 
   /// Construct a column
   TColumn(std::shared_ptr<TTable> table, std::shared_ptr<arrow::Field> field) :
-    table_(table), map_(nullptr), numRows_(0), field_(field) { }
+    table_(table), map_(nullptr), numRows_(0), field_(field) {  name_ = field->name(); }
 
   /// Add TBlock to Column
   TStatus Add(std::shared_ptr<TBlock> tBlock);
@@ -32,10 +32,15 @@ public:
 
   /// Get associated table
   std::shared_ptr<TTable> GetTable();
+
+  /// Get col name
+  std::string GetName() { return name_; }
   
   /// Get the map if already exists, else create one
   TResult<std::shared_ptr<TColumnMap>>  GetMap();
-
+  TStatus CreateZoneMap(bool forceCreate=false) { return std::move(map_->CreateZoneMap()); }
+  TStatus CreateReverseMap(bool forceCreate=false) { return std::move(map_->CreateReverseMap()); }
+  
   /// Get map for this column
   std::shared_ptr<TColumnMap> GetCurMap() { return map_; }
 
@@ -94,6 +99,9 @@ private:
 
   /// field associated with this column
   std::shared_ptr<arrow::Field> field_;
+
+  /// name of the column same as field
+  std::string name_;
 
   /// Table to which this column belongs
   std::shared_ptr<TTable> table_;
@@ -191,8 +199,6 @@ bool TColumn::GetRowId(int64_t& arrId,            // Output array Id
     return found;
   }
 
-  TLOG(INFO) << "No reverse map for field=" << field_->name();
-  
   // Linear search if no map found
   for (arrId=0; arrId <blocks_.size(); arrId++)
   {

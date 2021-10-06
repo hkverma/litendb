@@ -59,6 +59,8 @@ public:
 
   /// Get the name of the schema
   TStatus AddTable(std::shared_ptr<TTable> ttable);
+
+  std::shared_ptr<TTable> GetTable() const { return table_; }
   
 private:
 
@@ -68,8 +70,8 @@ private:
   /// Type of table defined by this schema
   TableType type_;
 
-  /// All tables associated with this schema
-  std::set<std::shared_ptr<TTable>> tables_;
+  /// Only one table can be associated with this schema
+  std::shared_ptr<TTable> table_;
   
   /// Field types either dim or metric
   std::map<std::shared_ptr<arrow::Field>, FieldType> typeFields_;
@@ -94,7 +96,7 @@ private:
   std::string name_;
 
   /// Use only named constructor
-  TSchema() { }
+  TSchema() : table_(nullptr) { }
 
   /// Allow shared_ptr in static create return
   struct MakeSharedEnabler;

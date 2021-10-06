@@ -635,7 +635,7 @@ std::shared_ptr<std::unordered_map<std::string, double>> TpchDemo::Query5()
   int64_t pnum=0;
   for (int64_t chunkNum = 0; chunkNum < numChunks; chunkNum++)
   {
-    auto tf = std::bind(&TpchDemo::GetQuery5Revenue, this, chunkNum,
+    auto tf = std::bind(&TpchDemo::GetQuery5RevenueTensor, this, chunkNum,
                         std::ref(revenues[chunkNum]));
     tg.run(tf);
     pnum++;
