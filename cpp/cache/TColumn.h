@@ -33,6 +33,8 @@ public:
   /// Get associated table
   std::shared_ptr<TTable> GetTable();
 
+  std::shared_ptr<arrow::ChunkedArray> Slice(int64_t offset, int64_t length);
+
   /// Get col name
   std::string GetName() { return name_; }
   

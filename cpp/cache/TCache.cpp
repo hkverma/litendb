@@ -242,9 +242,7 @@ std::shared_ptr<arrow::Table> TCache::Slice(std::string tableName, int64_t offse
     return nullptr;
   }
 
-  // TBD does not work
-  //auto slicedTable = arrTable->Slice(offset, length);
-  //return slicedTable;
-  return nullptr;
+  auto slicedTable = ttable->Slice(offset, length);
+  return slicedTable;
 }
 }

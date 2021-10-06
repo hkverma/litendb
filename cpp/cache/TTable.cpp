@@ -506,4 +506,16 @@ TStatus TTable::CreateColumnLookUp(int64_t cnum,
   return TStatus::OK();
 }
 
+std::shared_ptr<arrow::Table> TTable::Slice(int64_t offset, int64_t numRows)
+{
+  std::vector<std::shared_ptr<arrow::ChunkedArray>> sliced;
+  for (auto column : columns_) {
+    auto chunkSlice = column->Slice(offset, numRows);
+    if (nullptr == chunkSlice)
+      return nullptr;
+    sliced.push_back(chunkSlice);
+  }
+  return arrow::Table::Make(schema_->GetSchema(), sliced, numRows);
+}
+
 }

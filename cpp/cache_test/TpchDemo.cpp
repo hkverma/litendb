@@ -291,6 +291,7 @@ order by
 	revenue desc;
 limit -1;
 */
+
 std::shared_ptr<std::unordered_map<std::string, double>> TpchDemo::Query5Serial()
 {
   if (nullptr == tables_[lineitem] || nullptr == tables_[supplier] ||
