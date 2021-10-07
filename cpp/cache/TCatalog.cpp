@@ -12,9 +12,9 @@ std::shared_ptr<TCatalog> TCatalog::GetInstance()
 {
   if (nullptr == tCatalog_)
   {
+    TLOG(INFO) << "Created a new TCatalog";
     tCatalog_ = std::make_shared<TCatalog::MakeSharedEnabler>();
   }
-  TLOG(INFO) << "Created a new TCatalog";
   return tCatalog_;
 }
 

@@ -39,6 +39,12 @@ TResult<std::shared_ptr<TRowBlock>> TCache::AddRowBlock(std::shared_ptr<TTable> 
   return std::move(ttable->AddRowBlock(recordBatch));
 }
 
+TStatus TCache::AddArrowTable(std::shared_ptr<TTable> ttable,
+                              std::shared_ptr<arrow::Table> table)
+{
+  return std::move(ttable->AddArrowTable(table));
+}
+
 TResult<std::shared_ptr<TSchema>> TCache::AddSchema(std::string schemaName,
                                                     TableType type,
                                                     std::shared_ptr<arrow::Schema> schema)
@@ -185,30 +191,30 @@ TResult<std::shared_ptr<TTable>> TCache::ReadCsv(std::string tableName,
 }
 
 // TBD modify these
-TStatus TCache::CreateMaps(std::string tableName)
+TStatus TCache::MakeMaps(std::string tableName, bool ifReverseMap)
 {
   auto ttable = TCatalog::GetInstance()->GetTable(tableName);
-  auto result = CreateMaps(ttable);
+  auto result = MakeMaps(ttable,ifReverseMap);
   return result;
 }
 
-TStatus TCache::CreateMaps(std::shared_ptr<TTable> ttable)
+TStatus TCache::MakeMaps(std::shared_ptr<TTable> ttable, bool ifReverseMap)
 {
   if (nullptr == ttable)
   {
     return TStatus::Invalid("Failed to create data-tensor. Did not find in cache table ", ttable->GetName());
   }
-  auto result = std::move(ttable->CreateMaps());
+  auto result = std::move(ttable->MakeMaps(ifReverseMap));
   return result;
 }
 
-TStatus TCache::CreateMaps()
+TStatus TCache::MakeMaps(bool ifReverseMap)
 {
   auto& tables = TCatalog::GetInstance()->GetTableMap();
   for (auto it=tables.begin(); it != tables.end(); it++)
   {
     auto table = it->second;
-    auto status = std::move(CreateMaps(table));
+    auto status = std::move(MakeMaps(table, ifReverseMap));
     if (!status.ok())
     {
       return status;
@@ -217,13 +223,30 @@ TStatus TCache::CreateMaps()
   return TStatus::OK();
 }
 
-TStatus TCache::CreateTensors()
+TStatus TCache::MakeTensor(std::string tableName)
+{
+  auto ttable = TCatalog::GetInstance()->GetTable(tableName);
+  auto result = std::move(MakeTensor(ttable));
+  return result;
+}
+
+TStatus TCache::MakeTensor(std::shared_ptr<TTable> ttable)
+{
+  if (nullptr == ttable)
+  {
+    return TStatus::Invalid("Failed to create data-tensor. Did not find in cache table ", ttable->GetName());
+  }
+  auto result = std::move(ttable->MakeTensor());
+  return result;
+}
+
+TStatus TCache::MakeTensor()
 {
   auto& tables = TCatalog::GetInstance()->GetTableMap();
   for (auto it=tables.begin(); it != tables.end(); it++)
   {
     auto table = it->second;
-    auto status = std::move(table->CreateTensor());
+    auto status = std::move(table->MakeTensor());
     if (!status.ok())
     {
       return status;

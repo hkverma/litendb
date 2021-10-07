@@ -22,6 +22,11 @@ cdef extern from "common.h" namespace "liten" nogil:
     bool ok() const
     c_string message() const
       
+  cdef cppclass CTResultCTRowBlock" liten::TResult<std::shared_ptr<liten::TRowBlock>>":
+     bool ok() const
+     const shared_ptr[CTRowBlock]& ValueOrDie() const
+     const CTStatus& status() const
+
   cdef cppclass CTResultCTTable" liten::TResult<std::shared_ptr<liten::TTable>>":
      bool ok() const
      const shared_ptr[CTTable]& ValueOrDie() const
@@ -42,6 +47,11 @@ cdef extern from "cache.h" namespace "liten" nogil:
    ctypedef enum TableType: DimensionTable, FactTable
 
    ctypedef enum FieldType: DimensionField, MetricField, FeatureField, EmbeddingField
+
+# CTRowBlock is liten::TRowBlock in Cython
+   cdef cppclass CTRowBlock" liten::TRowBlock":
+      int NumColumns()
+      int NumRows()
    
 # CTTable is liten::TTable in Cython. CTable is arrow::Table cython from pyarrow.
    cdef cppclass CTTable" liten::TTable":
@@ -50,6 +60,8 @@ cdef extern from "cache.h" namespace "liten" nogil:
       shared_ptr[CTSchema] GetSchema()
       TableType GetType()
       shared_ptr[CTable] Slice(int64_t offset, int64_t length)
+      CTStatus AddArrowTable(shared_ptr[CTable] table)
+      CTResultCTRowBlock AddRowBlock(shared_ptr[CRecordBatch] rb)
 
 # CTSchema is liten::TSchema in Cython. CSchema is arrow::Schema cython from pyarrow.
    cdef cppclass CTSchema" liten::TSchema":
@@ -70,14 +82,18 @@ cdef extern from "cache.h" namespace "liten" nogil:
       c_string GetTableInfo()
       c_string GetSchemaInfo()      
       
-      CTResultCTTable AddTable(c_string tableName, TableType type, shared_ptr[CTable] table, c_string schemaName)
+      CTResultCTTable AddTable(c_string tableName, TableType type, c_string schemaName)
       shared_ptr[CTTable] GetTable(c_string name) const
+
       
       CTResultCTSchema AddSchema(c_string schemaName, TableType type, shared_ptr[CSchema] schema)
       shared_ptr[CTSchema] GetSchema(c_string name) const
       
-      int MakeMaps(c_string name)
-      int MakeMaps()
+      CTStatus MakeMaps(c_string name, bool if_reverse_map)
+      CTStatus MakeMaps(bool if_reverse_map)
+      
+      CTStatus MakeTensor(c_string name)
+      CTStatus MakeTensor()
       
       shared_ptr[CTable] Slice(c_string tableName, int64_t offset, int64_t length)
 

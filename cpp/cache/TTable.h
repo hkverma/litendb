@@ -48,7 +48,10 @@ public:
   std::shared_ptr<TRowBlock> GetRowBlock(int32_t rbNum);
 
   /// Append the rowblock to the table
-  TResult<std::shared_ptr<TRowBlock>> AddRowBlock(std::shared_ptr<arrow::RecordBatch> rb, int64_t numRows=-1);
+  TResult<std::shared_ptr<TRowBlock>> AddRowBlock(std::shared_ptr<arrow::RecordBatch> rb);
+
+  /// Append arrow table to the table
+  TStatus AddArrowTable(std::shared_ptr<arrow::Table> table);
 
   /// Add Schema 
   TResult<std::shared_ptr<TSchema>> AddSchema(std::shared_ptr<arrow::Schema> schema);
@@ -64,10 +67,10 @@ public:
 
   /// TBD Clean these up with tensor values
   /// Inverted maps and min-max zones
-  TStatus CreateMaps();
+  TStatus MakeMaps(bool ifReverseMap=false);
 
   /// This will create required maps and join columns for this table
-  TStatus CreateTensor();
+  TStatus MakeTensor();
 
   template<class Type, class ValueType, class ArrayType>
   TStatus CreateColumnLookUp(int64_t cnum,

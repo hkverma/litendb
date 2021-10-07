@@ -295,7 +295,7 @@ cdef class TCache:
             raise ValueError(f"Table type must be Dimension or Fact")
         
         tc_ttype = <TableType>ttype
-        sp_ttable_result = self.tcache.AddTable(liten.utils.to_bytes(name), tc_ttype, sp_pa_table, liten.utils.to_bytes(schema_name))
+        sp_ttable_result = self.tcache.AddTable(liten.utils.to_bytes(name), tc_ttype, liten.utils.to_bytes(schema_name))
         if (not sp_ttable_result.ok()):
             raise ValueError(f"Failed to add table {name} {sp_ttable_result.status().message()}")
         
@@ -303,6 +303,10 @@ cdef class TCache:
         p_ttable = sp_ttable.get()
         if (NULL == p_ttable):
             raise ValueError(f"Failed to build table {name}")
+
+        arr_status = p_ttable.AddArrowTable(sp_pa_table)
+        if (not arr_status.ok()):
+            raise ValueError(f"Failed to add table {name} {arr_status.message()}")
 
         ttable = TTable()
         ttable.sp_pa_table = sp_pa_table
@@ -320,17 +324,29 @@ cdef class TCache:
             return True
         return False
         
-    def make_tensor_table(self, name):
-        result = self.tcache.MakeMaps(name)
-        if (result):
+    def make_maps_table(self, name, bool if_reverse_map):
+        result = self.tcache.MakeMaps(name, if_reverse_map)
+        if (not result.ok()):
             print ("Failed to create data-tensor for ", name)
-        return result
+        return result.ok()
+
+    def make_maps(self, bool if_reverse_map):
+        result = self.tcache.MakeMaps(if_reverse_map)
+        if (not result.ok()):
+            print ("Failed to create data-tensor")
+        return result.ok()
+    
+    def make_tensor_table(self, name):
+        result = self.tcache.MakeTensor(name)
+        if (not result.ok()):
+            print ("Failed to create data-tensor for ", name, " msg=", result.message())
+        return result.ok()
 
     def make_tensor(self):
-        result = self.tcache.MakeMaps()
-        if (result):
-            print ("Failed to create data-tensor")
-        return result
+        result = self.tcache.MakeTensor()
+        if (not result.ok()):
+            print ("Failed to create data-tensor with msg=", result.message())
+        return result.ok()
     
     def query6(self):
         cdef:

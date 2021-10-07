@@ -138,7 +138,7 @@ void TTable::PrintTable()
 }
 
 // Returns non-zero code if fails to make map
-TStatus TTable::CreateMaps()
+TStatus TTable::MakeMaps(bool ifReverseMap)
 {
   TStatus status;
   for (int64_t cnum=0; cnum<NumColumns(); cnum++)
@@ -169,8 +169,8 @@ TStatus TTable::CreateMaps()
     }
     auto colMap = colResult.ValueOrDie();
     status = colMap->CreateZoneMap();
-    // TBD reverseMap only for dimension tables
-    // status = colMap->CreateReverseMap();
+    if (ifReverseMap)
+      status = colMap->CreateReverseMap();
   }
   return status;
 }
@@ -179,14 +179,24 @@ void TTable::PrintMaps()
 {
   std::stringstream ss;
   for (int colNum = 0; colNum < NumColumns(); colNum++) {
-    /*    auto colMap = maps_[colNum];
+    auto col = columns_[colNum];
+    if (nullptr == col)
+    {
+      ss << "col=null at " << colNum;
+      continue;
+    }
+    auto colMap = columns_[colNum]->GetCurMap();
+    if (nullptr == colMap)
+    {
+      ss << "colMap=null at " << colNum;
+      continue;      
+    }
+    // Print
     ss << "Col " << colNum;
-     TBD Do proper printing move to TColumn
-    auto chArr = colMap->chunkedArray_;
-    for (int arrNum = 0; arrNum<chArr->num_chunks(); arrNum++)
+    for (int arrNum = 0; arrNum<col->NumBlocks(); arrNum++)
     {
       int64_t minVal, maxVal;
-      auto arr = chArr->chunk(arrNum);
+      auto arr = col->GetBlock(arrNum)->GetArray();
       ss << " Arr " << arrNum << " Size=" << arr->length();
       ss << " Type=" << arr->type()->ToString() ;
       ss << " Min=";
@@ -194,7 +204,7 @@ void TTable::PrintMaps()
       ss << " Max=";
       colMap->GetMax(arrNum,maxVal)?(ss << maxVal):(ss << "None");
       ss << ";" ;
-      }*/
+    }
     //colMap->GetReverseMap(ss);
     //ss << "; ";
   }
@@ -202,11 +212,10 @@ void TTable::PrintMaps()
 }
 
 /// Append the rowblock to the table
-TResult<std::shared_ptr<TRowBlock>> TTable::AddRowBlock(std::shared_ptr<arrow::RecordBatch> arrb,
-                                                           int64_t numRows)
+TResult<std::shared_ptr<TRowBlock>> TTable::AddRowBlock(std::shared_ptr<arrow::RecordBatch> arrb)
 {
   // Create rowblock
-  auto rb_result = std::move(TRowBlock::Create(shared_from_this(), arrb, numRows));
+  auto rb_result = std::move(TRowBlock::Create(shared_from_this(), arrb));
   if (!rb_result.ok())
   {
     return std::move(rb_result);
@@ -251,9 +260,52 @@ TResult<std::shared_ptr<TRowBlock>> TTable::AddRowBlock(std::shared_ptr<arrow::R
 
   // Now add the rowblocks
   rowBlocks_.push_back(rb);
-  numRows += rb->NumRows();
 
   return rb_result;
+}
+
+// TBD Ensure it works with zero sized table and arrays
+/// Append the rowblock to the table
+TStatus TTable::AddArrowTable(std::shared_ptr<arrow::Table> table)
+{
+  std::vector<std::shared_ptr<arrow::ChunkedArray>> columns = std::move(table->columns());
+  if (columns.size() < 1)
+  {
+    return TStatus::OK();
+  }
+  auto numArrays = columns[0]->num_chunks();
+  if (numArrays < 1)
+  {
+    return TStatus::Invalid("Empty arrow table");
+  }
+  
+  std::vector<std::shared_ptr<arrow::RecordBatch>> arrRbVec;
+  for (auto arrNum=0; arrNum<numArrays; arrNum++)
+  {
+    std::vector<std::shared_ptr<arrow::Array>> arrCol;
+    for (auto colNum=0; colNum< columns[0]->num_chunks(); colNum++)
+    {
+      arrCol.push_back(columns[colNum]->chunk(arrNum));
+    }
+    auto rbResult = arrow::RecordBatch::Make(table->schema(), arrCol[0]->length(), std::move(arrCol));
+    if (nullptr == rbResult)
+    {
+      return TStatus::Invalid("Cannot add rowblock ");
+    }
+    arrRbVec.push_back(rbResult);
+  }
+
+  // Create rowblock
+  for (auto rb: arrRbVec)
+  {
+    auto trbResult = AddRowBlock(rb);
+    if (!trbResult.ok())
+    {
+      return std::move(trbResult.status());
+    }
+  }
+
+  return TStatus::OK();
 }
 
 // Add Schema to the table
@@ -306,7 +358,7 @@ std::shared_ptr<TBlock> TTable::GetBlock(int64_t rbNum, int64_t colNum)
 //  If a column is of dimension type
 //    If child field exists - create reverseMap for all the dimension fields
 //    If parent field exists - create joinMap into the parent field table
-TStatus TTable::CreateTensor()
+TStatus TTable::MakeTensor()
 {
   if (nullptr == schema_)
   {

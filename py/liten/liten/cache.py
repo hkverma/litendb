@@ -207,7 +207,9 @@ class Cache:
         Returns
            true if create successfully else false
         """
-        return Cache.tcache.make_tensor_table(name)
+        map_result = Cache.tcache.make_maps(name, False)
+        ten_result = Cache.tcache.make_tensor(name)
+        return map_result or ten_result
     
     def make_tensor(self):
         """
@@ -215,7 +217,27 @@ class Cache:
         Returns
            true if create successfully else false
         """
-        return Cache.tcache.make_tensor()
+        map_result = Cache.tcache.make_maps(False)
+        ten_result = Cache.tcache.make_tensor()
+        return map_result or ten_result
+    
+    def make_maps_table(self, name, if_reverse_map):
+        """
+        Create data-tensor for name table
+        Parameters
+           name: Name of table 
+        Returns
+           true if create successfully else false
+        """
+        return Cache.tcache.make_maps_table(name, if_reverse_map)
+    
+    def make_maps(self, if_reverse_map):
+        """
+        Create n-dimensional data tensor for all n dimension tables in cache
+        Returns
+           true if create successfully else false
+        """
+        return Cache.tcache.make_maps(if_reverse_map)
     
     def query6(self):
         """

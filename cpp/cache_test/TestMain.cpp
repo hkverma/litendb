@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
   tpchDemo->PrintSchemas();
 
   // Create Tensor
-  if (!tCache->CreateTensors().ok())
+  if (!tCache->MakeTensor().ok())
   {
     TLOG(ERROR) << "Unable to create tensors";
   }
@@ -121,12 +121,13 @@ int main(int argc, char** argv) {
   }
 
   // Make Maps except for lineitem
+
   TStopWatch stopWatch;
   stopWatch.Start();
   for (int32_t i=1; i<TpchDemo::tableNames.size(); i++)
   {
     auto tableName = TpchDemo::tableNames[i];
-    auto result = tCache->CreateMaps(tableName);
+    auto result = tCache->MakeMaps(tableName);
     if (!result.ok())
     {
       LOG(ERROR) << "Failed to create maps for " << tableName << "with msg=" << result.message();
@@ -138,7 +139,7 @@ int main(int argc, char** argv) {
   }
   stopWatch.Stop();
   LOG(INFO) << "Liten Tensor Creation Time (us)=" << stopWatch.ElapsedInMicroseconds();
-  tpchDemo->PrintMaps(tpchDemo->customer);
+  //tpchDemo->PrintMaps(tpchDemo->customer);
 
   auto printRevenue = [&](std::shared_ptr<std::unordered_map<std::string, double>> q5revs) -> void {
     LOG(INFO) << "Query5 Revenue=";
