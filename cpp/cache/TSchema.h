@@ -30,14 +30,24 @@ public:
 
   /// Get the field type
   TResult<FieldType> GetFieldType(std::string fieldName) const;
-  
+  TResult<FieldType> GetFieldType(int32_t colNum) const;
+  TResult<FieldType> GetFieldType(std::shared_ptr<arrow::Field> field) const;
+
   /// Get the table type
   TableType GetType() const { return type_; }
 
   /// Get Raw Array, Use it judiciously, prefer to add an access method
   std::shared_ptr<arrow::Schema> GetSchema();
 
-  using SchemaField = std::pair<std::shared_ptr<TSchema>, std::shared_ptr<arrow::Field>>;
+  using TSchemaField = std::pair<std::shared_ptr<TSchema>, std::shared_ptr<arrow::Field>>;
+  
+  /// Get Parent Schema and Field
+  TResult<TSchemaField> GetParentField(int i);
+  TResult<TSchemaField> GetParentField(const std::string& fieldName) const;
+  
+  /// Get child schema and field
+  TResult<TSchemaField> GetChildField(int i) const;
+  TResult<TSchemaField> GetChildField(const std::string& fieldName) const;
 
   /// joins this schema (child) field_id to parent[schema, field_id]
   TStatus Join(std::string fieldName,
@@ -47,6 +57,11 @@ public:
   /// JSon string represntation for schema
   std::string ToString();
 
+  /// Get the name of the schema
+  TStatus AddTable(std::shared_ptr<TTable> ttable);
+
+  std::shared_ptr<TTable> GetTable() const { return table_; }
+  
 private:
 
   /// Arrow array
@@ -55,11 +70,14 @@ private:
   /// Type of table defined by this schema
   TableType type_;
 
+  /// Only one table can be associated with this schema
+  std::shared_ptr<TTable> table_;
+  
   /// Field types either dim or metric
   std::map<std::shared_ptr<arrow::Field>, FieldType> typeFields_;
 
   /// Join columns - joins this schema (child) field_id to parent[schema, field_id]
-  std::map<std::shared_ptr<arrow::Field>, SchemaField> parentFields_;
+  std::map<std::shared_ptr<arrow::Field>, TSchemaField> parentFields_;
 
   /// Add parent fields to the schema
   void AddParentField(std::shared_ptr<arrow::Field> field,
@@ -67,7 +85,7 @@ private:
                       std::shared_ptr<arrow::Field> parentField);
 
   /// Join columns - list all child schema fields here
-  std::map<std::shared_ptr<arrow::Field>, SchemaField> childFields_;
+  std::map<std::shared_ptr<arrow::Field>, TSchemaField> childFields_;
 
   /// Add child fields to the schema
   void AddChildField(std::shared_ptr<arrow::Field> field,
@@ -78,7 +96,7 @@ private:
   std::string name_;
 
   /// Use only named constructor
-  TSchema() { }
+  TSchema() : table_(nullptr) { }
 
   /// Allow shared_ptr in static create return
   struct MakeSharedEnabler;

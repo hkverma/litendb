@@ -5,11 +5,11 @@
 
 // TBD persist schema and all data files in SSD using a separate object
 namespace liten {
-  
-  
+
+
 class TCatalog {
 public:
-    
+
   /// Get a singleton instance, if not present create one
   static std::shared_ptr<TCatalog> GetInstance();
 
@@ -32,7 +32,7 @@ public:
   /// @param tableName name of table
   /// @returns status if table got added
   TStatus AddTable(std::shared_ptr<TTable> ttable);
-    
+
   /// Return information with compute information
   std::string GetTableInfo() const; //TBD bool schema=false, bool table=false) const;
 
@@ -40,17 +40,18 @@ public:
   /// @param tableName name of the table
   /// @returns ptr to TTable, null if not present
   std::shared_ptr<TTable> GetTable(std::string tableName) const;
-  
+
   // TBD Write an iterator here..
   std::unordered_map<std::string, std::shared_ptr<TTable>>& GetTableMap() { return tables_; }
-    
+
 
   /// Add a schema to catalog, should be added after all blocks have been added
   /// @param schema schema to be added
   /// @param schemaName name of schema
   /// @returns status if schema got added
   TStatus AddSchema(std::shared_ptr<TSchema> schema);
-    
+  TStatus AddSchemaForTable(std::string schemaName, std::string tableName);
+
   /// Return information with compute information
   std::string GetSchemaInfo() const; //TBD bool schema=false, bool schema=false) const;
 
@@ -58,7 +59,7 @@ public:
   /// @param schemaName name of the schema
   /// @returns ptr to TSchema, null if not present
   std::shared_ptr<TSchema> GetSchema(std::string schemaName) const;
-  
+
   using TableNameColumnNamePair = std::pair<std::string, std::string>;
   using VersionToUuidMap = std::map<int, TGuid::Uuid>;
 
@@ -69,22 +70,22 @@ private:
 
   /// Cannot construct
   TCatalog() { }
-    
+
   /// Allow shared_ptr with private constructors
-  struct MakeSharedEnabler;    
-    
+  struct MakeSharedEnabler;
+
   /// A singleton class for catalog
   static std::shared_ptr<TCatalog> tCatalog_;
-      
+
   /// Map an uuid to a block pointer
   std::unordered_map<TGuid::Uuid, std::shared_ptr<TBlock>, hash_boost> idToBlock_;
-    
+
   /// Map a block pointer to a UUID
   std::unordered_map<std::shared_ptr<TBlock>, TGuid::Uuid> blockToId_;
-    
+
   /// map table name and field_name to a map containing pairs of version and array UUIDs
   std::unordered_map<TableNameColumnNamePair, VersionToUuidMap, hash_pair> blockIds_;
-    
+
   /// hash map table name to table information
   // TBD Add table URI as well here for caching purpose
   // TBD convert to RowBlocks with its own mutex Have generic atomic templates
@@ -92,7 +93,10 @@ private:
 
   /// hash map schema name to schema information
   std::unordered_map<std::string, std::shared_ptr<TSchema>> schemas_;
-  
+
+  /// schema to tables
+  std::map<std::string, std::string> schemaToTables_;
+
   /// shared_lock
   mutable std::shared_mutex mutex_;
 
@@ -100,11 +104,11 @@ private:
   /// @param blockName table and column name
   /// @param cacheId UUid for the given pair
   bool GetId(TableNameColumnNamePair blockName, TGuid::Uuid& cacheId);
-    
+
 };
-  
+
 struct TCatalog::MakeSharedEnabler : public TCatalog {
   MakeSharedEnabler() : TCatalog() { }
 };
-  
+
 }

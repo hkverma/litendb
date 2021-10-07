@@ -179,7 +179,7 @@ with open("README.md", "r") as fh:
 
 setup(
   name='liten',
-  version='0.0.2',
+  version='0.0.3',  # should be sam as lib.pyx::_version
   author='HK Verma',
   author_email='hkverma@gmail.com',
   description='Big Data Analytics Toolset',

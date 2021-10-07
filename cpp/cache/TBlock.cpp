@@ -7,8 +7,7 @@ namespace liten
 std::unordered_map<std::shared_ptr<arrow::Array>, std::shared_ptr<TBlock>> TBlock::arrayToBlock_;
 std::shared_mutex TBlock::arrayToBlockMutex_;
 
-
-std::shared_ptr<TBlock> TBlock::Create(std::shared_ptr<arrow::Array> arr)
+TResult<std::shared_ptr<TBlock>> TBlock::Create(std::shared_ptr<arrow::Array> arr)
 {
   auto tblk = GetTBlock(arr);
   if (tblk)
@@ -18,18 +17,9 @@ std::shared_ptr<TBlock> TBlock::Create(std::shared_ptr<arrow::Array> arr)
   tblk = std::make_shared<TBlock::MakeSharedEnabler>();
   tblk->arr_ = arr;
   TStatus status = std::move(TCatalog::GetInstance()->AddBlock(tblk, tblk->id_));
-  if (!status.ok())
-  {
-    TLOG(ERROR) << "Cannot create uuid for block. " << status.message();
-    tblk = nullptr;
-  } else {
-    status = std::move(AddTBlock(tblk));
-    if (!status.ok())
-    {
-      TLOG(ERROR) << "Cannot add arrow to block key.";
-      tblk = nullptr;
-    }
-  }
+  LITEN_RETURN_IF(!status.ok(), status);
+  status = std::move(AddTBlock(tblk));
+  LITEN_RETURN_IF(!status.ok(), status);  
   return tblk;
 }
 

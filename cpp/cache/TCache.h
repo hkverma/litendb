@@ -61,6 +61,12 @@ public:
                                            const arrow::csv::ReadOptions& readOptions,
                                            const arrow::csv::ParseOptions& parseOptions,
                                            const arrow::csv::ConvertOptions& convertOptions);
+  TResult<std::shared_ptr<TTable>> ReadCsvTable(std::string tableName,
+                                                TableType type,
+                                                std::string csvUri,
+                                                const arrow::csv::ReadOptions& readOptions,
+                                                const arrow::csv::ParseOptions& parseOptions,
+                                                const arrow::csv::ConvertOptions& convertOptions);
 
 
   /// Add table to cache
@@ -70,9 +76,22 @@ public:
   /// @returns Result with TTable
   TResult<std::shared_ptr<TTable>> AddTable(std::string tableName,
                                             TableType type,
-                                            std::shared_ptr<arrow::Table> table,
                                             std::string schemaName);
 
+  /// Add table to cache
+  /// @param ttable Liten Table
+  /// @param recordBatch recordBatch to be added
+  /// @returns Result with TRowBlock
+  TResult<std::shared_ptr<TRowBlock>> AddRowBlock(std::shared_ptr<TTable> ttable,
+                                                   std::shared_ptr<arrow::RecordBatch> recordBatch);
+
+  /// Add arrow table to cache
+  /// @param ttable Liten Table
+  /// @param table arrow table to be added
+  /// @returns Result with TRowBlock
+  TStatus AddArrowTable(std::shared_ptr<TTable> ttable,
+                        std::shared_ptr<arrow::Table> table);
+  
   /// Get table or given table name
   /// @param tableName name of the table
   /// @returns ptr to TTable, null if not present
@@ -92,12 +111,16 @@ public:
   std::shared_ptr<TSchema> GetSchema(std::string schemaName) const;  
   
   /// Make maps for a given schema name
-  int MakeMaps(std::string tableName);
-  int MakeMaps(std::shared_ptr<TTable> ttable);
+  TStatus MakeMaps(std::string tableName, bool ifReverseMap=false);
+  TStatus MakeMaps(std::shared_ptr<TTable> ttable, bool ifReverseMap=false);
     
   /// Make maps for all dimension tables
-  int MakeMaps();
+  TStatus MakeMaps(bool ifReverseMap=false);
 
+  // Create tensors
+  TStatus MakeTensor(std::string tableName);
+  TStatus MakeTensor(std::shared_ptr<TTable> ttable);
+  TStatus MakeTensor();
 
   // TBD
   // Define various cuts here - slicing and dicing

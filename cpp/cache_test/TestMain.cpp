@@ -39,8 +39,10 @@ int main(int argc, char** argv) {
     std::filesystem::path fileName = tpchDir;
     std::string tableName = TpchDemo::tableNames[i] + ".tbl";
     fileName /= tableName;
-    auto status = tCache->ReadCsv(TpchDemo::tableNames[i], TpchDemo::tableTypes[i], fileName,
-                                  readOptions, parseOptions, convertOptions);
+    //    auto status = tCache->ReadCsv(TpchDemo::tableNames[i], TpchDemo::tableTypes[i], fileName,
+    //                                  readOptions, parseOptions, convertOptions);
+    auto status = tCache->ReadCsvTable(TpchDemo::tableNames[i], TpchDemo::tableTypes[i], fileName,
+                                       readOptions, parseOptions, convertOptions);
     if (!status.ok())
     {
       TLOG(ERROR) << "Unable to Read file=" << fileName;
@@ -89,6 +91,12 @@ int main(int argc, char** argv) {
   
   tpchDemo->PrintSchemas();
 
+  // Create Tensor
+  if (!tCache->MakeTensor().ok())
+  {
+    TLOG(ERROR) << "Unable to create tensors";
+  }
+  
   // Run Query6
   auto execQuery6 = [&]()
   {
@@ -115,15 +123,16 @@ int main(int argc, char** argv) {
   }
 
   // Make Maps except for lineitem
+
   TStopWatch stopWatch;
   stopWatch.Start();
   for (int32_t i=1; i<TpchDemo::tableNames.size(); i++)
   {
     auto tableName = TpchDemo::tableNames[i];
-    int result = tCache->MakeMaps(tableName);
-    if (result)
+    auto result = tCache->MakeMaps(tableName);
+    if (!result.ok())
     {
-      LOG(ERROR) << "Failed to create maps for " << tableName;
+      LOG(ERROR) << "Failed to create maps for " << tableName << "with msg=" << result.message();
     }
     else
     {
@@ -132,7 +141,7 @@ int main(int argc, char** argv) {
   }
   stopWatch.Stop();
   LOG(INFO) << "Liten Tensor Creation Time (us)=" << stopWatch.ElapsedInMicroseconds();
-  tpchDemo->PrintMaps(tpchDemo->customer);
+  //tpchDemo->PrintMaps(tpchDemo->customer);
 
   auto printRevenue = [&](std::shared_ptr<std::unordered_map<std::string, double>> q5revs) -> void {
     LOG(INFO) << "Query5 Revenue=";

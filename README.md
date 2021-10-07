@@ -690,6 +690,33 @@ These are some of the techniques being used in Liten code.
 
 * Use arrow::Result to return Status along with the value
 
+#### To Read
+
+[Spark data source example code](https://github.com/spirom/spark-data-sources)
+
+[IPC benchmark good one to run to check perf](https://github.com/goldsborough/ipc-bench)
+
+[IPC perf named pipe vs socket](https://stackoverflow.com/questions/1235958/ipc-performance-named-pipe-vs-socket)
+
+[Simple IPC benchmark](https://github.com/rigtorp/ipc-bench)
+
+[Write small data io with mmap etc in C++ lib](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p1031r1.pdf)
+[LLFIO C++ lib](https://ned14.github.io/llfio/)
+[metall lib for memory mapped files](https://metall.readthedocs.io/en/latest/)
+[metall paper](https://www.osti.gov/servlets/purl/1576900)
+
+[Brendan perf tools](https://github.com/brendangregg/perf-tools)
+
+[shmem-blog](https://github.com/goldshtn/shmemq-blog)
+
+[PCA for network analytics](http://conferences.sigcomm.org/sigcomm/2004/papers/p405-lakhina111.pdf)
+
+[PCA eigen values](https://towardsdatascience.com/pca-eigenvectors-and-eigenvalues-1f968bc6777a)
+
+[Arrow Extended columnar processing in spark](https://issues.apache.org/jira/browse/SPARK-27396)
+
+[Synapse ML Services](https://github.com/microsoft/SynapseML)
+
 #### Completed
 * Added LitenIntro_0.ipynb - Added dimention and fact tabes
 * Added LitenIntro_1.ipynb Works with Ray remote calls

@@ -1,5 +1,6 @@
+#include <TColumn.h>
 #include <TColumnMap.h>
-
+// TBD All ValueOrDie type returns should be made macros
 namespace liten
 {
 
@@ -11,79 +12,91 @@ namespace liten
 // go through the list and collect min & max
 // arrow::builder.cc check L22 for the types shown below
 //
-std::shared_ptr<TColumnMap> TColumnMap::Make(std::shared_ptr<arrow::ChunkedArray> chunkedArray)
-{
-  std::shared_ptr<TColumnMap> chunkArrMap = std::make_shared<TColumnMap>(chunkedArray);
 
-  switch (chunkedArray->type()->id())
+// By looking at the column ID type, it creates the correct ColumnMap.
+TResult<std::shared_ptr<TColumnMap>> TColumnMap::Create(std::shared_ptr<TColumn> tColumn)
+{
+  if (0 == tColumn->NumBlocks())
   {
-    /* TODO
+    return TStatus::Invalid("Empty Columnar data");
+  }
+  
+  std::shared_ptr<TColumnMap> colMap = nullptr;
+  
+  auto idType = tColumn->GetBlock(0)->GetArray()->type()->id();
+  for (auto i=0; i<tColumn->NumBlocks(); i++)
+  {
+    if (idType != tColumn->GetBlock(i)->GetArray()->type()->id())
+    {
+      return TStatus::Invalid("Different type of data in the same column");
+    }
+  }
+  
+  switch (idType)
+  {
+    /* TBD
        case UInt8: case Int8: case UInt16:  case Int16:
        case UInt32:
        case Int32:
        case UInt64:
     */
   case arrow::Int64Type::type_id:
-    {
-      chunkArrMap = TInt64ColumnMap::Make(chunkedArray);
-      break;
-    }
-    /* TODO
-       case Date32:
-       case Date64:
-       case Duration:
-       case Time32:
-       case Time64:
-       case Timestamp:
-       case MonthInterval:
-       case DayTimeInterval:
-       case Boolean:
-       case HalfFloat:
-       case Float:
-       case Double:
-       case String:
-       case Binary:
-       case LargeString:
-       case LargeBinary:
-       case FixedSizeBinary:
-       case Decimal128:
-    */
-  default:
-    {
-      chunkArrMap = std::make_shared<TColumnMap>(chunkedArray);
-      break ;
-    }
+  {
+    colMap = std::make_shared<TInt64ColumnMap>(tColumn);
+    break;
   }
-  return chunkArrMap;
-}
-
-std::shared_ptr<TColumnMap> TColumnMap::Copy()
-{
-  auto colMap = std::make_shared<TColumnMap>(chunkedArray_);
+  /* TBD
+     case Date32:
+     case Date64:
+     case Duration:
+     case Time32:
+     case Time64:
+     case Timestamp:
+     case MonthInterval:
+     case DayTimeInterval:
+     case Boolean:
+     case HalfFloat:
+     case Float:
+     case Double:
+     case String:
+     case Binary:
+     case LargeString:
+     case LargeBinary:
+     case FixedSizeBinary:
+     case Decimal128:
+  */
+  default:
+  {
+    colMap = std::make_shared<TColumnMap>(tColumn);
+    break ;
+  }
+  }
+  
   return colMap;
 }
 
-TInt64ColumnMap::TInt64ColumnMap(std::shared_ptr<arrow::ChunkedArray> chunkedArray)
-  : TColumnMap(chunkedArray)
+TInt64ColumnMap::TInt64ColumnMap(std::shared_ptr<TColumn> tColumn)
+  : TColumnMap(tColumn)
 {
-  min_.resize(chunkedArray->num_chunks(), std::numeric_limits<int64_t>::min());
-  max_.resize(chunkedArray->num_chunks(), std::numeric_limits<int64_t>::max());
+  min_.resize(tColumn->NumBlocks(), std::numeric_limits<int64_t>::min());
+  max_.resize(tColumn->NumBlocks(), std::numeric_limits<int64_t>::max());
 }
 
-std::shared_ptr<TInt64ColumnMap> TInt64ColumnMap::Make(std::shared_ptr<arrow::ChunkedArray> chunkedArray)
+TStatus TInt64ColumnMap::CreateZoneMap(bool forceCreate)
 {
-  std::shared_ptr<TInt64ColumnMap> mapArr = std::make_shared<TInt64ColumnMap>(chunkedArray);
-  for (int64_t arrNum=0; arrNum<chunkedArray->num_chunks(); arrNum++)
+  if (!forceCreate && ifZoneMap_)
+    return TStatus::OK();
+  
+  for (int64_t blkNum=0; blkNum<tColumn_->NumBlocks(); blkNum++)
   {
-    int64_t& minVal = mapArr->min_[arrNum];
-    int64_t& maxVal = mapArr->max_[arrNum];
-    std::shared_ptr<arrow::Array> arr = chunkedArray->chunk(arrNum);
+    int64_t& minVal = min_[blkNum];
+    int64_t& maxVal = max_[blkNum];
+    std::shared_ptr<arrow::Array> arr = tColumn_->GetBlock(blkNum)->GetArray();
 
     std::shared_ptr<arrow::Int64Array> numArr = std::static_pointer_cast<arrow::Int64Array>(arr);
     if (numArr == nullptr)
     {
-      LOG(ERROR) << "Internal error - cannot convert to Int64Array." ;
-      continue;
+      return TStatus::UnknownError("Cannot convert to Int64Array.");
     }
 
     int64_t length = numArr->length();
@@ -99,20 +112,35 @@ std::shared_ptr<TInt64ColumnMap> TInt64ColumnMap::Make(std::shared_ptr<arrow::Ch
       // Set min and max
       minVal = (rowVal < minVal)?rowVal:minVal;
       maxVal = (rowVal > maxVal)?rowVal:maxVal;
-      // Create an inverted index
-      mapArr->reverseMap_.insert(std::make_pair(rowVal, std::make_pair(arrNum, rowId)));
     }
   }
-  return mapArr;
+  ifZoneMap_ = true;  
+  return TStatus::OK();
 }
 
-std::shared_ptr<TColumnMap> TInt64ColumnMap::Copy()
+TStatus TInt64ColumnMap::CreateReverseMap(bool forceCreate)
 {
-  std::shared_ptr<TInt64ColumnMap> colMap = std::make_shared<TInt64ColumnMap>(chunkedArray_);
-  colMap->min_ = min_;
-  colMap->max_ = max_;
-  colMap->reverseMap_ = reverseMap_;
-  return colMap;
+  if (!forceCreate && ifReverseMap_)
+    return TStatus::OK();
+  
+  for (int64_t blkNum=0; blkNum<tColumn_->NumBlocks(); blkNum++)
+  {
+    std::shared_ptr<arrow::Array> arr = tColumn_->GetBlock(blkNum)->GetArray();
+    std::shared_ptr<arrow::Int64Array> numArr = std::static_pointer_cast<arrow::Int64Array>(arr);
+    if (numArr == nullptr)
+    {
+      return TStatus::UnknownError("cannot convert to Int64Array.");
+    }
+
+    int64_t length = numArr->length();
+    for (int64_t rowId=0 ; rowId<length; rowId++)
+    {
+      int64_t rowVal = numArr->Value(rowId);
+      reverseMap_.insert(std::make_pair(rowVal, std::make_pair(blkNum, rowId)));
+    }
+  }
+  ifReverseMap_ = true;
+  return TStatus::OK();
 }
 
 bool TInt64ColumnMap::GetReverseMap(int64_t& rowVal, int64_t& arrId, int64_t& rowId)
@@ -123,7 +151,7 @@ bool TInt64ColumnMap::GetReverseMap(int64_t& rowVal, int64_t& arrId, int64_t& ro
     return false;
   }
   // For now return only one
-  // TODO Use equal_range in future to return a vector of matched rowIds
+  // TBD Use equal_range in future to return a vector of matched rowIds
   arrId = (revMapItr->second).first;
   rowId = (revMapItr->second).second;
   return true;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <common.h>
+#include <cache_fwd.h>
 
 //
 // Liten Columnar Storage Node
@@ -10,27 +11,32 @@
 // One column chunk stores numComponents of a single column of Liten
 // Arrow in memory, persistent in parquet format
 //
+// TBD Use Arrow Array to store Column Map data
+//
 
 namespace liten
 {
 //
 // TODO Use Memory Pool to create an arrow memory pool liks  arrow::MemoryPool* pool_
 //      Use pool to store all the values
-//
 class TColumnMap
 {
 public:
-  TColumnMap(std::shared_ptr<arrow::ChunkedArray> chunkedArray) :
-    chunkedArray_(chunkedArray)
-  {  }
-  virtual ~TColumnMap() { }
 
-  // Column Map from Arrow Chunked Array
-  static std::shared_ptr<TColumnMap> Make(std::shared_ptr<arrow::ChunkedArray> chunkedArray);
-  // Copy into another map structure
-  virtual std::shared_ptr<TColumnMap> Copy();
 
-  // TODO needs to be templated for min-max types
+  virtual TStatus CreateZoneMap(bool forceCreate=false)
+  {
+    ifZoneMap_ = false;
+    return TStatus::OK();
+  }
+  
+  virtual TStatus CreateReverseMap(bool forceCreate=false)
+  {
+    ifReverseMap_ = false;
+    return TStatus::OK();
+  }
+  
+  // TBD needs to be templated for min-max types
   virtual bool GetMin(int64_t arrNum, int64_t& minVal)
   {
     return false;
@@ -45,36 +51,66 @@ public:
   {
     return false;
   }
+  
   virtual bool GetReverseMap(int64_t& rowVal, int64_t& arrId, int64_t& rowId)
   {
     return false;
   }
+  
   virtual bool GetReverseMap(std::stringstream& ss)
   {
     return false;
   }
-  virtual bool IfValidMap()
+  
+  virtual bool IfValidZoneMap()
   {
     return false;
   }
+  
+  virtual bool IfValidReverseMap()
+  {
+    return false;
+  }
+  
+  /// Columnmap for a given column
+  TColumnMap(std::shared_ptr<TColumn> tColumn) :
+    tColumn_(tColumn), ifZoneMap_(false), ifReverseMap_(false)
+  {  }
+  
+  virtual ~TColumnMap() { }
 
-  // arrow chunked array for which map is built
-  std::shared_ptr<arrow::ChunkedArray> chunkedArray_;
-  //TODO arrow::Status status_;
+protected:
+
+  // TBD Can only be created from TColumn
+  friend class TColumn;
+  static TResult<std::shared_ptr<TColumnMap>> Create(std::shared_ptr<TColumn> tColumn);
+  
+  /// arrow chunked array for which map is built
+  std::shared_ptr<TColumn> tColumn_;
+
+  /// Create zoneMap if true
+  bool ifZoneMap_;
+
+  /// Create reverseMap if true
+  bool ifReverseMap_;
+
 };
+
+/// TBD Currently make it only for int64_t, enhance it later with other types
 
 // zone maps for comparable types currently only range type
 // Create a MinMax template class here
-// TODO Currently make it only for int64_t, enhance it later with other types
 class TInt64ColumnMap : public TColumnMap
 {
 public:
-  TInt64ColumnMap(std::shared_ptr<arrow::ChunkedArray> chunkedArray);
     
-  static std::shared_ptr<TInt64ColumnMap> Make(std::shared_ptr<arrow::ChunkedArray> chunkedArray);
-
-  virtual std::shared_ptr<TColumnMap> Copy();
-    
+  /// Use named constructor Create instead
+  TInt64ColumnMap(std::shared_ptr<TColumn> tColumn);
+  
+  virtual TStatus CreateZoneMap(bool forceCreate=false);
+  
+  virtual TStatus CreateReverseMap(bool forceCreate=false);
+  
   virtual bool GetMin(int64_t arrNum, int64_t& minVal)
   {
     minVal = min_[arrNum];
@@ -86,20 +122,28 @@ public:
     maxVal = max_[arrNum];
     return true;
   }
-  virtual bool IfValidMap()
+  virtual bool IfValidZoneMap()
   {
-    return true;
+    return ifZoneMap_;
   }
 
+  virtual bool IfValidReverseMap()
+  {
+    return ifReverseMap_;
+  }
+  
   virtual bool GetReverseMap(int64_t& rowVal, int64_t& arrId, int64_t& rowId);
 
   virtual bool GetReverseMap(std::stringstream& ss);
 
-  // min, max
+
+private:
+  /// min, max
   std::vector<int64_t> min_, max_;
-  // Inverse maps from rowId to arrow::Array and offset within that array
+  
+  /// Inverse maps from rowId to arrow::Array and offset within the array
+  /// TBD can map to mulitple rows
   std::map<int64_t, std::pair<int64_t, int64_t>> reverseMap_;
-    
 };
 
   

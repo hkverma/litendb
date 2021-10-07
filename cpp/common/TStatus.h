@@ -18,50 +18,53 @@
 //
 //
 
-/*
+#ifdef LITEN_EXTRA_ERROR_CONTEXT
+
 /// \brief Return with given status if condition is met.
-#define LITEN_RETURN_IF_(condition, status, expr)       \
-do {                                                  \
-if (LITEN_PREDICT_FALSE(condition)) {               \
-::liten::Status _st = (status);                   \
-_st.AddContextLine(__FILE__, __LINE__, expr);     \
-return _st;                                       \
-}                                                   \
+#define LITEN_RETURN_IF_(condition, status, expr)   \
+do                                                    \
+{                                                     \
+  if (LITEN_UNLIKELY(condition))                      \
+  {                                                   \
+    ::liten::Status _st = (status);                   \
+    _st.AddContextLine(__FILE__, __LINE__, expr);     \
+    return _st;                                       \
+  }                                                   \
 } while (0)
 
-#define LITEN_RETURN_IF_(condition, status, _)  \
-do {                                          \
-if (LITEN_PREDICT_FALSE(condition)) {       \
-return (status);                          \
-}                                           \
+#else
+
+#define LITEN_RETURN_IF_(condition, status, _)   \
+do                                                 \
+{                                                  \
+  if (LITEN_UNLIKELY(condition)) {                 \
+    return (status);                               \
+  }                                                \
 } while (0)
 
 #endif  // LITEN_EXTRA_ERROR_CONTEXT
+
 
 #define LITEN_RETURN_IF(condition, status)                      \
 LITEN_RETURN_IF_(condition, status, LITEN_STRINGIFY(status))
 
 /// \brief Propagate any non-successful Status to the caller
-#define LITEN_RETURN_NOT_OK(status)                                     \
-do {                                                                  \
-::liten::Status __s = ::arrow::internal::GenericToStatus(status);   \
-LITEN_RETURN_IF_(!__s.ok(), __s, LITEN_STRINGIFY(status));          \
+#define LITEN_RETURN_NOT_OK(status)                             \
+do                                                                \
+{                                                                 \
+  ::liten::TStatus __s = ::liten::GenericToTStatus(status);        \
+    ARROW_RETURN_IF_(!__s.ok(), __s, ARROW_STRINGIFY(status));    \
 } while (false)
-
-#define RETURN_NOT_OK_ELSE(s, else_)                            \
+ 
+#define LITEN_RETURN_NOT_OK_ELSE(s, else_)                 \
 do {                                                          \
-::arrow::Status _s = ::arrow::internal::GenericToStatus(s); \
-if (!_s.ok()) {                                             \
-else_;                                                    \
-return _s;                                                \
-}                                                           \
+  ::liten::TStatus _s = ::liten::GenericToTStatus(s);          \
+  if (!_s.ok()) {                                             \
+   else_;                                                    \
+   return _s;                                                \
+  }                                                           \
 } while (false)
 
-// This is an internal-use macro and should not be used in public headers.
-#ifndef RETURN_NOT_OK
-#define RETURN_NOT_OK(s) LITEN_RETURN_NOT_OK(s)
-#endif
-*/
 namespace liten {
 
 enum class TStatusCode : char {
@@ -390,5 +393,10 @@ TStatus& TStatus::operator&=(TStatus&& s) noexcept {
   return *this;
 }
 /// \endcond
+
+// Extract Status from TStatus or TResult<T>
+// Useful for the status check macros such as RETURN_NOT_OK.
+inline TStatus GenericToTStatus(const TStatus& st) { return st; }
+inline TStatus GenericToTStatus(TStatus&& st) { return std::move(st); }
 
 }  // namespace liten

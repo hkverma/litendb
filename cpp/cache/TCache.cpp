@@ -28,10 +28,21 @@ std::shared_ptr<TCache> TCache::GetInstance()
 
 TResult<std::shared_ptr<TTable>> TCache::AddTable(std::string tableName,
                                                   TableType type,
-                                                  std::shared_ptr<arrow::Table> table,
                                                   std::string schemaName)
 {
-  return std::move(TTable::Create(tableName, type, table, schemaName));
+  return std::move(TTable::Create(tableName, type, schemaName));
+}
+
+TResult<std::shared_ptr<TRowBlock>> TCache::AddRowBlock(std::shared_ptr<TTable> ttable,
+                                                std::shared_ptr<arrow::RecordBatch> recordBatch)
+{
+  return std::move(ttable->AddRowBlock(recordBatch));
+}
+
+TStatus TCache::AddArrowTable(std::shared_ptr<TTable> ttable,
+                              std::shared_ptr<arrow::Table> table)
+{
+  return std::move(ttable->AddArrowTable(table));
 }
 
 TResult<std::shared_ptr<TSchema>> TCache::AddSchema(std::string schemaName,
@@ -94,12 +105,12 @@ std::string TCache::GetSchemaInfo()
 
 
 /// Read csv file in a new table tableName. tableName should be unique
-TResult<std::shared_ptr<TTable>> TCache::ReadCsv(std::string tableName,
-                                                 TableType type,
-                                                 std::string csvUri,
-                                                 const arrow::csv::ReadOptions& readOptions,
-                                                 const arrow::csv::ParseOptions& parseOptions,
-                                                 const arrow::csv::ConvertOptions& convertOptions)
+TResult<std::shared_ptr<TTable>> TCache::ReadCsvTable(std::string tableName,
+                                                      TableType type,
+                                                      std::string csvUri,
+                                                      const arrow::csv::ReadOptions& readOptions,
+                                                      const arrow::csv::ParseOptions& parseOptions,
+                                                      const arrow::csv::ConvertOptions& convertOptions)
 {
   // If found one, return it
   std::shared_ptr<TTable> ttable = TCatalog::GetInstance()->GetTable(tableName);
@@ -176,65 +187,180 @@ TResult<std::shared_ptr<TTable>> TCache::ReadCsv(std::string tableName,
   {
     return TResult<std::shared_ptr<TTable>>(TStatus::UnknownError("Creating arrow table"));
   }
-  auto ttableResult = std::move(TTable::Create(tableName, type, table, ""));
+  auto ttableResult = std::move(TTable::Create(tableName, type, ""));
   if (!ttableResult.ok())
   {
     TLOG(ERROR) << "Error creating Liten table= " << tableName;
   }
+  ttable = ttableResult.ValueOrDie();
+  auto status = ttable->AddArrowTable(table);
+  if (!status.ok())
+    return status;
   return ttableResult;
 }
 
+/// Read csv file in a new table tableName. tableName should be unique
+TResult<std::shared_ptr<TTable>> TCache::ReadCsv(std::string tableName,
+                                                 TableType type,
+                                                 std::string csvUri,
+                                                 const arrow::csv::ReadOptions& readOptions,
+                                                 const arrow::csv::ParseOptions& parseOptions,
+                                                 const arrow::csv::ConvertOptions& convertOptions)
+{
+  // If found one, return it
+  std::shared_ptr<TTable> ttable = TCatalog::GetInstance()->GetTable(tableName);
+  if (nullptr != ttable)
+  {
+    TLOG(INFO) << csvUri << " found in cache memory for tableName=" << tableName;
+    return TResult<std::shared_ptr<TTable>>(ttable);
+  }
+
+  // Create one table with tableName
+  // Use default memory pool
+  arrow::MemoryPool* pool = arrow::default_memory_pool();
+
+  // Readable File for the csvFile
+  arrow::Result<std::shared_ptr<arrow::io::ReadableFile>> fpResult =
+    arrow::io::ReadableFile::Open(csvUri, pool);
+  if (!fpResult.ok()) {
+    TLOG(ERROR) << "Cannot open file " << csvUri;
+    return TStatus::Invalid("Cannot open file=", csvUri);
+  }
+  std::shared_ptr<arrow::io::ReadableFile> fp = fpResult.ValueOrDie();
+
+  // Get fileSizeResult
+  arrow::Result<int64_t> fileSizeResult = fp->GetSize();
+  if (!fileSizeResult.ok()) {
+    TLOG(ERROR) << "Unknown filesize for file " << csvUri;
+    return TResult<std::shared_ptr<TTable>>(TStatus::UnknownError("Unknown filesize for file ", csvUri));
+  }
+  int64_t fileSize = fileSizeResult.ValueOrDie();
+
+  // Random access file reader
+  std::shared_ptr<arrow::io::InputStream> inputStream =
+    arrow::io::RandomAccessFile::GetStream(fp, 0, fileSize);
+
+  // Instantiate TableReader from input stream and options
+  arrow::io::IOContext ioContext = arrow::io::default_io_context();
+  arrow::Result<std::shared_ptr<arrow::csv::StreamingReader>> readerResult
+    = arrow::csv::StreamingReader::Make(ioContext, inputStream, readOptions,
+                                    parseOptions, convertOptions);
+  if (!readerResult.ok()) {
+    TLOG(ERROR) << "Cannot read table " << csvUri;
+    return TStatus::IOError("Cannot read table=", csvUri);
+  }
+  std::shared_ptr<arrow::csv::StreamingReader> reader = readerResult.ValueOrDie();
+
+  // Schema is read from first batch, so should be same in all batches
+  std::shared_ptr<arrow::RecordBatch> rb;
+  auto rbResult = reader->ReadNext(&rb);
+  if (!rbResult.ok()) {
+    TLOG(ERROR) << "Reading csv table= " << rbResult.ToString();
+    return TResult<std::shared_ptr<TTable>>(TStatus::IOError("Reading csv table= ", rbResult.ToString()));
+  }
+  
+  auto ttableResult = std::move(AddTable(tableName, type, ""));
+  if (!ttableResult.ok()) {
+    // Handle CSV read error
+    // (for example a CSV syntax error or failed type conversion)
+    TLOG(ERROR) << "Creating TTable from csv= " << ttableResult.status().ToString();
+    return TResult<std::shared_ptr<TTable>>(TStatus::IOError("Reading csv table= ", ttableResult.status().ToString()));
+  }
+  ttable = ttableResult.ValueOrDie();
+
+  while (rb) {
+    auto trbResult = std::move(AddRowBlock(ttable, rb));
+    if (!trbResult.ok()) {
+      // Handle CSV read error
+      // (for example a CSV syntax error or failed type conversion)
+      TLOG(ERROR) << "Creating RowBlock from csv= " << trbResult.status().ToString();
+      return TResult<std::shared_ptr<TTable>>(TStatus::IOError("Reading csv table= ", trbResult.status().ToString()));
+    }
+    reader->ReadNext(&rb);
+  }
+
+  // Log table information
+  auto numCols = ttable->NumColumns();
+  TLOG(INFO) << "Total columns=" << numCols;
+  return std::move(ttableResult);
+}
+
 // TBD modify these
-int TCache::MakeMaps(std::string tableName)
+TStatus TCache::MakeMaps(std::string tableName, bool ifReverseMap)
 {
   auto ttable = TCatalog::GetInstance()->GetTable(tableName);
-  int result = MakeMaps(ttable);
+  auto result = MakeMaps(ttable,ifReverseMap);
   return result;
 }
 
-int TCache::MakeMaps(std::shared_ptr<TTable> ttable)
+TStatus TCache::MakeMaps(std::shared_ptr<TTable> ttable, bool ifReverseMap)
 {
   if (nullptr == ttable)
   {
-    TLOG(ERROR) << "Failed to create data-tensor. Did not find in cache table " << ttable->GetName();
-    return 1;
+    return TStatus::Invalid("Failed to create data-tensor. Did not find in cache table ", ttable->GetName());
   }
-  // TBD Are numCopies needed? remove it.
-  int result = ttable->MakeMaps(1);
-  if (result)
-  {
-    TLOG(ERROR) << "Found table " << ttable->GetName() << " but failed to create data tensor";
-  }
+  auto result = std::move(ttable->MakeMaps(ifReverseMap));
   return result;
 }
 
-int TCache::MakeMaps()
+TStatus TCache::MakeMaps(bool ifReverseMap)
 {
   auto& tables = TCatalog::GetInstance()->GetTableMap();
-  int result = 0;
   for (auto it=tables.begin(); it != tables.end(); it++)
   {
     auto table = it->second;
-    if (MakeMaps(table))
+    auto status = std::move(MakeMaps(table, ifReverseMap));
+    if (!status.ok())
     {
-      result = 1;
+      return status;
     }
   }
+  return TStatus::OK();
+}
+
+TStatus TCache::MakeTensor(std::string tableName)
+{
+  auto ttable = TCatalog::GetInstance()->GetTable(tableName);
+  auto result = std::move(MakeTensor(ttable));
   return result;
+}
+
+TStatus TCache::MakeTensor(std::shared_ptr<TTable> ttable)
+{
+  if (nullptr == ttable)
+  {
+    return TStatus::Invalid("Failed to create data-tensor. Did not find in cache table ", ttable->GetName());
+  }
+  auto result = std::move(ttable->MakeTensor());
+  return result;
+}
+
+TStatus TCache::MakeTensor()
+{
+  auto& tables = TCatalog::GetInstance()->GetTableMap();
+  for (auto it=tables.begin(); it != tables.end(); it++)
+  {
+    auto table = it->second;
+    auto status = std::move(table->MakeTensor());
+    if (!status.ok())
+    {
+      return status;
+    }
+  }
+  return TStatus::OK();
 }
 
 // This gives a slice from offset from beginning of length length
 // TBD do it using tensor
 std::shared_ptr<arrow::Table> TCache::Slice(std::string tableName, int64_t offset, int64_t length)
 {
-  auto arrTable = GetTable(tableName);
+  auto ttable = GetTable(tableName);
   // No table by this name
-  if (nullptr == arrTable) {
+  if (nullptr == ttable) {
     return nullptr;
   }
-  
-  auto slicedTable = arrTable->Slice(offset, length);
+
+  auto slicedTable = ttable->Slice(offset, length);
   return slicedTable;
-  
 }
 }

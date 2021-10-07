@@ -1,5 +1,6 @@
 #include <TSchema.h>
 #include <TCatalog.h>
+#include <TTable.h>
 
 namespace liten
 {
@@ -20,8 +21,8 @@ TResult<std::shared_ptr<TSchema>> TSchema::Create(std::string name,
         tschema->type_ == type &&
         tschema->name_ == name)
     {
-      TLOG(INFO) << "Creating an already existing schema by name=" << name;
-      return TResult<std::shared_ptr<TSchema>>(tschema);
+      TLOG(INFO) << "Created using an already existing schema by name=" << name;
+      return tschema;
     }
     return TStatus::AlreadyExists("Schema name=", name, " is already in use.");
   }
@@ -33,7 +34,7 @@ TResult<std::shared_ptr<TSchema>> TSchema::Create(std::string name,
   TStatus status = catalog->AddSchema(tschema);
   if (!status.ok())
   {
-    return TResult<std::shared_ptr<TSchema>>(status);
+    return status;
   }
   // By default all fields are metric, Join fields to create dim fields
   const arrow::FieldVector& fv = schema->fields();
@@ -41,7 +42,7 @@ TResult<std::shared_ptr<TSchema>> TSchema::Create(std::string name,
   {
     tschema->typeFields_[field] = (DimensionTable == tschema->type_)?FeatureField:MetricField;
   }
-  return TResult<std::shared_ptr<TSchema>>(tschema);
+  return tschema;
 }
 
 std::shared_ptr<arrow::Schema> TSchema::GetSchema()
@@ -68,10 +69,12 @@ TStatus TSchema::Join(std::string fieldName,
     return TStatus::Invalid("Field name ", parentFieldName, " for schema ", parentSchema->GetName(), " does not exist.");
   }
 
+  // Mark the fields as dimension fields
+  typeFields_[field] = DimensionField;  
+  parentSchema->typeFields_[parentField] = DimensionField;
+  
   AddParentField(field, parentSchema, parentField);
   parentSchema->AddChildField(parentField, shared_from_this(), field);
-  
-  typeFields_[field] = DimensionField;
   
   return TStatus::OK();
 }
@@ -111,19 +114,35 @@ TStatus TSchema::SetFieldType(std::string fieldName, FieldType fieldType)
   return TStatus::OK();
 }
 
+TResult<FieldType> TSchema::GetFieldType(std::shared_ptr<arrow::Field> field) const
+{
+  auto fieldItr = typeFields_.find(field);
+  if (typeFields_.end() == fieldItr)
+  {
+    return TStatus::UnknownError("No field in liten schema found by name=", field->name());
+  }
+  return TResult<FieldType>(fieldItr->second);
+}
+
 TResult<FieldType> TSchema::GetFieldType(std::string fieldName) const
 {
-  std::shared_ptr<arrow::Field> field = schema_->GetFieldByName(fieldName);
+  std::shared_ptr<arrow::Field> field = std::move(schema_->GetFieldByName(fieldName));
   if (nullptr == field)
   {
     return TStatus::Invalid("No field found by name=", fieldName);
   }
-  auto fieldItr = typeFields_.find(field);
-  if (typeFields_.end() == fieldItr)
+  auto result = std::move(GetFieldType(field));
+  return result;
+}
+
+TResult<FieldType> TSchema::GetFieldType(int32_t colNum) const
+{
+  if (colNum < 0 || colNum>schema_->num_fields())
   {
-    return TStatus::UnknownError("No field in liten schema found by name=", fieldName);
+    return TStatus::Invalid("Incorrect column number=", colNum);
   }
-  return TResult<FieldType>(fieldItr->second);
+  auto result = std::move(GetFieldType(schema_->field(colNum)));
+  return result;
 }
 
 // Schema Json representation
@@ -172,6 +191,78 @@ std::string TSchema::ToString()
     TLOG(ERROR) << "Failed to create json for schema " << name_ << "Error=" << exc.what();
     return "";
   }
+}
+
+TResult<TSchema::TSchemaField> TSchema::GetParentField(int i)
+{
+  if (i < 0 || i > schema_->num_fields())
+  {
+    return TStatus::IndexError("Schema out of index=", i);
+  }
+  auto itr = parentFields_.find(schema_->field(i));
+  if (parentFields_.end() != itr)
+  {
+    return itr->second;
+  }
+  return std::make_pair(nullptr,nullptr);
+}
+
+TResult<TSchema::TSchemaField> TSchema::GetParentField(const std::string& fieldName) const
+{
+  std::shared_ptr<arrow::Field> field = schema_->GetFieldByName(fieldName);
+  if (nullptr == field)
+  {
+    return TStatus::IndexError("Schema incorrect field name=", fieldName);
+  }
+  auto itr = parentFields_.find(field);
+  if (parentFields_.end() != itr)
+  {
+    return itr->second;
+  }
+  return std::make_pair(nullptr,nullptr);
+}
+
+TResult<TSchema::TSchemaField> TSchema::GetChildField(int i) const
+{
+  if (i < 0 || i > schema_->num_fields())
+  {
+    return TStatus::IndexError("Schema out of index=", i);
+  }
+  auto itr = childFields_.find(schema_->field(i));
+  if (childFields_.end() != itr)
+  {
+    return itr->second;
+  }
+  return std::make_pair(nullptr,nullptr);
+}
+
+TResult<TSchema::TSchemaField> TSchema::GetChildField(const std::string& fieldName) const
+{
+  std::shared_ptr<arrow::Field> field = schema_->GetFieldByName(fieldName);
+  if (nullptr == field)
+  {
+    return TStatus::IndexError("Schema incorrect field name=", fieldName);
+  }
+  auto itr = childFields_.find(field);
+  if (childFields_.end() != itr)
+  {
+    return itr->second;
+  }
+  return std::make_pair(nullptr,nullptr);
+}
+
+/// TBD RemoveTable
+
+TStatus TSchema::AddTable(std::shared_ptr<TTable> ttable)
+{
+  if (table_)
+  {
+    return TStatus::AlreadyExists("Schema=", name_, " adding another table=", ttable->GetName());
+  }
+  table_ = ttable;
+  // add table name to this schema name
+  auto status = std::move(TCatalog::GetInstance()->AddSchemaForTable(name_, ttable->GetName()));
+  return status;
 }
 
 }
