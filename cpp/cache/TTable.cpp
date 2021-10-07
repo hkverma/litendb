@@ -569,6 +569,7 @@ std::shared_ptr<arrow::Table> TTable::Slice(int64_t offset, int64_t numRows)
     if (nullptr == chunkSlice)
       return nullptr;
     sliced.push_back(chunkSlice);
+    numRows = chunkSlice->length();
   }
   return arrow::Table::Make(schema_->GetSchema(), sliced, numRows);
 }

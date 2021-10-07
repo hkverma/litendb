@@ -454,5 +454,5 @@ ORDER BY
         if (NULL == sp_table.get()):
             print ("Failed to get table=", table_name)
             return None
-        arr_table = pyarrow_wrap_table(sp_table)        
+        arr_table = pyarrow_wrap_table(sp_table)
         return arr_table
