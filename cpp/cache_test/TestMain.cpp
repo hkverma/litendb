@@ -39,8 +39,10 @@ int main(int argc, char** argv) {
     std::filesystem::path fileName = tpchDir;
     std::string tableName = TpchDemo::tableNames[i] + ".tbl";
     fileName /= tableName;
-    auto status = tCache->ReadCsv(TpchDemo::tableNames[i], TpchDemo::tableTypes[i], fileName,
-                                  readOptions, parseOptions, convertOptions);
+    //    auto status = tCache->ReadCsv(TpchDemo::tableNames[i], TpchDemo::tableTypes[i], fileName,
+    //                                  readOptions, parseOptions, convertOptions);
+    auto status = tCache->ReadCsvTable(TpchDemo::tableNames[i], TpchDemo::tableTypes[i], fileName,
+                                       readOptions, parseOptions, convertOptions);
     if (!status.ok())
     {
       TLOG(ERROR) << "Unable to Read file=" << fileName;

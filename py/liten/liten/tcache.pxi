@@ -15,6 +15,7 @@ from graphviz import Source
 
 import sys
 import codecs
+import time
 
 def q6digraph():
     """
@@ -365,9 +366,13 @@ WHERE
   AND L_DISCOUNT BETWEEN 0.07 - 0.01 AND 0.07 + 0.01
   AND L_QUANTITY < 25;
 """)
+        start = time.time_ns();
         result = p_tpch_demo.Query6()
+        end = time.time_ns();
         print("Revenue=",result);
         print("")
+        print("Time(ms)=",(end-start)/1000000)
+        print("")        
         q6di = Source(q6diggraphcmd, filename="_temp.gv", format="png")
         return q6di
 
@@ -405,7 +410,9 @@ GROUP BY
 ORDER BY
 	REVENUE DESC;
 """)
+        start = time.time_ns();
         sp_result = p_tpch_demo.Query5()
+        end = time.time_ns();
         p_result = sp_result.get()
         q5result = { }        
         if (NULL == p_result):
@@ -418,6 +425,8 @@ ORDER BY
             q5result[key] = value
             print(key,"=",value)
             postincrement(it)
+        print("")
+        print("Time(ms)=",(end-start)/1000000)
         print("")
         q5di = Source(q5diggraphcmd, filename="_temp.gv", format="png")
         return q5di

@@ -61,6 +61,12 @@ public:
                                            const arrow::csv::ReadOptions& readOptions,
                                            const arrow::csv::ParseOptions& parseOptions,
                                            const arrow::csv::ConvertOptions& convertOptions);
+  TResult<std::shared_ptr<TTable>> ReadCsvTable(std::string tableName,
+                                                TableType type,
+                                                std::string csvUri,
+                                                const arrow::csv::ReadOptions& readOptions,
+                                                const arrow::csv::ParseOptions& parseOptions,
+                                                const arrow::csv::ConvertOptions& convertOptions);
 
 
   /// Add table to cache

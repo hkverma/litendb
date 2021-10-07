@@ -283,11 +283,14 @@ TStatus TTable::AddArrowTable(std::shared_ptr<arrow::Table> table)
   for (auto arrNum=0; arrNum<numArrays; arrNum++)
   {
     std::vector<std::shared_ptr<arrow::Array>> arrCol;
-    for (auto colNum=0; colNum< columns[0]->num_chunks(); colNum++)
+    auto numRows = columns[0]->chunk(arrNum)->length();
+    for (auto colNum=0; colNum< columns.size(); colNum++)
     {
       arrCol.push_back(columns[colNum]->chunk(arrNum));
+      if (arrCol[colNum]->length() != numRows)
+        return TStatus::Invalid("Invalid numrows in table rowblock");
     }
-    auto rbResult = arrow::RecordBatch::Make(table->schema(), arrCol[0]->length(), std::move(arrCol));
+    auto rbResult = arrow::RecordBatch::Make(table->schema(), numRows, std::move(arrCol));
     if (nullptr == rbResult)
     {
       return TStatus::Invalid("Cannot add rowblock ");

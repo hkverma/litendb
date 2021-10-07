@@ -105,6 +105,101 @@ std::string TCache::GetSchemaInfo()
 
 
 /// Read csv file in a new table tableName. tableName should be unique
+TResult<std::shared_ptr<TTable>> TCache::ReadCsvTable(std::string tableName,
+                                                      TableType type,
+                                                      std::string csvUri,
+                                                      const arrow::csv::ReadOptions& readOptions,
+                                                      const arrow::csv::ParseOptions& parseOptions,
+                                                      const arrow::csv::ConvertOptions& convertOptions)
+{
+  // If found one, return it
+  std::shared_ptr<TTable> ttable = TCatalog::GetInstance()->GetTable(tableName);
+  if (nullptr != ttable)
+  {
+    TLOG(INFO) << csvUri << " found in cache memory for tableName=" << tableName;
+    return TResult<std::shared_ptr<TTable>>(ttable);
+  }
+
+  // Create one table with tableName
+  // Use default memory pool
+  arrow::MemoryPool* pool = arrow::default_memory_pool();
+
+  // Readable File for the csvFile
+  arrow::Result<std::shared_ptr<arrow::io::ReadableFile>> fpResult =
+    arrow::io::ReadableFile::Open(csvUri, pool);
+  if (!fpResult.ok()) {
+    TLOG(ERROR) << "Cannot open file " << csvUri;
+    return TStatus::Invalid("Cannot open file=", csvUri);
+  }
+  std::shared_ptr<arrow::io::ReadableFile> fp = fpResult.ValueOrDie();
+
+  // Get fileSizeResult
+  arrow::Result<int64_t> fileSizeResult = fp->GetSize();
+  if (!fileSizeResult.ok()) {
+    TLOG(ERROR) << "Unknown filesize for file " << csvUri;
+    return TResult<std::shared_ptr<TTable>>(TStatus::UnknownError("Unknown filesize for file ", csvUri));
+  }
+  int64_t fileSize = fileSizeResult.ValueOrDie();
+
+  // Random access file reader
+  std::shared_ptr<arrow::io::InputStream> inputStream =
+    arrow::io::RandomAccessFile::GetStream(fp, 0, fileSize);
+
+  // Instantiate TableReader from input stream and options
+  arrow::io::IOContext ioContext = arrow::io::default_io_context();
+  arrow::Result<std::shared_ptr<arrow::csv::TableReader>> readerResult
+    = arrow::csv::TableReader::Make(ioContext, inputStream, readOptions,
+                                    parseOptions, convertOptions);
+  if (!readerResult.ok()) {
+    TLOG(ERROR) << "Cannot read table " << csvUri;
+    return TStatus::IOError("Cannot read table=", csvUri);
+  }
+  std::shared_ptr<arrow::csv::TableReader> reader = readerResult.ValueOrDie();
+
+  // Read table from CSV file
+  arrow::Result<std::shared_ptr<arrow::Table>> tableResult = reader->Read();
+  if (!tableResult.ok()) {
+    // Handle CSV read error
+    // (for example a CSV syntax error or failed type conversion)
+    TLOG(ERROR) << "Reading csv table= " << tableResult.status().ToString();
+    return TResult<std::shared_ptr<TTable>>(TStatus::IOError("Reading csv table= ", tableResult.status().ToString()));
+  }
+  std::shared_ptr<arrow::Table> table = tableResult.ValueOrDie();
+
+  // Log table information
+  std::vector<std::shared_ptr<arrow::ChunkedArray>> cols = table->columns();
+  TLOG(INFO) << "Total columns=" << cols.size();
+  int64_t numChunks = cols[0]->num_chunks();
+  for (int i=0; i<cols.size(); i++) {
+    if (cols[i]->num_chunks() != numChunks) {
+      TLOG(ERROR) << "Chunks " << cols[i]->num_chunks() << " != " << numChunks;
+    }
+  }
+  for (auto i=0; i<cols.size(); i++) {
+    for (auto j=0; j<numChunks; j++) {
+      if (cols[i]->chunk(j)->length() != cols[0]->chunk(j)->length()) {
+        TLOG(ERROR) << "Col " << i << " Chunk " << j ;
+        TLOG(ERROR) << "Chunk length " << cols[i]->chunk(j)->length() << "!=" << cols[0]->chunk(j)->length() ;
+      }
+    }
+  }
+  if (nullptr == table)
+  {
+    return TResult<std::shared_ptr<TTable>>(TStatus::UnknownError("Creating arrow table"));
+  }
+  auto ttableResult = std::move(TTable::Create(tableName, type, ""));
+  if (!ttableResult.ok())
+  {
+    TLOG(ERROR) << "Error creating Liten table= " << tableName;
+  }
+  ttable = ttableResult.ValueOrDie();
+  auto status = ttable->AddArrowTable(table);
+  if (!status.ok())
+    return status;
+  return ttableResult;
+}
+
+/// Read csv file in a new table tableName. tableName should be unique
 TResult<std::shared_ptr<TTable>> TCache::ReadCsv(std::string tableName,
                                                  TableType type,
                                                  std::string csvUri,
