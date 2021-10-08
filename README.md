@@ -113,16 +113,20 @@ sudo apt-get install clang-tools
 sudo apt-get install clang-format
 sudo apt-get install clang-tidy
 ```
-Update to 12
-```
-sudo apt install clang-12 --install-suggests
-```
 Install llvm 12 as well.
 ```
 printf "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-12 main" |sudo tee /etc/apt/sources.list.d/llvm-toolchain-xenial-12.list
 wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key |sudo apt-key add -
 sudo apt update
 sudo apt install llvm-12
+Update to 12
+```
+sudo apt install clang-12 --install-suggest
+```
+Install zlib as well
+```
+sudo apt install zlib1g
+sudo apt install zlib1g-dev
 ```
 
 #### Ray
@@ -311,13 +315,15 @@ conda install jupyter
 ```
 
 #### Install required packges
-Open InstallPackages.ipynb in notebook and run to install all required packages. Kernel needs to be restarted each time.
+You can create a new environment called liten using the following commands
 ```
-cd py/notebooks
-jupyter notebook
+conda env create -f py/environment.yml
+conda activate liten
 ```
-This would install Ray, Arrow, Pandas, Graphviz, Cython and all the other dependencies.
-
+The existing environment can be updated using the following environments.
+```
+conda env update --file environment.yml --prune
+```
 For C++ build to pick the correct arrow lib, add following to LD_LIBRARY_PATH
 ```
 export LD_LIBRARY_PATH=${MINICONDA_ROOT_DIR}/envs/liten/lib:${LD_LIBRARY_PATH}

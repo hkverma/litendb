@@ -22,10 +22,12 @@ if [[ ${build_target} = "Release" ]]; then
     cd release
     ${cmake_command}
     make
+    make install
 else
     echo "Building debug.."
     mkdir debug
     cd debug
     ${cmake_command}
     make
+    make install
 fi
