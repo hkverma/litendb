@@ -498,6 +498,11 @@ Follow the README file to create data files and queries.
 
 The results of the TPC runs are in benchmarks/README.md
 
+Use x2goclient and server
+ssh -i ~/dev_key.pem azureuser@xx.xx.xx.
+x2goclient
+https://wiki.x2go.org/doku.php
+
 ### Software Architecture
 
 #### TCache
