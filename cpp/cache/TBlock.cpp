@@ -45,4 +45,29 @@ TStatus TBlock::AddTBlock(std::shared_ptr<TBlock> blk)
   return TStatus::OK();
 }
 
+std::string TBlock::ToString()
+{
+  std::stringstream ss;
+  auto arr = GetArray();
+  ss << " Arr Size=" << arr->length();
+  ss << " Type=" << std::move(arr->type()->ToString()) << " ";
+  for (auto rn=0; rn<arr->length(); rn++)
+  {
+    arrow::Result<std::shared_ptr<arrow::Scalar>> dataResult = arr->GetScalar(rn);
+    if ( !dataResult.ok() )
+    {
+      ss << ",";
+    }
+    else
+    {
+      std::shared_ptr<arrow::Scalar> data = dataResult.ValueOrDie();
+      if (data->is_valid)
+        ss << data->ToString();
+      ss << ",";
+    }
+  }
+  return std::move(ss.str());
+}  
+
 }
+

@@ -46,6 +46,9 @@ public:
   /// Get map for this column
   std::shared_ptr<TColumnMap> GetCurMap() { return map_; }
 
+  /// String debug output
+  std::string ToString(bool values, bool zonemap, bool reversemap);
+  
   /// A simple forward iterator for TColumn
   template <class Type, class ArrayType>
   class Iterator
@@ -83,6 +86,9 @@ public:
   template<class Type, class ArrayType>
   bool GetValue(int64_t& rowId,  // rowId input
                 Type& value);      // output value
+  
+  arrow::Result<std::shared_ptr<arrow::Scalar>> GetScalar(int64_t rowId);
+  arrow::Result<std::shared_ptr<arrow::Scalar>> GetScalar(int64_t arrId, int64_t rowId);
   
   // Get value from a rowId 
   template<class Type, class ArrayType>

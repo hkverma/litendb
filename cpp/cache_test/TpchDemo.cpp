@@ -77,7 +77,7 @@ void TpchDemo::ReadTables(std::string tpchDir)
       TLOG(ERROR) << "Error reading file=" << fileName;
       continue;
     }    
-    //tables_[i]->Print();
+    tables_[i]->PrintTable(true, true);
   }
 
 }
@@ -200,7 +200,8 @@ void TpchDemo::GetQuery6Revenue(int64_t chunkNum, double& revenue)
 // Get Query6 Revenue, use numWorkers_ threads
 double TpchDemo::Query6()
 {
-  int64_t shipdateValue, quantityValue;
+  int32_t shipdateValue;
+  int64_t quantityValue;
   double discountValue, extendedpriceValue;
   if (tables_[lineitem] == nullptr)
   {
@@ -479,7 +480,8 @@ void TpchDemo::GetQuery5Revenue(int64_t chunkNum, double revenue[])
   int64_t supplierGetRowIdTime=0, supplierGetValTime=0;
   int64_t nationGetRowIdTime=0, nationGetValTime=0;
 
-  int64_t oOrderdateValue, sNationkeyValue, nRegionkeyValue;
+  int32_t oOrderdateValue;
+  int64_t sNationkeyValue, nRegionkeyValue;
   int64_t rowId;
   for (rowId=0; rowId<extendedprice->length(); rowId++)
   {
@@ -492,10 +494,11 @@ void TpchDemo::GetQuery5Revenue(int64_t chunkNum, double revenue[])
     // l_orderkey = o_orderkey
     // and o_orderdate >= date '1995-01-01'
     // and o_orderdate < date '1995-01-01' + interval '1' year
-    if (!tables_[orders]->JoinInner<int64_t, arrow::Int64Array>
+    if (!tables_[orders]->JoinInner<int64_t, arrow::Int64Array, int32_t, arrow::Int32Array>
         (lOrderkeyValue, o_orderkey, ordersGetRowIdTime,
          oOrderdateValue, o_orderdate, ordersGetValTime))
       continue;
+    //TLOG(INFO) << "Join " << rowId << "=" << oOrderdateValue;    
     if (oOrderdateValue < date19950101Value || oOrderdateValue > date19951231Value)
       continue;
 
@@ -524,14 +527,14 @@ void TpchDemo::GetQuery5Revenue(int64_t chunkNum, double revenue[])
   std::stringstream ss;
   ss << " " << "Query 5 Chunk " << chunkNum ;
   ss << " " << "Rows = " << rowId << " Elapsed ms=" << timer.ElapsedInMicroseconds()/1000;
-  ss << " " << "Orders RowId Time ms= " << ordersGetRowIdTime/1000;
-  ss << " " << "Orders ValId Time ms= " << ordersGetValTime/1000;
-  ss << " " << "Supplier RowId Time ms= " << supplierGetRowIdTime/1000;
-  ss << " " << "Supplier ValId Time ms= " << supplierGetValTime/1000;
-  ss << " " << "Nation RowId Time ms= " << nationGetRowIdTime/1000;
-  ss << " " << "Nation ValId Time ms= " << nationGetValTime/1000;
+  ss << " " << "Orders RowId Time ns= " << ordersGetRowIdTime;
+  ss << " " << "Orders ValId Time ns= " << ordersGetValTime;
+  ss << " " << "Supplier RowId Time ns= " << supplierGetRowIdTime;
+  ss << " " << "Supplier ValId Time ns= " << supplierGetValTime;
+  ss << " " << "Nation RowId Time ns= " << nationGetRowIdTime;
+  ss << " " << "Nation ValId Time ns= " << nationGetValTime;
 
-  //  LOG(INFO) << ss.str() ;
+  TLOG(INFO) << ss.str() ;
 
 }
 
@@ -549,7 +552,8 @@ void TpchDemo::GetQuery5RevenueTensor(int64_t chunkNum, double revenue[])
   int64_t supplierGetRowIdTime=0, supplierGetValTime=0;
   int64_t nationGetRowIdTime=0, nationGetValTime=0;
 
-  int64_t oOrderdateValue, sNationkeyValue, nRegionkeyValue;
+  int32_t oOrderdateValue;
+  int64_t sNationkeyValue, nRegionkeyValue;
   int64_t rowId;
   for (rowId=0; rowId<extendedprice->length(); rowId++)
   {
@@ -562,10 +566,11 @@ void TpchDemo::GetQuery5RevenueTensor(int64_t chunkNum, double revenue[])
     // l_orderkey = o_orderkey
     // and o_orderdate >= date '1995-01-01'
     // and o_orderdate < date '1995-01-01' + interval '1' year
-    if (!tables_[lineitem]->GetValue<int64_t, arrow::Int64Array>
+    if (!tables_[lineitem]->GetValue<int64_t, arrow::Int64Array, int32_t, arrow::Int32Array>
         (l_orderkey, rowId, ordersGetRowIdTime,
          oOrderdateValue, o_orderdate, ordersGetValTime))
       continue;
+    //TLOG(INFO) << "Tensor " << rowId << "=" << oOrderdateValue;
     if (oOrderdateValue < date19950101Value || oOrderdateValue > date19951231Value)
       continue;
 
@@ -594,24 +599,24 @@ void TpchDemo::GetQuery5RevenueTensor(int64_t chunkNum, double revenue[])
   std::stringstream ss;
   ss << " " << "Query 5 Chunk " << chunkNum ;
   ss << " " << "Rows = " << rowId << " Elapsed ms=" << timer.ElapsedInMicroseconds()/1000;
-  ss << " " << "Orders RowId Time ms= " << ordersGetRowIdTime/1000;
-  ss << " " << "Orders ValId Time ms= " << ordersGetValTime/1000;
-  ss << " " << "Supplier RowId Time ms= " << supplierGetRowIdTime/1000;
-  ss << " " << "Supplier ValId Time ms= " << supplierGetValTime/1000;
-  ss << " " << "Nation RowId Time ms= " << nationGetRowIdTime/1000;
-  ss << " " << "Nation ValId Time ms= " << nationGetValTime/1000;
+  ss << " " << "Orders RowId Time ns= " << ordersGetRowIdTime;
+  ss << " " << "Orders ValId Time ns= " << ordersGetValTime;
+  ss << " " << "Supplier RowId Time ns= " << supplierGetRowIdTime;
+  ss << " " << "Supplier ValId Time ns= " << supplierGetValTime;
+  ss << " " << "Nation RowId Time ns= " << nationGetRowIdTime;
+  ss << " " << "Nation ValId Time ns= " << nationGetValTime;
 
   //  LOG(INFO) << ss.str() ;
 
 }
 
-std::shared_ptr<std::unordered_map<std::string, double>> TpchDemo::Query5()
+std::shared_ptr<std::unordered_map<std::string, double>> TpchDemo::Query5(bool useTensor)
 {
   if (nullptr == tables_[lineitem] || nullptr == tables_[supplier] ||
       nullptr == tables_[orders] || nullptr == tables_[customer] ||
       nullptr == tables_[nation] || nullptr == tables_[region])
   {
-    LOG(ERROR) <<  "No valid table to run Query5" ;
+    TLOG(ERROR) <<  "No valid table to run Query5" ;
     return nullptr;
   }
 
@@ -636,9 +641,18 @@ std::shared_ptr<std::unordered_map<std::string, double>> TpchDemo::Query5()
   int64_t pnum=0;
   for (int64_t chunkNum = 0; chunkNum < numChunks; chunkNum++)
   {
-    auto tf = std::bind(&TpchDemo::GetQuery5RevenueTensor, this, chunkNum,
-                        std::ref(revenues[chunkNum]));
-    tg.run(tf);
+    if (useTensor)
+    {
+      auto tf = std::bind(&TpchDemo::GetQuery5RevenueTensor, this, chunkNum,
+                     std::ref(revenues[chunkNum]));
+      tg.run(tf);
+    }
+    else
+    {
+      auto tf = std::bind(&TpchDemo::GetQuery5Revenue, this, chunkNum,
+                          std::ref(revenues[chunkNum]));
+      tg.run(tf);
+    }
     pnum++;
     if (pnum == numWorkers_)
     {
@@ -674,13 +688,18 @@ void TpchDemo::PrintSchemas()
   }
 }
 
-void TpchDemo::PrintMaps(int startAt)
+void TpchDemo::PrintTables()
 {
-  for (int32_t i=startAt; i<numTables; i++)
+  for (int32_t i=0; i<numTables; i++)
   {
-    LOG(INFO) << "Table " << tableNames[i];
-    tables_[i]->PrintMaps();
+    PrintTable(i);
   }
+}
+
+void TpchDemo::PrintTable(int num)
+{
+  TLOG(INFO) << "Table " << tableNames[num];
+  tables_[num]->PrintTable(true, true);
 }
 
 }

@@ -53,7 +53,12 @@ int main(int argc, char** argv) {
     {
       TLOG(ERROR) << "Unable to get table from catalog=" << TpchDemo::tableNames[i];
       continue;
-    }    
+    }
+    if (!ttable->MakeMaps().ok())
+    {
+      TLOG(ERROR) << "Unable to create map for table from catalog=" << TpchDemo::tableNames[i];
+      continue;
+    }      
     //ttable->PrintSchema();
     //ttable->PrintTable();
   }
@@ -84,7 +89,7 @@ int main(int argc, char** argv) {
   }
   
   std::string cacheInfo = tCache->GetInfo();
-  LOG(INFO) << "Cache=" << cacheInfo;
+  TLOG(INFO) << "Cache=" << cacheInfo;
 
   // tpchDemo will probe cache to get all the tables
   shared_ptr<TpchDemo> tpchDemo = TpchDemo::GetInstance(tCache);
@@ -104,18 +109,18 @@ int main(int argc, char** argv) {
     stopWatch.Start();
     double result = tpchDemo->Query6Serial();
     stopWatch.Stop();
-    LOG(INFO) << "Query6 Revenue=" << result;
-    LOG(INFO) << stopWatch.ElapsedInMicroseconds() << "us";
+    TLOG(INFO) << "Query6 Revenue=" << result;
+    TLOG(INFO) << stopWatch.ElapsedInMicroseconds() << "us";
 
     stopWatch.Start();
     result = tpchDemo->Query6();
     stopWatch.Stop();
-    LOG(INFO) << "Query6 Revenue=" << result;
-    LOG(INFO) << stopWatch.ElapsedInMicroseconds() << "us";
+    TLOG(INFO) << "Query6 Revenue=" << result;
+    TLOG(INFO) << stopWatch.ElapsedInMicroseconds() << "us";
   };
   if (nullptr == tpchDemo->tables_[tpchDemo->lineitem])
   {
-    LOG(ERROR) << "No lineitem table to run query 6";
+    TLOG(ERROR) << "No lineitem table to run query 6";
   }
   else
   {
@@ -132,35 +137,44 @@ int main(int argc, char** argv) {
     auto result = tCache->MakeMaps(tableName);
     if (!result.ok())
     {
-      LOG(ERROR) << "Failed to create maps for " << tableName << "with msg=" << result.message();
+      TLOG(ERROR) << "Failed to create maps for " << tableName << "with msg=" << result.message();
     }
     else
     {
-      LOG(INFO) << "Success create maps for " << tableName;
+      TLOG(INFO) << "Success create maps for " << tableName;
     }
   }
   stopWatch.Stop();
-  LOG(INFO) << "Liten Tensor Creation Time (us)=" << stopWatch.ElapsedInMicroseconds();
-  //tpchDemo->PrintMaps(tpchDemo->customer);
+  TLOG(INFO) << "Liten Tensor Creation Time (us)=" << stopWatch.ElapsedInMicroseconds();
+  //tpchDemo->PrintTables(); //Maps(tpchDemo->customer); TBD
 
   auto printRevenue = [&](std::shared_ptr<std::unordered_map<std::string, double>> q5revs) -> void {
-    LOG(INFO) << "Query5 Revenue=";
+    TLOG(INFO) << "Query5 Revenue=";
     for (auto it=q5revs->begin(); it!=q5revs->end(); it++) {
-      LOG(INFO) << it->first << "=" << it->second;
+      TLOG(INFO) << it->first << "=" << it->second;
     }
   };
 
+  /*  TLOG(INFO) << "Query5: Serial" ;
   stopWatch.Start();
-  auto q5revs = tpchDemo->Query5();
+  auto q5revs = tpchDemo->Query5Serial();
   stopWatch.Stop();
   printRevenue(q5revs);
-  LOG(INFO) << stopWatch.ElapsedInMicroseconds() << "us";
+  TLOG(INFO) << "Total=" <<stopWatch.ElapsedInMicroseconds() << "us"; */
+  
+  /*  TLOG(INFO) << "Query5: ParallelMaps" ;  
+  stopWatch.Start();
+  auto q5revs = tpchDemo->Query5(false);
+  stopWatch.Stop();
+  printRevenue(q5revs);
+  TLOG(INFO) << "Total=" <<stopWatch.ElapsedInMicroseconds() << "us";*/
 
+  TLOG(INFO) << "Query5: Tensor" ;  
   stopWatch.Start();
-  q5revs = tpchDemo->Query5Serial();
+  auto q5revs = tpchDemo->Query5(true);
   stopWatch.Stop();
   printRevenue(q5revs);
-  LOG(INFO) << stopWatch.ElapsedInMicroseconds() << "us";
+  TLOG(INFO) << "Total=" <<stopWatch.ElapsedInMicroseconds() << "us";
 
   return EXIT_SUCCESS;
 

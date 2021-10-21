@@ -63,8 +63,10 @@ public:
   void PrintSchema();
 
   /// Print table in logfile
-  void PrintTable();
-
+  void PrintTable(bool columns, bool parents);
+  std::string ToString();
+  std::string ParentsToString();
+  
   /// TBD Clean these up with tensor values
   /// Inverted maps and min-max zones
   TStatus MakeMaps(bool ifReverseMap=false);
@@ -134,7 +136,9 @@ public:
     TStopWatch timer;
     bool result = true;
     timer.Start();
-    if (nullptr == parentArrId_[childColNum] || nullptr == parentRowId_[childColNum])
+    if (nullptr == parentArrId_[childColNum] ||
+        nullptr == parentRowId_[childColNum] ||
+        nullptr == parentColumn_[childColNum])
     {
       TLOG(ERROR) << "Invalid tensor representation";
       result = false;
@@ -152,9 +156,15 @@ public:
     }
 
     timer.Start();
-    result = parentColumn_[childColNum]->GetValue<TypeRight, ArrayTypeRight>(arrId, rowId, parentValue);
+    auto parentTable = parentColumn_[childColNum]->GetTable();
+    auto parentColumn = parentTable->GetColumn(parentColNum);
+    result = parentColumn->GetValue<TypeRight, ArrayTypeRight>(arrId, rowId, parentValue);
     timer.Stop();
     parentValueInMicroseconds += timer.ElapsedInMicroseconds();
+    if (!result)
+    {
+      TLOG(ERROR) << "Invalid parent lookup";
+    }    
     return result;
   }
 

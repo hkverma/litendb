@@ -24,6 +24,9 @@ public:
     
   /// Add TBlock to the lookup list
   static TStatus AddTBlock(std::shared_ptr<TBlock> blk);
+
+  /// Convert to string for debug
+  std::string ToString();
     
 private:
 

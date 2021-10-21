@@ -73,5 +73,75 @@ std::shared_ptr<arrow::ChunkedArray> TColumn::Slice(int64_t offset, int64_t leng
   return std::make_shared<arrow::ChunkedArray>(newChunks, type);
 }
 
+arrow::Result<std::shared_ptr<arrow::Scalar>> TColumn::GetScalar(int64_t rowId)
+{
+  int64_t blkId=0;
+  arrow::Result<std::shared_ptr<arrow::Scalar>> result;
+  for (int64_t blkNum=0; blkNum<blocks_.size(); blkNum++)
+  {
+    auto arr = blocks_[blkNum]->GetArray();
+    int64_t length = arr->length();
+    if (blkId+length < rowId)
+    {
+      blkId += length;
+    }
+    else
+    {
+      int64_t offset = rowId-blkId;
+      result = arr->GetScalar(offset);
+    }
+  }
+  return result;  
+}
+
+arrow::Result<std::shared_ptr<arrow::Scalar>> TColumn::GetScalar(int64_t arrId, int64_t rowId)
+{
+  int64_t blkId=0;
+  arrow::Result<std::shared_ptr<arrow::Scalar>> result;
+  if (arrId>=0 && arrId<blocks_.size())
+  {
+    auto arr = blocks_[arrId]->GetArray();
+    result = arr->GetScalar(rowId);
+  }
+  return result;  
+}
+
+std::string TColumn::ToString(bool values, bool zonemap, bool reversemap)
+{
+  std::stringstream ss;
+  ss << GetName() << "=";
+  if (values)
+  {
+    ss << "\nValues=";
+    for (auto bn=0; bn<blocks_.size(); bn++)
+    {
+      ss << "Block " << bn << "=" << std::move(blocks_[bn]->ToString()) << ";";
+    }
+  }
+  
+  if (zonemap)
+  {
+    ss << "\nZoneMap=";
+    for (int bn = 0; bn<NumBlocks(); bn++)
+    {
+      int64_t minVal, maxVal;
+      auto arr = GetBlock(bn)->GetArray();
+      ss << " Arr " << bn << " Size=" << arr->length();
+      ss << " Type=" << arr->type()->ToString() ;
+      ss << " Min=";
+      map_->GetMin(bn,minVal)?(ss << minVal):(ss << "None");
+      ss << " Max=";
+      map_->GetMax(bn,maxVal)?(ss << maxVal):(ss << "None");
+      ss << ";" ;
+    }
+  }
+  if (reversemap)
+  {
+    ss << "\nReverseMap=";
+    map_->GetReverseMap(ss);
+    ss << "; ";
+  }
+  return (std::move(ss.str()));
+}
 
 }

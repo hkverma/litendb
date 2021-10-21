@@ -50,23 +50,24 @@ public:
   void GetQuery6Revenue(int64_t chunkNum, double& revenue);
 
   // Run Query5
-  std::shared_ptr<std::unordered_map<std::string, double>> Query5();
+  std::shared_ptr<std::unordered_map<std::string, double>> Query5(bool useTensor);
   std::shared_ptr<std::unordered_map<std::string, double>> Query5Serial();
   // Get Query5 revenue for chunk chunkNum
   void GetQuery5Revenue(int64_t chunkNum, double revenue[]);
   void GetQuery5RevenueTensor(int64_t chunkNum, double revenue[]);
 
   void PrintSchemas();
-  void PrintMaps(int startAt=lineitem);
+  void PrintTable(int num);
+  void PrintTables();
 
   std::vector<std::shared_ptr<TTable>> tables_;
   std::shared_ptr<TCache> tCache_;
 
   const int64_t rowIncrementsForTimeLog = 500000;
-  int64_t date19970101Value;
-  int64_t date19971231Value;
-  int64_t date19950101Value;
-  int64_t date19951231Value;
+  int32_t date19970101Value;
+  int32_t date19971231Value;
+  int32_t date19950101Value;
+  int32_t date19951231Value;
 
   static std::shared_ptr<TpchDemo> tpchDemo_;
 

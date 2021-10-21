@@ -92,16 +92,14 @@ void TTable::PrintSchema()
   TLOG(INFO) << schStr;
 }
 
-// print table in logfile
-void TTable::PrintTable()
+// print table in row formats
+std::string TTable::ToString()
 {
   std::stringstream ss;
-  ss << "NumCols=" << NumColumns();
-  ss << " NumRows=" << NumRows() << " Data=";
-
-  // Print the table
+  // Print the table information
   for (int64_t i=0; i<NumRowBlocks(); i++)
   {
+    ss << "RowBlock " << i << "=";
     auto rb = GetRowBlock(i);
     for (int64_t j=0; i<NumColumns(); i++)
     {
@@ -132,8 +130,64 @@ void TTable::PrintTable()
         }
       }
     }
+    ss << ";\n";
   }
+  std::string tblStr = ss.str();
+  return std::move(tblStr);
+}
+
+// print table in row formats
+std::string TTable::ParentsToString()
+{
+  std::stringstream ss;
+  ss << "\nParents=";
+  for (int64_t i=0; i<columns_.size(); i++)
+  {
+    auto pArrId = parentArrId_[i];
+    auto pRowId = parentRowId_[i];
+    auto pCol = parentColumn_[i]; // TBD - clarify the use of parent column here
+    if (pArrId && pRowId && pCol)
+    {
+      ss << "Col " << i << "=" << columns_[i]->GetName() << " parent=" << pCol->GetName() << " ";
+      for (int rn=0; rn<NumRows(); rn++)
+      {
+        ss << rn << ":" << pArrId->at(rn) << ":" << pRowId->at(rn) << ":";
+        arrow::Result<std::shared_ptr<arrow::Scalar>> result = pCol->GetScalar(pArrId->at(rn), pRowId->at(rn));
+        if (result.ok())
+        {
+          ss << result.ValueOrDie()->ToString();
+        }
+        ss << ",";        
+      }
+      ss << "; ";
+    }
+  }
+  std::string str = std::move(ss.str());
+  return std::move(str);
+}
+
+// print table in logfile
+void TTable::PrintTable(bool columns, bool parents)
+{
+  std::stringstream ss;
+  ss << "Table=" << GetName();
+  ss << " NumCols=" << NumColumns();
+  ss << " NumRows=" << NumRows();
   TLOG(INFO) << ss.str();
+  ss.str(std::string());
+  
+  TLOG(INFO) << std::move(ToString());
+  if (columns)
+  {
+    for (auto i=0; i<columns_.size(); i++)
+    {
+      TLOG(INFO) << "Col " << i << "=" << std::move(columns_[i]->ToString(true, true, true)) << ";";
+    }
+  }
+  if (parents)
+  {
+    TLOG(INFO) << std::move(ParentsToString());
+  }
   TLog::GetInstance()->FlushLogFiles(google::INFO);
 }
 
@@ -260,7 +314,8 @@ TResult<std::shared_ptr<TRowBlock>> TTable::AddRowBlock(std::shared_ptr<arrow::R
 
   // Now add the rowblocks
   rowBlocks_.push_back(rb);
-
+  numRows_ +=  rb->NumRows();
+  
   return rb_result;
 }
 
