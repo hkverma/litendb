@@ -97,9 +97,17 @@ cdef extern from "cache.h" namespace "liten" nogil:
       
       shared_ptr[CTable] Slice(c_string tableName, int64_t offset, int64_t length)
 
+# CTService is liten::TService
+   cdef cppclass CTService" liten::TService":
+      @staticmethod
+      shared_ptr[CTService] GetInstance()
+      void Start()
+      void Shutdown()
+      
+
 cdef extern from "TpchDemo.h" namespace "liten" nogil:
    cdef cppclass CTpchDemo" liten::TpchDemo":
        @staticmethod
        shared_ptr[CTpchDemo] GetInstance(shared_ptr[CTCache] tCache)
        double Query6()
-       shared_ptr[unordered_map[c_string, double]] Query5()
+       shared_ptr[unordered_map[c_string, double]] Query5(bool use_tensor)

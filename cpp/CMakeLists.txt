@@ -16,7 +16,7 @@ add_subdirectory(cache_test)
 # 
 # liten dynamic library - .so
 #
-add_library(liten SHARED $<TARGET_OBJECTS:cache_objects> $<TARGET_OBJECTS:cache_test_objects>)
+add_library(liten SHARED $<TARGET_OBJECTS:common_objects> $<TARGET_OBJECTS:cache_objects> $<TARGET_OBJECTS:cache_test_objects>)
 target_include_directories(liten PUBLIC cache cache_test)
 target_link_libraries(liten general common arrow)
 target_link_libraries(liten debug glogd debug tbb_debug)

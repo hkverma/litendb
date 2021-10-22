@@ -21,13 +21,16 @@ from liten import utils
 import liten.lib as cliten
 
 # should be same as ../setup.py::setup::version
-_version = "0.0.3"
+_version = "0.0.4"
 
 # Schema
 include "tschema.pxi"
 
-# Schema
+# Table
 include "ttable.pxi"
 
-# Schema
+# Cache
 include "tcache.pxi"
+
+# Service
+include "tservice.pxi"

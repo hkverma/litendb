@@ -25,7 +25,7 @@ cdef class TSchema:
          shared_ptr[CTSchema] sp_tschema
          CTSchema* p_tschema
          object tcache
-       
+
 cdef class TTable:
      """
      Liten Table Class wrapping cppclass CTTable
@@ -43,3 +43,11 @@ cdef class TCache:
    cdef:
        shared_ptr[CTCache] sp_tcache
        CTCache* tcache
+
+cdef class TService:
+   """
+   Liten TService wrapping cppclass CTService with user methods
+   """
+   cdef:
+       shared_ptr[CTService] sp_tservice
+       CTService* tservice

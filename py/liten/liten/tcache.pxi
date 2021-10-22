@@ -411,13 +411,14 @@ ORDER BY
 	REVENUE DESC;
 """)
         start = time.time_ns();
-        sp_result = p_tpch_demo.Query5()
+        sp_result = p_tpch_demo.Query5(True)
         end = time.time_ns();
         p_result = sp_result.get()
         q5result = { }        
         if (NULL == p_result):
             print("Failed to run Query5")
             return q5result
+        print("Revenue=")
         cdef unordered_map[c_string, double].iterator it = p_result.begin()
         while (it != p_result.end()):
             key = deref(it).first
