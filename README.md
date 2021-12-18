@@ -56,7 +56,11 @@ apt-get install openssl libssl-dev
 ```
 ### Submodule packages
 These are the packages in external_libs that Tenalytics uses.
-
+You can build all the packages using the following command
+```
+ $ cd ${LITEN_ROOT_DIR}/cpp/external_libs
+ $ sudo ./buildall.sh [debug|release]
+```
 #### Boost
 
 Download 1.73.0 from https://www.boost.org/users/download to the following directory ${LITEN_ROOT_DIR}/cpp/external_libs/boost
