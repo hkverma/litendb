@@ -7,9 +7,6 @@ Liten Data - Build and Run
 
 ## How do I get set up?
 
-### Clone this repo
-
-git clone https://hkv@bitbucket.org/hkv/dbaistuff.git
 
 ### Build Structure Setup
 
@@ -25,17 +22,21 @@ Use C++-17 standard. For compilation, g++/gcc version 9 is used.
 
 Install cmake 3.17 minimum. Download source code & build. Or download the binary from cmake website.
 
+Use python3 for all python code.
+```html
 https://cmake.org/download/
+```
 
 Set LITEN_ROOT_DIR to the root of the repository.
-```
+```console
 $ export LITEN_ROOT_DIR=<root-dir>
 ```
 
 From the root following directories exist.
 
-* cpp - Hsas C++ code. Use CMake to build and maintain.
-* jvm - Has java & scala code. Use maven to build and maintain
+* cpp - Has C++ code. Use CMake to build and maintain.
+* jvm - Has java & scala code. Use maven to build and maintain.
+* py  - Has python code.
 
 Within cpp these directories exist.
 
@@ -49,18 +50,172 @@ For local machine setup, following environment is used.
 * C++-17 standards
 * g++-9, gcc-9 compiler
 
-### Required packages
+#### Required packages
 SSL should be installed
-```
+```console
 apt-get install openssl libssl-dev
 ```
-### Submodule packages
-These are the packages in external_libs that Tenalytics uses.
-You can build all the packages using the following command
+
+
+### How to build Liten?
+
+#### Clone from github
+
+Clone Ltten code from github.
+```console
+git clone https://<user-name>@bitbucket.org/hkv/dbaistuff.git
 ```
+
+Update all the submodules as shown below.
+```console
+$ cd ${LITEN_ROOT_DIR}/cpp/external_libs
+$ git submodule update --recursive
+```
+
+#### Compile C++ code
+These are the packages in external_libs that Tenalytics uses.
+One can build all the packages using the following command
+```console
  $ cd ${LITEN_ROOT_DIR}/cpp/external_libs
  $ sudo ./buildall.sh [debug|release]
 ```
+See below for details on how to build various submodules.
+
+Build the Liten code.
+```console
+$ cd ${LITEN_ROOT_DIR}/cpp
+$ ./buildall.sh [debug|release]
+```
+
+### Python code setup and compilation
+
+### Jupyter Notebook and Python lib Installations
+Use conda and create a new env liten. Use this env and install new environment. Python is used for a real notbook environment.
+
+#### Conda environment
+Install miniconda with python3. Follow instructions from here
+https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html
+Set environement variabel MINICONDA_ROOT_DIR to ~/miniconda3 or other directory where conda was installed.
+```console
+$ export MINICONDA_ROOT_DIR="/home/azureuser/miniconda3"
+```
+Use python 3.8.5 version. Ray needs version 3.8.
+```console
+conda install python=3.8.5
+```
+Create a new environment liten for tenanlytics tests
+```console
+conda create --name liten python=3.8.5
+```
+Change env to liten everytime for work
+```console
+conda activate liten
+```
+If needed env can be removed.
+```
+conda env remove --name liten
+```
+Update pip and setuptools. This is typically not needed.
+```console
+curl https://bootstrap.pypa.io/get-pip.py | python
+pip install --upgrade setuptools
+```
+
+#### Install Jupyter
+Install jupyter notebook and then start the notebook.
+```console
+conda install jupyter
+```
+
+#### Install required packges
+You can create a new environment called liten using the following commands
+```console
+conda env create -f py/environment.yml
+conda activate liten
+```
+The existing environment can be updated using the following environments.
+```console
+conda env update --file environment.yml --prune
+```
+For C++ build to pick the correct arrow lib, add following to LD_LIBRARY_PATH
+```console
+export LD_LIBRARY_PATH=${MINICONDA_ROOT_DIR}/envs/liten/lib:${LD_LIBRARY_PATH}
+```
+Liten uses graphviz to show query plans. It is installed using sudo command.
+```console
+sudo apt install graphviz
+```
+
+#### Check Arrow Installation
+Open ArrowTutorial.ipynb in notebook and run to check that arrow is ok.
+```
+cd py/notebooks
+jupyter notebook
+```
+
+#### Check Ray Installation
+Open RayTutorial.ipynb in notebook and run to check that Ray is ok.
+```
+cd py/notebooks
+jupyter notebook
+```
+
+
+#### Build Liten python wheel
+Python setup.py is in py/liten subdirectory.
+
+Always develop in liten environment.
+You can check cmake command separately. Not needed but useful if cmake canges are made.
+```console
+cmake -DPYTHON_EXECUTABLE=/home/hkverma/miniconda3/envs/liten/bin/python -DPython3_EXECUTABLE=/home/hkverma/miniconda3/envs/liten/bin/python  -DCMAKE_BUILD_TYPE=debug /mnt/c/Users/hkver/Documents/dbai/dbaistuff/py/liten
+cmake --build . --config _liten
+```
+First get to the liten conda environment. This should have all the library components.
+```console
+conda activate liten
+```console
+Run setup.py to build from py/liten directory.
+       
+```console
+python setup.py build
+```
+To check for a dist do the following
+```console
+python3 setup.py sdist
+```
+Create a wheel (zip file with all the install libs, files etc.) do the following.
+```console
+python3 setup.py bdist_wheel
+```
+
+This wheel can be testeted locally by using pip install. Uninstall liten first if installed earlier.
+```console
+pip uninstall liten
+```console
+pip install dist/liten-0.0.1-cp38-cp38-linux_x86_64.whl
+```
+
+#### Check Liten Installation
+Open LitenIntro.ipynb in notebook and run to check that arrow is ok.
+```
+cd py/notebooks
+jupyter notebook
+```
+#### Upload to pip website
+It is not needed for local runs. However, once uploaded anyone can use it.
+Upload it for pip install commands from testpy repository.
+```console
+python3 -m twine upload --repository dist/*
+```
+This package can be installed using conda like.
+```console
+python3 -m pip install --index-url https://test.pypi.org/simple/ --no-deps liten-pkg-liten
+```
+
+### Submodule packages
+
+These are the detailed information on all the submodule packages.
+
 #### Boost
 
 Download 1.73.0 from https://www.boost.org/users/download to the following directory ${LITEN_ROOT_DIR}/cpp/external_libs/boost
@@ -271,7 +426,7 @@ $ git submodule add https://github.com/google/glog
 
 gperftools is google perftool library. This can be used in conjunction with valgrind.
 
-```
+```console
 $ cd ${LITEN_ROOT_DIR}/cpp/external_libs
 $ git submodule add https://github.com/gperftools/gperftools
 ```
@@ -279,129 +434,6 @@ For profiling following tools can be used
 * gprof - old gnu profiler.
 * valgrind - callgrind does call checks. Use kcahcegrind to view call stacks
 * gperfools - can be used to profile code sections. Use kcachegrind to see call stacks and costs.
-
-### Jupyter Notebook and Python lib Installations
-I use conda and create a new env liten. Use this env and install new environment. Python is used for a real notbook environment.
-
-#### Conda environment
-Install miniconda with python3. Follow instructions from here
-https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html
-Set environement variabel MINICONDA_ROOT_DIR to ~/miniconda3 or other directory here conda was installed.
-```
-MINICONDA_ROOT_DIR="/home/azureuser/miniconda3"
-```
-Use python 3.8.5 version. Ray needs version 3.8
-```
-conda install python=3.8.5
-```
-Create a new environment liten for tenanlytics tests
-```
-conda create --name liten python=3.8.5
-```
-Change env to liten everytime for work
-```
-conda activate liten
-```
-If needed env can be removed.
-```
-conda env remove --name liten
-```
-Update pip and setuptools. This is typically not needed.
-```
-curl https://bootstrap.pypa.io/get-pip.py | python
-pip install --upgrade setuptools
-```
-
-#### Install Jupyter
-Install jupyter notebook and then start the notebook.
-```
-conda install jupyter
-```
-
-#### Install required packges
-You can create a new environment called liten using the following commands
-```
-conda env create -f py/environment.yml
-conda activate liten
-```
-The existing environment can be updated using the following environments.
-```
-conda env update --file environment.yml --prune
-```
-For C++ build to pick the correct arrow lib, add following to LD_LIBRARY_PATH
-```
-export LD_LIBRARY_PATH=${MINICONDA_ROOT_DIR}/envs/liten/lib:${LD_LIBRARY_PATH}
-```
-Liten uses graphviz to show query plans. It is installed using sudo command.
-```
-sudo apt install graphviz
-```
-
-#### Check Arrow Installation
-Open ArrowTutorial.ipynb in notebook and run to check that arrow is ok.
-```
-cd py/notebooks
-jupyter notebook
-```
-
-#### Check Arrow Installation
-Open RayTutorial.ipynb in notebook and run to check that Ray is ok.
-```
-cd py/notebooks
-jupyter notebook
-```
-
-#### Check Liten Installation
-Open LitenIntro.ipynb in notebook and run to check that arrow is ok.
-```
-cd py/notebooks
-jupyter notebook
-```
-
-### Python Setup Builds
-Python setup.py is in py/liten subdirectory.
-
-Always develop in liten environment.
-You can check cmake command separately. Not needed but useful if cmake canges are made.
-```
-cmake -DPYTHON_EXECUTABLE=/home/hkverma/miniconda3/envs/liten/bin/python -DPython3_EXECUTABLE=/home/hkverma/miniconda3/envs/liten/bin/python  -DCMAKE_BUILD_TYPE=debug /mnt/c/Users/hkver/Documents/dbai/dbaistuff/py/liten
-cmake --build . --config _liten
-```
-#### setup.py
-First get to the liten conda environment. This should have all the library components.
-```
-conda activate liten
-```
-Run setup.py to build from py/liten directory.
-       
-```
-python setup.py build
-```
-To check for a dist do the following
-```
-python3 setup.py sdist
-```
-Create a wheel (zip file with all the install libs, files etc.) do the following.
-```
-python3 setup.py bdist_wheel
-```
-
-This wheel can be testeted locally by using pip install. Uninstall liten first if installed earlier.
-```
-pip uninstall liten
-..
-pip install dist/liten-0.0.1-cp38-cp38-linux_x86_64.whl
-```
-Test the code with TenalyticsIntro notebook.
-
-Upload it for pip install commands from testpy repository.
-```
-python3 -m twine upload --repository dist/*
-```
-This package can be installed using conda like.
-```bash
-python3 -m pip install --index-url https://test.pypi.org/simple/ --no-deps liten-pkg-liten
-```
 
 
 ### Development Guidelines
@@ -462,6 +494,95 @@ Once all done kill jupyter notebook. Stop slave and master after that.
 ```
 $ sbin/stop-slave.sh
 $ sbin/stop-master.sh
+```
+
+### Python Demo notebooks
+
+All demo notebooks are in subdirectory py/notebooks. This is a list of current notebooks.
+
+| Notebook | Description |
+| ------  | ------ |
+| LitenStandaloneQ5Q6.ipynb | Custom Query6 and Query5 |
+| LitenRaySingleActorQ5Q6.ipynb | Ray remote with one node |
+| LitenNYTaxiSQLXGBoost.ipynb | XGBoost on Liten data |
+| LitenBasicSentimentAnalysis.ipynb | Sentiment analysis on Liten data |
+| LitenPCapIPPktAnalyzer.ipynb | Liten pcap packet analyzer |
+
+
+### Python packaging for Liten
+
+Packaging directions are available at the following link -
+```html
+https://packaging.python.org/tutorials/packaging-projects/
+```
+
+
+#### An Example setup directory structure 
+
+liten
+ * LICENSE
+ * README.md
+ * liten_pkg
+   * __init__.py
+ * setup.py
+ * tests
+
+#### Commands
+Use the following commands to package and upload.
+
+```console
+python3 setup.py sdist
+python3 setup.py bdist_wheel
+python3 -m twine upload --repository dist/*
+```
+This is pip install from index-url
+```console
+python3 -m pip install --index-url https://test.pypi.org/simple/ --no-deps liten-pkg-liten
+```
+
+Using ctypes to call C functions from Python. Here is an code in python.
+```python
+from ctypes import cdll
+lib = cdll.LoadLibrary('./libliten.so')
+
+class Foo(object):
+    def __init__(self):
+        self.obj = lib.Foo_new()
+
+    def bar(self):
+        lib.Foo_bar(self.obj)
+```
+
+Here is an example run in python
+```console
+$ 
+$ conda activate liten
+(liten) $ python3
+Python 3.9.0 | packaged by conda-forge | (default, Oct 14 2020, 22:59:50)
+[GCC 7.5.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> exec(open("__init__.py").read())
+>>> f = Foo()
+>>> f.bar()
+Hello
+>>>
+```
+How to run on jupyter notebook locally.
+```console
+$ pip install py/liten/dist/liten-0.0.4-cp38-cp38-linux_x86_64.whl
+```
+
+Follow these directions if needed
+```html
+https://github.com/libdynd/dynd-python/blob/master/setup.py
+https://docs.python.org/3/distutils/setupscript.html
+https://packaging.python.org/guides/distributing-packages-using-setuptools/#package-data
+https://cython.readthedocs.io/en/latest/src/userguide/wrapping_CPlusPlus.html
+```
+
+To save python environments, you can export conda env.
+```console
+conda env export > environment.yml
 ```
 
 ### TPC benchmarks
@@ -629,60 +750,6 @@ These are some of the techniques being used in Liten code.
 * index - multi-dimensional, hierarchical access to a single point
 * DSLs on DAGs - lazy evaluation
 
-
-### Tasks
-
-#### In Progress
-
-  Create Liten tensor for query processing
-  Modife schema to add dimension hierarchy. For example in TPCH it looks like 
-  Child     Parent
-  ORDERS -> CUSTOMER
-  PART -> PARTSUPP
-  SUPP -> NATION -> REGION
-
-  Add these hierarchies into Schema.
-
-  Add the following APIs and execute query6 and query5 using these APIs.
-  
-  API -
-  lineitem = vector<region>  region contains set<nations>
-  lineitem = vector<orders>  orders contain set<customer>
-
-  l1[set<lineitem-ids>] = lineitem.slice(region == "europe")
-  l2[set<lineitem-ids>] = l1[set<lineitem-ids>].filter(for col == "orders" do pred = "orderdate == 1996")
-  l2.aggregate(revenue as ep*(1-dis) by nation)
-  map????
-  
-  Modify Liten to enable these two operations
-  
-  Change ML training example and add features as table in Liten as well
-  Add pcap reading and parsing for network security work with streaming actions
-  
-  Use RecordBatches instead of Table in C++ code, make type names consistent across python and cpp
-
-#### TODO
-
-  Use property instead of get_* functions in python  
-  Enhance make_dtensor to replace only dimensional columns and replace fact table completely
-  Clean and rerun all the other demo python codes
-
-  Explore Splunk addition
-  
-  Reading logs from multiple database systems and doing performance analysis (say between Oracle and SQL-Server)
-  
-* Clean LitenIntro_1.ipynb for print outputs
-* Design LitenIntro_2.ipynb with multiple remote cache
-
-* Create demo with optimized timing 
-* Select between all TXXX name or Lxxx names. Make it consistent across python and cpp
-* Write cache into SSD or storage for persistence
-* In TTable.h remove multiple maps_ copies, keep only one. Do an analysis.
-* Use ctest to run tests (from cmake)
-* What to do if same table is read again & again
-* Register Liten library with pytest 
-* 
-
 #### Ideas
 
 * Added LCache as class in package. Works with local as well as Ray remote code. Build the demo here.
@@ -731,10 +798,6 @@ These are some of the techniques being used in Liten code.
 [Arrow Extended columnar processing in spark](https://issues.apache.org/jira/browse/SPARK-27396)
 
 [Synapse ML Services](https://github.com/microsoft/SynapseML)
-
-#### Completed
-* Added LitenIntro_0.ipynb - Added dimention and fact tabes
-* Added LitenIntro_1.ipynb Works with Ray remote calls
 
 #### To Write
 
