@@ -22,3 +22,6 @@
 [submodule "cpp/external_libs/re2/re2"]
 	path = cpp/external_libs/re2/re2
 	url = https://github.com/google/re2.git
+[submodule "cpp/external_libs/tbb/oneTBB"]
+	path = cpp/external_libs/tbb/oneTBB
+	url = https://github.com/oneapi-src/oneTBB

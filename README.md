@@ -252,7 +252,7 @@ It was registered as a submodule using steps shown below.
 First submodule was added. It clones the data into the arrow subdir.
 It is currently fixed as to release 2.0.0. You can get it by first updating the git and then checkout the tag
 
-```
+```console
 $ cd ${LITEN_ROOT_DIR}/cpp/external_libs/arrow
 $ git submodule add https://github.com/apache/arrow
 remote: Enumerating objects: 100065, done.        
@@ -266,24 +266,25 @@ $ git checkout tags/apache-arrow-2.0.0
 $ git commit -a -m "Updated to arrow 2.0.0"
 ```
 When cloning these can be done from the arrow submodule directory to get arrow files.
-```
+```console
 $ git submodule init
 $ git submodule update
 ```
 Arrow also has gandiva in it. Liten uses gandiva as an expression evaluator. This needs these libs as well
-```
+```console
 sudo apt-get install clang-tools
 sudo apt-get install clang-format
 sudo apt-get install clang-tidy
 ```
 Install llvm 12 as well.
-```
+```console
 printf "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-12 main" |sudo tee /etc/apt/sources.list.d/llvm-toolchain-xenial-12.list
 wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key |sudo apt-key add -
 sudo apt update
 sudo apt install llvm-12
-Update to 12
 ```
+Update to 12
+```console
 sudo apt install clang-12 --install-suggest
 ```
 Install zlib as well
@@ -323,7 +324,7 @@ $ git submodule init
 $ git submodule update
 ```
 
-#### TBB - Intel Thread Building Blocks
+#### OneTBB - Intel Thread Building Blocks
 
 TBB provides task manager and various other parallel algorithms to build parallel applications. 
 
@@ -336,10 +337,11 @@ $ cd ${LITEN_ROOT_DIR}/cpp/external_libs/tbb
 $ git submodule update --init
 $ ./build.sh [debug|release]
 ```
+
 It was registered as a submodule using steps shown below.
 ```
 $ cd ${LITEN_ROOT_DIR}/cpp/external_libs/tbb
-$ git submodule add https://github.com/apache/arrow
+$ git submodule add https://github.com/oneapi-src/oneTBB
 remote: Enumerating objects: 100065, done.        
 remote: Total 100065 (delta 0), reused 0 (delta 0), pack-reused 100065        
 Receiving objects: 100% (100065/100065), 53.00 MiB | 10.23 MiB/s, done.
