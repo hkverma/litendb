@@ -162,12 +162,12 @@ int main(int argc, char** argv) {
   printRevenue(q5revs);
   TLOG(INFO) << "Total=" <<stopWatch.ElapsedInMicroseconds() << "us"; */
   
-  /*  TLOG(INFO) << "Query5: ParallelMaps" ;  
+  /* TLOG(INFO) << "Query5: ParallelMaps" ;  
   stopWatch.Start();
   auto q5revs = tpchDemo->Query5(false);
   stopWatch.Stop();
   printRevenue(q5revs);
-  TLOG(INFO) << "Total=" <<stopWatch.ElapsedInMicroseconds() << "us";*/
+  TLOG(INFO) << "Total=" <<stopWatch.ElapsedInMicroseconds() << "us"; */
 
   TLOG(INFO) << "Query5: Tensor" ;  
   stopWatch.Start();

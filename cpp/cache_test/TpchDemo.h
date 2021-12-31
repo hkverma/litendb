@@ -71,10 +71,6 @@ public:
 
   static std::shared_ptr<TpchDemo> tpchDemo_;
 
-  // Total worker numbers
-  static const int64_t numWorkers_ = 6;
-  static const int64_t numMaps_ = 1;
-
   // Store TpchData properties
   static const int numNations = 25;
   inline static const std::string nations[numNations] = {

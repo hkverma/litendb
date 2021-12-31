@@ -31,6 +31,10 @@ Set LITEN_ROOT_DIR to the root of the repository.
 ```console
 $ export LITEN_ROOT_DIR=<root-dir>
 ```
+Set LITEN_BUILD_TYPE to debug or release for C++ and python wheel builds.
+```console
+$ export LITEN_BUILD_TYPE=<debug|release>
+```
 
 From the root following directories exist.
 

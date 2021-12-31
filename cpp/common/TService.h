@@ -9,22 +9,14 @@ namespace liten
 class TService {
 public:
     
-  // On one worker node, there can only be one service
+  // On one node, there can only be one service
   static std::shared_ptr<TService> GetInstance();
     
-  // Start all services and utilities
-  void Start()
-  {
-    tLog_ = TLog::GetInstance()->Start();
-    TLOG(INFO) << "Start Liten Services";
-  };
+  /// Start all services and utilities
+  void Start();
 
   /// Shutdown all services and utilities
-  void Shutdown()
-  {
-    TLOG(INFO) << "Stop Liten Services";
-    tLog_->Stop();
-  }
+  void Shutdown();
 
 private:
 
@@ -36,6 +28,9 @@ private:
 
   /// Logging utility
   std::shared_ptr<TLog> tLog_;
+
+  // Total worker numbers
+  const int64_t numThreads_ = 32;
     
   /// Allow shared_ptr with private constructors
   struct MakeSharedEnabler;

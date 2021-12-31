@@ -1,3 +1,4 @@
+#include <tbb/tbb.h>
 #include <TService.h>
 
 namespace liten
@@ -12,6 +13,19 @@ std::shared_ptr<TService> TService::GetInstance()
     tService_ = std::make_shared<TService::MakeSharedEnabler>();
   }
   return tService_;
+}
+
+void TService::Start()
+{
+  tLog_ = TLog::GetInstance()->Start();
+  tbb::task_scheduler_init init(numThreads_);
+  TLOG(INFO) << "Start Liten Services";
+};
+
+void TService::Shutdown()
+{
+  TLOG(INFO) << "Stop Liten Services";
+  tLog_->Stop();
 }
     
 }

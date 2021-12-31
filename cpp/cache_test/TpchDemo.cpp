@@ -197,7 +197,7 @@ void TpchDemo::GetQuery6Revenue(int64_t chunkNum, double& revenue)
 
 };
 
-// Get Query6 Revenue, use numWorkers_ threads
+// Get Query6 Revenue
 double TpchDemo::Query6()
 {
   int32_t shipdateValue;
@@ -218,20 +218,12 @@ double TpchDemo::Query6()
   int64_t numChunks = lExtendedprice->NumBlocks();
   std::vector<double> revenues(lExtendedprice->NumBlocks());
 
-  int64_t pnum=0;
   for (int64_t chunkNum = 0; chunkNum < numChunks; chunkNum++)
   {
     auto tf = std::bind(&TpchDemo::GetQuery6Revenue, this, chunkNum, std::ref(revenues[chunkNum]));
     tg.run(tf);
-    pnum++;
-    if (pnum == numWorkers_)
-    {
-      tg.wait();
-      pnum = 0;
-    }
   }
-  if (pnum > 0)
-    tg.wait();
+  tg.wait();
 
   double revenue = 0;
   for (auto rev: revenues)
@@ -606,7 +598,7 @@ void TpchDemo::GetQuery5RevenueTensor(int64_t chunkNum, double revenue[])
   ss << " " << "Nation RowId Time ns= " << nationGetRowIdTime;
   ss << " " << "Nation ValId Time ns= " << nationGetValTime;
 
-  //  LOG(INFO) << ss.str() ;
+  LOG(INFO) << ss.str() ;
 
 }
 
@@ -638,7 +630,6 @@ std::shared_ptr<std::unordered_map<std::string, double>> TpchDemo::Query5(bool u
 
   TStopWatch timer;
   timer.Start();
-  int64_t pnum=0;
   for (int64_t chunkNum = 0; chunkNum < numChunks; chunkNum++)
   {
     if (useTensor)
@@ -653,15 +644,8 @@ std::shared_ptr<std::unordered_map<std::string, double>> TpchDemo::Query5(bool u
                           std::ref(revenues[chunkNum]));
       tg.run(tf);
     }
-    pnum++;
-    if (pnum == numWorkers_)
-    {
-      pnum = 0;
-      tg.wait();
-    }
   }
-  if (pnum > 0)
-    tg.wait();
+  tg.wait();
   
   for (int i=0; i<numChunks; i++)
   {
