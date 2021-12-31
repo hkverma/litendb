@@ -195,7 +195,8 @@ private:
   std::vector<std::shared_ptr<TColumn>> columns_;
   std::unordered_map<std::shared_ptr<arrow::Field>, std::shared_ptr<TColumn>> fieldToColumns_;
 
-  /// Joined parent tables of the tensor TBD Use Arrow array builder
+  /// Parent columns for each column in the table, null if no parents
+  /// For each value, the parentrowid and arrid is also stored if parentCol is not null
   std::vector<std::shared_ptr<std::vector<int64_t>>> parentArrId_;
   std::vector<std::shared_ptr<std::vector<int64_t>>> parentRowId_;
   std::vector<std::shared_ptr<TColumn>> parentColumn_;

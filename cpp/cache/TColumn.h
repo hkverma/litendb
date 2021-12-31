@@ -93,7 +93,7 @@ public:
   // Get value from a rowId 
   template<class Type, class ArrayType>
   bool GetValue(int64_t blkId,  // array Id
-                int64_t rowId,  // rowId input                
+                int64_t rowId,  // rowId input
                 Type& value);    // output value
 
 private:
@@ -259,9 +259,9 @@ bool TColumn::GetValue(int64_t& rowId,  // rowId input
   
 // Get value from a rowId 
 template<class Type, class ArrayType>
-bool TColumn::GetValue(int64_t blkId,  // array Id
+bool TColumn::GetValue(int64_t blkId, // array Id
                        int64_t rowId,  // rowId input                
-                       Type& value)      // output value
+                       Type& value)    // output value
 {
   if (blkId >= blocks_.size() || blkId < 0 )
   {
@@ -273,13 +273,13 @@ bool TColumn::GetValue(int64_t blkId,  // array Id
     return false;
     
   if constexpr(std::is_same_v<Type, arrow::util::string_view>)
-    {
-      value = array->GetView(rowId);
-    }
+  {
+    value = array->GetView(rowId);
+  }
   else if constexpr(std::is_same_v<Type, std::string>)
-    {
-      value = array->GetString(rowId);
-    }
+  {
+    value = array->GetString(rowId);
+  }
   else
   {
     value = array->Value(rowId);

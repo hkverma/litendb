@@ -30,7 +30,7 @@ private:
   std::shared_ptr<TLog> tLog_;
 
   // Total worker numbers
-  const int64_t numThreads_ = 32;
+  const int64_t numThreads_ = 1;
     
   /// Allow shared_ptr with private constructors
   struct MakeSharedEnabler;
