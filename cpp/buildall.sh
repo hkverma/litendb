@@ -3,12 +3,13 @@ if [ -z "$LITEN_ROOT_DIR" ]; then
     echo "LITEN_ROOT_DIR must be set"
     exit
 fi
-build_type="debug"
+
 if [ -z "$LITEN_BUILD_TYPE" ]; then
-    echo "LITEN_BUILD_TYPE is not set, building debug by default"
-else
-    build_type=${LITEN_BUILD_TYPE}
+    echo "LITEN_BUILD_TYPE must be set"
+    exit
 fi
+build_type=${LITEN_BUILD_TYPE}
+
 if [[ "${build_type}" == "debug" || "${build_type}" == "release" ]]; then
     echo "Building ${build_type}"
 else
@@ -17,7 +18,6 @@ else
 fi
 
 # Create a debug or optimized make file
-# TBD Use LITEN_BUILD_TYPE as debug or release same as setup.py in python
 #
 echo "Create makefile for build type ${build_type}"
 build_dir=${LITEN_ROOT_DIR}/cpp/build/${build_type}

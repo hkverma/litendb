@@ -15,7 +15,7 @@
 #include <unordered_map>
 
 #include <cstdint>
-#include <tbb/tbb.h>
+#include <oneapi/tbb.h>
 
 #include <arrow/api.h>
 #include <arrow/csv/api.h>
@@ -30,9 +30,9 @@
 #include <TStopWatch.h>
 #include <TStringBuilder.h>
 #include <TStatus.h>
+#include <TTaskScheduler.h>
 #include <TLog.h>
 #include <TService.h>
 #include <TGuid.h>
 #include <TConfigs.h>
 #include <TResult.h>
-

@@ -1,25 +1,21 @@
 #!/bin/bash
-# If nothing provided build debug
-build_target="debug"
-if [[ "$#" -gt 0 ]]; then
-    if [[ "$1" == "debug" || "$1" == "release" ]]; then
-        build_target=$1
-    else
-        echo "Usage: build.sh [debug|release]"
-        exit
-    fi
+# Installs in /usr/local
+#
+if [ -z "$LITEN_BUILD_TYPE" ]; then
+    echo "LITEN_BUILD_TYPE must be set"
+    exit
 fi
-if [[ ${build_target} = "release" ]]; then
+build_type=${LITEN_BUILD_TYPE}
+pushd oneTBB
+mkdir build
+pushd build
+if [[ ${build_type} = "release" ]]; then
     echo "Building release.."
-    pushd tbb/src
-    make release
-    ln -s tbb/build/linux_intel64_gcc_cc9.3.0_libc2.27_kernel5.4.0_release bin
-    popd
+    cmake -DCMAKE_BUILD_TYPE=Release -DTBB_TEST=OFF .
 else
     echo "Building debug.."
-    pushd tbb/src
-    make debug
-    ln -s tbb/build/linux_intel64_gcc_cc9.3.0_libc2.27_kernel4.19.128_debug bin
-    popd
+    cmake -DCMAKE_BUILD_TYPE=Debug -DTBB_TEST=OFF .
 fi
-
+cmake --build .
+make install
+popd

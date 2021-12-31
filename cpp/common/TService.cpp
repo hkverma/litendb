@@ -18,7 +18,6 @@ std::shared_ptr<TService> TService::GetInstance()
 void TService::Start()
 {
   tLog_ = TLog::GetInstance()->Start();
-  tbb::task_scheduler_init init(numThreads_);
   TLOG(INFO) << "Start Liten Services";
 };
 
