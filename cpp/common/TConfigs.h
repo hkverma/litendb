@@ -13,20 +13,8 @@ public:
   /// Get a singleton instance, if not present create one
   static std::shared_ptr<TConfigs> GetInstance();
 
-  /// Get allowed worker threads
-  int64_t GetWorkerThreads()
-  {
-    return numWorkerThreads_;
-  }
-
   /// Return information with compute information
-  std::string GetComputeInfo()
-  {
-    std::string str("{\"WorkerThreads\":");
-    str.append(std::to_string(numWorkerThreads_)).append("}");
-    return std::move(str);
-  }
-        
+  std::string GetComputeInfo();
     
   ~TConfigs() { }
     
@@ -38,9 +26,6 @@ private:
   /// singleton member
   static std::shared_ptr<TConfigs> tConfigs_;
     
-  /// Total worker CPU nodes
-  int64_t numWorkerThreads_ = 6;
-
   /// Allow shared_ptr with private constructors
   struct MakeSharedEnabler;    
     

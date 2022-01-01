@@ -1,5 +1,6 @@
 #include <TConfigs.h>
 #include <TLog.h>
+#include <TTaskScheduler.h>
 
 namespace liten
 {
@@ -16,5 +17,13 @@ std::shared_ptr<TConfigs> TConfigs::GetInstance()
   TLOG(INFO) << "Created a new TConfigs";
   return tConfigs_;
 }
+
+std::string TConfigs::GetComputeInfo()
+{
+  std::string str("{\"WorkerThreads\":");
+  str.append(std::to_string(TTaskScheduler::GetInstance()->NumWorkerThreads())).append("}");
+  return std::move(str);
+}
+
 
 }

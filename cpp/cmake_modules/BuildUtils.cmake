@@ -40,11 +40,6 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${LITEN_BIN_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${LITEN_BIN_DIR})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${LITEN_BIN_DIR})
 #
-# TBB include directory
-#
-set(TBB_INC_DIR $ENV{LITEN_ROOT_DIR}/cpp/external_libs/tbb/tbb/include)
-set(TBB_LIB_DIR $ENV{LITEN_ROOT_DIR}/cpp/external_libs/tbb/bin)
-#
 # Source Code directories
 #
 set(COMMON_SRC  $ENV{LITEN_ROOT_DIR}/cpp/common)
@@ -55,5 +50,4 @@ set(CACHE_TEST_SRC $ENV{LITEN_ROOT_DIR}/cpp/cache_test)
 # TODO expand include directories
 #
 include_directories(/usr/include/python3.6)
-link_directories(${TBB_LIB_DIR})
 

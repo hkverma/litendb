@@ -1,5 +1,6 @@
 #include <tbb/tbb.h>
 #include <TService.h>
+#include <TTaskScheduler.h>
 
 namespace liten
 {
@@ -19,12 +20,14 @@ void TService::Start()
 {
   tLog_ = TLog::GetInstance()->Start();
   TLOG(INFO) << "Start Liten Services";
+  TTaskScheduler::GetInstance()->Start();
 };
 
 void TService::Shutdown()
 {
   TLOG(INFO) << "Stop Liten Services";
   tLog_->Stop();
+  TTaskScheduler::GetInstance()->Stop();
 }
     
 }
