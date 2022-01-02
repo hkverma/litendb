@@ -10,6 +10,13 @@
 namespace liten
 {
 
+/// Each block in Liten Column has a unique blkNum. rowNum is the rownumber in that block.
+struct TRowId {
+  TRowId() : blkNum(-1), rowNum(-1) { }
+  int32_t blkNum;
+  int32_t rowNum;
+};
+
 class TColumn : public std::enable_shared_from_this<TColumn>
 {
 public:
@@ -40,8 +47,8 @@ public:
   
   /// Get the map if already exists, else create one
   TResult<std::shared_ptr<TColumnMap>>  GetMap();
-  TStatus CreateZoneMap(bool forceCreate=false) { return std::move(map_->CreateZoneMap()); }
-  TStatus CreateReverseMap(bool forceCreate=false) { return std::move(map_->CreateReverseMap()); }
+  TStatus CreateZoneMap(bool forceCreate=false);
+  TStatus CreateReverseMap(bool forceCreate=false);
   
   /// Get map for this column
   std::shared_ptr<TColumnMap> GetCurMap() { return map_; }
@@ -70,34 +77,29 @@ public:
     
   };
 
-  // first rowId for a given value in chunkedArray
-  // TBD under progress needs to define Table such that we can skip the columns in the table
-  // It leads to issues currently
-  // TBD currently assumes return first match it can be a set
-  // TBD Use zone map here min-max here diferentiate using what has been built
-  //
+  /// first rowId for a given value 
   template<class Type, class ArrayType> 
-  bool GetRowId(int64_t& arrId,            // Output array Id
-                int64_t& rowId,             // output Row Id
-                Type& value);                // Input Value
+  TRowId GetRowId(Type& value);
 
-  // Get value from a rowId
-  // TBD Use TypeTraits<Type>::ArrayType to get to the array, builders, scalar etc.
+  template<class Type, class ArrayType> 
+  TRowId GetRowIdLinear(Type& value);
+
+  /// Given rowNum get blkId and rowId
+  TRowId GetRowId(int64_t rowNum);
+  
+  /// Get value from rowid
+  template<class Type, class ArrayType> inline
+  TResult<Type> GetValue(TRowId& id);
+
+  /// This is currently slow, get value from a linear value of rowId
   template<class Type, class ArrayType>
-  bool GetValue(int64_t& rowId,  // rowId input
-                Type& value);      // output value
+  TResult<Type> GetValue(int64_t rowId);  // rowId input
   
   arrow::Result<std::shared_ptr<arrow::Scalar>> GetScalar(int64_t rowId);
   arrow::Result<std::shared_ptr<arrow::Scalar>> GetScalar(int64_t arrId, int64_t rowId);
   
-  // Get value from a rowId 
-  template<class Type, class ArrayType>
-  bool GetValue(int64_t blkId,  // array Id
-                int64_t rowId,  // rowId input
-                Type& value);    // output value
 
 private:
-
   
   /// chunkedArrows from which TCache was created
   std::vector<std::shared_ptr<TBlock>> blocks_;
@@ -194,97 +196,74 @@ bool TColumn::Iterator<Type, ArrayType>::NextBlock()
   return true;
 }
 
-template<class Type, class ArrayType> 
-bool TColumn::GetRowId(int64_t& arrId,            // Output array Id
-                       int64_t& rowId,             // output Row Id
-                       Type& value)                // Input Value
+template<class Type, class ArrayType> inline
+TRowId TColumn::GetRowId(Type& value) // Input Value
 {
+  TRowId id;
   if (map_ && map_->IfValidReverseMap())
   {
-    bool found = map_->GetReverseMap(value, arrId, rowId);
-    if (!found)
-      TLOG(INFO) << "Not found value " << value << " for field=" << field_->name();
-    return found;
+    id = map_->GetReverseMap(value);
   }
+  return id;
+}
 
-  // Linear search if no map found
-  for (arrId=0; arrId <blocks_.size(); arrId++)
+template<class Type, class ArrayType> inline
+TRowId TColumn::GetRowIdLinear(Type& value) // Input Value
+{
+  TRowId id;
+  for (auto arrId=0; arrId <blocks_.size(); arrId++)
   {
     std::shared_ptr<ArrayType> arr = std::static_pointer_cast<ArrayType>(blocks_[arrId]->GetArray());
-    for (rowId=0; rowId<arr->length(); rowId++)
+    for (auto rowId=0; rowId<arr->length(); rowId++)
     {
       if (value == arr->Value(rowId))
       {
-        return true;
+        id.blkNum = arrId;
+        id.rowNum = rowId;
+        return id;
       }
     }
   }
-  return false;
+  return id;
 }
 
-template<class Type, class ArrayType>
-bool TColumn::GetValue(int64_t& rowId,  // rowId input
-                       Type& value)      // output value
+
+template<class Type, class ArrayType> inline
+TResult<Type> TColumn::GetValue(int64_t rowId)  // rowId input
 {
-  int64_t blkId=0;
-  for (int64_t blkNum=0; blkNum<=blocks_.size(); blkNum++)
-  {
-    std::shared_ptr<ArrayType> array =
-      std::static_pointer_cast<ArrayType>(blocks_[blkNum]);
-    int64_t length = array->length();
-    if (blkId+length < rowId)
-    {
-      blkId += length;
-    }
-    else
-    {
-      int64_t offset = rowId-blkId;
-      if constexpr(std::is_same_v<Type, arrow::util::string_view>)
-        {
-          value = array->GetView(offset);
-        }
-      else if constexpr(std::is_same_v<Type, std::string>)
-        {
-          value = array->GetString(offset);
-        }
-      else
-      {
-        value = array->Value(offset);
-      }
-      return true;
-    }
-  }
-  return false;
-}
+  auto id = GetRowId(rowId);
+  auto val = std::move(GetValue<Type, ArrayType>(id));
+  return val;
+}  
   
 // Get value from a rowId 
-template<class Type, class ArrayType>
-bool TColumn::GetValue(int64_t blkId, // array Id
-                       int64_t rowId,  // rowId input                
-                       Type& value)    // output value
+template<class Type, class ArrayType> inline
+TResult<Type> TColumn::GetValue(TRowId& id)
 {
-  if (blkId >= blocks_.size() || blkId < 0 )
+  if (id.blkNum >= blocks_.size() || id.blkNum < 0 )
   {
-    return false;
+    return TStatus::Invalid("Invalid block id");
   }
   std::shared_ptr<ArrayType> array =
-    std::static_pointer_cast<ArrayType>(blocks_[blkId]->GetArray());
-  if (rowId >= array->length())
-    return false;
-    
+    std::static_pointer_cast<ArrayType>(blocks_[id.blkNum]->GetArray());
+  if (id.rowNum >= array->length())
+  {
+    return TStatus::Invalid("Invalid row id");
+  }
+  Type value;
   if constexpr(std::is_same_v<Type, arrow::util::string_view>)
   {
-    value = array->GetView(rowId);
+    value = array->GetView(id.rowNum);
   }
   else if constexpr(std::is_same_v<Type, std::string>)
   {
-    value = array->GetString(rowId);
+    value = std::move(array->GetString(id.rowNum));
   }
   else
   {
-    value = array->Value(rowId);
+    value = std::move(array->Value(id.rowNum));
   }
-  return true;
+  return value;
 }
 
 }

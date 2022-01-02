@@ -13,6 +13,12 @@ namespace liten
 // arrow::builder.cc check L22 for the types shown below
 //
 
+TRowId TColumnMap::GetReverseMap(int64_t& rowVal)
+{
+  TRowId id;
+  return id;
+}
+
 // By looking at the column ID type, it creates the correct ColumnMap.
 TResult<std::shared_ptr<TColumnMap>> TColumnMap::Create(std::shared_ptr<TColumn> tColumn)
 {
@@ -143,18 +149,18 @@ TStatus TInt64ColumnMap::CreateReverseMap(bool forceCreate)
   return TStatus::OK();
 }
 
-bool TInt64ColumnMap::GetReverseMap(int64_t& rowVal, int64_t& arrId, int64_t& rowId)
+// TBD For now return only one, there could be multiple matches
+TRowId TInt64ColumnMap::GetReverseMap(int64_t& rowVal)
 {
+  TRowId id;
   auto revMapItr = reverseMap_.find(rowVal);
   if (revMapItr == reverseMap_.end())
   {
-    return false;
+    return id;
   }
-  // For now return only one
-  // TBD Use equal_range in future to return a vector of matched rowIds
-  arrId = (revMapItr->second).first;
-  rowId = (revMapItr->second).second;
-  return true;
+  id.blkNum = (revMapItr->second).first;
+  id.rowNum = (revMapItr->second).second;
+  return id;
 }
 
 bool TInt64ColumnMap::GetReverseMap(std::stringstream& ss)

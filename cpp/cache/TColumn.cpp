@@ -6,6 +6,38 @@
 namespace liten
 {
 
+TRowId TColumn::GetRowId(int64_t rowNum)
+{
+  TRowId id;
+  id.blkNum = -1;
+  int64_t blkId = 0;
+  for (int64_t blkNum=0; blkNum<=blocks_.size(); blkNum++)
+  {
+    int64_t length = blocks_[blkNum]->GetArray()->length();
+    if (blkId+length < rowNum)
+    {
+      blkId += length;
+    }
+    else
+    {
+      id.blkNum = blkNum;
+      id.rowNum = rowNum-blkId;
+      break;
+    }
+  }
+  return id;
+}
+
+TStatus TColumn::CreateZoneMap(bool forceCreate)
+{
+  return std::move(map_->CreateZoneMap());
+}
+
+TStatus TColumn::CreateReverseMap(bool forceCreate)
+{
+  return std::move(map_->CreateReverseMap());
+}
+
 TStatus TColumn::Add(std::shared_ptr<TBlock> tBlock)
 {
   if (nullptr == tBlock)

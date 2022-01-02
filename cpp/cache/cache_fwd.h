@@ -11,6 +11,7 @@ enum FieldType {DimensionField=0, MetricField=1, FeatureField=2, EmbeddingField=
 extern std::vector<std::string> FieldTypeString;
 
 /// These are all defined classes in core library
+struct TRowId;
 class TCatalog;
 class TColumn;
 class TRowBlock;

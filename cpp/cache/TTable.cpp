@@ -85,6 +85,7 @@ TStatus TTable::AddToCatalog() {
   return std::move(status);
 }
 */
+
 // Print Schema in logfile
 void TTable::PrintSchema()
 {
@@ -143,16 +144,21 @@ std::string TTable::ParentsToString()
   ss << "\nParents=";
   for (int64_t i=0; i<columns_.size(); i++)
   {
-    auto pArrId = parentArrId_[i];
-    auto pRowId = parentRowId_[i];
-    auto pCol = parentColumn_[i]; // TBD - clarify the use of parent column here
-    if (pArrId && pRowId && pCol)
+    auto col = columns_[i];
+    auto pCol = parentColumn_[i];
+    if (nullptr == pCol) continue;
+    auto pColBlks = parentRowNumLookup_[i];
+    if (nullptr == pColBlks) continue;
+    int64_t rowNum = 0;
+    ss << "Col " << i << "=" << col->GetName() << " parent=" << pCol->GetName() << " ";
+    for (auto bn=0; bn<col->NumBlocks(); bn++)
     {
-      ss << "Col " << i << "=" << columns_[i]->GetName() << " parent=" << pCol->GetName() << " ";
-      for (int rn=0; rn<NumRows(); rn++)
+      auto pBlk = pCol->GetBlock(bn);
+      for (auto rn=0; rn<pBlk->GetArray()->length(); rn++)
       {
-        ss << rn << ":" << pArrId->at(rn) << ":" << pRowId->at(rn) << ":";
-        arrow::Result<std::shared_ptr<arrow::Scalar>> result = pCol->GetScalar(pArrId->at(rn), pRowId->at(rn));
+        auto rowId = pColBlks->at(rn);
+        ss << rowNum << ":" << rowId.blkNum << ":" << rowId.rowNum << ":" ;
+        auto result = pCol->GetScalar(rowId.blkNum, rowId.rowNum);
         if (result.ok())
         {
           ss << result.ValueOrDie()->ToString();
@@ -387,14 +393,12 @@ TResult<std::shared_ptr<TSchema>> TTable::AddSchema(std::shared_ptr<arrow::Schem
   // TBD what if schema is not null
   schema_ = tschema;
   columns_.resize(schema->num_fields());
-  parentArrId_.resize(schema->num_fields());
-  parentRowId_.resize(schema->num_fields());
+  parentRowNumLookup_.resize(schema->num_fields());
   parentColumn_.resize(schema->num_fields());
   for (auto i=0; i<schema->num_fields(); i++) {
     columns_[i] = std::make_shared<TColumn>(shared_from_this(), schema->field(i));
     fieldToColumns_[schema->field(i)] = columns_[i];
-    parentArrId_[i] = nullptr;
-    parentRowId_[i] = nullptr;
+    parentRowNumLookup_[i] = nullptr;
     parentColumn_[i] = nullptr;
   }
 
@@ -527,8 +531,8 @@ TResult<std::shared_ptr<TColumn>> TTable::GetColumn(std::shared_ptr<arrow::Field
     return TStatus::Invalid("No column found for field=", field->name());
   return itr->second;
 }
+
 // Create a lookup column
-// TBD Check all template classes
 template<class Type, class ValueType, class ArrayType>
 TStatus TTable::CreateColumnLookUp(int64_t cnum,
                                    std::shared_ptr<TColumn> col,
@@ -536,7 +540,7 @@ TStatus TTable::CreateColumnLookUp(int64_t cnum,
                                    std::shared_ptr<arrow::Field> parentField)
 {
 
-  if (nullptr != parentArrId_[cnum])
+  if (nullptr != parentRowNumLookup_[cnum])
     return TStatus::OK();
 
   // Get parent column
@@ -553,66 +557,30 @@ TStatus TTable::CreateColumnLookUp(int64_t cnum,
   {
     parentCol->CreateReverseMap();
   }
-  
-  auto parentArrId = std::make_shared<std::vector<int64_t>>(col->NumRows());
-  auto parentRowId = std::make_shared<std::vector<int64_t>>(col->NumRows());
-  for (auto i=0; i<col->NumRows(); i++)
-  {
-    parentArrId->at(i) = -1;
-    parentRowId->at(i) = -1;
-  }
 
-  int64_t curRowId = 0;
-  for (auto i=0; i<col->NumBlocks(); i++)
+  // For each block, create a vector to look at the parent value
+  parentRowNumLookup_.resize(col->NumBlocks(), nullptr);
+
+  for (auto blkNum=0; blkNum<col->NumBlocks(); blkNum++)
   {
     std::shared_ptr<arrow::NumericArray<ValueType>> arr =
-      std::dynamic_pointer_cast<arrow::NumericArray<ValueType>>(col->GetBlock(i)->GetArray());
+      std::dynamic_pointer_cast<arrow::NumericArray<ValueType>>(col->GetBlock(blkNum)->GetArray());    
     if (nullptr == arr)
     {
       return TStatus::Invalid("Non numeric array not supported in Column lookups");
     }
-
-    // TBD
-    // Build an array to join the data directly
-    // std::unique_ptr<arrow::<ValueType>> arrBaseBuilder;
-    // auto status = arrow::MakeBuilder(arrow::default_memory_pool(), arr->type(), &arrBaseBuilder);
-    // std::unique_ptr<arrow::NumericBuilder<ValueType>> arrBuilder = std::make_unique<arrow::NumericBuilder<ValueType>>(arr->type(), arrow::default_memory_pool());
-    // arrow::Status status = arrBuilder->Reserve(arr->length());
-    // if (!status.ok())
-    // {
-    // return TStatus::Invalid(status.message());
-    // }
-
-    for (auto rId=0; rId<arr->length(); rId++)
+    
+    auto parentRowNum = std::make_shared<std::vector<TRowId>>(arr->length());
+    parentRowNumLookup_[blkNum] = parentRowNum;
+    for (auto rowNum=0; rowNum<arr->length(); rowNum++)
     {
-      Type value = std::move(arr->Value(rId));
-      int64_t arrId, rowId;
-      arrow::Status status;
-      if (parentCol->GetRowId<Type,ArrayType>(arrId, rowId, value))
-      {
-        parentArrId->at(curRowId) = arrId;
-        parentRowId->at(curRowId) = rowId;
-      }
-      curRowId++;
+      Type value = std::move(arr->Value(rowNum));
+      parentRowNum->at(rowNum) = std::move(parentCol->GetRowId<Type,ArrayType>(value));
     }
-    /* TBD
-    std::shared_ptr<arrow::Array> outArr;
-    status = arrBuilder->Finish(&outArr);
-    if (!status.ok())
-    {
-      return TStatus::Invalid(status.message());
-    }
-    auto blkResult = TBlock::Create(outArr);
-    if (!blkResult.ok())
-      return blkResult.status();
-    auto tStatus = joinCol->Add(blkResult.ValueOrDie());
-    if (!tStatus.ok())
-    return tStatus; */
   }
-  parentArrId_[cnum] = parentArrId;
-  parentRowId_[cnum] = parentRowId;
+
+  // Now set the parent Column
   parentColumn_[cnum] = parentCol;
-  
   return TStatus::OK();
 }
 

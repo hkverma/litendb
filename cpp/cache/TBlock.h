@@ -3,8 +3,9 @@
 #include <common.h>
 
 namespace liten {
-  
+
 /// Zero cost wrapper class for Arrow Array
+/// Blocks can be local or remote
 class TBlock {
 public:
 

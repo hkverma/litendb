@@ -2,6 +2,7 @@
 
 #include <common.h>
 #include <cache_fwd.h>
+//#include <TColumn.h>
 
 //
 // Liten Columnar Storage Node
@@ -52,10 +53,7 @@ public:
     return false;
   }
   
-  virtual bool GetReverseMap(int64_t& rowVal, int64_t& arrId, int64_t& rowId)
-  {
-    return false;
-  }
+  virtual TRowId GetReverseMap(int64_t& rowVal);
   
   virtual bool GetReverseMap(std::stringstream& ss)
   {
@@ -132,7 +130,7 @@ public:
     return ifReverseMap_;
   }
   
-  virtual bool GetReverseMap(int64_t& rowVal, int64_t& arrId, int64_t& rowId);
+  virtual TRowId GetReverseMap(int64_t& rowVal);
 
   virtual bool GetReverseMap(std::stringstream& ss);
 

@@ -87,7 +87,7 @@ public:
   /// Type of table - dim or fact
   TableType GetType();
     
-  int64_t NumRows();
+  int64_t NumRows() { return numRows_; }
   
   // Get different cuts. For now it is a simple index cut - minIndex <= index <= maxIndex
   // TODO do point, range, set cuts 
@@ -96,6 +96,7 @@ public:
   // This performs the following operation
   // 1. Find arrId, rowId where leftTable[lefttColNum][arrId,rowId] == leftValue
   // 2. Return rightValue equal to rightTable[rightColNum][arrId,rowId]
+  // TBD Clean it up
   template<class TypeLeft, class ArrayTypeLeft,
            class TypeRight=TypeLeft, class ArrayTypeRight=ArrayTypeLeft> inline
   bool JoinInner(TypeLeft& leftValue,      // leftValue Input
@@ -105,60 +106,89 @@ public:
                  int64_t rightColNum,     // right Col Num
                  int64_t& rightValueInMicroseconds)  // time taken to look for rightValue
   {
-    int64_t rowId, arrId;
     TStopWatch timer;
     timer.Start();
-    bool result = GetColumn(leftColNum)->GetRowId<TypeLeft, ArrayTypeLeft>(arrId, rowId, leftValue);
+    TRowId rowId = GetColumn(leftColNum)->GetRowId<TypeLeft, ArrayTypeLeft>(leftValue);
     timer.Stop();
     leftRowIdInMicroseconds += timer.ElapsedInMicroseconds();
-    if (!result)
+    if (rowId.blkNum < 0)
     {
-      return result;
+      return false;
     }
 
     timer.Start();
-    result = GetColumn(rightColNum)->GetValue<TypeRight, ArrayTypeRight>(arrId, rowId, rightValue);
+    bool result = false;
+    auto resultValue = GetColumn(rightColNum)->GetValue<TypeRight, ArrayTypeRight>(rowId);
+    if (resultValue.ok())
+    {
+      rightValue = resultValue.ValueOrDie();
+      result = true;
+    }
     timer.Stop();
     rightValueInMicroseconds += timer.ElapsedInMicroseconds();
     return result;
   }
+
+
+  /// Get parent column info
+  TRowId GetParentInfo(int64_t colNum, TRowId id);
+
+  /// Current table to child. GetValue looks at the parent table joined by the column parentColId
+  template<class Type, class ArrayType> inline
+  TResult<Type> GetValue(TRowId rowId, // rowId
+                         int64_t colId, // colId
+                         int64_t parentColId, // parent Col Id
+                         TRowId& parentRowId, // Return parent rowId for hieararchical lookups
+                         std::vector<int64_t>& wallTimeInMicroSeconds); // time taken
+
+
+  /// Current table to child. GetValue looks at the parent table joined by two hierarchies  
+  template<class Type, class ArrayType> inline
+  TResult<Type> GetValue(TRowId rowId,       // rowId
+                         int64_t colId,     // col Id
+                         int64_t parent0ColId, // parent0 Col Id to be joined
+                         int64_t parent1ColId, // parent1 Col Id to be joined
+                         std::vector<int64_t>& wallTimeInMicroSeconds); // time taken
   
-  template<class TypeLeft, class ArrayTypeLeft,
-           class TypeRight=TypeLeft, class ArrayTypeRight=ArrayTypeLeft> inline
-  bool GetValue(int64_t childColNum,                // childColNum
-                int64_t childRowId,                  // childRowId
-                int64_t& childRowIdInMicroseconds,   // time taken to look for leftValue
-                TypeRight& parentValue,              // rightValue output
-                int64_t parentColNum,                // right Col Num
-                int64_t& parentValueInMicroseconds)  // time taken to look for rightValue
+    
+  /// Current table to child. GetValue looks at the parent table joined by the column number
+  /// It gets the parent column number value
+  /// TBD ArrayType can be derived from Type
+  /*REMOVE  template<class Type, class ArrayType> inline
+  bool GetValue(int64_t colNum,                // colNum
+                int64_t rowId,                  // rowId
+                int64_t& rowIdInMicroseconds,   // time taken to look for leftValue
+                Type& parentValue,              // parent Value
+                int64_t parentColNum,                // parent Col Num
+                int64_t& parentValueInMicroseconds)  // time taken to look for parent Value
   {
-    int64_t rowId, arrId;
+    int64_t parentRowId, parentArrId;
     TStopWatch timer;
     bool result = true;
     timer.Start();
-    if (nullptr == parentArrId_[childColNum] ||
-        nullptr == parentRowId_[childColNum] ||
-        nullptr == parentColumn_[childColNum])
+    if (nullptr == parentBlkNum_[colNum] ||
+        nullptr == parentRowNum_[colNum] ||
+        nullptr == parentColumn_[colNum])
     {
       TLOG(ERROR) << "Invalid tensor representation";
       result = false;
     }
     else
     {
-      rowId = parentRowId_[childColNum]->at(childRowId);
-      arrId = parentArrId_[childColNum]->at(childRowId);
+      parentRowId = parentRowNum_[colNum]->at(rowId);
+      parentArrId = parentBlkNum_[colNum]->at(rowId);
     }
     timer.Stop();
-    childRowIdInMicroseconds += timer.ElapsedInMicroseconds();
+    rowIdInMicroseconds += timer.ElapsedInMicroseconds();
     if (!result)
     {
       return result;
     }
 
     timer.Start();
-    auto parentTable = parentColumn_[childColNum]->GetTable();
+    auto parentTable = parentColumn_[colNum]->GetTable();
     auto parentColumn = parentTable->GetColumn(parentColNum);
-    result = parentColumn->GetValue<TypeRight, ArrayTypeRight>(arrId, rowId, parentValue);
+    result = parentColumn->GetValue<Type, ArrayType>(parentArrId, parentRowId, parentValue);
     timer.Stop();
     parentValueInMicroseconds += timer.ElapsedInMicroseconds();
     if (!result)
@@ -166,7 +196,7 @@ public:
       TLOG(ERROR) << "Invalid parent lookup";
     }    
     return result;
-  }
+    }*/
 
   // TBD Add to the option class
   static const bool EnableColumnReverseMap = false;
@@ -196,15 +226,14 @@ private:
   std::unordered_map<std::shared_ptr<arrow::Field>, std::shared_ptr<TColumn>> fieldToColumns_;
 
   /// Parent columns for each column in the table, null if no parents
-  /// For each value, the parentrowid and arrid is also stored if parentCol is not null
-  std::vector<std::shared_ptr<std::vector<int64_t>>> parentArrId_;
-  std::vector<std::shared_ptr<std::vector<int64_t>>> parentRowId_;
+  /// For each value, the parent rowNum and blkNum are also stored if parentCol is not null
+  std::vector<std::shared_ptr<std::vector<TRowId>>> parentRowNumLookup_;
   std::vector<std::shared_ptr<TColumn>> parentColumn_;
   
   /// Tables consist of columnar series
   std::vector<std::shared_ptr<TRowBlock>> rowBlocks_;
 
-  /// Total number of rows so far
+  /// Total number of rows in the table
   int64_t numRows_;
   
   /// Schema of the table
@@ -260,9 +289,83 @@ inline std::shared_ptr<TRowBlock> TTable::GetRowBlock(int32_t rbNum)
   return rowBlocks_[rbNum];
 }
 
-inline int64_t TTable::NumRows()
+/// Current table to child. GetValue looks at the parent table joined by the column parentColId
+template<class Type, class ArrayType> inline
+TResult<Type> TTable::GetValue(TRowId rowId, // rowId
+                               int64_t colId, // colId
+                               int64_t parentColId, // parent Col Id
+                               TRowId& parentRowId, // Return parent rowId for hieararchical joins
+                               std::vector<int64_t>& wallTimeInMicroSeconds) // time taken
 {
-  return numRows_;
+  TStopWatch timer;
+  timer.Start();
+  parentRowId = std::move(GetParentInfo(colId, rowId));
+  timer.Stop();
+  wallTimeInMicroSeconds[0] += timer.ElapsedInMicroseconds();
+  if (parentRowId.blkNum < 0)
+  {
+    return TStatus::Invalid("Invalid tensor representation");
+  }
+
+  timer.Start();
+  auto parentColumn = parentColumn_[colId]->GetTable()->GetColumn(parentColId);
+  auto value = std::move(parentColumn->GetValue<Type, ArrayType>(parentRowId));
+  timer.Stop();
+  wallTimeInMicroSeconds[1] += timer.ElapsedInMicroseconds();
+  return value;
 }
+
+template<class Type, class ArrayType> inline
+TResult<Type> TTable::GetValue(TRowId rowId,       // rowId
+                               int64_t colId,     // col Id
+                               int64_t parent0ColId, // parent0 Col Id to be joined
+                               int64_t parent1ColId, // parent1 Col Id to be joined
+                               std::vector<int64_t>& wallTimeInMicroSeconds) // time taken
+{
   
+  TStopWatch timer;
+
+  timer.Start();
+  auto parent0RowId = std::move(GetParentInfo(colId, rowId));
+  if (parent0RowId.blkNum < 0)
+  {
+    return TStatus::Invalid("Invalid tensor representation");
+  }
+  timer.Stop();
+  wallTimeInMicroSeconds[0] += timer.ElapsedInMicroseconds();
+
+  timer.Start();
+  auto parent0Table = parentColumn_[colId]->GetTable();
+  auto parent1RowId = parent0Table->GetParentInfo(parent0ColId, parent0RowId);
+  if (parent1RowId.blkNum < 0)
+  {
+    return TStatus::Invalid("Invalid tensor representation");
+  }
+  timer.Stop();
+  wallTimeInMicroSeconds[1] += timer.ElapsedInMicroseconds();
+  
+  timer.Start();
+  auto parent1Column = parent0Table->parentColumn_[parent0ColId]->GetTable()->GetColumn(parent1ColId);
+  auto value = std::move(parent1Column->GetValue<Type, ArrayType>(parent1RowId));
+  timer.Stop();
+  wallTimeInMicroSeconds[2] += timer.ElapsedInMicroseconds();
+  
+  return value;
+
+}
+
+inline TRowId TTable::GetParentInfo(int64_t colNum, TRowId id)
+{
+  TRowId pId;
+  if (nullptr != parentColumn_[colNum])
+  {
+    auto lkup = parentRowNumLookup_[id.blkNum];
+    if (nullptr != lkup)
+    {
+      pId = lkup->at(id.rowNum);
+    }
+  }
+  return pId;
+}
+
 }
