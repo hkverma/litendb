@@ -86,6 +86,7 @@ int main(int argc, char** argv) {
     ordersSchema->Join("O_CUSTKEY", customerSchema, "C_CUSTKEY");
     customerSchema->Join("C_NATIONKEY", nationSchema, "N_NATIONKEY");
     nationSchema->Join("N_REGIONKEY", regionSchema, "R_REGIONKEY");
+    supplierSchema->Join("S_NATIONKEY", nationSchema, "N_NATIONKEY");
   }
   
   std::string cacheInfo = tCache->GetInfo();

@@ -176,4 +176,14 @@ std::string TColumn::ToString(bool values, bool zonemap, bool reversemap)
   return (std::move(ss.str()));
 }
 
+int64_t TColumn::GetRowNum(TRowId rowId)
+{
+  int64_t rowNum = rowId.rowNum;
+  for (auto blkId=0; blkId <rowId.blkNum; blkId++)
+  {
+    rowNum += blocks_[blkId]->GetArray()->length();
+  }
+  return rowNum;
+}
+
 }

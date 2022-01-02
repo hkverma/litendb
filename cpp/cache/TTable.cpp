@@ -147,7 +147,7 @@ std::string TTable::ParentsToString()
     auto col = columns_[i];
     auto pCol = parentColumn_[i];
     if (nullptr == pCol) continue;
-    auto pColBlks = parentRowNumLookup_[i];
+    auto pColBlks = parentRowIdLookup_[i];
     if (nullptr == pColBlks) continue;
     int64_t rowNum = 0;
     ss << "Col " << i << "=" << col->GetName() << " parent=" << pCol->GetName() << " ";
@@ -156,14 +156,14 @@ std::string TTable::ParentsToString()
       auto pBlk = pCol->GetBlock(bn);
       for (auto rn=0; rn<pBlk->GetArray()->length(); rn++)
       {
-        auto rowId = pColBlks->at(rn);
+        TRowId rowId = (*pColBlks)[bn][rn];
         ss << rowNum << ":" << rowId.blkNum << ":" << rowId.rowNum << ":" ;
         auto result = pCol->GetScalar(rowId.blkNum, rowId.rowNum);
         if (result.ok())
         {
           ss << result.ValueOrDie()->ToString();
         }
-        ss << ",";        
+        ss << ",";
       }
       ss << "; ";
     }
@@ -181,7 +181,7 @@ void TTable::PrintTable(bool columns, bool parents)
   ss << " NumRows=" << NumRows();
   TLOG(INFO) << ss.str();
   ss.str(std::string());
-  
+
   TLOG(INFO) << std::move(ToString());
   if (columns)
   {
@@ -249,7 +249,7 @@ void TTable::PrintMaps()
     if (nullptr == colMap)
     {
       ss << "colMap=null at " << colNum;
-      continue;      
+      continue;
     }
     // Print
     ss << "Col " << colNum;
@@ -321,7 +321,7 @@ TResult<std::shared_ptr<TRowBlock>> TTable::AddRowBlock(std::shared_ptr<arrow::R
   // Now add the rowblocks
   rowBlocks_.push_back(rb);
   numRows_ +=  rb->NumRows();
-  
+
   return rb_result;
 }
 
@@ -339,7 +339,7 @@ TStatus TTable::AddArrowTable(std::shared_ptr<arrow::Table> table)
   {
     return TStatus::Invalid("Empty arrow table");
   }
-  
+
   std::vector<std::shared_ptr<arrow::RecordBatch>> arrRbVec;
   for (auto arrNum=0; arrNum<numArrays; arrNum++)
   {
@@ -393,12 +393,12 @@ TResult<std::shared_ptr<TSchema>> TTable::AddSchema(std::shared_ptr<arrow::Schem
   // TBD what if schema is not null
   schema_ = tschema;
   columns_.resize(schema->num_fields());
-  parentRowNumLookup_.resize(schema->num_fields());
-  parentColumn_.resize(schema->num_fields());
+  parentRowIdLookup_.resize(schema->num_fields(), nullptr);
+  parentColumn_.resize(schema->num_fields(), nullptr);
   for (auto i=0; i<schema->num_fields(); i++) {
     columns_[i] = std::make_shared<TColumn>(shared_from_this(), schema->field(i));
     fieldToColumns_[schema->field(i)] = columns_[i];
-    parentRowNumLookup_[i] = nullptr;
+    parentRowIdLookup_[i] = nullptr;
     parentColumn_[i] = nullptr;
   }
 
@@ -426,10 +426,10 @@ TStatus TTable::MakeTensor()
   {
     return TStatus::Invalid("Cannot create tensor, no schema for table ", name_);
   }
-  
+
   TStatus status;
   std::stringstream ss;
-  
+
   // Return field if field type is fieldType, adds any error message to errmsg
   auto ifFieldType = [](TResult<FieldType> fieldTypeResult, FieldType fieldType) -> bool
   {
@@ -482,9 +482,9 @@ TStatus TTable::MakeTensor()
       else
       {
         ss << "Could not create a column map for col="  << cnum << " for table=" << name_ << "; ";
-      }      
+      }
     };
-    
+
     // If child field exists create a reverse lookup column
     std::shared_ptr<arrow::Field> field = getArrowField(std::move(schema_->GetChildField(cnum)));
     if (nullptr != field)
@@ -532,57 +532,6 @@ TResult<std::shared_ptr<TColumn>> TTable::GetColumn(std::shared_ptr<arrow::Field
   return itr->second;
 }
 
-// Create a lookup column
-template<class Type, class ValueType, class ArrayType>
-TStatus TTable::CreateColumnLookUp(int64_t cnum,
-                                   std::shared_ptr<TColumn> col,
-                                   std::shared_ptr<TSchema> parentSchema,
-                                   std::shared_ptr<arrow::Field> parentField)
-{
-
-  if (nullptr != parentRowNumLookup_[cnum])
-    return TStatus::OK();
-
-  // Get parent column
-  auto ttable = parentSchema->GetTable();
-  if (!ttable)
-  {
-    return TStatus::Invalid("No table for parent schema.");
-  }
-  auto parentColResult = ttable->GetColumn(parentField);
-  if (!parentColResult.ok())
-    return std::move(parentColResult.status());
-  auto parentCol = parentColResult.ValueOrDie();
-  if (parentCol->GetMap().ok())
-  {
-    parentCol->CreateReverseMap();
-  }
-
-  // For each block, create a vector to look at the parent value
-  parentRowNumLookup_.resize(col->NumBlocks(), nullptr);
-
-  for (auto blkNum=0; blkNum<col->NumBlocks(); blkNum++)
-  {
-    std::shared_ptr<arrow::NumericArray<ValueType>> arr =
-      std::dynamic_pointer_cast<arrow::NumericArray<ValueType>>(col->GetBlock(blkNum)->GetArray());    
-    if (nullptr == arr)
-    {
-      return TStatus::Invalid("Non numeric array not supported in Column lookups");
-    }
-    
-    auto parentRowNum = std::make_shared<std::vector<TRowId>>(arr->length());
-    parentRowNumLookup_[blkNum] = parentRowNum;
-    for (auto rowNum=0; rowNum<arr->length(); rowNum++)
-    {
-      Type value = std::move(arr->Value(rowNum));
-      parentRowNum->at(rowNum) = std::move(parentCol->GetRowId<Type,ArrayType>(value));
-    }
-  }
-
-  // Now set the parent Column
-  parentColumn_[cnum] = parentCol;
-  return TStatus::OK();
-}
 
 std::shared_ptr<arrow::Table> TTable::Slice(int64_t offset, int64_t numRows)
 {

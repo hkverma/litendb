@@ -94,6 +94,8 @@ public:
   /// This is currently slow, get value from a linear value of rowId
   template<class Type, class ArrayType>
   TResult<Type> GetValue(int64_t rowId);  // rowId input
+
+  int64_t GetRowNum(TRowId rowId);
   
   arrow::Result<std::shared_ptr<arrow::Scalar>> GetScalar(int64_t rowId);
   arrow::Result<std::shared_ptr<arrow::Scalar>> GetScalar(int64_t arrId, int64_t rowId);

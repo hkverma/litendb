@@ -532,11 +532,6 @@ void TpchDemo::GetQuery5Revenue(int64_t chunkNum, double revenue[])
 
 void TpchDemo::GetQuery5RevenueTensor(int64_t chunkNum, double revenue[])
 {
-  auto orderkey = std::static_pointer_cast<arrow::Int64Array>(lOrderkey->GetBlock(chunkNum)->GetArray());
-  auto suppkey = std::static_pointer_cast<arrow::Int64Array>(lSuppkey->GetBlock(chunkNum)->GetArray());
-  auto discount = std::static_pointer_cast<arrow::DoubleArray>(lDiscount->GetBlock(chunkNum)->GetArray());
-  auto quantity = std::static_pointer_cast<arrow::Int64Array>(lQuantity->GetBlock(chunkNum)->GetArray());
-  auto extendedprice = std::static_pointer_cast<arrow::DoubleArray>(lExtendedprice->GetBlock(chunkNum)->GetArray());
   TStopWatch timer;
   timer.Start();
 
@@ -546,110 +541,105 @@ void TpchDemo::GetQuery5RevenueTensor(int64_t chunkNum, double revenue[])
   int32_t oOrderdateValue;
   int64_t sNationkeyValue, nRegionkeyValue;
 
-  int64_t length = lDiscount->NumRows();
-  if (length != lExtendedprice->NumRows())
-  {
-    TLOG(ERROR) << "Length should be the same";
-    return;
-  }
-
   TRowId rowId;
   TRowId parentRowId;
-  int64_t totalRows=0;
   int64_t filteredRows=0;
-  for (rowId.blkNum=0; rowId.blkNum<lExtendedprice->NumBlocks(); rowId.blkNum++)
-  {
-    auto epBlock = lExtendedprice->GetBlock(rowId.blkNum);
-    for (rowId.rowNum=0; rowId.rowNum<epBlock->GetArray()->length(); rowId.rowNum++) {
-      totalRows++;
-    
-      // l_orderkey = o_orderkey
-      // and o_orderdate >= date '1995-01-01'
-      // and o_orderdate < date '1995-01-01' + interval '1' year
-      auto oOrderdateValueResult =
-        tables_[lineitem]->GetValue<int64_t, arrow::Int64Array>
-        (rowId,       // lineitem rowId
-         l_orderkey,  // column number where orderkey is present
-         o_orderdate, // order date column number
-         parentRowId, // parent row id
-         ordersTime); // time taken
-      if (!oOrderdateValueResult.ok())
-      {
-        TLOG(ERROR) << "Failed to get orderdate msg=" << oOrderdateValueResult.status().message();
-        continue;
-      }
-      oOrderdateValue = oOrderdateValueResult.ValueOrDie();  // order date value return
-      //TLOG(INFO) << "Tensor " << rowId << "=" << oOrderdateValue;
-      if (oOrderdateValue < date19950101Value || oOrderdateValue > date19951231Value)
-        continue;
+  
+  rowId.blkNum=chunkNum;
+  TLOG(INFO) << "Query5 Processing block=" << rowId.blkNum;
+  
+  int64_t blkLength = tables_[lineitem]->GetColumn(l_orderkey)->GetBlock(chunkNum)->GetArray()->length();
+  for (rowId.rowNum=0; rowId.rowNum<blkLength; rowId.rowNum++) {
 
-      // Filter on r_name
-      // l_suppkey = s_suppkey
-
-
-      auto sNationkeyValueResult =
-        tables_[lineitem]->GetValue<int64_t, arrow::Int64Array>
-        (rowId,         // lineitem row Id
-         l_suppkey,     // supply key column number
-         s_nationkey,   // supplier nation key column
-         parentRowId,   // parent row id
-         supplierTime); // supplier value
-      if (!sNationkeyValueResult.ok())
-      {
-        TLOG(ERROR) << "Failed to get nationkey msg=" << sNationkeyValueResult.status().message();
-        continue;
-      }
-      sNationkeyValue = sNationkeyValueResult.ValueOrDie();
-      
-      auto nRegionkeyValueResult =
-        tables_[supplier]->GetValue<int64_t, arrow::Int64Array>
-        (parentRowId,         // lineitem row Id
-         s_nationkey,   // supplier nation key column
-         n_regionkey,   // get region from nation
-         parentRowId,   // parent row id         
-         supplierTime); // supplier value
-          
-      if (!nRegionkeyValueResult.ok())
-      {
-        TLOG(ERROR) << "Failed to get orderdate msg=" << nRegionkeyValueResult.status().message();
-        continue;
-      }
-      nRegionkeyValue = nRegionkeyValueResult.ValueOrDie();  // nationkey from supplier table
-      
-      // n_regionkey = r_regionkey
-      if (nRegionkeyValue != 3)
-        continue;
-
-      // add to revenue by nation key
-      
-      // Get all values from lineitem revenue calculation
-      auto lExtendedpriceValueResult =
-        tables_[lineitem]->GetColumn(l_extendedprice)->GetValue<double, arrow::DoubleArray>(rowId);
-      if (!lExtendedpriceValueResult.ok())
-      {
-        TLOG(ERROR) << "Invalid extended price value" ;
-        break;
-      }
-      auto lExtendedpriceValue = lExtendedpriceValueResult.ValueOrDie();
-      
-      auto lDiscountValueResult =
-        tables_[lineitem]->GetColumn(l_discount)->GetValue<double, arrow::DoubleArray>(rowId);
-      if (!lDiscountValueResult.ok())
-      {
-        TLOG(ERROR) << "Invalid extended price value" ;
-        break;
-      }
-      auto lDiscountValue = lDiscountValueResult.ValueOrDie();
-
-      filteredRows++;
-      revenue[sNationkeyValue] += (1-lDiscountValue)*lExtendedpriceValue;
+    // l_orderkey = o_orderkey
+    // and o_orderdate >= date '1995-01-01'
+    // and o_orderdate < date '1995-01-01' + interval '1' year
+    auto oOrderdateValueResult =
+      tables_[lineitem]->GetValue<int64_t, arrow::Int64Array>
+      (rowId,       // lineitem rowId
+       l_orderkey,  // column number where orderkey is present
+       o_orderdate, // order date column number
+       parentRowId, // parent row id
+       ordersTime); // time taken
+    if (!oOrderdateValueResult.ok())
+    {
+      TLOG(ERROR) << "Failed to get orderdate msg=" << oOrderdateValueResult.status().message();
+      continue;
     }
+    oOrderdateValue = oOrderdateValueResult.ValueOrDie();  // order date value return
+    //TLOG(INFO) << "Tensor " << rowId << "=" << oOrderdateValue;
+    if (oOrderdateValue < date19950101Value || oOrderdateValue > date19951231Value)
+      continue;
+
+    // Filter on r_name
+    // l_suppkey = s_suppkey
+
+
+    auto sNationkeyValueResult =
+      tables_[lineitem]->GetValue<int64_t, arrow::Int64Array>
+      (rowId,         // lineitem row Id
+       l_suppkey,     // supply key column number
+       s_nationkey,   // supplier nation key column
+       parentRowId,   // parent row id
+       supplierTime); // supplier value
+    if (!sNationkeyValueResult.ok())
+    {
+      TLOG(ERROR) << "Failed to get nationkey msg=" << sNationkeyValueResult.status().message()
+                  << " Blk Num=" << rowId.blkNum << " Row Num=" << rowId.rowNum
+                  << " lineitem RowId=" << tables_[lineitem]->GetColumn(l_suppkey)->GetRowNum(rowId)
+                  << " supplier RowId=" << tables_[supplier]->GetColumn(s_nationkey)->GetRowNum(parentRowId);
+       continue;
+    }
+    sNationkeyValue = sNationkeyValueResult.ValueOrDie();
+      
+    auto nRegionkeyValueResult =
+      tables_[supplier]->GetValue<int64_t, arrow::Int64Array>
+      (parentRowId,   // lineitem row Id
+       s_nationkey,   // supplier nation key column
+       n_regionkey,   // get region from nation
+       parentRowId,   // parent row id         
+       supplierTime); // supplier value
+          
+    if (!nRegionkeyValueResult.ok())
+    {
+      TLOG(ERROR) << "Failed to get orderdate msg=" << nRegionkeyValueResult.status().message();
+      continue;
+    }
+    nRegionkeyValue = nRegionkeyValueResult.ValueOrDie();  // nationkey from supplier table
+      
+    // n_regionkey = r_regionkey
+    if (nRegionkeyValue != 3)
+      continue;
+
+    // add to revenue by nation key
+      
+    // Get all values from lineitem revenue calculation
+    auto lExtendedpriceValueResult =
+      tables_[lineitem]->GetColumn(l_extendedprice)->GetValue<double, arrow::DoubleArray>(rowId);
+    if (!lExtendedpriceValueResult.ok())
+    {
+      TLOG(ERROR) << "Invalid extended price value" ;
+      break;
+    }
+    auto lExtendedpriceValue = lExtendedpriceValueResult.ValueOrDie();
+      
+    auto lDiscountValueResult =
+      tables_[lineitem]->GetColumn(l_discount)->GetValue<double, arrow::DoubleArray>(rowId);
+    if (!lDiscountValueResult.ok())
+    {
+      TLOG(ERROR) << "Invalid extended price value" ;
+      break;
+    }
+    auto lDiscountValue = lDiscountValueResult.ValueOrDie();
+    
+    filteredRows++;
+    revenue[sNationkeyValue] += (1-lDiscountValue)*lExtendedpriceValue;
   }
 
   timer.Stop();
   std::stringstream ss;
-  ss << " " << "Query 5 Chunk " << chunkNum ;
-  ss << " " << "Total Rows = " << totalRows << " Filtered rows=" << filteredRows;
+  ss << " " << "Query 5  Blk " << rowId.blkNum ;
+  ss << " " << "Total Rows = " << rowId.rowNum << " Filtered rows=" << filteredRows;
   ss << " " << "Elapsed ms=" << timer.ElapsedInMicroseconds()/1000;
   ss << " " << "Orders RowId Time ns= " << ordersTime[0];
   ss << " " << "Orders ValId Time ns= " << ordersTime[1];
