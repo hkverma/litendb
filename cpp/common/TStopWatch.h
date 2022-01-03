@@ -9,7 +9,7 @@ namespace liten
 class TStopWatch
 {
 public:
-  using clock_resolution = std::chrono::high_resolution_clock;
+  using clock_resolution = std::chrono::steady_clock;
 
   /// For now default constructors are ok
   TStopWatch() { }
@@ -28,6 +28,13 @@ public:
     if (running_)
       stop_ = clock_resolution::now();
     running_ = false;
+  }
+
+  /// Time in nanoseconds
+  int64_t ElapsedInNanoseconds()
+  {
+    auto microseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(stop_-start_);
+    return microseconds.count();
   }
 
   /// Time in microseconds

@@ -102,16 +102,16 @@ public:
            class TypeRight=TypeLeft, class ArrayTypeRight=ArrayTypeLeft> inline
   bool JoinInner(TypeLeft& leftValue,      // leftValue Input
                  int64_t leftColNum,      // leftColNum
-                 int64_t& leftRowIdInMicroseconds,   // time taken to look for leftValue
+                 int64_t& leftRowIdInNanoseconds,   // time taken to look for leftValue
                  TypeRight& rightValue,    // rightValue output
                  int64_t rightColNum,     // right Col Num
-                 int64_t& rightValueInMicroseconds)  // time taken to look for rightValue
+                 int64_t& rightValueInNanoseconds)  // time taken to look for rightValue
   {
     TStopWatch timer;
     timer.Start();
     TRowId rowId = GetColumn(leftColNum)->GetRowId<TypeLeft, ArrayTypeLeft>(leftValue);
     timer.Stop();
-    leftRowIdInMicroseconds += timer.ElapsedInMicroseconds();
+    leftRowIdInNanoseconds += timer.ElapsedInNanoseconds();
     if (rowId.blkNum < 0)
     {
       return false;
@@ -126,7 +126,7 @@ public:
       result = true;
     }
     timer.Stop();
-    rightValueInMicroseconds += timer.ElapsedInMicroseconds();
+    rightValueInNanoseconds += timer.ElapsedInNanoseconds();
     return result;
   }
 
@@ -139,8 +139,7 @@ public:
   TResult<Type> GetValue(TRowId rowId, // rowId
                          int64_t colId, // colId
                          int64_t parentColId, // parent Col Id
-                         TRowId& parentRowId, // Return parent rowId for hieararchical lookups
-                         std::vector<int64_t>& wallTimeInMicroSeconds); // time taken
+                         TRowId& parentRowId); // Return parent rowId for hieararchical lookups
 
 
   /// Current table to child. GetValue looks at the parent table joined by two hierarchies
@@ -148,56 +147,7 @@ public:
   TResult<Type> GetValue(TRowId rowId,       // rowId
                          int64_t colId,     // col Id
                          int64_t parent0ColId, // parent0 Col Id to be joined
-                         int64_t parent1ColId, // parent1 Col Id to be joined
-                         std::vector<int64_t>& wallTimeInMicroSeconds); // time taken
-
-
-  /// Current table to child. GetValue looks at the parent table joined by the column number
-  /// It gets the parent column number value
-  /// TBD ArrayType can be derived from Type
-  /*REMOVE  template<class Type, class ArrayType> inline
-  bool GetValue(int64_t colNum,                // colNum
-                int64_t rowId,                  // rowId
-                int64_t& rowIdInMicroseconds,   // time taken to look for leftValue
-                Type& parentValue,              // parent Value
-                int64_t parentColNum,                // parent Col Num
-                int64_t& parentValueInMicroseconds)  // time taken to look for parent Value
-  {
-    int64_t parentRowId, parentArrId;
-    TStopWatch timer;
-    bool result = true;
-    timer.Start();
-    if (nullptr == parentBlkNum_[colNum] ||
-        nullptr == parentRowNum_[colNum] ||
-        nullptr == parentColumn_[colNum])
-    {
-      TLOG(ERROR) << "Invalid tensor representation";
-      result = false;
-    }
-    else
-    {
-      parentRowId = parentRowNum_[colNum]->at(rowId);
-      parentArrId = parentBlkNum_[colNum]->at(rowId);
-    }
-    timer.Stop();
-    rowIdInMicroseconds += timer.ElapsedInMicroseconds();
-    if (!result)
-    {
-      return result;
-    }
-
-    timer.Start();
-    auto parentTable = parentColumn_[colNum]->GetTable();
-    auto parentColumn = parentTable->GetColumn(parentColNum);
-    result = parentColumn->GetValue<Type, ArrayType>(parentArrId, parentRowId, parentValue);
-    timer.Stop();
-    parentValueInMicroseconds += timer.ElapsedInMicroseconds();
-    if (!result)
-    {
-      TLOG(ERROR) << "Invalid parent lookup";
-    }
-    return result;
-    }*/
+                         int64_t parent1ColId); // parent1 Col Id to be joined
 
   // TBD Add to the option class
   static const bool EnableColumnReverseMap = false;
@@ -295,24 +245,16 @@ template<class Type, class ArrayType> inline
 TResult<Type> TTable::GetValue(TRowId rowId, // rowId
                                int64_t colId, // colId
                                int64_t parentColId, // parent Col Id
-                               TRowId& parentRowId, // Return parent rowId for hieararchical joins
-                               std::vector<int64_t>& wallTimeInMicroSeconds) // time taken
+                               TRowId& parentRowId) // Return parent rowId for hieararchical joins
 {
-  TStopWatch timer;
-  timer.Start();
   parentRowId = GetParentInfo(colId, rowId);
-  timer.Stop();
-  wallTimeInMicroSeconds[0] += timer.ElapsedInMicroseconds();
   if (parentRowId.blkNum < 0)
   {
     return TStatus::Invalid("Invalid tensor representation");
   }
 
-  timer.Start();
   auto parentColumn = parentColumn_[colId]->GetTable()->GetColumn(parentColId);
   auto value = std::move(parentColumn->GetValue<Type, ArrayType>(parentRowId));
-  timer.Stop();
-  wallTimeInMicroSeconds[1] += timer.ElapsedInMicroseconds();
   return value;
 }
 
@@ -320,36 +262,24 @@ template<class Type, class ArrayType> inline
 TResult<Type> TTable::GetValue(TRowId rowId,       // rowId
                                int64_t colId,     // col Id
                                int64_t parent0ColId, // parent0 Col Id to be joined
-                               int64_t parent1ColId, // parent1 Col Id to be joined
-                               std::vector<int64_t>& wallTimeInMicroSeconds) // time taken
+                               int64_t parent1ColId) // parent1 Col Id to be joined
 {
 
-  TStopWatch timer;
-
-  timer.Start();
   auto parent0RowId = GetParentInfo(colId, rowId);
   if (parent0RowId.blkNum < 0)
   {
     return TStatus::Invalid("Invalid tensor representation");
   }
-  timer.Stop();
-  wallTimeInMicroSeconds[0] += timer.ElapsedInMicroseconds();
 
-  timer.Start();
   auto parent0Table = parentColumn_[colId]->GetTable();
   auto parent1RowId = parent0Table->GetParentInfo(parent0ColId, parent0RowId);
   if (parent1RowId.blkNum < 0)
   {
     return TStatus::Invalid("Invalid tensor representation");
   }
-  timer.Stop();
-  wallTimeInMicroSeconds[1] += timer.ElapsedInMicroseconds();
 
-  timer.Start();
   auto parent1Column = parent0Table->parentColumn_[parent0ColId]->GetTable()->GetColumn(parent1ColId);
   auto value = std::move(parent1Column->GetValue<Type, ArrayType>(parent1RowId));
-  timer.Stop();
-  wallTimeInMicroSeconds[2] += timer.ElapsedInMicroseconds();
 
   return value;
 

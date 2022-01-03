@@ -17,14 +17,19 @@ std::shared_ptr<TTaskScheduler> TTaskScheduler::GetInstance()
 
 void TTaskScheduler::Start()
 {
+  
+  numWorkerThreads_ = 1;
+  
   numaIndexes_ = tbb::info::numa_nodes();
   taskArenas_ = std::make_unique<std::vector<tbb::task_arena>>(numaIndexes_.size());
   taskGroups_ = std::make_unique<std::vector<tbb::task_group>>(numaIndexes_.size());  
   TLOG(INFO) << "Discovered " << numaIndexes_.size() << " NUMA nodes.";
   for(unsigned numaId = 0; numaId < numaIndexes_.size(); numaId++) {
-    taskArenas_->at(numaId).initialize(tbb::task_arena::constraints(numaIndexes_[numaId]));
-    TLOG(INFO) << "Created arena and task group for NUMA node=" << numaId << " with concurrency=" << tbb::detail::d1::default_concurrency(numaId);
-    numWorkerThreads_ += tbb::detail::d1::default_concurrency(numaId);
+    // Use default if needed tbb::detail::d1::default_concurrency(numaId)
+    tbb::task_arena::constraints arenaConstraints(numaIndexes_[numaId]);
+    arenaConstraints.set_max_concurrency(numWorkerThreads_);
+    taskArenas_->at(numaId).initialize(arenaConstraints);
+    TLOG(INFO) << "Created arena and task group for NUMA node=" << numaId << " with concurrency=" << arenaConstraints.max_concurrency;
   }
 }
 

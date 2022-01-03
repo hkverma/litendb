@@ -27,6 +27,7 @@
 #include <TJSon.h>
 #include <TMacros.h>
 #include <TTimeUtils.h>
+#include <TFuncUtils.h>
 #include <TStopWatch.h>
 #include <TStringBuilder.h>
 #include <TStatus.h>
