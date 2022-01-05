@@ -15,8 +15,13 @@ struct EnsureTResult;
   
 namespace internal
 {
+
+/// Fatal log terminates the program after logging the message
 void DieWithMessage(const std::string& msg);
+
+/// Invalid value therefore die
 void InvalidValueOrDie(const liten::TStatus& st);
+
 using std::launder;
 };
 

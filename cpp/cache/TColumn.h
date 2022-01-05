@@ -156,7 +156,7 @@ TColumn::Iterator<Type, ArrayType>::Iterator(std::shared_ptr<TColumn> tcolumn) :
 }
 
 template <class Type, class ArrayType>
-void TColumn::Iterator<Type, ArrayType>::Reset()
+inline void TColumn::Iterator<Type, ArrayType>::Reset()
 {
   currentBlockRowId_=0;
   lastBlockRowId_=0;
@@ -166,7 +166,7 @@ void TColumn::Iterator<Type, ArrayType>::Reset()
 }
 
 template <class Type, class ArrayType>
-bool TColumn::Iterator<Type, ArrayType>::Next(Type& data)
+inline bool TColumn::Iterator<Type, ArrayType>::Next(Type& data)
 {
   int64_t rowId = currentBlockRowId_+lastBlockRowId_;
   if (rowId >= tcolumn_->NumRows())
@@ -187,7 +187,7 @@ bool TColumn::Iterator<Type, ArrayType>::Next(Type& data)
 }
 
 template <class Type, class ArrayType>
-bool TColumn::Iterator<Type, ArrayType>::NextBlock()
+inline bool TColumn::Iterator<Type, ArrayType>::NextBlock()
 {
   blockNum_++;
   if (blockNum_ >= tcolumn_->blocks_.size())
@@ -198,8 +198,8 @@ bool TColumn::Iterator<Type, ArrayType>::NextBlock()
   return true;
 }
 
-template<class Type, class ArrayType> inline
-TRowId TColumn::GetRowId(Type& value) // Input Value
+template<class Type, class ArrayType>
+inline TRowId TColumn::GetRowId(Type& value) // Input Value
 {
   TRowId id;
   if (map_ && map_->IfValidReverseMap())
@@ -209,8 +209,8 @@ TRowId TColumn::GetRowId(Type& value) // Input Value
   return id;
 }
 
-template<class Type, class ArrayType> inline
-TRowId TColumn::GetRowIdLinear(Type& value) // Input Value
+template<class Type, class ArrayType>
+inline TRowId TColumn::GetRowIdLinear(Type& value) // Input Value
 {
   TRowId id;
   for (auto arrId=0; arrId <blocks_.size(); arrId++)
@@ -229,9 +229,8 @@ TRowId TColumn::GetRowIdLinear(Type& value) // Input Value
   return id;
 }
 
-
-template<class Type, class ArrayType> inline
-TResult<Type> TColumn::GetValue(int64_t rowId)  // rowId input
+template<class Type, class ArrayType>
+inline TResult<Type> TColumn::GetValue(int64_t rowId)  // rowId input
 {
   auto id = GetRowId(rowId);
   auto val = std::move(GetValue<Type, ArrayType>(id));
@@ -239,8 +238,8 @@ TResult<Type> TColumn::GetValue(int64_t rowId)  // rowId input
 }  
   
 // Get value from a rowId 
-template<class Type, class ArrayType> inline
-TResult<Type> TColumn::GetValue(TRowId& id)
+template<class Type, class ArrayType>
+inline TResult<Type> TColumn::GetValue(TRowId& id)
 {
   if (id.blkNum >= blocks_.size() || id.blkNum < 0 )
   {

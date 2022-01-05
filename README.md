@@ -53,6 +53,12 @@ For local machine setup, following environment is used.
 * Ubuntu Linux 18.04.04 LTS
 * C++-17 standards
 * g++-9, gcc-9 compiler
+* valgrind, callgrind for memory, perf analysis
+
+Valgrind example run can be
+```console
+valgrind --tool=callgrind --dump-instr=yes --simulate-cache=yes --collect-jumps=yes --collect-atstart=no --instr-atstart=no ./cache_test ../../../../../tpch-kit/sf1g/
+```
 
 #### Required packages
 SSL should be installed

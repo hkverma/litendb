@@ -241,8 +241,8 @@ inline std::shared_ptr<TRowBlock> TTable::GetRowBlock(int32_t rbNum)
 }
 
 /// Current table to child. GetValue looks at the parent table joined by the column parentColId
-template<class Type, class ArrayType> inline
-TResult<Type> TTable::GetValue(TRowId rowId, // rowId
+template<class Type, class ArrayType>
+inline TResult<Type> TTable::GetValue(TRowId rowId, // rowId
                                int64_t colId, // colId
                                int64_t parentColId, // parent Col Id
                                TRowId& parentRowId) // Return parent rowId for hieararchical joins
@@ -258,8 +258,8 @@ TResult<Type> TTable::GetValue(TRowId rowId, // rowId
   return value;
 }
 
-template<class Type, class ArrayType> inline
-TResult<Type> TTable::GetValue(TRowId rowId,       // rowId
+template<class Type, class ArrayType>
+inline TResult<Type> TTable::GetValue(TRowId rowId,       // rowId
                                int64_t colId,     // col Id
                                int64_t parent0ColId, // parent0 Col Id to be joined
                                int64_t parent1ColId) // parent1 Col Id to be joined
