@@ -546,7 +546,7 @@ void TpchDemo::GetQuery5RevenueTensor(int64_t chunkNum, double revenue[])
   int64_t filteredRows=0;
   
   rowId.blkNum=chunkNum;
-  TLOG(INFO) << "Query5 Processing block=" << rowId.blkNum;
+  //  TLOG(INFO) << "Query5 Processing block=" << rowId.blkNum;
   
   int64_t blkLength = tables_[lineitem]->GetColumn(l_orderkey)->GetBlock(chunkNum)->GetArray()->length();
 
@@ -678,7 +678,7 @@ void TpchDemo::GetQuery5RevenueTensor(int64_t chunkNum, double revenue[])
   ss << " " << "Nation Time ns= " << nationTime;
   ss << " " << "Region Time ns= " << regionTime;
 
-  TLOG(INFO) << ss.str() ;
+  //TLOG(INFO) << ss.str() ;
 
 }
 
