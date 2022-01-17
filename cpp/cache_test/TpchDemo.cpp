@@ -534,7 +534,7 @@ void TpchDemo::GetQuery5Revenue(int64_t chunkNum, double revenue[])
 void TpchDemo::GetQuery5RevenueTensor(int64_t chunkNum, double revenue[])
 {
   TStopWatch loopTimer, lkupTimer, exprTimer, spotTimer;
-  
+
   int64_t ordersTime=0, regionTime=0, nationTime=0;
   int64_t exprTime=0, lkupTime=0, totalTime=0;
 
@@ -546,13 +546,13 @@ void TpchDemo::GetQuery5RevenueTensor(int64_t chunkNum, double revenue[])
   int64_t filteredRows=0;
   
   rowId.blkNum=chunkNum;
-  //  TLOG(INFO) << "Query5 Processing block=" << rowId.blkNum;
+  TLOG(INFO) << "Query5 Processing block=" << rowId.blkNum;
   
   int64_t blkLength = tables_[lineitem]->GetColumn(l_orderkey)->GetBlock(chunkNum)->GetArray()->length();
 
   for (rowId.rowNum=0; rowId.rowNum<blkLength; rowId.rowNum++)
   {
-    loopTimer.Start();
+    //    loopTimer.Start();
 
     auto lkup =[&]()
       { // Lookup block
@@ -560,7 +560,7 @@ void TpchDemo::GetQuery5RevenueTensor(int64_t chunkNum, double revenue[])
         // l_orderkey = o_orderkey
         // and o_orderdate >= date '1995-01-01'
         // and o_orderdate < date '1995-01-01' + interval '1' year
-        spotTimer.Start();
+        //        spotTimer.Start();
         auto oOrderdateValueResult =
         std::move(
                   tables_[lineitem]->GetValue<int64_t, arrow::Int64Array>
@@ -569,8 +569,8 @@ void TpchDemo::GetQuery5RevenueTensor(int64_t chunkNum, double revenue[])
                    o_orderdate, // order date column number
                    parentRowId) // parent row id
                   );
-        spotTimer.Stop();
-        ordersTime += spotTimer.ElapsedInNanoseconds();
+        //        spotTimer.Stop();
+        //        ordersTime += spotTimer.ElapsedInNanoseconds();
       
         if (!oOrderdateValueResult.ok())
         {
@@ -584,7 +584,7 @@ void TpchDemo::GetQuery5RevenueTensor(int64_t chunkNum, double revenue[])
 
         // Filter on r_name
         // l_suppkey = s_suppkey
-        spotTimer.Start();
+        //        spotTimer.Start();
         auto sNationkeyValueResult =
         std::move(
                   tables_[lineitem]->GetValue<int64_t, arrow::Int64Array>
@@ -593,8 +593,8 @@ void TpchDemo::GetQuery5RevenueTensor(int64_t chunkNum, double revenue[])
                    s_nationkey,   // supplier nation key column
                    parentRowId)   // parent row id
                   );
-        spotTimer.Stop();
-        nationTime += spotTimer.ElapsedInNanoseconds();
+        //        spotTimer.Stop();
+        //        nationTime += spotTimer.ElapsedInNanoseconds();
       
         if (!sNationkeyValueResult.ok())
         {
@@ -602,7 +602,7 @@ void TpchDemo::GetQuery5RevenueTensor(int64_t chunkNum, double revenue[])
           return;
         }
         sNationkeyValue = sNationkeyValueResult.ValueOrDie();
-        spotTimer.Start();
+        //        spotTimer.Start();
         auto nRegionkeyValueResult =
         std::move(
                   tables_[supplier]->GetValue<int64_t, arrow::Int64Array>
@@ -611,8 +611,8 @@ void TpchDemo::GetQuery5RevenueTensor(int64_t chunkNum, double revenue[])
                    n_regionkey,   // get region from nation
                    parentRowId)   // parent row id         
                   );
-        spotTimer.Stop();
-        regionTime += spotTimer.ElapsedInNanoseconds();
+        //        spotTimer.Stop();
+        //       regionTime += spotTimer.ElapsedInNanoseconds();
           
         if (!nRegionkeyValueResult.ok())
         {
@@ -623,10 +623,10 @@ void TpchDemo::GetQuery5RevenueTensor(int64_t chunkNum, double revenue[])
       };
 
       
-    lkupTimer.Start();
+    //    lkupTimer.Start();
     lkup();
-    lkupTimer.Stop();
-    lkupTime += lkupTimer.ElapsedInNanoseconds();
+    //    lkupTimer.Stop();
+    //    lkupTime += lkupTimer.ElapsedInNanoseconds();
 
     auto aggr = [&]() 
       { // expr measurement blocks
@@ -659,24 +659,24 @@ void TpchDemo::GetQuery5RevenueTensor(int64_t chunkNum, double revenue[])
         revenue[sNationkeyValue] += (1-lDiscountValue)*lExtendedpriceValue;
       };
 
-    exprTimer.Start();
+    //    exprTimer.Start();
     aggr();
-    exprTimer.Stop();
-    exprTime += exprTimer.ElapsedInNanoseconds();
+    //    exprTimer.Stop();
+    //    exprTime += exprTimer.ElapsedInNanoseconds();
 
-    loopTimer.Stop();
-    totalTime += loopTimer.ElapsedInNanoseconds();
+    //    loopTimer.Stop();
+    //    totalTime += loopTimer.ElapsedInNanoseconds();
   }
   
   std::stringstream ss;
   ss << " " << "Query 5  Blk " << rowId.blkNum ;
   ss << " " << "Total Rows = " << rowId.rowNum << " Filtered rows=" << filteredRows;
-  ss << " " << "Elapsed ns=" << totalTime;
-  ss << " " << "Total lookup time ns=" << lkupTime;
-  ss << " " << "Expr eval time ns=" << exprTime;
-  ss << " " << "Orders Time ns= " << ordersTime;
-  ss << " " << "Nation Time ns= " << nationTime;
-  ss << " " << "Region Time ns= " << regionTime;
+  //  ss << " " << "Elapsed ns=" << totalTime;
+  //  ss << " " << "Total lookup time ns=" << lkupTime;
+  //  ss << " " << "Expr eval time ns=" << exprTime;
+  //  ss << " " << "Orders Time ns= " << ordersTime;
+  //  ss << " " << "Nation Time ns= " << nationTime;
+  //  ss << " " << "Region Time ns= " << regionTime;
 
   //TLOG(INFO) << ss.str() ;
 
@@ -706,7 +706,7 @@ std::shared_ptr<std::unordered_map<std::string, double>> TpchDemo::Query5(bool u
     }
   }
 
-  auto taskScheduler = TTaskScheduler::GetInstance();
+  //  auto taskScheduler = TTaskScheduler::GetInstance();
   int64_t numaId = 0;
 
   CALLGRIND_START_INSTRUMENTATION;
@@ -727,10 +727,10 @@ std::shared_ptr<std::unordered_map<std::string, double>> TpchDemo::Query5(bool u
     {
       auto tf = std::bind(&TpchDemo::GetQuery5Revenue, this, chunkNum,
                           std::ref(revenues[chunkNum]));
-      taskScheduler->Execute(tf, numaId);
+      //      taskScheduler->Execute(tf, numaId);
     }
   }
-  taskScheduler->Wait(numaId);
+  //  taskScheduler->Wait(numaId);
   
   for (int i=0; i<numChunks; i++)
   {
@@ -744,7 +744,7 @@ std::shared_ptr<std::unordered_map<std::string, double>> TpchDemo::Query5(bool u
   CALLGRIND_TOGGLE_COLLECT;
   CALLGRIND_STOP_INSTRUMENTATION;
   
-  LOG(INFO) << "Query 5 Elapsed ms=" << timer.ElapsedInNanoseconds();
+  LOG(INFO) << "Query 5 Elapsed ns=" << timer.ElapsedInNanoseconds();
   auto result = GetAggrRevenues();
   google::FlushLogFiles(google::INFO);
   return result;

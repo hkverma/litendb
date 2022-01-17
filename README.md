@@ -60,6 +60,16 @@ Valgrind example run can be
 valgrind --tool=callgrind --dump-instr=yes --simulate-cache=yes --collect-jumps=yes --collect-atstart=no --instr-atstart=no ./cache_test ../../../../../tpch-kit/sf1g/
 ```
 
+Flamegraph is useful to look at the call stacks for the given query. Flamegraph can be set up either using vtune from Intel or Flamegraph code from here -
+https://github.com/brendangregg/FlameGraph
+
+```console
+ /mnt/c/Users/hkver/Documents/work/github/WSL2-Linux-Kernel/tools/perf/perf record -F 99 -a -g ./cache_test ../../../../../tpch-kit/sf1g/
+/mnt/c/Users/hkver/Documents/work/github/WSL2-Linux-Kernel/tools/perf/perf script > sf1g.perf
+/mnt/c/Users/hkver/Documents/work/github/FlameGraph/stackcollapse-perf.pl sf1g.perf > sf1g.folded
+/mnt/c/Users/hkver/Documents/work/github/FlameGraph/flamegraph.pl sf1g.folded > sf1g.svg
+```
+
 #### Required packages
 SSL should be installed
 ```console

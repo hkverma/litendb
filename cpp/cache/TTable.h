@@ -143,12 +143,12 @@ public:
 
 
   /// Current table to child. GetValue looks at the parent table joined by two hierarchies
-  template<class Type, class ArrayType> inline
+  /*  template<class Type, class ArrayType> inline
   TResult<Type> GetValue(TRowId rowId,       // rowId
                          int64_t colId,     // col Id
                          int64_t parent0ColId, // parent0 Col Id to be joined
                          int64_t parent1ColId); // parent1 Col Id to be joined
-
+  */
   // TBD Add to the option class
   static const bool EnableColumnReverseMap = false;
 
@@ -228,6 +228,14 @@ inline std::shared_ptr<TColumn> TTable::GetColumn(int64_t colNum)
   return columns_[colNum];
 }
 
+inline TResult<std::shared_ptr<TColumn>> TTable::GetColumn(std::shared_ptr<arrow::Field> field)
+{
+  auto itr = fieldToColumns_.find(field);
+  if (itr == fieldToColumns_.end())
+    return TStatus::Invalid("No column found for field=", field->name());
+  return itr->second;
+}
+
 inline int64_t TTable::NumRowBlocks()
 {
   return rowBlocks_.size();
@@ -253,11 +261,11 @@ inline TResult<Type> TTable::GetValue(TRowId rowId, // rowId
     return TStatus::Invalid("Invalid tensor representation");
   }
 
-  auto parentColumn = parentColumn_[colId]->GetTable()->GetColumn(parentColId);
-  auto value = std::move(parentColumn->GetValue<Type, ArrayType>(parentRowId));
-  return value;
+  std::shared_ptr<TColumn> parentColumn = parentColumn_[colId]->GetTable()->GetColumn(parentColId);
+  return std::move(parentColumn->GetValue<Type, ArrayType>(parentRowId));
 }
 
+/*TBD
 template<class Type, class ArrayType>
 inline TResult<Type> TTable::GetValue(TRowId rowId,       // rowId
                                int64_t colId,     // col Id
@@ -284,16 +292,13 @@ inline TResult<Type> TTable::GetValue(TRowId rowId,       // rowId
   return value;
 
 }
-
+*/
 inline TRowId TTable::GetParentInfo(int64_t colNum, TRowId id)
 {
-  TRowId pId;
   auto lkup = parentRowIdLookup_[colNum];
   if (nullptr == lkup)
-    return pId;
-
-  pId = (*lkup)[id.blkNum][id.rowNum];
-  return pId;
+    return TRowId();
+  return std::move((*lkup)[id.blkNum][id.rowNum]);
 }
 
 template<class Type, class ValueType, class ArrayType>

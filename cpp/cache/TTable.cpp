@@ -524,14 +524,6 @@ TStatus TTable::MakeTensor()
   return TStatus::OK();
 }
 
-TResult<std::shared_ptr<TColumn>> TTable::GetColumn(std::shared_ptr<arrow::Field> field)
-{
-  auto itr = fieldToColumns_.find(field);
-  if (itr == fieldToColumns_.end())
-    return TStatus::Invalid("No column found for field=", field->name());
-  return itr->second;
-}
-
 
 std::shared_ptr<arrow::Table> TTable::Slice(int64_t offset, int64_t numRows)
 {

@@ -204,9 +204,9 @@ inline TRowId TColumn::GetRowId(Type& value) // Input Value
   TRowId id;
   if (map_ && map_->IfValidReverseMap())
   {
-    id = map_->GetReverseMap(value);
+    id = std::move(map_->GetReverseMap(value));
   }
-  return id;
+  return std::move(id);
 }
 
 template<class Type, class ArrayType>
@@ -226,15 +226,14 @@ inline TRowId TColumn::GetRowIdLinear(Type& value) // Input Value
       }
     }
   }
-  return id;
+  return std::move(id);
 }
 
 template<class Type, class ArrayType>
 inline TResult<Type> TColumn::GetValue(int64_t rowId)  // rowId input
 {
   auto id = GetRowId(rowId);
-  auto val = std::move(GetValue<Type, ArrayType>(id));
-  return val;
+  return std::move(GetValue<Type, ArrayType>(id));
 }  
   
 // Get value from a rowId 
@@ -264,7 +263,7 @@ inline TResult<Type> TColumn::GetValue(TRowId& id)
   {
     value = std::move(array->Value(id.rowNum));
   }
-  return value;
+  return std::move(value);
 }
 
 }
