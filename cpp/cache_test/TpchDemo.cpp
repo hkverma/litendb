@@ -681,7 +681,7 @@ std::shared_ptr<std::unordered_map<std::string, double>> TpchDemo::Query5(bool u
     }
   }
 
-  //  auto taskScheduler = TTaskScheduler::GetInstance();
+  auto taskScheduler = TTaskScheduler::GetInstance();
   int64_t numaId = 0;
 
   CALLGRIND_START_INSTRUMENTATION;
@@ -705,7 +705,7 @@ std::shared_ptr<std::unordered_map<std::string, double>> TpchDemo::Query5(bool u
       //      taskScheduler->Execute(tf, numaId);
     }
   }
-  //  taskScheduler->Wait(numaId);
+  taskScheduler->Wait(numaId);
   
   for (int i=0; i<numChunks; i++)
   {

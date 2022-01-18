@@ -505,8 +505,9 @@ Once master and slaves are running, start pyspark notebook with master node. The
 ```
 $ sbin/start-master.sh 
 $ more ~/spark/spark-3.0.0-bin-hadoop2.7/logs/spark-azureuser-org.apache.spark.deploy.master.Master-1-dev.out
-$  sbin/start-slave.sh spark://dev.udukqz5jp4je5ng1bvoq2ijmdd.xx.internal.cloudapp.net:7077
-$  vi ~/spark/spark-3.0.0-bin-hadoop2.7/logs/spark-azureuser-org.apache.spark.deploy.worker.Worker-1-dev.out
+# Pick the spark master URI and start the worker
+$ sbin/start-worker.sh spark://dev.udukqz5jp4je5ng1bvoq2ijmdd.xx.internal.cloudapp.net:7077
+# Now start pyspark workbook on master
 $  ~/spark/spark-3.0.0-bin-hadoop2.7/bin/pyspark --master spark://dev.udukqz5jp4je5ng1bvoq2ijmdd.xx.internal.cloudapp.net:7077
 ```
 Use the following web lcations
@@ -530,6 +531,24 @@ All demo notebooks are in subdirectory py/notebooks. This is a list of current n
 | LitenBasicSentimentAnalysis.ipynb | Sentiment analysis on Liten data |
 | LitenPCapIPPktAnalyzer.ipynb | Liten pcap packet analyzer |
 
+Spark query results
+Query 6
++--------------------+
+|             revenue|
++--------------------+
+|1.5659409560959977E8|
++--------------------+
+
+Query 5
++--------------+--------------------+
+|        n_name|             revenue|
++--------------+--------------------+
+|        RUSSIA| 5.606302283899998E7|
+|       ROMANIA|     5.49946485948E7|
+|UNITED KINGDOM| 5.468614748900001E7|
+|        FRANCE| 5.194113723339999E7|
+|       GERMANY|5.1536498183800004E7|
++--------------+--------------------+
 
 ### Python packaging for Liten
 
