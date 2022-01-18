@@ -93,13 +93,21 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a107d8b0b2d25bdbf567a9a75b4937fc8"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classliten_1_1TBlock.html">TBlock</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TRowBlock.html#a107d8b0b2d25bdbf567a9a75b4937fc8">GetBlock</a> (int colNum)</td></tr>
+<tr class="separator:a107d8b0b2d25bdbf567a9a75b4937fc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a59279e64eb6809589696ffc5fc3ba6e5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TRowBlock.html#a59279e64eb6809589696ffc5fc3ba6e5">~TRowBlock</a> ()</td></tr>
 <tr class="separator:a59279e64eb6809589696ffc5fc3ba6e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3afe947d2d7df1d4e0d8cf6f2869b9b7"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TRowBlock.html#a3afe947d2d7df1d4e0d8cf6f2869b9b7">NumColumns</a> ()</td></tr>
+<tr class="separator:a3afe947d2d7df1d4e0d8cf6f2869b9b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecce95fa0e58af20ff70e91ce9055330"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TRowBlock.html#aecce95fa0e58af20ff70e91ce9055330">NumRows</a> ()</td></tr>
+<tr class="separator:aecce95fa0e58af20ff70e91ce9055330"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a3d2d99997f332a02fa3fc26dec2cce14"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr&lt; <a class="el" href="classliten_1_1TRowBlock.html">TRowBlock</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TRowBlock.html#a3d2d99997f332a02fa3fc26dec2cce14">Create</a> (<a class="el" href="namespaceliten.html#a0bceb441a3312e84adfce46bf4c8953f">TableType</a> type, std::shared_ptr&lt; <a class="el" href="classliten_1_1TSchema.html">TSchema</a> &gt; schema, int64_t num_rows, std::vector&lt; std::shared_ptr&lt; <a class="el" href="classliten_1_1TBlock.html">TBlock</a> &gt;&gt; &amp;columns)</td></tr>
-<tr class="separator:a3d2d99997f332a02fa3fc26dec2cce14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43e56af66cde006108d279313a8a806c"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classliten_1_1TResult.html">TResult</a>&lt; std::shared_ptr&lt; <a class="el" href="classliten_1_1TRowBlock.html">TRowBlock</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TRowBlock.html#a43e56af66cde006108d279313a8a806c">Create</a> (std::shared_ptr&lt; <a class="el" href="classliten_1_1TTable.html">TTable</a> &gt; ttable, std::vector&lt; std::shared_ptr&lt; <a class="el" href="classliten_1_1TBlock.html">TBlock</a> &gt;&gt; &amp;blocks, int64_t numRows=-1)</td></tr>
+<tr class="separator:a43e56af66cde006108d279313a8a806c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3b727fbc33f1caff7c142d0e2aa8508"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classliten_1_1TResult.html">TResult</a>&lt; std::shared_ptr&lt; <a class="el" href="classliten_1_1TRowBlock.html">TRowBlock</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TRowBlock.html#aa3b727fbc33f1caff7c142d0e2aa8508">Create</a> (std::shared_ptr&lt; <a class="el" href="classliten_1_1TTable.html">TTable</a> &gt; ttable, std::shared_ptr&lt; arrow::RecordBatch &gt; rb, int64_t numRows=-1)</td></tr>
+<tr class="separator:aa3b727fbc33f1caff7c142d0e2aa8508"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
@@ -109,12 +117,15 @@ Private Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:a72e7838d18b7571e2d56e497349c62bc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceliten.html#a0bceb441a3312e84adfce46bf4c8953f">TableType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TRowBlock.html#a72e7838d18b7571e2d56e497349c62bc">type_</a></td></tr>
-<tr class="memdesc:a72e7838d18b7571e2d56e497349c62bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of rowblock -fact or dimension.  <a href="#a72e7838d18b7571e2d56e497349c62bc">More...</a><br /></td></tr>
-<tr class="separator:a72e7838d18b7571e2d56e497349c62bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afe511b6c363a7014a0dcc65946e2b91e"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; arrow::RecordBatch &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TRowBlock.html#afe511b6c363a7014a0dcc65946e2b91e">recordBatch_</a></td></tr>
-<tr class="memdesc:afe511b6c363a7014a0dcc65946e2b91e"><td class="mdescLeft">&#160;</td><td class="mdescRight">All rowblocks are recordbatches.  <a href="#afe511b6c363a7014a0dcc65946e2b91e">More...</a><br /></td></tr>
-<tr class="separator:afe511b6c363a7014a0dcc65946e2b91e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6150d9bdb3e7faad0569b09947df2ae9"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classliten_1_1TTable.html">TTable</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TRowBlock.html#a6150d9bdb3e7faad0569b09947df2ae9">ttable_</a></td></tr>
+<tr class="memdesc:a6150d9bdb3e7faad0569b09947df2ae9"><td class="mdescLeft">&#160;</td><td class="mdescRight">All RowBlocks must belong to a table.  <a href="#a6150d9bdb3e7faad0569b09947df2ae9">More...</a><br /></td></tr>
+<tr class="separator:a6150d9bdb3e7faad0569b09947df2ae9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b35a55c3be2629043654b4425f6b59b"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classliten_1_1TBlock.html">TBlock</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TRowBlock.html#a5b35a55c3be2629043654b4425f6b59b">blocks_</a></td></tr>
+<tr class="memdesc:a5b35a55c3be2629043654b4425f6b59b"><td class="mdescLeft">&#160;</td><td class="mdescRight">All rowblocks are a vector of TBlocks.  <a href="#a5b35a55c3be2629043654b4425f6b59b">More...</a><br /></td></tr>
+<tr class="separator:a5b35a55c3be2629043654b4425f6b59b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79d88deaa648e7e55642209c95f2e6e4"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TRowBlock.html#a79d88deaa648e7e55642209c95f2e6e4">numRows_</a></td></tr>
+<tr class="memdesc:a79d88deaa648e7e55642209c95f2e6e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pick first numRows from the rowblock.  <a href="#a79d88deaa648e7e55642209c95f2e6e4">More...</a><br /></td></tr>
+<tr class="separator:a79d88deaa648e7e55642209c95f2e6e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a59279e64eb6809589696ffc5fc3ba6e5"></a>
@@ -170,8 +181,8 @@ Private Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a3d2d99997f332a02fa3fc26dec2cce14"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3d2d99997f332a02fa3fc26dec2cce14">&#9670;&nbsp;</a></span>Create()</h2>
+<a id="a43e56af66cde006108d279313a8a806c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43e56af66cde006108d279313a8a806c">&#9670;&nbsp;</a></span>Create() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -180,28 +191,22 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::shared_ptr&lt; <a class="el" href="classliten_1_1TRowBlock.html">TRowBlock</a> &gt; liten::TRowBlock::Create </td>
+          <td class="memname"><a class="el" href="classliten_1_1TResult.html">TResult</a>&lt; std::shared_ptr&lt; <a class="el" href="classliten_1_1TRowBlock.html">TRowBlock</a> &gt; &gt; liten::TRowBlock::Create </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespaceliten.html#a0bceb441a3312e84adfce46bf4c8953f">TableType</a>&#160;</td>
-          <td class="paramname"><em>type</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classliten_1_1TSchema.html">TSchema</a> &gt;&#160;</td>
-          <td class="paramname"><em>schema</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int64_t&#160;</td>
-          <td class="paramname"><em>num_rows</em>, </td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classliten_1_1TTable.html">TTable</a> &gt;&#160;</td>
+          <td class="paramname"><em>ttable</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classliten_1_1TBlock.html">TBlock</a> &gt;&gt; &amp;&#160;</td>
-          <td class="paramname"><em>columns</em>&#160;</td>
+          <td class="paramname"><em>blocks</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>numRows</em> = <code>-1</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -218,9 +223,127 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="aa3b727fbc33f1caff7c142d0e2aa8508"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3b727fbc33f1caff7c142d0e2aa8508">&#9670;&nbsp;</a></span>Create() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classliten_1_1TResult.html">TResult</a>&lt; std::shared_ptr&lt; <a class="el" href="classliten_1_1TRowBlock.html">TRowBlock</a> &gt; &gt; liten::TRowBlock::Create </td>
+          <td>(</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classliten_1_1TTable.html">TTable</a> &gt;&#160;</td>
+          <td class="paramname"><em>ttable</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::shared_ptr&lt; arrow::RecordBatch &gt;&#160;</td>
+          <td class="paramname"><em>rb</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>numRows</em> = <code>-1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a107d8b0b2d25bdbf567a9a75b4937fc8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a107d8b0b2d25bdbf567a9a75b4937fc8">&#9670;&nbsp;</a></span>GetBlock()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt; <a class="el" href="classliten_1_1TBlock.html">TBlock</a> &gt; liten::TRowBlock::GetBlock </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>colNum</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3afe947d2d7df1d4e0d8cf6f2869b9b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3afe947d2d7df1d4e0d8cf6f2869b9b7">&#9670;&nbsp;</a></span>NumColumns()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t liten::TRowBlock::NumColumns </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aecce95fa0e58af20ff70e91ce9055330"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aecce95fa0e58af20ff70e91ce9055330">&#9670;&nbsp;</a></span>NumRows()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t liten::TRowBlock::NumRows </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="afe511b6c363a7014a0dcc65946e2b91e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afe511b6c363a7014a0dcc65946e2b91e">&#9670;&nbsp;</a></span>recordBatch_</h2>
+<a id="a5b35a55c3be2629043654b4425f6b59b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b35a55c3be2629043654b4425f6b59b">&#9670;&nbsp;</a></span>blocks_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -229,7 +352,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::shared_ptr&lt;arrow::RecordBatch&gt; liten::TRowBlock::recordBatch_</td>
+          <td class="memname">std::vector&lt;std::shared_ptr&lt;<a class="el" href="classliten_1_1TBlock.html">TBlock</a>&gt; &gt; liten::TRowBlock::blocks_</td>
         </tr>
       </table>
   </td>
@@ -239,12 +362,12 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>All rowblocks are recordbatches. </p>
+<p>All rowblocks are a vector of TBlocks. </p>
 
 </div>
 </div>
-<a id="a72e7838d18b7571e2d56e497349c62bc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a72e7838d18b7571e2d56e497349c62bc">&#9670;&nbsp;</a></span>type_</h2>
+<a id="a79d88deaa648e7e55642209c95f2e6e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79d88deaa648e7e55642209c95f2e6e4">&#9670;&nbsp;</a></span>numRows_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -253,7 +376,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespaceliten.html#a0bceb441a3312e84adfce46bf4c8953f">TableType</a> liten::TRowBlock::type_</td>
+          <td class="memname">int64_t liten::TRowBlock::numRows_</td>
         </tr>
       </table>
   </td>
@@ -263,7 +386,31 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Type of rowblock -fact or dimension. </p>
+<p>Pick first numRows from the rowblock. </p>
+
+</div>
+</div>
+<a id="a6150d9bdb3e7faad0569b09947df2ae9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6150d9bdb3e7faad0569b09947df2ae9">&#9670;&nbsp;</a></span>ttable_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt;<a class="el" href="classliten_1_1TTable.html">TTable</a>&gt; liten::TRowBlock::ttable_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>All RowBlocks must belong to a table. </p>
 
 </div>
 </div>

@@ -93,8 +93,6 @@ Inheritance diagram for liten::TSchema:</div>
 Collaboration diagram for liten::TSchema:</div>
 <div class="dyncontent">
 <div class="center"><img src="classliten_1_1TSchema__coll__graph.png" border="0" usemap="#liten_1_1TSchema_coll__map" alt="Collaboration graph"/></div>
-<map name="liten_1_1TSchema_coll__map" id="liten_1_1TSchema_coll__map">
-</map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
@@ -104,8 +102,8 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a80a8df2410b86c58dcdf8909c5bee865"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TSchema.html#a80a8df2410b86c58dcdf8909c5bee865">SchemaField</a> = std::pair&lt; std::shared_ptr&lt; <a class="el" href="classliten_1_1TSchema.html">TSchema</a> &gt;, std::shared_ptr&lt; arrow::Field &gt; &gt;</td></tr>
-<tr class="separator:a80a8df2410b86c58dcdf8909c5bee865"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63ea373361076b4370c9d6ce0bb9fa07"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TSchema.html#a63ea373361076b4370c9d6ce0bb9fa07">TSchemaField</a> = std::pair&lt; std::shared_ptr&lt; <a class="el" href="classliten_1_1TSchema.html">TSchema</a> &gt;, std::shared_ptr&lt; arrow::Field &gt; &gt;</td></tr>
+<tr class="separator:a63ea373361076b4370c9d6ce0bb9fa07"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -115,23 +113,48 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a74023b4dad0b4a079be1840ab48f259a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TSchema.html#a74023b4dad0b4a079be1840ab48f259a">GetName</a> () const</td></tr>
 <tr class="memdesc:a74023b4dad0b4a079be1840ab48f259a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the name of the schema.  <a href="#a74023b4dad0b4a079be1840ab48f259a">More...</a><br /></td></tr>
 <tr class="separator:a74023b4dad0b4a079be1840ab48f259a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdf36ac1d87b7eb07f6e4918b5316f79"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classliten_1_1TStatus.html">TStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TSchema.html#acdf36ac1d87b7eb07f6e4918b5316f79">SetFieldType</a> (std::string fieldName, <a class="el" href="namespaceliten.html#ab91b44a099064445f7a115f79cad0b14">FieldType</a> fieldType)</td></tr>
+<tr class="memdesc:acdf36ac1d87b7eb07f6e4918b5316f79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set field type for the new field.  <a href="#acdf36ac1d87b7eb07f6e4918b5316f79">More...</a><br /></td></tr>
+<tr class="separator:acdf36ac1d87b7eb07f6e4918b5316f79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a895d94a8bb36e7894ce1c73edb7234"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classliten_1_1TResult.html">TResult</a>&lt; <a class="el" href="namespaceliten.html#ab91b44a099064445f7a115f79cad0b14">FieldType</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TSchema.html#a1a895d94a8bb36e7894ce1c73edb7234">GetFieldType</a> (std::string fieldName) const</td></tr>
+<tr class="memdesc:a1a895d94a8bb36e7894ce1c73edb7234"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the field type.  <a href="#a1a895d94a8bb36e7894ce1c73edb7234">More...</a><br /></td></tr>
+<tr class="separator:a1a895d94a8bb36e7894ce1c73edb7234"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8dac4da525e38010213246f404671563"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classliten_1_1TResult.html">TResult</a>&lt; <a class="el" href="namespaceliten.html#ab91b44a099064445f7a115f79cad0b14">FieldType</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TSchema.html#a8dac4da525e38010213246f404671563">GetFieldType</a> (int32_t colNum) const</td></tr>
+<tr class="separator:a8dac4da525e38010213246f404671563"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c5e7b3d980992902a80030302e5f145"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classliten_1_1TResult.html">TResult</a>&lt; <a class="el" href="namespaceliten.html#ab91b44a099064445f7a115f79cad0b14">FieldType</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TSchema.html#a4c5e7b3d980992902a80030302e5f145">GetFieldType</a> (std::shared_ptr&lt; arrow::Field &gt; field) const</td></tr>
+<tr class="separator:a4c5e7b3d980992902a80030302e5f145"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a77b6355baa57dfb689e160846377ffd4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceliten.html#a0bceb441a3312e84adfce46bf4c8953f">TableType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TSchema.html#a77b6355baa57dfb689e160846377ffd4">GetType</a> () const</td></tr>
 <tr class="memdesc:a77b6355baa57dfb689e160846377ffd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the table type.  <a href="#a77b6355baa57dfb689e160846377ffd4">More...</a><br /></td></tr>
 <tr class="separator:a77b6355baa57dfb689e160846377ffd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af54a9023a2f6b1ab97374246fdb82b14"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; arrow::Schema &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TSchema.html#af54a9023a2f6b1ab97374246fdb82b14">GetSchema</a> ()</td></tr>
 <tr class="memdesc:af54a9023a2f6b1ab97374246fdb82b14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get Raw Array, Use it judiciously, prefer to add an access method.  <a href="#af54a9023a2f6b1ab97374246fdb82b14">More...</a><br /></td></tr>
 <tr class="separator:af54a9023a2f6b1ab97374246fdb82b14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb1c7eca06c3ce68d5a09e2365b230cb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classliten_1_1TResult.html">TResult</a>&lt; <a class="el" href="classliten_1_1TSchema.html#a63ea373361076b4370c9d6ce0bb9fa07">TSchemaField</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TSchema.html#abb1c7eca06c3ce68d5a09e2365b230cb">GetParentField</a> (int i)</td></tr>
+<tr class="memdesc:abb1c7eca06c3ce68d5a09e2365b230cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get Parent Schema and Field.  <a href="#abb1c7eca06c3ce68d5a09e2365b230cb">More...</a><br /></td></tr>
+<tr class="separator:abb1c7eca06c3ce68d5a09e2365b230cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa79a02765d61216773ee7323cdca99cb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classliten_1_1TResult.html">TResult</a>&lt; <a class="el" href="classliten_1_1TSchema.html#a63ea373361076b4370c9d6ce0bb9fa07">TSchemaField</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TSchema.html#aa79a02765d61216773ee7323cdca99cb">GetParentField</a> (const std::string &amp;fieldName) const</td></tr>
+<tr class="separator:aa79a02765d61216773ee7323cdca99cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41a9acb4e24a1b66030a32f8086dde98"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classliten_1_1TResult.html">TResult</a>&lt; <a class="el" href="classliten_1_1TSchema.html#a63ea373361076b4370c9d6ce0bb9fa07">TSchemaField</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TSchema.html#a41a9acb4e24a1b66030a32f8086dde98">GetChildField</a> (int i) const</td></tr>
+<tr class="memdesc:a41a9acb4e24a1b66030a32f8086dde98"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get child schema and field.  <a href="#a41a9acb4e24a1b66030a32f8086dde98">More...</a><br /></td></tr>
+<tr class="separator:a41a9acb4e24a1b66030a32f8086dde98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2258e6019d1b0101cf0f21d69c44771"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classliten_1_1TResult.html">TResult</a>&lt; <a class="el" href="classliten_1_1TSchema.html#a63ea373361076b4370c9d6ce0bb9fa07">TSchemaField</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TSchema.html#ad2258e6019d1b0101cf0f21d69c44771">GetChildField</a> (const std::string &amp;fieldName) const</td></tr>
+<tr class="separator:ad2258e6019d1b0101cf0f21d69c44771"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7d6adb121741fb5d9767bb766c379ab0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classliten_1_1TStatus.html">TStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TSchema.html#a7d6adb121741fb5d9767bb766c379ab0">Join</a> (std::string fieldName, std::shared_ptr&lt; <a class="el" href="classliten_1_1TSchema.html">TSchema</a> &gt; parentSchema, std::string parentFieldName)</td></tr>
 <tr class="memdesc:a7d6adb121741fb5d9767bb766c379ab0"><td class="mdescLeft">&#160;</td><td class="mdescRight">joins this schema (child) field_id to parent[schema, field_id]  <a href="#a7d6adb121741fb5d9767bb766c379ab0">More...</a><br /></td></tr>
 <tr class="separator:a7d6adb121741fb5d9767bb766c379ab0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aac430596770c137698af1cd7c04bd60d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TSchema.html#aac430596770c137698af1cd7c04bd60d">ToString</a> ()</td></tr>
 <tr class="memdesc:aac430596770c137698af1cd7c04bd60d"><td class="mdescLeft">&#160;</td><td class="mdescRight">JSon string represntation for schema.  <a href="#aac430596770c137698af1cd7c04bd60d">More...</a><br /></td></tr>
 <tr class="separator:aac430596770c137698af1cd7c04bd60d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ab7500053cc4d61c3ac16a1f9f5eb0a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classliten_1_1TStatus.html">TStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TSchema.html#a6ab7500053cc4d61c3ac16a1f9f5eb0a">AddTable</a> (std::shared_ptr&lt; <a class="el" href="classliten_1_1TTable.html">TTable</a> &gt; ttable)</td></tr>
+<tr class="memdesc:a6ab7500053cc4d61c3ac16a1f9f5eb0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the name of the schema.  <a href="#a6ab7500053cc4d61c3ac16a1f9f5eb0a">More...</a><br /></td></tr>
+<tr class="separator:a6ab7500053cc4d61c3ac16a1f9f5eb0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6159000707815b52b45b73283f0d795a"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classliten_1_1TTable.html">TTable</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TSchema.html#a6159000707815b52b45b73283f0d795a">GetTable</a> () const</td></tr>
+<tr class="separator:a6159000707815b52b45b73283f0d795a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a2c335fad68bad8a97336ca72b87b3b16"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classliten_1_1TResult.html">TResult</a>&lt; std::shared_ptr&lt; <a class="el" href="classliten_1_1TSchema.html">TSchema</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TSchema.html#a2c335fad68bad8a97336ca72b87b3b16">Create</a> (std::shared_ptr&lt; arrow::Schema &gt; schema, <a class="el" href="namespaceliten.html#a0bceb441a3312e84adfce46bf4c8953f">TableType</a> type, std::string name)</td></tr>
-<tr class="separator:a2c335fad68bad8a97336ca72b87b3b16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08f034f4476a403ba3f6cd405e0ed73f"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classliten_1_1TResult.html">TResult</a>&lt; std::shared_ptr&lt; <a class="el" href="classliten_1_1TSchema.html">TSchema</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TSchema.html#a08f034f4476a403ba3f6cd405e0ed73f">Create</a> (std::string name, <a class="el" href="namespaceliten.html#a0bceb441a3312e84adfce46bf4c8953f">TableType</a> type, std::shared_ptr&lt; arrow::Schema &gt; schema)</td></tr>
+<tr class="separator:a08f034f4476a403ba3f6cd405e0ed73f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
@@ -153,15 +176,18 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:a5b3e9d966926e4085edd32b1ff66ff28"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceliten.html#a0bceb441a3312e84adfce46bf4c8953f">TableType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TSchema.html#a5b3e9d966926e4085edd32b1ff66ff28">type_</a></td></tr>
 <tr class="memdesc:a5b3e9d966926e4085edd32b1ff66ff28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of table defined by this schema.  <a href="#a5b3e9d966926e4085edd32b1ff66ff28">More...</a><br /></td></tr>
 <tr class="separator:a5b3e9d966926e4085edd32b1ff66ff28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6914c9737f615c201119fc2dbb87f5af"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classliten_1_1TTable.html">TTable</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TSchema.html#a6914c9737f615c201119fc2dbb87f5af">table_</a></td></tr>
+<tr class="memdesc:a6914c9737f615c201119fc2dbb87f5af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Only one table can be associated with this schema.  <a href="#a6914c9737f615c201119fc2dbb87f5af">More...</a><br /></td></tr>
+<tr class="separator:a6914c9737f615c201119fc2dbb87f5af"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a97658d2813108b38119851c5953fbaf6"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::shared_ptr&lt; arrow::Field &gt;, <a class="el" href="namespaceliten.html#ab91b44a099064445f7a115f79cad0b14">FieldType</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TSchema.html#a97658d2813108b38119851c5953fbaf6">typeFields_</a></td></tr>
 <tr class="memdesc:a97658d2813108b38119851c5953fbaf6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Field types either dim or metric.  <a href="#a97658d2813108b38119851c5953fbaf6">More...</a><br /></td></tr>
 <tr class="separator:a97658d2813108b38119851c5953fbaf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acbbcdc2a443583c989640c48661dca44"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::shared_ptr&lt; arrow::Field &gt;, <a class="el" href="classliten_1_1TSchema.html#a80a8df2410b86c58dcdf8909c5bee865">SchemaField</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TSchema.html#acbbcdc2a443583c989640c48661dca44">parentFields_</a></td></tr>
-<tr class="memdesc:acbbcdc2a443583c989640c48661dca44"><td class="mdescLeft">&#160;</td><td class="mdescRight">Join columns - joins this schema (child) field_id to parent[schema, field_id].  <a href="#acbbcdc2a443583c989640c48661dca44">More...</a><br /></td></tr>
-<tr class="separator:acbbcdc2a443583c989640c48661dca44"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4c7f0c086bc5fa573c98cd25381658f1"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::shared_ptr&lt; arrow::Field &gt;, <a class="el" href="classliten_1_1TSchema.html#a80a8df2410b86c58dcdf8909c5bee865">SchemaField</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TSchema.html#a4c7f0c086bc5fa573c98cd25381658f1">childFields_</a></td></tr>
-<tr class="memdesc:a4c7f0c086bc5fa573c98cd25381658f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Join columns - list all child schema fields here.  <a href="#a4c7f0c086bc5fa573c98cd25381658f1">More...</a><br /></td></tr>
-<tr class="separator:a4c7f0c086bc5fa573c98cd25381658f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00b90659f80b248140237b694aadcba0"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::shared_ptr&lt; arrow::Field &gt;, <a class="el" href="classliten_1_1TSchema.html#a63ea373361076b4370c9d6ce0bb9fa07">TSchemaField</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TSchema.html#a00b90659f80b248140237b694aadcba0">parentFields_</a></td></tr>
+<tr class="memdesc:a00b90659f80b248140237b694aadcba0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Join columns - joins this schema (child) field_id to parent[schema, field_id].  <a href="#a00b90659f80b248140237b694aadcba0">More...</a><br /></td></tr>
+<tr class="separator:a00b90659f80b248140237b694aadcba0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afda29a0edbe0addbe847f5bdcbac66cf"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::shared_ptr&lt; arrow::Field &gt;, <a class="el" href="classliten_1_1TSchema.html#a63ea373361076b4370c9d6ce0bb9fa07">TSchemaField</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TSchema.html#afda29a0edbe0addbe847f5bdcbac66cf">childFields_</a></td></tr>
+<tr class="memdesc:afda29a0edbe0addbe847f5bdcbac66cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Join columns - list all child schema fields here.  <a href="#afda29a0edbe0addbe847f5bdcbac66cf">More...</a><br /></td></tr>
+<tr class="separator:afda29a0edbe0addbe847f5bdcbac66cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a99b286adc57ecce556140d9964db5c01"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TSchema.html#a99b286adc57ecce556140d9964db5c01">name_</a></td></tr>
 <tr class="memdesc:a99b286adc57ecce556140d9964db5c01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provide a unique name for the schema.  <a href="#a99b286adc57ecce556140d9964db5c01">More...</a><br /></td></tr>
 <tr class="separator:a99b286adc57ecce556140d9964db5c01"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -169,14 +195,14 @@ Private Attributes</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Wrap arrow schema with fact, dimension and join columns. </p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
-<a id="a80a8df2410b86c58dcdf8909c5bee865"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a80a8df2410b86c58dcdf8909c5bee865">&#9670;&nbsp;</a></span>SchemaField</h2>
+<a id="a63ea373361076b4370c9d6ce0bb9fa07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63ea373361076b4370c9d6ce0bb9fa07">&#9670;&nbsp;</a></span>TSchemaField</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="classliten_1_1TSchema.html#a80a8df2410b86c58dcdf8909c5bee865">liten::TSchema::SchemaField</a> =  std::pair&lt;std::shared_ptr&lt;<a class="el" href="classliten_1_1TSchema.html">TSchema</a>&gt;, std::shared_ptr&lt;arrow::Field&gt; &gt;</td>
+          <td class="memname">using <a class="el" href="classliten_1_1TSchema.html#a63ea373361076b4370c9d6ce0bb9fa07">liten::TSchema::TSchemaField</a> =  std::pair&lt;std::shared_ptr&lt;<a class="el" href="classliten_1_1TSchema.html">TSchema</a>&gt;, std::shared_ptr&lt;arrow::Field&gt; &gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -327,8 +353,29 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a2c335fad68bad8a97336ca72b87b3b16"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2c335fad68bad8a97336ca72b87b3b16">&#9670;&nbsp;</a></span>Create()</h2>
+<a id="a6ab7500053cc4d61c3ac16a1f9f5eb0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ab7500053cc4d61c3ac16a1f9f5eb0a">&#9670;&nbsp;</a></span>AddTable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classliten_1_1TStatus.html">TStatus</a> liten::TSchema::AddTable </td>
+          <td>(</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classliten_1_1TTable.html">TTable</a> &gt;&#160;</td>
+          <td class="paramname"><em>ttable</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the name of the schema. </p>
+<p>TBD RemoveTable. </p>
+
+</div>
+</div>
+<a id="a08f034f4476a403ba3f6cd405e0ed73f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08f034f4476a403ba3f6cd405e0ed73f">&#9670;&nbsp;</a></span>Create()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -339,8 +386,8 @@ Private Attributes</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="classliten_1_1TResult.html">TResult</a>&lt; std::shared_ptr&lt; <a class="el" href="classliten_1_1TSchema.html">TSchema</a> &gt; &gt; liten::TSchema::Create </td>
           <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; arrow::Schema &gt;&#160;</td>
-          <td class="paramname"><em>schema</em>, </td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -351,8 +398,8 @@ Private Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::string&#160;</td>
-          <td class="paramname"><em>name</em>&#160;</td>
+          <td class="paramtype">std::shared_ptr&lt; arrow::Schema &gt;&#160;</td>
+          <td class="paramname"><em>schema</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -368,12 +415,106 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Create TSChema from Arrow array and other informations </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">schema</td><td>Arrow schema </td></tr>
-    <tr><td class="paramname">type</td><td>type of schema is for fact table or dim table </td></tr>
     <tr><td class="paramname">name</td><td>name of schema, is cached by this name </td></tr>
+    <tr><td class="paramname">type</td><td>type of schema is for fact table or dim table </td></tr>
+    <tr><td class="paramname">schema</td><td>Arrow schema </td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a41a9acb4e24a1b66030a32f8086dde98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41a9acb4e24a1b66030a32f8086dde98">&#9670;&nbsp;</a></span>GetChildField() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classliten_1_1TResult.html">TResult</a>&lt; <a class="el" href="classliten_1_1TSchema.html#a63ea373361076b4370c9d6ce0bb9fa07">TSchema::TSchemaField</a> &gt; liten::TSchema::GetChildField </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get child schema and field. </p>
+
+</div>
+</div>
+<a id="ad2258e6019d1b0101cf0f21d69c44771"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2258e6019d1b0101cf0f21d69c44771">&#9670;&nbsp;</a></span>GetChildField() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classliten_1_1TResult.html">TResult</a>&lt; <a class="el" href="classliten_1_1TSchema.html#a63ea373361076b4370c9d6ce0bb9fa07">TSchema::TSchemaField</a> &gt; liten::TSchema::GetChildField </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>fieldName</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1a895d94a8bb36e7894ce1c73edb7234"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1a895d94a8bb36e7894ce1c73edb7234">&#9670;&nbsp;</a></span>GetFieldType() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classliten_1_1TResult.html">TResult</a>&lt; <a class="el" href="namespaceliten.html#ab91b44a099064445f7a115f79cad0b14">FieldType</a> &gt; liten::TSchema::GetFieldType </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>fieldName</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the field type. </p>
+
+</div>
+</div>
+<a id="a8dac4da525e38010213246f404671563"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8dac4da525e38010213246f404671563">&#9670;&nbsp;</a></span>GetFieldType() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classliten_1_1TResult.html">TResult</a>&lt; <a class="el" href="namespaceliten.html#ab91b44a099064445f7a115f79cad0b14">FieldType</a> &gt; liten::TSchema::GetFieldType </td>
+          <td>(</td>
+          <td class="paramtype">int32_t&#160;</td>
+          <td class="paramname"><em>colNum</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a4c5e7b3d980992902a80030302e5f145"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c5e7b3d980992902a80030302e5f145">&#9670;&nbsp;</a></span>GetFieldType() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classliten_1_1TResult.html">TResult</a>&lt; <a class="el" href="namespaceliten.html#ab91b44a099064445f7a115f79cad0b14">FieldType</a> &gt; liten::TSchema::GetFieldType </td>
+          <td>(</td>
+          <td class="paramtype">std::shared_ptr&lt; arrow::Field &gt;&#160;</td>
+          <td class="paramname"><em>field</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
 
 </div>
 </div>
@@ -404,6 +545,44 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="abb1c7eca06c3ce68d5a09e2365b230cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb1c7eca06c3ce68d5a09e2365b230cb">&#9670;&nbsp;</a></span>GetParentField() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classliten_1_1TResult.html">TResult</a>&lt; <a class="el" href="classliten_1_1TSchema.html#a63ea373361076b4370c9d6ce0bb9fa07">TSchema::TSchemaField</a> &gt; liten::TSchema::GetParentField </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get Parent Schema and Field. </p>
+
+</div>
+</div>
+<a id="aa79a02765d61216773ee7323cdca99cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa79a02765d61216773ee7323cdca99cb">&#9670;&nbsp;</a></span>GetParentField() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classliten_1_1TResult.html">TResult</a>&lt; <a class="el" href="classliten_1_1TSchema.html#a63ea373361076b4370c9d6ce0bb9fa07">TSchema::TSchemaField</a> &gt; liten::TSchema::GetParentField </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>fieldName</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="af54a9023a2f6b1ab97374246fdb82b14"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af54a9023a2f6b1ab97374246fdb82b14">&#9670;&nbsp;</a></span>GetSchema()</h2>
 
@@ -420,6 +599,31 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get Raw Array, Use it judiciously, prefer to add an access method. </p>
+
+</div>
+</div>
+<a id="a6159000707815b52b45b73283f0d795a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6159000707815b52b45b73283f0d795a">&#9670;&nbsp;</a></span>GetTable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt;<a class="el" href="classliten_1_1TTable.html">TTable</a>&gt; liten::TSchema::GetTable </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>
@@ -486,6 +690,36 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="acdf36ac1d87b7eb07f6e4918b5316f79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdf36ac1d87b7eb07f6e4918b5316f79">&#9670;&nbsp;</a></span>SetFieldType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classliten_1_1TStatus.html">TStatus</a> liten::TSchema::SetFieldType </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>fieldName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceliten.html#ab91b44a099064445f7a115f79cad0b14">FieldType</a>&#160;</td>
+          <td class="paramname"><em>fieldType</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set field type for the new field. </p>
+
+</div>
+</div>
 <a id="aac430596770c137698af1cd7c04bd60d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aac430596770c137698af1cd7c04bd60d">&#9670;&nbsp;</a></span>ToString()</h2>
 
@@ -506,8 +740,8 @@ Private Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="a4c7f0c086bc5fa573c98cd25381658f1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4c7f0c086bc5fa573c98cd25381658f1">&#9670;&nbsp;</a></span>childFields_</h2>
+<a id="afda29a0edbe0addbe847f5bdcbac66cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afda29a0edbe0addbe847f5bdcbac66cf">&#9670;&nbsp;</a></span>childFields_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -516,7 +750,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::map&lt;std::shared_ptr&lt;arrow::Field&gt;, <a class="el" href="classliten_1_1TSchema.html#a80a8df2410b86c58dcdf8909c5bee865">SchemaField</a>&gt; liten::TSchema::childFields_</td>
+          <td class="memname">std::map&lt;std::shared_ptr&lt;arrow::Field&gt;, <a class="el" href="classliten_1_1TSchema.html#a63ea373361076b4370c9d6ce0bb9fa07">TSchemaField</a>&gt; liten::TSchema::childFields_</td>
         </tr>
       </table>
   </td>
@@ -554,8 +788,8 @@ Private Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="acbbcdc2a443583c989640c48661dca44"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acbbcdc2a443583c989640c48661dca44">&#9670;&nbsp;</a></span>parentFields_</h2>
+<a id="a00b90659f80b248140237b694aadcba0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00b90659f80b248140237b694aadcba0">&#9670;&nbsp;</a></span>parentFields_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -564,7 +798,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::map&lt;std::shared_ptr&lt;arrow::Field&gt;, <a class="el" href="classliten_1_1TSchema.html#a80a8df2410b86c58dcdf8909c5bee865">SchemaField</a>&gt; liten::TSchema::parentFields_</td>
+          <td class="memname">std::map&lt;std::shared_ptr&lt;arrow::Field&gt;, <a class="el" href="classliten_1_1TSchema.html#a63ea373361076b4370c9d6ce0bb9fa07">TSchemaField</a>&gt; liten::TSchema::parentFields_</td>
         </tr>
       </table>
   </td>
@@ -599,6 +833,30 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Arrow array. </p>
+
+</div>
+</div>
+<a id="a6914c9737f615c201119fc2dbb87f5af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6914c9737f615c201119fc2dbb87f5af">&#9670;&nbsp;</a></span>table_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt;<a class="el" href="classliten_1_1TTable.html">TTable</a>&gt; liten::TSchema::table_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Only one table can be associated with this schema. </p>
 
 </div>
 </div>

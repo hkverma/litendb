@@ -77,9 +77,6 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Zero cost wrapper class for Arrow Array.  
- <a href="classliten_1_1TBlock.html#details">More...</a></p>
-
 <p><code>#include &lt;<a class="el" href="TBlock_8h_source.html">TBlock.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for liten::TBlock:</div>
@@ -103,16 +100,19 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aba14beda21a2561526e467bbe9e8c892"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; arrow::Array &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TBlock.html#aba14beda21a2561526e467bbe9e8c892">GetArray</a> ()</td></tr>
 <tr class="memdesc:aba14beda21a2561526e467bbe9e8c892"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get Raw Array, Use it judiciously, prefer to add an access method.  <a href="#aba14beda21a2561526e467bbe9e8c892">More...</a><br /></td></tr>
 <tr class="separator:aba14beda21a2561526e467bbe9e8c892"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c0580f8c1a98ca921c0e46735b4e35c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TBlock.html#a2c0580f8c1a98ca921c0e46735b4e35c">ToString</a> ()</td></tr>
+<tr class="memdesc:a2c0580f8c1a98ca921c0e46735b4e35c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert to string for debug.  <a href="#a2c0580f8c1a98ca921c0e46735b4e35c">More...</a><br /></td></tr>
+<tr class="separator:a2c0580f8c1a98ca921c0e46735b4e35c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:ab2b2939a4ea07109afc7dcf209445987"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr&lt; <a class="el" href="classliten_1_1TBlock.html">TBlock</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TBlock.html#ab2b2939a4ea07109afc7dcf209445987">Create</a> (std::shared_ptr&lt; arrow::Array &gt; arr)</td></tr>
-<tr class="separator:ab2b2939a4ea07109afc7dcf209445987"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa55cd5b5c7a843dc0b19a2ee78117746"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classliten_1_1TResult.html">TResult</a>&lt; std::shared_ptr&lt; <a class="el" href="classliten_1_1TBlock.html">TBlock</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TBlock.html#aa55cd5b5c7a843dc0b19a2ee78117746">Create</a> (std::shared_ptr&lt; arrow::Array &gt; arr)</td></tr>
+<tr class="separator:aa55cd5b5c7a843dc0b19a2ee78117746"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1cbe3e5bfe4f62d291b7759527d9ba5c"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr&lt; <a class="el" href="classliten_1_1TBlock.html">TBlock</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TBlock.html#a1cbe3e5bfe4f62d291b7759527d9ba5c">GetTBlock</a> (std::shared_ptr&lt; arrow::Array &gt; arr)</td></tr>
-<tr class="memdesc:a1cbe3e5bfe4f62d291b7759527d9ba5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get <a class="el" href="classliten_1_1TBlock.html" title="Zero cost wrapper class for Arrow Array. ">TBlock</a> for a given array.  <a href="#a1cbe3e5bfe4f62d291b7759527d9ba5c">More...</a><br /></td></tr>
+<tr class="memdesc:a1cbe3e5bfe4f62d291b7759527d9ba5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get <a class="el" href="classliten_1_1TBlock.html">TBlock</a> for a given array, return nullptr if not found.  <a href="#a1cbe3e5bfe4f62d291b7759527d9ba5c">More...</a><br /></td></tr>
 <tr class="separator:a1cbe3e5bfe4f62d291b7759527d9ba5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aab0ca3192120d20116f1973de001dde4"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classliten_1_1TStatus.html">TStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TBlock.html#aab0ca3192120d20116f1973de001dde4">AddTBlock</a> (std::shared_ptr&lt; <a class="el" href="classliten_1_1TBlock.html">TBlock</a> &gt; blk)</td></tr>
-<tr class="memdesc:aab0ca3192120d20116f1973de001dde4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add <a class="el" href="classliten_1_1TBlock.html" title="Zero cost wrapper class for Arrow Array. ">TBlock</a> to the lookup list.  <a href="#aab0ca3192120d20116f1973de001dde4">More...</a><br /></td></tr>
+<tr class="memdesc:aab0ca3192120d20116f1973de001dde4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add <a class="el" href="classliten_1_1TBlock.html">TBlock</a> to the lookup list.  <a href="#aab0ca3192120d20116f1973de001dde4">More...</a><br /></td></tr>
 <tr class="separator:aab0ca3192120d20116f1973de001dde4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
@@ -133,13 +133,13 @@ Private Attributes</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-static-attribs"></a>
 Static Private Attributes</h2></td></tr>
 <tr class="memitem:a61f13ecb8feeaf32d064cc96766f240e"><td class="memItemLeft" align="right" valign="top">static std::unordered_map&lt; std::shared_ptr&lt; arrow::Array &gt;, std::shared_ptr&lt; <a class="el" href="classliten_1_1TBlock.html">TBlock</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TBlock.html#a61f13ecb8feeaf32d064cc96766f240e">arrayToBlock_</a></td></tr>
-<tr class="memdesc:a61f13ecb8feeaf32d064cc96766f240e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Arrow Array to <a class="el" href="classliten_1_1TBlock.html" title="Zero cost wrapper class for Arrow Array. ">TBlock</a>.  <a href="#a61f13ecb8feeaf32d064cc96766f240e">More...</a><br /></td></tr>
+<tr class="memdesc:a61f13ecb8feeaf32d064cc96766f240e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Arrow Array to <a class="el" href="classliten_1_1TBlock.html">TBlock</a>.  <a href="#a61f13ecb8feeaf32d064cc96766f240e">More...</a><br /></td></tr>
 <tr class="separator:a61f13ecb8feeaf32d064cc96766f240e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac5ace6824484399c551882e48acf498a"><td class="memItemLeft" align="right" valign="top">static std::shared_mutex&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TBlock.html#ac5ace6824484399c551882e48acf498a">arrayToBlockMutex_</a></td></tr>
 <tr class="separator:ac5ace6824484399c551882e48acf498a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Zero cost wrapper class for Arrow Array. </p>
+<div class="textblock"><p>Zero cost wrapper class for Arrow Array Blocks can be local or remote </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a23c72bf3a4de6b5c3f56addd0c696a6a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a23c72bf3a4de6b5c3f56addd0c696a6a">&#9670;&nbsp;</a></span>~TBlock()</h2>
@@ -220,12 +220,12 @@ Static Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Add <a class="el" href="classliten_1_1TBlock.html" title="Zero cost wrapper class for Arrow Array. ">TBlock</a> to the lookup list. </p>
+<p>Add <a class="el" href="classliten_1_1TBlock.html">TBlock</a> to the lookup list. </p>
 
 </div>
 </div>
-<a id="ab2b2939a4ea07109afc7dcf209445987"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab2b2939a4ea07109afc7dcf209445987">&#9670;&nbsp;</a></span>Create()</h2>
+<a id="aa55cd5b5c7a843dc0b19a2ee78117746"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa55cd5b5c7a843dc0b19a2ee78117746">&#9670;&nbsp;</a></span>Create()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -234,7 +234,7 @@ Static Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::shared_ptr&lt; <a class="el" href="classliten_1_1TBlock.html">TBlock</a> &gt; liten::TBlock::Create </td>
+          <td class="memname"><a class="el" href="classliten_1_1TResult.html">TResult</a>&lt; std::shared_ptr&lt; <a class="el" href="classliten_1_1TBlock.html">TBlock</a> &gt; &gt; liten::TBlock::Create </td>
           <td>(</td>
           <td class="paramtype">std::shared_ptr&lt; arrow::Array &gt;&#160;</td>
           <td class="paramname"><em>arr</em></td><td>)</td>
@@ -247,9 +247,9 @@ Static Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Wrap Arrow array in <a class="el" href="classliten_1_1TBlock.html" title="Zero cost wrapper class for Arrow Array. ">TBlock</a> Create a <a class="el" href="classliten_1_1TBlock.html" title="Zero cost wrapper class for Arrow Array. ">TBlock</a>, if one already exists with the given arr, return that </p><dl class="params"><dt>Parameters</dt><dd>
+<p>Wrap Arrow array in <a class="el" href="classliten_1_1TBlock.html">TBlock</a> Create a <a class="el" href="classliten_1_1TBlock.html">TBlock</a>, if one already exists with the given arr, return that </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">arr</td><td>arrow::Array for which we need to create <a class="el" href="classliten_1_1TBlock.html" title="Zero cost wrapper class for Arrow Array. ">TBlock</a> </td></tr>
+    <tr><td class="paramname">arr</td><td>arrow::Array for which we need to create <a class="el" href="classliten_1_1TBlock.html">TBlock</a> </td></tr>
   </table>
   </dd>
 </dl>
@@ -307,7 +307,26 @@ Static Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Get <a class="el" href="classliten_1_1TBlock.html" title="Zero cost wrapper class for Arrow Array. ">TBlock</a> for a given array. </p>
+<p>Get <a class="el" href="classliten_1_1TBlock.html">TBlock</a> for a given array, return nullptr if not found. </p>
+
+</div>
+</div>
+<a id="a2c0580f8c1a98ca921c0e46735b4e35c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c0580f8c1a98ca921c0e46735b4e35c">&#9670;&nbsp;</a></span>ToString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string liten::TBlock::ToString </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convert to string for debug. </p>
 
 </div>
 </div>
@@ -356,7 +375,7 @@ Static Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Arrow Array to <a class="el" href="classliten_1_1TBlock.html" title="Zero cost wrapper class for Arrow Array. ">TBlock</a>. </p>
+<p>Arrow Array to <a class="el" href="classliten_1_1TBlock.html">TBlock</a>. </p>
 
 </div>
 </div>

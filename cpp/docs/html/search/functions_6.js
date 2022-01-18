@@ -1,10 +1,11 @@
 var searchData=
 [
   ['ifexists',['IfExists',['../classliten_1_1TCatalog.html#a63026347e9476c5815503e98ffa90dab',1,'liten::TCatalog::IfExists(std::shared_ptr&lt; TBlock &gt; block, TGuid::Uuid &amp;id)'],['../classliten_1_1TCatalog.html#a2b0cbbf3912ea9430c63091c9da67860',1,'liten::TCatalog::IfExists(std::shared_ptr&lt; TBlock &gt; block)']]],
-  ['ifvalidmap',['IfValidMap',['../classliten_1_1TColumnMap.html#a80055209212c732408feaeed3782f605',1,'liten::TColumnMap::IfValidMap()'],['../classliten_1_1TInt64ColumnMap.html#a66efcb0da0dd5d86bbf75ec5767bfe19',1,'liten::TInt64ColumnMap::IfValidMap()']]],
+  ['ifvalidreversemap',['IfValidReverseMap',['../classliten_1_1TColumnMap.html#a70d3202572afd34418a771f2a096f36b',1,'liten::TColumnMap::IfValidReverseMap()'],['../classliten_1_1TInt64ColumnMap.html#a66ffa1a84a653c222cb78b920e32d80e',1,'liten::TInt64ColumnMap::IfValidReverseMap()']]],
+  ['ifvalidzonemap',['IfValidZoneMap',['../classliten_1_1TColumnMap.html#ad6f2d94ef9d2f0b89a8d8a5b615355b0',1,'liten::TColumnMap::IfValidZoneMap()'],['../classliten_1_1TInt64ColumnMap.html#adddb152a450ff220e5e354707498c046',1,'liten::TInt64ColumnMap::IfValidZoneMap()']]],
   ['indexerror',['IndexError',['../classliten_1_1TStatus.html#ac7620258b248617da63cbc716e09644a',1,'liten::TStatus']]],
   ['invalid',['Invalid',['../classliten_1_1TStatus.html#aaafb719f4652646a88480029b4ce24c7',1,'liten::TStatus']]],
-  ['invalidvalueordie',['InvalidValueOrDie',['../namespaceliten_1_1internal.html#a582f46b12ffef646adc280f47f285cfe',1,'liten::internal']]],
+  ['invalidvalueordie',['InvalidValueOrDie',['../namespaceliten_1_1internal.html#ab583184a97862d8e0a18cfa29fc102c6',1,'liten::internal']]],
   ['ioerror',['IOError',['../classliten_1_1TStatus.html#a387c2c5876109be2f2810ad08cb5cc8e',1,'liten::TStatus']]],
   ['iscapacityerror',['IsCapacityError',['../classliten_1_1TStatus.html#ad90b973b2fe9f81cfb9fc9a191521dec',1,'liten::TStatus']]],
   ['isindexerror',['IsIndexError',['../classliten_1_1TStatus.html#a58a1f08c61e50f4f1c0d77afc307dff9',1,'liten::TStatus']]],
@@ -15,5 +16,6 @@ var searchData=
   ['isoutofmemory',['IsOutOfMemory',['../classliten_1_1TStatus.html#a65a79ce21baad49a3601c82ca0418fea',1,'liten::TStatus']]],
   ['isserializationerror',['IsSerializationError',['../classliten_1_1TStatus.html#aada182b288ec95cbd1a0a48af0352b3a',1,'liten::TStatus']]],
   ['istypeerror',['IsTypeError',['../classliten_1_1TStatus.html#a20905d3a59957e19ada280e905b36851',1,'liten::TStatus']]],
-  ['isunknownerror',['IsUnknownError',['../classliten_1_1TStatus.html#a1ab15fed61608505bdf4c8edad2e1376',1,'liten::TStatus']]]
+  ['isunknownerror',['IsUnknownError',['../classliten_1_1TStatus.html#a1ab15fed61608505bdf4c8edad2e1376',1,'liten::TStatus']]],
+  ['iterator',['Iterator',['../classliten_1_1TColumn_1_1Iterator.html#ac357a83024a51fff63845e155ba4031c',1,'liten::TColumn::Iterator']]]
 ];

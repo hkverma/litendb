@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['metricfield',['MetricField',['../namespaceliten.html#ab91b44a099064445f7a115f79cad0b14a2eb081ba8918e1ad7b22b81e9b6ba951',1,'liten']]]
+  ['keyerror',['KeyError',['../namespaceliten.html#a84eeb34ab2a9b1c869f91848b4ca3be2ac84999914a408f8c02b4122a49df6e00',1,'liten']]]
 ];

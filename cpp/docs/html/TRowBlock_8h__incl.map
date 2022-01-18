@@ -1,16 +1,18 @@
 <map id="cache/TRowBlock.h" name="cache/TRowBlock.h">
-<area shape="rect" id="node2" href="$common_8h.html" title="common.h" alt="" coords="1076,80,1159,107"/>
-<area shape="rect" id="node42" href="$cache__fwd_8h.html" title="cache_fwd.h" alt="" coords="1183,80,1279,107"/>
-<area shape="rect" id="node19" href="$THashFuncs_8h.html" title="THashFuncs.h" alt="" coords="2245,155,2353,181"/>
-<area shape="rect" id="node21" href="$TJSon_8h.html" title="TJSon.h" alt="" coords="2614,155,2685,181"/>
-<area shape="rect" id="node23" href="$TMacros_8h.html" title="TMacros.h" alt="" coords="533,319,617,345"/>
-<area shape="rect" id="node24" href="$TTimeUtils_8h.html" title="TTimeUtils.h" alt="" coords="2810,155,2907,181"/>
-<area shape="rect" id="node26" href="$TStopWatch_8h.html" title="TStopWatch.h" alt="" coords="3036,155,3143,181"/>
-<area shape="rect" id="node28" href="$TStringBuilder_8h.html" title="TStringBuilder.h" alt="" coords="641,319,756,345"/>
-<area shape="rect" id="node29" href="$TStatus_8h.html" title="TStatus.h" alt="" coords="575,237,654,263"/>
-<area shape="rect" id="node30" href="$TLog_8h.html" title="TLog.h" alt="" coords="489,237,551,263"/>
-<area shape="rect" id="node32" href="$TService_8h.html" title="TService.h" alt="" coords="519,155,604,181"/>
-<area shape="rect" id="node33" href="$TGuid_8h.html" title="TGuid.h" alt="" coords="2377,155,2445,181"/>
-<area shape="rect" id="node38" href="$TConfigs_8h.html" title="TConfigs.h" alt="" coords="139,237,226,263"/>
-<area shape="rect" id="node39" href="$TResult_8h.html" title="TResult.h" alt="" coords="365,155,443,181"/>
+<area shape="rect" id="node2" href="$common_8h.html" title="common.h" alt="" coords="1105,80,1188,107"/>
+<area shape="rect" id="node44" href="$cache__fwd_8h.html" title="cache_fwd.h" alt="" coords="1212,80,1308,107"/>
+<area shape="rect" id="node19" href="$THashFuncs_8h.html" title="THashFuncs.h" alt="" coords="2290,155,2398,181"/>
+<area shape="rect" id="node21" href="$TJSon_8h.html" title="TJSon.h" alt="" coords="2514,155,2585,181"/>
+<area shape="rect" id="node23" href="$TMacros_8h.html" title="TMacros.h" alt="" coords="473,319,557,345"/>
+<area shape="rect" id="node24" href="$TTimeUtils_8h.html" title="TTimeUtils.h" alt="" coords="2609,155,2706,181"/>
+<area shape="rect" id="node26" href="$TFuncUtils_8h.html" title="TFuncUtils.h" alt="" coords="2730,155,2827,181"/>
+<area shape="rect" id="node27" href="$TStopWatch_8h.html" title="TStopWatch.h" alt="" coords="2953,155,3060,181"/>
+<area shape="rect" id="node29" href="$TStringBuilder_8h.html" title="TStringBuilder.h" alt="" coords="581,319,696,345"/>
+<area shape="rect" id="node30" href="$TStatus_8h.html" title="TStatus.h" alt="" coords="515,237,594,263"/>
+<area shape="rect" id="node31" href="$TTaskScheduler_8h.html" title="TTaskScheduler.h" alt="" coords="1413,155,1541,181"/>
+<area shape="rect" id="node32" href="$TLog_8h.html" title="TLog.h" alt="" coords="429,237,491,263"/>
+<area shape="rect" id="node34" href="$TService_8h.html" title="TService.h" alt="" coords="408,155,493,181"/>
+<area shape="rect" id="node35" href="$TGuid_8h.html" title="TGuid.h" alt="" coords="2422,155,2490,181"/>
+<area shape="rect" id="node40" href="$TConfigs_8h.html" title="TConfigs.h" alt="" coords="27,237,114,263"/>
+<area shape="rect" id="node41" href="$TResult_8h.html" title="TResult.h" alt="" coords="305,155,383,181"/>
 </map>

@@ -120,6 +120,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a86a854491e38dbd57f367b786f49ae82"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a96c15b29101a18e7e8e80e05005fc587"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classliten_1_1TStatus.html">TStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TCatalog.html#a96c15b29101a18e7e8e80e05005fc587">AddSchema</a> (std::shared_ptr&lt; <a class="el" href="classliten_1_1TSchema.html">TSchema</a> &gt; schema)</td></tr>
 <tr class="separator:a96c15b29101a18e7e8e80e05005fc587"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb776c2c199e5966362edfe4fd94ac9b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classliten_1_1TStatus.html">TStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TCatalog.html#afb776c2c199e5966362edfe4fd94ac9b">AddSchemaForTable</a> (std::string schemaName, std::string tableName)</td></tr>
+<tr class="separator:afb776c2c199e5966362edfe4fd94ac9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa15d0ba55f3bf0c016ece0cd457bfbce"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TCatalog.html#aa15d0ba55f3bf0c016ece0cd457bfbce">GetSchemaInfo</a> () const</td></tr>
 <tr class="memdesc:aa15d0ba55f3bf0c016ece0cd457bfbce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return information with compute information.  <a href="#aa15d0ba55f3bf0c016ece0cd457bfbce">More...</a><br /></td></tr>
 <tr class="separator:aa15d0ba55f3bf0c016ece0cd457bfbce"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -161,6 +163,9 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:ad6fa6e0d4c63d70c9fb63a8dd64fd53e"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, std::shared_ptr&lt; <a class="el" href="classliten_1_1TSchema.html">TSchema</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TCatalog.html#ad6fa6e0d4c63d70c9fb63a8dd64fd53e">schemas_</a></td></tr>
 <tr class="memdesc:ad6fa6e0d4c63d70c9fb63a8dd64fd53e"><td class="mdescLeft">&#160;</td><td class="mdescRight">hash map schema name to schema information  <a href="#ad6fa6e0d4c63d70c9fb63a8dd64fd53e">More...</a><br /></td></tr>
 <tr class="separator:ad6fa6e0d4c63d70c9fb63a8dd64fd53e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b06bebb32dbf248c12d8413b396d654"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::string, std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TCatalog.html#a6b06bebb32dbf248c12d8413b396d654">schemaToTables_</a></td></tr>
+<tr class="memdesc:a6b06bebb32dbf248c12d8413b396d654"><td class="mdescLeft">&#160;</td><td class="mdescRight">schema to tables  <a href="#a6b06bebb32dbf248c12d8413b396d654">More...</a><br /></td></tr>
+<tr class="separator:a6b06bebb32dbf248c12d8413b396d654"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa3388d9935e6db86f6951310fc78a900"><td class="memItemLeft" align="right" valign="top">std::shared_mutex&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TCatalog.html#aa3388d9935e6db86f6951310fc78a900">mutex_</a></td></tr>
 <tr class="memdesc:aa3388d9935e6db86f6951310fc78a900"><td class="mdescLeft">&#160;</td><td class="mdescRight">shared_lock  <a href="#aa3388d9935e6db86f6951310fc78a900">More...</a><br /></td></tr>
 <tr class="separator:aa3388d9935e6db86f6951310fc78a900"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -313,6 +318,34 @@ Static Private Attributes</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>status if schema got added </dd></dl>
+
+</div>
+</div>
+<a id="afb776c2c199e5966362edfe4fd94ac9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb776c2c199e5966362edfe4fd94ac9b">&#9670;&nbsp;</a></span>AddSchemaForTable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classliten_1_1TStatus.html">TStatus</a> liten::TCatalog::AddSchemaForTable </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>schemaName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>tableName</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
 
 </div>
 </div>
@@ -706,6 +739,30 @@ Static Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>hash map schema name to schema information </p>
+
+</div>
+</div>
+<a id="a6b06bebb32dbf248c12d8413b396d654"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b06bebb32dbf248c12d8413b396d654">&#9670;&nbsp;</a></span>schemaToTables_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::map&lt;std::string, std::string&gt; liten::TCatalog::schemaToTables_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>schema to tables </p>
 
 </div>
 </div>

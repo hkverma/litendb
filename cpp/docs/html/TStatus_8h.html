@@ -67,7 +67,9 @@ $(function() {
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#enum-members">Enumerations</a>  </div>
+<a href="#define-members">Macros</a> &#124;
+<a href="#enum-members">Enumerations</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">TStatus.h File Reference</div>  </div>
 </div><!--header-->
@@ -89,27 +91,27 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="TStatus_8h__dep__incl.png" border="0" usemap="#common_2TStatus_8hdep" alt=""/></div>
 <map name="common_2TStatus_8hdep" id="common_2TStatus_8hdep">
-<area shape="rect" id="node2" href="common_8h.html" title="common/common.h" alt="" coords="608,155,745,181"/>
-<area shape="rect" id="node20" href="TResult_8h.html" title="common/TResult.h" alt="" coords="714,80,847,107"/>
-<area shape="rect" id="node22" href="TStatus_8cpp.html" title="common/TStatus.cpp" alt="" coords="871,80,1018,107"/>
-<area shape="rect" id="node3" href="TCatalog_8h.html" title="cache/TCatalog.h" alt="" coords="326,304,451,331"/>
-<area shape="rect" id="node11" href="TBlock_8h.html" title="cache/TBlock.h" alt="" coords="476,304,589,331"/>
-<area shape="rect" id="node13" href="TSchema_8h.html" title="cache/TSchema.h" alt="" coords="665,304,793,331"/>
-<area shape="rect" id="node14" href="TColumn_8h.html" title="cache/TColumn.h" alt="" coords="817,304,942,331"/>
-<area shape="rect" id="node15" href="TColumnMap_8h.html" title="cache/TColumnMap.h" alt="" coords="955,229,1105,256"/>
-<area shape="rect" id="node17" href="TCache_8h.html" title="cache/TCache.h" alt="" coords="132,304,251,331"/>
-<area shape="rect" id="node18" href="TTable_8h.html" title="cache/TTable.h" alt="" coords="573,229,685,256"/>
-<area shape="rect" id="node19" href="TRowBlock_8h.html" title="cache/TRowBlock.h" alt="" coords="1308,304,1448,331"/>
-<area shape="rect" id="node4" href="cache_8h.html" title="cache/cache.h" alt="" coords="806,379,913,405"/>
-<area shape="rect" id="node5" href="TBlock_8cpp.html" title="cache/TBlock.cpp" alt="" coords="325,379,452,405"/>
-<area shape="rect" id="node6" href="TCache_8cpp.html" title="cache/TCache.cpp" alt="" coords="5,379,137,405"/>
-<area shape="rect" id="node7" href="TCatalog_8cpp.html" title="cache/TCatalog.cpp" alt="" coords="162,379,301,405"/>
-<area shape="rect" id="node8" href="TColumn_8cpp.html" title="cache/TColumn.cpp" alt="" coords="643,379,782,405"/>
-<area shape="rect" id="node9" href="TSchema_8cpp.html" title="cache/TSchema.cpp" alt="" coords="476,379,619,405"/>
-<area shape="rect" id="node10" href="TTable_8cpp.html" title="cache/TTable.cpp" alt="" coords="1116,379,1243,405"/>
-<area shape="rect" id="node12" href="TRowBlock_8cpp.html" title="cache/TRowBlock.cpp" alt="" coords="937,379,1091,405"/>
-<area shape="rect" id="node16" href="TColumnMap_8cpp.html" title="cache/TColumnMap.cpp" alt="" coords="1068,304,1232,331"/>
-<area shape="rect" id="node21" href="TResult_8cpp.html" title="common/TResult.cpp" alt="" coords="770,155,917,181"/>
+<area shape="rect" id="node2" href="common_8h.html" title="common/common.h" alt="" coords="810,155,948,181"/>
+<area shape="rect" id="node20" href="TResult_8h.html" title="common/TResult.h" alt="" coords="916,80,1050,107"/>
+<area shape="rect" id="node22" href="TStatus_8cpp.html" title="common/TStatus.cpp" alt="" coords="1074,80,1220,107"/>
+<area shape="rect" id="node3" href="TCatalog_8h.html" title="cache/TCatalog.h" alt="" coords="447,304,572,331"/>
+<area shape="rect" id="node11" href="TBlock_8h.html" title="cache/TBlock.h" alt="" coords="642,229,756,256"/>
+<area shape="rect" id="node12" href="TColumn_8h.html" title="cache/TColumn.h" alt="" coords="855,304,980,331"/>
+<area shape="rect" id="node13" href="TTable_8h.html" title="cache/TTable.h" alt="" coords="1228,379,1340,405"/>
+<area shape="rect" id="node16" href="TSchema_8h.html" title="cache/TSchema.h" alt="" coords="1339,304,1467,331"/>
+<area shape="rect" id="node17" href="TColumnMap_8h.html" title="cache/TColumnMap.h" alt="" coords="861,229,1012,256"/>
+<area shape="rect" id="node18" href="TCache_8h.html" title="cache/TCache.h" alt="" coords="24,379,142,405"/>
+<area shape="rect" id="node19" href="TRowBlock_8h.html" title="cache/TRowBlock.h" alt="" coords="1782,304,1922,331"/>
+<area shape="rect" id="node4" href="cache_8h.html" title="cache/cache.h" alt="" coords="583,453,690,480"/>
+<area shape="rect" id="node5" href="TBlock_8cpp.html" title="cache/TBlock.cpp" alt="" coords="218,379,345,405"/>
+<area shape="rect" id="node6" href="TCache_8cpp.html" title="cache/TCache.cpp" alt="" coords="317,453,449,480"/>
+<area shape="rect" id="node7" href="TCatalog_8cpp.html" title="cache/TCatalog.cpp" alt="" coords="1050,453,1188,480"/>
+<area shape="rect" id="node8" href="TColumn_8cpp.html" title="cache/TColumn.cpp" alt="" coords="724,379,863,405"/>
+<area shape="rect" id="node9" href="TSchema_8cpp.html" title="cache/TSchema.cpp" alt="" coords="1213,453,1356,480"/>
+<area shape="rect" id="node10" href="TTable_8cpp.html" title="cache/TTable.cpp" alt="" coords="1380,453,1506,480"/>
+<area shape="rect" id="node15" href="TRowBlock_8cpp.html" title="cache/TRowBlock.cpp" alt="" coords="1567,379,1722,405"/>
+<area shape="rect" id="node14" href="TColumnMap_8cpp.html" title="cache/TColumnMap.cpp" alt="" coords="989,379,1153,405"/>
+<area shape="rect" id="node21" href="TResult_8cpp.html" title="common/TResult.cpp" alt="" coords="972,155,1119,181"/>
 </map>
 </div>
 </div>
@@ -132,6 +134,18 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespaceliten"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceliten.html">liten</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:a209f67e0d581e1629deaf91782b06946"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="TStatus_8h.html#a209f67e0d581e1629deaf91782b06946">LITEN_RETURN_IF_</a>(condition,  status,  _)</td></tr>
+<tr class="separator:a209f67e0d581e1629deaf91782b06946"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2479fc78a9a0c6bcb2cdf8b5bc30e765"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="TStatus_8h.html#a2479fc78a9a0c6bcb2cdf8b5bc30e765">LITEN_RETURN_IF</a>(condition,  status)&#160;&#160;&#160;<a class="el" href="TStatus_8h.html#a209f67e0d581e1629deaf91782b06946">LITEN_RETURN_IF_</a>(condition, status, <a class="el" href="TMacros_8h.html#a818c0d9634615a9b2a1db1d8a28d3e11">LITEN_STRINGIFY</a>(status))</td></tr>
+<tr class="separator:a2479fc78a9a0c6bcb2cdf8b5bc30e765"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adddfe5c918945af851625d063237f078"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="TStatus_8h.html#adddfe5c918945af851625d063237f078">LITEN_RETURN_NOT_OK</a>(status)</td></tr>
+<tr class="memdesc:adddfe5c918945af851625d063237f078"><td class="mdescLeft">&#160;</td><td class="mdescRight">Propagate any non-successful Status to the caller.  <a href="#adddfe5c918945af851625d063237f078">More...</a><br /></td></tr>
+<tr class="separator:adddfe5c918945af851625d063237f078"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70e7ded57589f7c4839b2ac5315e5717"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="TStatus_8h.html#a70e7ded57589f7c4839b2ac5315e5717">LITEN_RETURN_NOT_OK_ELSE</a>(s,  else_)</td></tr>
+<tr class="separator:a70e7ded57589f7c4839b2ac5315e5717"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
 <tr class="memitem:a84eeb34ab2a9b1c869f91848b4ca3be2"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceliten.html#a84eeb34ab2a9b1c869f91848b4ca3be2">liten::TStatusCode</a> : char { <br />
@@ -152,7 +166,132 @@ Enumerations</h2></td></tr>
 <br />
  }</td></tr>
 <tr class="separator:a84eeb34ab2a9b1c869f91848b4ca3be2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:aeaf9d58d748e52474211064b8833e336"><td class="memItemLeft" align="right" valign="top">TStatus&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceliten.html#aeaf9d58d748e52474211064b8833e336">liten::GenericToTStatus</a> (const TStatus &amp;st)</td></tr>
+<tr class="separator:aeaf9d58d748e52474211064b8833e336"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa645ee13281187bc7114c6e6fcbef93e"><td class="memItemLeft" align="right" valign="top">TStatus&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceliten.html#aa645ee13281187bc7114c6e6fcbef93e">liten::GenericToTStatus</a> (TStatus &amp;&amp;st)</td></tr>
+<tr class="separator:aa645ee13281187bc7114c6e6fcbef93e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Macro Definition Documentation</h2>
+<a id="a2479fc78a9a0c6bcb2cdf8b5bc30e765"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2479fc78a9a0c6bcb2cdf8b5bc30e765">&#9670;&nbsp;</a></span>LITEN_RETURN_IF</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define LITEN_RETURN_IF</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">condition, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">status&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td>&#160;&#160;&#160;<a class="el" href="TStatus_8h.html#a209f67e0d581e1629deaf91782b06946">LITEN_RETURN_IF_</a>(condition, status, <a class="el" href="TMacros_8h.html#a818c0d9634615a9b2a1db1d8a28d3e11">LITEN_STRINGIFY</a>(status))</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a209f67e0d581e1629deaf91782b06946"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a209f67e0d581e1629deaf91782b06946">&#9670;&nbsp;</a></span>LITEN_RETURN_IF_</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define LITEN_RETURN_IF_</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">condition, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">status, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">_&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">do</span>                                                 \</div><div class="line">{                                                  \</div><div class="line">  if (<a class="code" href="TMacros_8h.html#a90be4a842ba46f91b10dee210638b875">LITEN_UNLIKELY</a>(condition)) {                 \</div><div class="line">    return (status);                               \</div><div class="line">  }                                                \</div><div class="line">} <span class="keywordflow">while</span> (0)</div><div class="ttc" id="TMacros_8h_html_a90be4a842ba46f91b10dee210638b875"><div class="ttname"><a href="TMacros_8h.html#a90be4a842ba46f91b10dee210638b875">LITEN_UNLIKELY</a></div><div class="ttdeci">#define LITEN_UNLIKELY(x)</div><div class="ttdef"><b>Definition:</b> TMacros.h:15</div></div>
+</div><!-- fragment -->
+</div>
+</div>
+<a id="adddfe5c918945af851625d063237f078"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adddfe5c918945af851625d063237f078">&#9670;&nbsp;</a></span>LITEN_RETURN_NOT_OK</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define LITEN_RETURN_NOT_OK</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">status</td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">do</span>                                                                \</div><div class="line">{                                                                 \</div><div class="line">  <a class="code" href="classliten_1_1TStatus.html">::liten::TStatus</a> __s = <a class="code" href="namespaceliten.html#aa645ee13281187bc7114c6e6fcbef93e">::liten::GenericToTStatus</a>(status);        \</div><div class="line">    ARROW_RETURN_IF_(!__s.<a class="code" href="classliten_1_1TStatus.html#a26919cdb96a21deb343b5ae2205ac542">ok</a>(), __s, ARROW_STRINGIFY(status));    \</div><div class="line">} <span class="keywordflow">while</span> (<span class="keyword">false</span>)</div><div class="ttc" id="classliten_1_1TStatus_html"><div class="ttname"><a href="classliten_1_1TStatus.html">liten::TStatus</a></div><div class="ttdoc">Status outcome object (success or error) </div><div class="ttdef"><b>Definition:</b> TStatus.h:110</div></div>
+<div class="ttc" id="namespaceliten_html_aa645ee13281187bc7114c6e6fcbef93e"><div class="ttname"><a href="namespaceliten.html#aa645ee13281187bc7114c6e6fcbef93e">liten::GenericToTStatus</a></div><div class="ttdeci">TStatus GenericToTStatus(TStatus &amp;&amp;st)</div><div class="ttdef"><b>Definition:</b> TStatus.h:400</div></div>
+<div class="ttc" id="classliten_1_1TStatus_html_a26919cdb96a21deb343b5ae2205ac542"><div class="ttname"><a href="classliten_1_1TStatus.html#a26919cdb96a21deb343b5ae2205ac542">liten::TStatus::ok</a></div><div class="ttdeci">bool ok() const</div><div class="ttdoc">Return true iff the status indicates success. </div><div class="ttdef"><b>Definition:</b> TStatus.h:229</div></div>
+</div><!-- fragment -->
+<p>Propagate any non-successful Status to the caller. </p>
+
+</div>
+</div>
+<a id="a70e7ded57589f7c4839b2ac5315e5717"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70e7ded57589f7c4839b2ac5315e5717">&#9670;&nbsp;</a></span>LITEN_RETURN_NOT_OK_ELSE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define LITEN_RETURN_NOT_OK_ELSE</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">s, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">else_&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line"><span class="keywordflow">do</span> {                                                          \</div><div class="line">  <a class="code" href="classliten_1_1TStatus.html">::liten::TStatus</a> _s = <a class="code" href="namespaceliten.html#aa645ee13281187bc7114c6e6fcbef93e">::liten::GenericToTStatus</a>(s);          \</div><div class="line">  if (!_s.<a class="code" href="classliten_1_1TStatus.html#a26919cdb96a21deb343b5ae2205ac542">ok</a>()) {                                             \</div><div class="line">   else_;                                                    \</div><div class="line">   return _s;                                                \</div><div class="line">  }                                                           \</div><div class="line">} <span class="keywordflow">while</span> (<span class="keyword">false</span>)</div><div class="ttc" id="classliten_1_1TStatus_html"><div class="ttname"><a href="classliten_1_1TStatus.html">liten::TStatus</a></div><div class="ttdoc">Status outcome object (success or error) </div><div class="ttdef"><b>Definition:</b> TStatus.h:110</div></div>
+<div class="ttc" id="namespaceliten_html_aa645ee13281187bc7114c6e6fcbef93e"><div class="ttname"><a href="namespaceliten.html#aa645ee13281187bc7114c6e6fcbef93e">liten::GenericToTStatus</a></div><div class="ttdeci">TStatus GenericToTStatus(TStatus &amp;&amp;st)</div><div class="ttdef"><b>Definition:</b> TStatus.h:400</div></div>
+<div class="ttc" id="classliten_1_1TStatus_html_a26919cdb96a21deb343b5ae2205ac542"><div class="ttname"><a href="classliten_1_1TStatus.html#a26919cdb96a21deb343b5ae2205ac542">liten::TStatus::ok</a></div><div class="ttdeci">bool ok() const</div><div class="ttdoc">Return true iff the status indicates success. </div><div class="ttdef"><b>Definition:</b> TStatus.h:229</div></div>
+</div><!-- fragment -->
+</div>
+</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

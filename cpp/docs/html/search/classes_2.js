@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['makesharedenabler',['MakeSharedEnabler',['../structliten_1_1TConfigs_1_1MakeSharedEnabler.html',1,'liten::TConfigs::MakeSharedEnabler'],['../structliten_1_1TTable_1_1MakeSharedEnabler.html',1,'liten::TTable::MakeSharedEnabler'],['../structliten_1_1TLog_1_1MakeSharedEnabler.html',1,'liten::TLog::MakeSharedEnabler'],['../structliten_1_1TBlock_1_1MakeSharedEnabler.html',1,'liten::TBlock::MakeSharedEnabler'],['../structliten_1_1TCache_1_1MakeSharedEnabler.html',1,'liten::TCache::MakeSharedEnabler'],['../structliten_1_1TGuid_1_1MakeSharedEnabler.html',1,'liten::TGuid::MakeSharedEnabler'],['../structliten_1_1TCatalog_1_1MakeSharedEnabler.html',1,'liten::TCatalog::MakeSharedEnabler'],['../structliten_1_1TService_1_1MakeSharedEnabler.html',1,'liten::TService::MakeSharedEnabler'],['../structliten_1_1TRowBlock_1_1MakeSharedEnabler.html',1,'liten::TRowBlock::MakeSharedEnabler'],['../structliten_1_1TSchema_1_1MakeSharedEnabler.html',1,'liten::TSchema::MakeSharedEnabler']]]
+  ['hash_5fboost',['hash_boost',['../structliten_1_1hash__boost.html',1,'liten']]],
+  ['hash_5fpair',['hash_pair',['../structliten_1_1hash__pair.html',1,'liten']]]
 ];

@@ -65,6 +65,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classliten_1_1TColumn-members.html">List of all members</a>  </div>
@@ -74,30 +75,114 @@ $(function() {
 <div class="contents">
 
 <p><code>#include &lt;<a class="el" href="TColumn_8h_source.html">TColumn.h</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for liten::TColumn:</div>
+<div class="dyncontent">
+<div class="center"><img src="classliten_1_1TColumn__inherit__graph.png" border="0" usemap="#liten_1_1TColumn_inherit__map" alt="Inheritance graph"/></div>
+<map name="liten_1_1TColumn_inherit__map" id="liten_1_1TColumn_inherit__map">
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for liten::TColumn:</div>
+<div class="dyncontent">
+<div class="center"><img src="classliten_1_1TColumn__coll__graph.png" border="0" usemap="#liten_1_1TColumn_coll__map" alt="Collaboration graph"/></div>
+<map name="liten_1_1TColumn_coll__map" id="liten_1_1TColumn_coll__map">
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TColumn_1_1Iterator.html">Iterator</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A simple forward iterator for <a class="el" href="classliten_1_1TColumn.html">TColumn</a>.  <a href="classliten_1_1TColumn_1_1Iterator.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aa90a8ce9e1a99a6b4987f2830264e389"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TColumn.html#aa90a8ce9e1a99a6b4987f2830264e389">TColumn</a> (std::string name, <a class="el" href="namespaceliten.html#a0bceb441a3312e84adfce46bf4c8953f">TableType</a> type, std::shared_ptr&lt; arrow::ChunkedArray &gt; chunkedArray)</td></tr>
-<tr class="separator:aa90a8ce9e1a99a6b4987f2830264e389"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af32ce6b3dc58b4f9a417042e0b6daa2c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classliten_1_1TStatus.html">TStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TColumn.html#af32ce6b3dc58b4f9a417042e0b6daa2c">AddToCatalog</a> ()</td></tr>
-<tr class="memdesc:af32ce6b3dc58b4f9a417042e0b6daa2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add all blocks to catalog.  <a href="#af32ce6b3dc58b4f9a417042e0b6daa2c">More...</a><br /></td></tr>
-<tr class="separator:af32ce6b3dc58b4f9a417042e0b6daa2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a2dca0356b17aaa73d3368679e20213"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TColumn.html#a4a2dca0356b17aaa73d3368679e20213">TColumn</a> (std::shared_ptr&lt; <a class="el" href="classliten_1_1TTable.html">TTable</a> &gt; table, std::shared_ptr&lt; arrow::Field &gt; field)</td></tr>
+<tr class="memdesc:a4a2dca0356b17aaa73d3368679e20213"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a column.  <a href="#a4a2dca0356b17aaa73d3368679e20213">More...</a><br /></td></tr>
+<tr class="separator:a4a2dca0356b17aaa73d3368679e20213"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a49f5ccb45a0bf53a61261473442bb9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classliten_1_1TStatus.html">TStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TColumn.html#a4a49f5ccb45a0bf53a61261473442bb9">Add</a> (std::shared_ptr&lt; <a class="el" href="classliten_1_1TBlock.html">TBlock</a> &gt; tBlock)</td></tr>
+<tr class="memdesc:a4a49f5ccb45a0bf53a61261473442bb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add <a class="el" href="classliten_1_1TBlock.html">TBlock</a> to Column.  <a href="#a4a49f5ccb45a0bf53a61261473442bb9">More...</a><br /></td></tr>
+<tr class="separator:a4a49f5ccb45a0bf53a61261473442bb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea0c4de6860ba1046e8eeb9ffeba5ca3"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TColumn.html#aea0c4de6860ba1046e8eeb9ffeba5ca3">NumBlocks</a> ()</td></tr>
+<tr class="memdesc:aea0c4de6860ba1046e8eeb9ffeba5ca3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get number of blocks.  <a href="#aea0c4de6860ba1046e8eeb9ffeba5ca3">More...</a><br /></td></tr>
+<tr class="separator:aea0c4de6860ba1046e8eeb9ffeba5ca3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a261fb838f70d14397941e9d0ebb553c5"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TColumn.html#a261fb838f70d14397941e9d0ebb553c5">NumRows</a> ()</td></tr>
+<tr class="memdesc:a261fb838f70d14397941e9d0ebb553c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Total number of rows in column.  <a href="#a261fb838f70d14397941e9d0ebb553c5">More...</a><br /></td></tr>
+<tr class="separator:a261fb838f70d14397941e9d0ebb553c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73ec32dd6d288240eba506f06f03db7d"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classliten_1_1TBlock.html">TBlock</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TColumn.html#a73ec32dd6d288240eba506f06f03db7d">GetBlock</a> (int64_t blkNum)</td></tr>
+<tr class="memdesc:a73ec32dd6d288240eba506f06f03db7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get blkNum block, null if out of range.  <a href="#a73ec32dd6d288240eba506f06f03db7d">More...</a><br /></td></tr>
+<tr class="separator:a73ec32dd6d288240eba506f06f03db7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45f864b88e33d2e5ccc09f5ee35646a5"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classliten_1_1TTable.html">TTable</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TColumn.html#a45f864b88e33d2e5ccc09f5ee35646a5">GetTable</a> ()</td></tr>
+<tr class="memdesc:a45f864b88e33d2e5ccc09f5ee35646a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get associated table.  <a href="#a45f864b88e33d2e5ccc09f5ee35646a5">More...</a><br /></td></tr>
+<tr class="separator:a45f864b88e33d2e5ccc09f5ee35646a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1bcace73d352434a9567bd64ebab5c1"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; arrow::ChunkedArray &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TColumn.html#af1bcace73d352434a9567bd64ebab5c1">Slice</a> (int64_t offset, int64_t length)</td></tr>
+<tr class="separator:af1bcace73d352434a9567bd64ebab5c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf5b4310196a4066004493ae6c3ddf59"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TColumn.html#aaf5b4310196a4066004493ae6c3ddf59">GetName</a> ()</td></tr>
+<tr class="memdesc:aaf5b4310196a4066004493ae6c3ddf59"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get col name.  <a href="#aaf5b4310196a4066004493ae6c3ddf59">More...</a><br /></td></tr>
+<tr class="separator:aaf5b4310196a4066004493ae6c3ddf59"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbae2aa54f6ee7f6bb36d9782a739463"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classliten_1_1TResult.html">TResult</a>&lt; std::shared_ptr&lt; <a class="el" href="classliten_1_1TColumnMap.html">TColumnMap</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TColumn.html#abbae2aa54f6ee7f6bb36d9782a739463">GetMap</a> ()</td></tr>
+<tr class="memdesc:abbae2aa54f6ee7f6bb36d9782a739463"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the map if already exists, else create one.  <a href="#abbae2aa54f6ee7f6bb36d9782a739463">More...</a><br /></td></tr>
+<tr class="separator:abbae2aa54f6ee7f6bb36d9782a739463"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e27af2fea1699817bec3d9ccd564a10"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classliten_1_1TStatus.html">TStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TColumn.html#a7e27af2fea1699817bec3d9ccd564a10">CreateZoneMap</a> (bool forceCreate=false)</td></tr>
+<tr class="separator:a7e27af2fea1699817bec3d9ccd564a10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ac5b2e0760dcdbee1602934a540b8bf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classliten_1_1TStatus.html">TStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TColumn.html#a1ac5b2e0760dcdbee1602934a540b8bf">CreateReverseMap</a> (bool forceCreate=false)</td></tr>
+<tr class="separator:a1ac5b2e0760dcdbee1602934a540b8bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac13905aa3005e8947816ffa08a9f0111"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classliten_1_1TColumnMap.html">TColumnMap</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TColumn.html#ac13905aa3005e8947816ffa08a9f0111">GetCurMap</a> ()</td></tr>
+<tr class="memdesc:ac13905aa3005e8947816ffa08a9f0111"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get map for this column.  <a href="#ac13905aa3005e8947816ffa08a9f0111">More...</a><br /></td></tr>
+<tr class="separator:ac13905aa3005e8947816ffa08a9f0111"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abcd05df4bb1f82dc7e2f4b7406c48bb7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TColumn.html#abcd05df4bb1f82dc7e2f4b7406c48bb7">ToString</a> (bool values, bool zonemap, bool reversemap)</td></tr>
+<tr class="memdesc:abcd05df4bb1f82dc7e2f4b7406c48bb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">String debug output.  <a href="#abcd05df4bb1f82dc7e2f4b7406c48bb7">More...</a><br /></td></tr>
+<tr class="separator:abcd05df4bb1f82dc7e2f4b7406c48bb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2e17cd02820ec7e5387172bff90f1d8"><td class="memTemplParams" colspan="2">template&lt;class Type , class ArrayType &gt; </td></tr>
+<tr class="memitem:ae2e17cd02820ec7e5387172bff90f1d8"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="structliten_1_1TRowId.html">TRowId</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classliten_1_1TColumn.html#ae2e17cd02820ec7e5387172bff90f1d8">GetRowId</a> (Type &amp;value)</td></tr>
+<tr class="memdesc:ae2e17cd02820ec7e5387172bff90f1d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">first rowId for a given value  <a href="#ae2e17cd02820ec7e5387172bff90f1d8">More...</a><br /></td></tr>
+<tr class="separator:ae2e17cd02820ec7e5387172bff90f1d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb0be11541f96f15a1ffb4b084399f58"><td class="memTemplParams" colspan="2">template&lt;class Type , class ArrayType &gt; </td></tr>
+<tr class="memitem:adb0be11541f96f15a1ffb4b084399f58"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="structliten_1_1TRowId.html">TRowId</a>&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classliten_1_1TColumn.html#adb0be11541f96f15a1ffb4b084399f58">GetRowIdLinear</a> (Type &amp;value)</td></tr>
+<tr class="separator:adb0be11541f96f15a1ffb4b084399f58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54a33b9e043c4c8ecdc3d55719c6afe8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structliten_1_1TRowId.html">TRowId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TColumn.html#a54a33b9e043c4c8ecdc3d55719c6afe8">GetRowId</a> (int64_t rowNum)</td></tr>
+<tr class="memdesc:a54a33b9e043c4c8ecdc3d55719c6afe8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Given rowNum get blkId and rowId.  <a href="#a54a33b9e043c4c8ecdc3d55719c6afe8">More...</a><br /></td></tr>
+<tr class="separator:a54a33b9e043c4c8ecdc3d55719c6afe8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01b608ffe498c6a5f5be39e84f8bfc49"><td class="memTemplParams" colspan="2">template&lt;class Type , class ArrayType &gt; </td></tr>
+<tr class="memitem:a01b608ffe498c6a5f5be39e84f8bfc49"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classliten_1_1TResult.html">TResult</a>&lt; Type &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classliten_1_1TColumn.html#a01b608ffe498c6a5f5be39e84f8bfc49">GetValue</a> (<a class="el" href="structliten_1_1TRowId.html">TRowId</a> &amp;id)</td></tr>
+<tr class="memdesc:a01b608ffe498c6a5f5be39e84f8bfc49"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get value from rowid.  <a href="#a01b608ffe498c6a5f5be39e84f8bfc49">More...</a><br /></td></tr>
+<tr class="separator:a01b608ffe498c6a5f5be39e84f8bfc49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5247028f4eee41f2cc24206ef9dbe1a3"><td class="memTemplParams" colspan="2">template&lt;class Type , class ArrayType &gt; </td></tr>
+<tr class="memitem:a5247028f4eee41f2cc24206ef9dbe1a3"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classliten_1_1TResult.html">TResult</a>&lt; Type &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classliten_1_1TColumn.html#a5247028f4eee41f2cc24206ef9dbe1a3">GetValue</a> (int64_t rowId)</td></tr>
+<tr class="memdesc:a5247028f4eee41f2cc24206ef9dbe1a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">This is currently slow, get value from a linear value of rowId.  <a href="#a5247028f4eee41f2cc24206ef9dbe1a3">More...</a><br /></td></tr>
+<tr class="separator:a5247028f4eee41f2cc24206ef9dbe1a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af26cfe432f46a81776c01a45c446d9eb"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TColumn.html#af26cfe432f46a81776c01a45c446d9eb">GetRowNum</a> (<a class="el" href="structliten_1_1TRowId.html">TRowId</a> rowId)</td></tr>
+<tr class="separator:af26cfe432f46a81776c01a45c446d9eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41914e5c059479673207a9b561a29bab"><td class="memItemLeft" align="right" valign="top">arrow::Result&lt; std::shared_ptr&lt; arrow::Scalar &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TColumn.html#a41914e5c059479673207a9b561a29bab">GetScalar</a> (int64_t rowId)</td></tr>
+<tr class="separator:a41914e5c059479673207a9b561a29bab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76d6535cc85990173d037eca25a4bbb9"><td class="memItemLeft" align="right" valign="top">arrow::Result&lt; std::shared_ptr&lt; arrow::Scalar &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TColumn.html#a76d6535cc85990173d037eca25a4bbb9">GetScalar</a> (int64_t arrId, int64_t rowId)</td></tr>
+<tr class="separator:a76d6535cc85990173d037eca25a4bbb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
+<tr class="memitem:a187c1d2fb186a4b2f7ec09cdabd4c3d6"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classliten_1_1TBlock.html">TBlock</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TColumn.html#a187c1d2fb186a4b2f7ec09cdabd4c3d6">blocks_</a></td></tr>
+<tr class="memdesc:a187c1d2fb186a4b2f7ec09cdabd4c3d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">chunkedArrows from which <a class="el" href="classliten_1_1TCache.html" title="TCache maintains a Liten cache. ">TCache</a> was created  <a href="#a187c1d2fb186a4b2f7ec09cdabd4c3d6">More...</a><br /></td></tr>
+<tr class="separator:a187c1d2fb186a4b2f7ec09cdabd4c3d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3efae6e0e2822bf957125530fa8b977e"><td class="memItemLeft" align="right" valign="top">int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TColumn.html#a3efae6e0e2822bf957125530fa8b977e">numRows_</a></td></tr>
+<tr class="memdesc:a3efae6e0e2822bf957125530fa8b977e"><td class="mdescLeft">&#160;</td><td class="mdescRight">total rows in columns  <a href="#a3efae6e0e2822bf957125530fa8b977e">More...</a><br /></td></tr>
+<tr class="separator:a3efae6e0e2822bf957125530fa8b977e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5615538ef6487b0b19fe26b6cb3c9945"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; arrow::Field &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TColumn.html#a5615538ef6487b0b19fe26b6cb3c9945">field_</a></td></tr>
+<tr class="memdesc:a5615538ef6487b0b19fe26b6cb3c9945"><td class="mdescLeft">&#160;</td><td class="mdescRight">field associated with this column  <a href="#a5615538ef6487b0b19fe26b6cb3c9945">More...</a><br /></td></tr>
+<tr class="separator:a5615538ef6487b0b19fe26b6cb3c9945"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7da9f21a62cefec208ec82d1fe0921af"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TColumn.html#a7da9f21a62cefec208ec82d1fe0921af">name_</a></td></tr>
-<tr class="memdesc:a7da9f21a62cefec208ec82d1fe0921af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Arrow table name, must be unique.  <a href="#a7da9f21a62cefec208ec82d1fe0921af">More...</a><br /></td></tr>
+<tr class="memdesc:a7da9f21a62cefec208ec82d1fe0921af"><td class="mdescLeft">&#160;</td><td class="mdescRight">name of the column same as field  <a href="#a7da9f21a62cefec208ec82d1fe0921af">More...</a><br /></td></tr>
 <tr class="separator:a7da9f21a62cefec208ec82d1fe0921af"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0295af72dbcf011ab63ae11b1f635fee"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceliten.html#a0bceb441a3312e84adfce46bf4c8953f">TableType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TColumn.html#a0295af72dbcf011ab63ae11b1f635fee">type_</a></td></tr>
-<tr class="memdesc:a0295af72dbcf011ab63ae11b1f635fee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of column -fact or dimension.  <a href="#a0295af72dbcf011ab63ae11b1f635fee">More...</a><br /></td></tr>
-<tr class="separator:a0295af72dbcf011ab63ae11b1f635fee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a594559a93cf55af4adf4ce5edb055e54"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; arrow::ChunkedArray &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TColumn.html#a594559a93cf55af4adf4ce5edb055e54">chunkedArray_</a></td></tr>
-<tr class="memdesc:a594559a93cf55af4adf4ce5edb055e54"><td class="mdescLeft">&#160;</td><td class="mdescRight">chunkedArrows from which <a class="el" href="classliten_1_1TCache.html" title="TCache maintains a Liten cache. ">TCache</a> was created  <a href="#a594559a93cf55af4adf4ce5edb055e54">More...</a><br /></td></tr>
-<tr class="separator:a594559a93cf55af4adf4ce5edb055e54"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9afa19f9c7dcf505fcc67756d113979a"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classliten_1_1TTable.html">TTable</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TColumn.html#a9afa19f9c7dcf505fcc67756d113979a">table_</a></td></tr>
+<tr class="memdesc:a9afa19f9c7dcf505fcc67756d113979a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Table to which this column belongs.  <a href="#a9afa19f9c7dcf505fcc67756d113979a">More...</a><br /></td></tr>
+<tr class="separator:a9afa19f9c7dcf505fcc67756d113979a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ee147b0fd6abb850832407111ccb958"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classliten_1_1TColumnMap.html">TColumnMap</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classliten_1_1TColumn.html#a8ee147b0fd6abb850832407111ccb958">map_</a></td></tr>
+<tr class="memdesc:a8ee147b0fd6abb850832407111ccb958"><td class="mdescLeft">&#160;</td><td class="mdescRight">map columns to create the tensor structures  <a href="#a8ee147b0fd6abb850832407111ccb958">More...</a><br /></td></tr>
+<tr class="separator:a8ee147b0fd6abb850832407111ccb958"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="aa90a8ce9e1a99a6b4987f2830264e389"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa90a8ce9e1a99a6b4987f2830264e389">&#9670;&nbsp;</a></span>TColumn()</h2>
+<a id="a4a2dca0356b17aaa73d3368679e20213"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a2dca0356b17aaa73d3368679e20213">&#9670;&nbsp;</a></span>TColumn()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -108,20 +193,14 @@ Private Attributes</h2></td></tr>
         <tr>
           <td class="memname">liten::TColumn::TColumn </td>
           <td>(</td>
-          <td class="paramtype">std::string&#160;</td>
-          <td class="paramname"><em>name</em>, </td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classliten_1_1TTable.html">TTable</a> &gt;&#160;</td>
+          <td class="paramname"><em>table</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespaceliten.html#a0bceb441a3312e84adfce46bf4c8953f">TableType</a>&#160;</td>
-          <td class="paramname"><em>type</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::shared_ptr&lt; arrow::ChunkedArray &gt;&#160;</td>
-          <td class="paramname"><em>chunkedArray</em>&#160;</td>
+          <td class="paramtype">std::shared_ptr&lt; arrow::Field &gt;&#160;</td>
+          <td class="paramname"><em>field</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -135,40 +214,70 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Construct a column </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">name</td><td>of the column </td></tr>
-    <tr><td class="paramname">type</td><td>if dimension or fact table </td></tr>
-    <tr><td class="paramname">chunkedArrow</td><td>an arrow table that has been read </td></tr>
-  </table>
-  </dd>
-</dl>
+
+<p>Construct a column. </p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="af32ce6b3dc58b4f9a417042e0b6daa2c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af32ce6b3dc58b4f9a417042e0b6daa2c">&#9670;&nbsp;</a></span>AddToCatalog()</h2>
+<a id="a4a49f5ccb45a0bf53a61261473442bb9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a49f5ccb45a0bf53a61261473442bb9">&#9670;&nbsp;</a></span>Add()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classliten_1_1TStatus.html">TStatus</a> liten::TColumn::AddToCatalog </td>
+          <td class="memname"><a class="el" href="classliten_1_1TStatus.html">TStatus</a> liten::TColumn::Add </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classliten_1_1TBlock.html">TBlock</a> &gt;&#160;</td>
+          <td class="paramname"><em>tBlock</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Add all blocks to catalog. </p>
+<p>Add <a class="el" href="classliten_1_1TBlock.html">TBlock</a> to Column. </p>
 
 </div>
 </div>
-<h2 class="groupheader">Member Data Documentation</h2>
-<a id="a594559a93cf55af4adf4ce5edb055e54"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a594559a93cf55af4adf4ce5edb055e54">&#9670;&nbsp;</a></span>chunkedArray_</h2>
+<a id="a1ac5b2e0760dcdbee1602934a540b8bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ac5b2e0760dcdbee1602934a540b8bf">&#9670;&nbsp;</a></span>CreateReverseMap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classliten_1_1TStatus.html">TStatus</a> liten::TColumn::CreateReverseMap </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>forceCreate</em> = <code>false</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7e27af2fea1699817bec3d9ccd564a10"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e27af2fea1699817bec3d9ccd564a10">&#9670;&nbsp;</a></span>CreateZoneMap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classliten_1_1TStatus.html">TStatus</a> liten::TColumn::CreateZoneMap </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>forceCreate</em> = <code>false</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a73ec32dd6d288240eba506f06f03db7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73ec32dd6d288240eba506f06f03db7d">&#9670;&nbsp;</a></span>GetBlock()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -177,7 +286,457 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::shared_ptr&lt;arrow::ChunkedArray&gt; liten::TColumn::chunkedArray_</td>
+          <td class="memname">std::shared_ptr&lt; <a class="el" href="classliten_1_1TBlock.html">TBlock</a> &gt; liten::TColumn::GetBlock </td>
+          <td>(</td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>blkNum</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get blkNum block, null if out of range. </p>
+<p>Get number of blocks. </p>
+
+</div>
+</div>
+<a id="ac13905aa3005e8947816ffa08a9f0111"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac13905aa3005e8947816ffa08a9f0111">&#9670;&nbsp;</a></span>GetCurMap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt;<a class="el" href="classliten_1_1TColumnMap.html">TColumnMap</a>&gt; liten::TColumn::GetCurMap </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get map for this column. </p>
+
+</div>
+</div>
+<a id="abbae2aa54f6ee7f6bb36d9782a739463"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abbae2aa54f6ee7f6bb36d9782a739463">&#9670;&nbsp;</a></span>GetMap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classliten_1_1TResult.html">TResult</a>&lt; std::shared_ptr&lt; <a class="el" href="classliten_1_1TColumnMap.html">TColumnMap</a> &gt; &gt; liten::TColumn::GetMap </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the map if already exists, else create one. </p>
+
+</div>
+</div>
+<a id="aaf5b4310196a4066004493ae6c3ddf59"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf5b4310196a4066004493ae6c3ddf59">&#9670;&nbsp;</a></span>GetName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string liten::TColumn::GetName </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get col name. </p>
+
+</div>
+</div>
+<a id="ae2e17cd02820ec7e5387172bff90f1d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2e17cd02820ec7e5387172bff90f1d8">&#9670;&nbsp;</a></span>GetRowId() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Type , class ArrayType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structliten_1_1TRowId.html">TRowId</a> liten::TColumn::GetRowId </td>
+          <td>(</td>
+          <td class="paramtype">Type &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>first rowId for a given value </p>
+
+</div>
+</div>
+<a id="a54a33b9e043c4c8ecdc3d55719c6afe8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54a33b9e043c4c8ecdc3d55719c6afe8">&#9670;&nbsp;</a></span>GetRowId() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structliten_1_1TRowId.html">TRowId</a> liten::TColumn::GetRowId </td>
+          <td>(</td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>rowNum</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Given rowNum get blkId and rowId. </p>
+
+</div>
+</div>
+<a id="adb0be11541f96f15a1ffb4b084399f58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb0be11541f96f15a1ffb4b084399f58">&#9670;&nbsp;</a></span>GetRowIdLinear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Type , class ArrayType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structliten_1_1TRowId.html">TRowId</a> liten::TColumn::GetRowIdLinear </td>
+          <td>(</td>
+          <td class="paramtype">Type &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af26cfe432f46a81776c01a45c446d9eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af26cfe432f46a81776c01a45c446d9eb">&#9670;&nbsp;</a></span>GetRowNum()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t liten::TColumn::GetRowNum </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structliten_1_1TRowId.html">TRowId</a>&#160;</td>
+          <td class="paramname"><em>rowId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a41914e5c059479673207a9b561a29bab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41914e5c059479673207a9b561a29bab">&#9670;&nbsp;</a></span>GetScalar() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">arrow::Result&lt; std::shared_ptr&lt; arrow::Scalar &gt; &gt; liten::TColumn::GetScalar </td>
+          <td>(</td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>rowId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a76d6535cc85990173d037eca25a4bbb9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76d6535cc85990173d037eca25a4bbb9">&#9670;&nbsp;</a></span>GetScalar() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">arrow::Result&lt; std::shared_ptr&lt; arrow::Scalar &gt; &gt; liten::TColumn::GetScalar </td>
+          <td>(</td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>arrId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>rowId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a45f864b88e33d2e5ccc09f5ee35646a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45f864b88e33d2e5ccc09f5ee35646a5">&#9670;&nbsp;</a></span>GetTable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt; <a class="el" href="classliten_1_1TTable.html">TTable</a> &gt; liten::TColumn::GetTable </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get associated table. </p>
+
+</div>
+</div>
+<a id="a01b608ffe498c6a5f5be39e84f8bfc49"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01b608ffe498c6a5f5be39e84f8bfc49">&#9670;&nbsp;</a></span>GetValue() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Type , class ArrayType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classliten_1_1TResult.html">TResult</a>&lt; Type &gt; liten::TColumn::GetValue </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structliten_1_1TRowId.html">TRowId</a> &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get value from rowid. </p>
+
+</div>
+</div>
+<a id="a5247028f4eee41f2cc24206ef9dbe1a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5247028f4eee41f2cc24206ef9dbe1a3">&#9670;&nbsp;</a></span>GetValue() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Type , class ArrayType &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classliten_1_1TResult.html">TResult</a>&lt; Type &gt; liten::TColumn::GetValue </td>
+          <td>(</td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>rowId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>This is currently slow, get value from a linear value of rowId. </p>
+
+</div>
+</div>
+<a id="aea0c4de6860ba1046e8eeb9ffeba5ca3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea0c4de6860ba1046e8eeb9ffeba5ca3">&#9670;&nbsp;</a></span>NumBlocks()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t liten::TColumn::NumBlocks </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get number of blocks. </p>
+
+</div>
+</div>
+<a id="a261fb838f70d14397941e9d0ebb553c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a261fb838f70d14397941e9d0ebb553c5">&#9670;&nbsp;</a></span>NumRows()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t liten::TColumn::NumRows </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Total number of rows in column. </p>
+
+</div>
+</div>
+<a id="af1bcace73d352434a9567bd64ebab5c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1bcace73d352434a9567bd64ebab5c1">&#9670;&nbsp;</a></span>Slice()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt; arrow::ChunkedArray &gt; liten::TColumn::Slice </td>
+          <td>(</td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>offset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>length</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abcd05df4bb1f82dc7e2f4b7406c48bb7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abcd05df4bb1f82dc7e2f4b7406c48bb7">&#9670;&nbsp;</a></span>ToString()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string liten::TColumn::ToString </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>values</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>zonemap</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>reversemap</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>String debug output. </p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a187c1d2fb186a4b2f7ec09cdabd4c3d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a187c1d2fb186a4b2f7ec09cdabd4c3d6">&#9670;&nbsp;</a></span>blocks_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::shared_ptr&lt;<a class="el" href="classliten_1_1TBlock.html">TBlock</a>&gt; &gt; liten::TColumn::blocks_</td>
         </tr>
       </table>
   </td>
@@ -188,6 +747,54 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>chunkedArrows from which <a class="el" href="classliten_1_1TCache.html" title="TCache maintains a Liten cache. ">TCache</a> was created </p>
+
+</div>
+</div>
+<a id="a5615538ef6487b0b19fe26b6cb3c9945"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5615538ef6487b0b19fe26b6cb3c9945">&#9670;&nbsp;</a></span>field_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt;arrow::Field&gt; liten::TColumn::field_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>field associated with this column </p>
+
+</div>
+</div>
+<a id="a8ee147b0fd6abb850832407111ccb958"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ee147b0fd6abb850832407111ccb958">&#9670;&nbsp;</a></span>map_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt;<a class="el" href="classliten_1_1TColumnMap.html">TColumnMap</a>&gt; liten::TColumn::map_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>map columns to create the tensor structures </p>
 
 </div>
 </div>
@@ -211,12 +818,12 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Arrow table name, must be unique. </p>
+<p>name of the column same as field </p>
 
 </div>
 </div>
-<a id="a0295af72dbcf011ab63ae11b1f635fee"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0295af72dbcf011ab63ae11b1f635fee">&#9670;&nbsp;</a></span>type_</h2>
+<a id="a3efae6e0e2822bf957125530fa8b977e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3efae6e0e2822bf957125530fa8b977e">&#9670;&nbsp;</a></span>numRows_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -225,7 +832,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="namespaceliten.html#a0bceb441a3312e84adfce46bf4c8953f">TableType</a> liten::TColumn::type_</td>
+          <td class="memname">int64_t liten::TColumn::numRows_</td>
         </tr>
       </table>
   </td>
@@ -235,7 +842,31 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Type of column -fact or dimension. </p>
+<p>total rows in columns </p>
+
+</div>
+</div>
+<a id="a9afa19f9c7dcf505fcc67756d113979a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9afa19f9c7dcf505fcc67756d113979a">&#9670;&nbsp;</a></span>table_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt;<a class="el" href="classliten_1_1TTable.html">TTable</a>&gt; liten::TColumn::table_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Table to which this column belongs. </p>
 
 </div>
 </div>

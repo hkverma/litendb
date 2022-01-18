@@ -141,14 +141,6 @@ public:
                          int64_t parentColId, // parent Col Id
                          TRowId& parentRowId); // Return parent rowId for hieararchical lookups
 
-
-  /// Current table to child. GetValue looks at the parent table joined by two hierarchies
-  /*  template<class Type, class ArrayType> inline
-  TResult<Type> GetValue(TRowId rowId,       // rowId
-                         int64_t colId,     // col Id
-                         int64_t parent0ColId, // parent0 Col Id to be joined
-                         int64_t parent1ColId); // parent1 Col Id to be joined
-  */
   // TBD Add to the option class
   static const bool EnableColumnReverseMap = false;
 
@@ -265,34 +257,6 @@ inline TResult<Type> TTable::GetValue(TRowId rowId, // rowId
   return std::move(parentColumn->GetValue<Type, ArrayType>(parentRowId));
 }
 
-/*TBD
-template<class Type, class ArrayType>
-inline TResult<Type> TTable::GetValue(TRowId rowId,       // rowId
-                               int64_t colId,     // col Id
-                               int64_t parent0ColId, // parent0 Col Id to be joined
-                               int64_t parent1ColId) // parent1 Col Id to be joined
-{
-
-  auto parent0RowId = GetParentInfo(colId, rowId);
-  if (parent0RowId.blkNum < 0)
-  {
-    return TStatus::Invalid("Invalid tensor representation");
-  }
-
-  auto parent0Table = parentColumn_[colId]->GetTable();
-  auto parent1RowId = parent0Table->GetParentInfo(parent0ColId, parent0RowId);
-  if (parent1RowId.blkNum < 0)
-  {
-    return TStatus::Invalid("Invalid tensor representation");
-  }
-
-  auto parent1Column = parent0Table->parentColumn_[parent0ColId]->GetTable()->GetColumn(parent1ColId);
-  auto value = std::move(parent1Column->GetValue<Type, ArrayType>(parent1RowId));
-
-  return value;
-
-}
-*/
 inline TRowId TTable::GetParentInfo(int64_t colNum, TRowId id)
 {
   auto lkup = parentRowIdLookup_[colNum];

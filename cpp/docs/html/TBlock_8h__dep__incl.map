@@ -1,8 +1,13 @@
 <map id="cache/TBlock.h" name="cache/TBlock.h">
-<area shape="rect" id="node2" href="$cache_8h.html" title="cache/cache.h" alt="" coords="5,80,112,107"/>
-<area shape="rect" id="node3" href="$TBlock_8cpp.html" title="cache/TBlock.cpp" alt="" coords="137,80,263,107"/>
-<area shape="rect" id="node4" href="$TCache_8cpp.html" title="cache/TCache.cpp" alt="" coords="287,80,419,107"/>
-<area shape="rect" id="node5" href="$TColumn_8cpp.html" title="cache/TColumn.cpp" alt="" coords="444,80,583,107"/>
-<area shape="rect" id="node6" href="$TRowBlock_8cpp.html" title="cache/TRowBlock.cpp" alt="" coords="607,80,761,107"/>
-<area shape="rect" id="node7" href="$TTable_8cpp.html" title="cache/TTable.cpp" alt="" coords="786,80,913,107"/>
+<area shape="rect" id="node2" href="$cache_8h.html" title="cache/cache.h" alt="" coords="5,229,112,256"/>
+<area shape="rect" id="node3" href="$TColumn_8h.html" title="cache/TColumn.h" alt="" coords="483,80,608,107"/>
+<area shape="rect" id="node5" href="$TCache_8cpp.html" title="cache/TCache.cpp" alt="" coords="137,229,269,256"/>
+<area shape="rect" id="node8" href="$TTable_8cpp.html" title="cache/TTable.cpp" alt="" coords="623,229,750,256"/>
+<area shape="rect" id="node9" href="$TColumn_8cpp.html" title="cache/TColumn.cpp" alt="" coords="643,155,781,181"/>
+<area shape="rect" id="node11" href="$TBlock_8cpp.html" title="cache/TBlock.cpp" alt="" coords="857,80,983,107"/>
+<area shape="rect" id="node12" href="$TRowBlock_8cpp.html" title="cache/TRowBlock.cpp" alt="" coords="1008,80,1163,107"/>
+<area shape="rect" id="node4" href="$TTable_8h.html" title="cache/TTable.h" alt="" coords="267,155,379,181"/>
+<area shape="rect" id="node10" href="$TColumnMap_8cpp.html" title="cache/TColumnMap.cpp" alt="" coords="403,155,567,181"/>
+<area shape="rect" id="node6" href="$TCatalog_8cpp.html" title="cache/TCatalog.cpp" alt="" coords="460,229,599,256"/>
+<area shape="rect" id="node7" href="$TSchema_8cpp.html" title="cache/TSchema.cpp" alt="" coords="293,229,435,256"/>
 </map>

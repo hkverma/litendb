@@ -1,21 +1,4 @@
 var searchData=
 [
-  ['tblock',['TBlock',['../classliten_1_1TBlock.html',1,'liten']]],
-  ['tcache',['TCache',['../classliten_1_1TCache.html',1,'liten']]],
-  ['tcatalog',['TCatalog',['../classliten_1_1TCatalog.html',1,'liten']]],
-  ['tcolumn',['TColumn',['../classliten_1_1TColumn.html',1,'liten']]],
-  ['tcolumniterator',['TColumnIterator',['../classliten_1_1TColumnIterator.html',1,'liten']]],
-  ['tcolumnmap',['TColumnMap',['../classliten_1_1TColumnMap.html',1,'liten']]],
-  ['tconfigs',['TConfigs',['../classliten_1_1TConfigs.html',1,'liten']]],
-  ['tguid',['TGuid',['../classliten_1_1TGuid.html',1,'liten']]],
-  ['tint64columnmap',['TInt64ColumnMap',['../classliten_1_1TInt64ColumnMap.html',1,'liten']]],
-  ['tlog',['TLog',['../classliten_1_1TLog.html',1,'liten']]],
-  ['tresult',['TResult',['../classliten_1_1TResult.html',1,'liten']]],
-  ['trowblock',['TRowBlock',['../classliten_1_1TRowBlock.html',1,'liten']]],
-  ['tschema',['TSchema',['../classliten_1_1TSchema.html',1,'liten']]],
-  ['tservice',['TService',['../classliten_1_1TService.html',1,'liten']]],
-  ['tstatus',['TStatus',['../classliten_1_1TStatus.html',1,'liten']]],
-  ['tstatusdetail',['TStatusDetail',['../classliten_1_1TStatusDetail.html',1,'liten']]],
-  ['tstopwatch',['TStopWatch',['../classliten_1_1TStopWatch.html',1,'liten']]],
-  ['ttable',['TTable',['../classliten_1_1TTable.html',1,'liten']]]
+  ['makesharedenabler',['MakeSharedEnabler',['../structliten_1_1TRowBlock_1_1MakeSharedEnabler.html',1,'liten::TRowBlock::MakeSharedEnabler'],['../structliten_1_1TSchema_1_1MakeSharedEnabler.html',1,'liten::TSchema::MakeSharedEnabler'],['../structliten_1_1TLog_1_1MakeSharedEnabler.html',1,'liten::TLog::MakeSharedEnabler'],['../structliten_1_1TTable_1_1MakeSharedEnabler.html',1,'liten::TTable::MakeSharedEnabler'],['../structliten_1_1TGuid_1_1MakeSharedEnabler.html',1,'liten::TGuid::MakeSharedEnabler'],['../structliten_1_1TTaskScheduler_1_1MakeSharedEnabler.html',1,'liten::TTaskScheduler::MakeSharedEnabler'],['../structliten_1_1TBlock_1_1MakeSharedEnabler.html',1,'liten::TBlock::MakeSharedEnabler'],['../structliten_1_1TConfigs_1_1MakeSharedEnabler.html',1,'liten::TConfigs::MakeSharedEnabler'],['../structliten_1_1TCache_1_1MakeSharedEnabler.html',1,'liten::TCache::MakeSharedEnabler'],['../structliten_1_1TCatalog_1_1MakeSharedEnabler.html',1,'liten::TCatalog::MakeSharedEnabler'],['../structliten_1_1TService_1_1MakeSharedEnabler.html',1,'liten::TService::MakeSharedEnabler']]]
 ];
