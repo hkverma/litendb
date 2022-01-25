@@ -25,3 +25,6 @@
 [submodule "cpp/external_libs/tbb/oneTBB"]
 	path = cpp/external_libs/tbb/oneTBB
 	url = https://github.com/oneapi-src/oneTBB
+[submodule "cpp/external_libs/velox/velox"]
+	path = cpp/external_libs/velox/velox
+	url = https://github.com/facebookincubator/velox
