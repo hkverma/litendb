@@ -6,7 +6,7 @@ if [ -z "$LITEN_BUILD_TYPE" ]; then
     exit
 fi
 build_type=${LITEN_BUILD_TYPE}
-pushd googletest
+pushd double-conversion
 if [[ ${build_type} = "release" ]]; then
     echo "Building release.."
     mkdir -p release

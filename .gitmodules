@@ -28,3 +28,12 @@
 [submodule "cpp/external_libs/velox/velox"]
 	path = cpp/external_libs/velox/velox
 	url = https://github.com/facebookincubator/velox
+[submodule "cpp/external_libs/folly/folly"]
+	path = cpp/external_libs/folly/folly
+	url = https://github.com/facebook/folly
+[submodule "cpp/external_libs/double-conversion/double-conversion"]
+	path = cpp/external_libs/double-conversion/double-conversion
+	url = https://github.com/google/double-conversion
+[submodule "cpp/external_libs/libevent/libevent"]
+	path = cpp/external_libs/libevent/libevent
+	url = https://github.com/libevent/libevent
