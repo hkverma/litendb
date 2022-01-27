@@ -37,3 +37,6 @@
 [submodule "cpp/external_libs/libevent/libevent"]
 	path = cpp/external_libs/libevent/libevent
 	url = https://github.com/libevent/libevent
+[submodule "cpp/external_libs/libfmt/fmt"]
+	path = cpp/external_libs/libfmt/fmt
+	url = https://github.com/fmtlib/fmt

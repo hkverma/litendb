@@ -74,8 +74,23 @@ https://github.com/brendangregg/FlameGraph
 SSL should be installed
 ```console
 apt-get install openssl libssl-dev
-```
+sudo apt update
+sudo apt-get install bzip2
+sudo apt install liblz4-tool
+sudo apt-get install liblzma-dev
+sudo apt-get install libzstd-dev
+sudo apt-get install libsnappy-dev
+sudo apt-get install libsodium-dev
+sudo apt-get install libunwind-dev
+sudo apt-get install -y xz-utils
+sudo apt-get install -y zlib1g
+sudo apt install libgflags-dev
+sudo apt-get install libdwarf-dev
+sudo apt-get install libiberty-dev
+sudo apt-get install libaio-dev
 
+```
+b
 
 ### How to build Liten?
 
