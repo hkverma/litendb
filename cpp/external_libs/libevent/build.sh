@@ -11,14 +11,14 @@ if [[ ${build_type} = "release" ]]; then
     echo "Building release.."
     mkdir -p release
     pushd release
-    cmake .. -DCMAKE_BUILD_TYPE=Release
-    make
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DEVENT__DISABLE_MBEDTLS=ON
+    sudo make install
     popd
 else
     mkdir -p debug
     pushd debug
-    cmake .. -DCMAKE_BUILD_TYPE=Debug
-    make
+    cmake .. -DCMAKE_BUILD_TYPE=Debug -DEVENT__DISABLE_MBEDTLS=ON
+    sudo make install
     popd
 fi
 popd
