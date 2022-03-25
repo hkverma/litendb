@@ -90,7 +90,6 @@ sudo apt-get install libiberty-dev
 sudo apt-get install libaio-dev
 
 ```
-b
 
 ### How to build Liten?
 
