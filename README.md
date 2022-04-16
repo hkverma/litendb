@@ -532,6 +532,25 @@ Once all done kill jupyter notebook. Stop slave and master after that.
 $ sbin/stop-slave.sh
 $ sbin/stop-master.sh
 ```
+### Superset
+##### Install and run Apache superset
+
+Follow to install Superset using componser - https://superset.apache.org/docs/installation/installing-superset-using-docker-compose
+
+Install docker -
+    Follow https://docs.docker.com/engine/install/ubuntu/ to install docker
+    Follow https://docs.docker.com/compose/install/ to install docker composer
+    
+Once superset is installed use the following command to bring up all superset
+docker-compose -f docker-compose-non-dev.yml up
+goto http://localhost:8088 default login is "admin" and "admin"
+
+Spark SQL connects through hive. It maintains a hive metastore (spark-warehouse) and metastore_db with the tables etc.
+Install pyhive for hive -
+```bash
+conda install pyhive
+```
+ 
 
 ### Python Demo notebooks
 
