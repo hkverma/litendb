@@ -88,7 +88,7 @@ sudo apt install libgflags-dev
 sudo apt-get install libdwarf-dev
 sudo apt-get install libiberty-dev
 sudo apt-get install libaio-dev
-
+sudo apt install rapidjson-dev
 ```
 
 ### How to build Liten?
@@ -380,7 +380,7 @@ $ cd tbb
 $ git submodule add
 ```
 
-#### Google glog
+#### Google glog & gflags
 
 Google glog is a C++ logging library. 
 Follow the following steps to build it.
@@ -399,6 +399,12 @@ $ git submodule add https://github.com/google/glog
 $ cd glog
 $ git pull
 $ git commit -a -m "Updated to latest glog version"
+```
+Similar stuff to be done for gflags
+```
+$ cd ${LITEN_ROOT_DIR}/cpp/external_libs/gflags
+$ git submodule add https://github.com/google/gflags
+...
 ```
 
 Following will also get the latest commit glog in an empty submodule

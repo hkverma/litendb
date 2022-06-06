@@ -1,5 +1,5 @@
 # Top level CMake file
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.23)
 #
 # Running from a Python sdist tarball
 

@@ -40,3 +40,6 @@
 [submodule "cpp/external_libs/libfmt/fmt"]
 	path = cpp/external_libs/libfmt/fmt
 	url = https://github.com/fmtlib/fmt
+[submodule "cpp/external_libs/gflags/gflags"]
+	path = cpp/external_libs/gflags/gflags
+	url = https://github.com/gflags/gflags

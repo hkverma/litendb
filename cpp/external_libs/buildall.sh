@@ -3,7 +3,7 @@
 #
 # If nothing provided build debug
 #for dir in glog googletest double-conversion libevent nlohmann folly tbb re2 arrow velox ray
-for dir in glog tbb re2 nlohmann arrow
+for dir in gflags glog tbb re2 nlohmann arrow
 do           
     echo "Building ${dir} ... "
     pushd $dir
