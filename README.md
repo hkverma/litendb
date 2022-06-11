@@ -12,9 +12,9 @@ Liten Data - Build and Run
 
 For local machine setup, following environment is used.
 
-* Ubuntu Linux 18.04.04 LTS
-* C++-17 standards
-* g++-9, gcc-9 compiler
+* Ubuntu Linux 18.04.04 LTS, moving to 22.04 LTS
+* C++-20 standards
+* g++-11, gcc-11 compiler
 
 ### C++ Build Environment
 
