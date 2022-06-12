@@ -1,10 +1,8 @@
-# Top level CMake file
-cmake_minimum_required(VERSION 3.23)
-#
-# Running from a Python sdist tarball
-
+# Min 3.22 version
+cmake_minimum_required(VERSION 3.22)
+# common build utils
 include($ENV{LITEN_ROOT_DIR}/cpp/cmake_modules/BuildUtils.cmake)
-
+#
 project(liten VERSION "${LITEN_BASE_VERSION}")
 #
 # Subdirectories

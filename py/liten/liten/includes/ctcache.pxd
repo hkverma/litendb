@@ -14,7 +14,12 @@ from libcpp.unordered_map cimport unordered_map
 from libcpp.unordered_set cimport unordered_set
 from libcpp cimport bool
 
-from pyarrow.includes.libarrow cimport *
+#from pyarrow.includes.libarrow cimport *
+from pyarrow.includes.libarrow cimport (CArray, CBuffer, CDataType,
+                                        CField, CRecordBatch, CSchema,
+                                        CTable, CTensor, CSparseCOOTensor,
+                                        CSparseCSRMatrix, CSparseCSCMatrix,
+                                        CSparseCSFTensor)
 
 cdef extern from "common.h" namespace "liten" nogil:
 

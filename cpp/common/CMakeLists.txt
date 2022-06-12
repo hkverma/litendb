@@ -1,6 +1,5 @@
-# Top level CMake file
-cmake_minimum_required(VERSION 3.23)
-message(STATUS "Building using CMake version: ${CMAKE_VERSION}")
+#
+message(STATUS "Building common using CMake version: ${CMAKE_VERSION}")
 #
 # Subdirectories
 #

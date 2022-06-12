@@ -171,6 +171,33 @@ The existing environment can be updated using the following environments.
 ```console
 conda env update --file environment.yml --prune
 ```
+
+To save python environments, you can export conda env.
+```console
+conda env export > environment.yml
+```
+
+You can also follow the following installs to create an env from scracth
+```
+conda create -n liten python=3.10
+conda activate liten
+```
+Arrow can be installed using conda and used in the env. See here arrow.apache.org/install
+C++ and python conda package needs to be installd
+```
+conda install arrow-cpp=8.0.* -c conda-forge
+conda install pyarrow=8.0.* -c conda-forge
+```
+cmake should be atleast 3.22
+```
+conda install cmake -c anaconda
+```
+cython is needed for python bindings of C++ code
+```
+conda install -c anaconda cython
+```
+
+```
 For C++ build to pick the correct arrow lib, add following to LD_LIBRARY_PATH
 ```console
 export LD_LIBRARY_PATH=${MINICONDA_ROOT_DIR}/envs/liten/lib:${LD_LIBRARY_PATH}
@@ -181,6 +208,7 @@ sudo apt install graphviz
 ```
 
 #### Check Arrow Installation
+
 Open ArrowTutorial.ipynb in notebook and run to check that arrow is ok.
 ```
 cd py/notebooks
@@ -660,10 +688,6 @@ https://packaging.python.org/guides/distributing-packages-using-setuptools/#pack
 https://cython.readthedocs.io/en/latest/src/userguide/wrapping_CPlusPlus.html
 ```
 
-To save python environments, you can export conda env.
-```console
-conda env export > environment.yml
-```
 
 ### TPC benchmarks
 

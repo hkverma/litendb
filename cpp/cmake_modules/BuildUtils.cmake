@@ -1,4 +1,3 @@
-# TODO create debug/release directory
 #
 # Set Versions
 #
@@ -49,5 +48,5 @@ set(CACHE_TEST_SRC $ENV{LITEN_ROOT_DIR}/cpp/cache_test)
 # Global include and link directories
 # TODO expand include directories
 #
-include_directories(/usr/include/python3.6)
+include_directories(/usr/include/python3.6 /home/azureuser/miniconda3/envs/liten/lib/python3.10/site-packages/numpy/core/include/numpy/)
 
