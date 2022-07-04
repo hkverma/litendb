@@ -3,6 +3,9 @@
 """
 Python C-wrapper CLiten for C++ Liten Cache
 """
+from cpython cimport PyObject
+from cpython cimport function
+
 from libc.stdint cimport *
 from libcpp cimport bool as c_bool, nullptr
 from libcpp.functional cimport function
@@ -13,6 +16,7 @@ from libcpp.vector cimport vector
 from libcpp.unordered_map cimport unordered_map
 from libcpp.unordered_set cimport unordered_set
 
+from pyarrow.includes.common cimport *
 from pyarrow.includes.libarrow cimport *
 from liten.includes.ctcache cimport *
 

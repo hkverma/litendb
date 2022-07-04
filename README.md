@@ -194,7 +194,7 @@ conda install cmake -c anaconda
 ```
 cython is needed for python bindings of C++ code
 ```
-conda install -c anaconda cython
+conda install -c conda-forge cython=0.29.30
 ```
 
 ```
