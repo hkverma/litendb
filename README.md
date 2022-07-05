@@ -15,6 +15,14 @@ For local machine setup, following environment is used.
 * Ubuntu Linux 18.04.04 LTS, moving to 22.04 LTS
 * C++-20 standards
 * g++-11, gcc-11 compiler
+You may need to update the c++ tool chain like this
+```
+sudo apt-get install libstdc++6
+sudo add-apt-repository ppa:ubuntu-toolchain-r/test 
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get dist-upgrade
+```
 
 ### C++ Build Environment
 
@@ -133,13 +141,13 @@ Set environement variabel MINICONDA_ROOT_DIR to ~/miniconda3 or other directory 
 ```console
 $ export MINICONDA_ROOT_DIR="/home/azureuser/miniconda3"
 ```
-Use python 3.8.5 version. Ray needs version 3.8.
+Use python 3.8 version. Linux 18 and 20 ships with 3.8 Stick with 3.8 for now.
 ```console
-conda install python=3.8.5
+conda install python=3.8
 ```
 Create a new environment liten for tenanlytics tests
 ```console
-conda create --name liten python=3.8.5
+conda create --name liten python=3.8
 ```
 Change env to liten everytime for work
 ```console
@@ -177,10 +185,17 @@ To save python environments, you can export conda env.
 conda env export > environment.yml
 ```
 
+#### Conda env from scratch
+
 You can also follow the following installs to create an env from scracth
 ```
-conda create -n liten python=3.10
+conda create -n liten python=3.8
 conda activate liten
+```
+Install latest versions of the following tools.
+```
+conda install ipython
+conda install jupyter
 ```
 Arrow can be installed using conda and used in the env. See here arrow.apache.org/install
 C++ and python conda package needs to be installd
