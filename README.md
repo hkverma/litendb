@@ -5,30 +5,85 @@
 Liten Data - Build and Run 
 * [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
 
-## How do I get set up?
+Following sections describe development tools and software needed to build Liten.
 
+## git repo
 
-### Build Structure Setup
+## Build Machine and development software versions
 
-For local machine setup, following environment is used.
+We use Ubuntu 22.04 LTS Linux OS for development
 
-* Ubuntu Linux 18.04.04 LTS, moving to 22.04 LTS
+### C++, gdb versions
+
 * C++-20 standards
 * g++-11, gcc-11 compiler
-You may need to update the c++ tool chain like this
+* Minimum cmake version 3.22
+
+Run buildvm.sh to install relevant build tools
 ```
-sudo apt-get install libstdc++6
-sudo add-apt-repository ppa:ubuntu-toolchain-r/test 
-sudo apt-get update
-sudo apt-get upgrade
-sudo apt-get dist-upgrade
+sudo ./buildvm.sh
 ```
 
-### C++ Build Environment
+### Python and conda 
 
-Use C++-17 standard. For compilation, g++/gcc version 9 is used.
+#### Conda environment
+Install miniconda with python3. Follow instructions from here
+https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html
+Set environement variabel MINICONDA_ROOT_DIR to ~/miniconda3 or other directory where conda was installed.
+```console
+$ export MINICONDA_ROOT_DIR="/home/azureuser/miniconda3"
+```
 
-Install cmake 3.17 minimum. Download source code & build. Or download the binary from cmake website.
+### Jupyter Notebook and Python lib Installations
+Use conda and create a new env liten. Use this env and install new environment. Python is used for a real notbook environment.
+
+#### Install required packges from the git hub repo
+You can create a new environment called liten using the following commands
+```console
+conda env create -f py/environment.yml
+conda activate liten
+```
+
+Use python 3.8 version. Linux 18 and 20 ships with 3.8 Stick with 3.8 for now.
+```console
+conda install python=3.8
+```
+Create a new environment liten for tenanlytics tests
+```console
+conda create --name liten python=3.8
+```
+Change env to liten everytime for work
+```console
+conda activate liten
+conda install -c conda-forge/label/cf202003 shap
+```
+If needed env can be removed.
+```
+conda env remove --name liten
+```
+Update pip and setuptools. This is typically not needed.
+```console
+curl https://bootstrap.pypa.io/get-pip.py | python
+pip install --upgrade setuptools
+```
+
+#### Install Jupyter
+Install jupyter notebook and then start the notebook.
+```console
+conda install jupyter
+```
+
+The existing environment can be updated using the following environments.
+```console
+conda env update --file environment.yml --prune
+```
+
+To save python environments, you can export conda env.
+```console
+conda env export > environment.yml
+```
+
+$$$$$
 
 Use python3 for all python code.
 ```html
@@ -52,15 +107,16 @@ From the root following directories exist.
 
 Within cpp these directories exist.
 
-* external_libs - All external C++ libs. These include boost, Poco,Apache-arrow
+* external_libs - All external C++ libs. These include boost, Poco, Apache-arrow
 * Other directories in C++ are liten specific code.
-
 
 For local machine setup, following environment is used.
 
 * Ubuntu Linux 18.04.04 LTS
 * C++-17 standards
 * g++-9, gcc-9 compiler
+
+#### Performance analysis tools
 * valgrind, callgrind for memory, perf analysis
 
 Valgrind example run can be
@@ -129,61 +185,6 @@ $ cd ${LITEN_ROOT_DIR}/cpp
 $ ./buildall.sh [debug|release]
 ```
 
-### Python code setup and compilation
-
-### Jupyter Notebook and Python lib Installations
-Use conda and create a new env liten. Use this env and install new environment. Python is used for a real notbook environment.
-
-#### Conda environment
-Install miniconda with python3. Follow instructions from here
-https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html
-Set environement variabel MINICONDA_ROOT_DIR to ~/miniconda3 or other directory where conda was installed.
-```console
-$ export MINICONDA_ROOT_DIR="/home/azureuser/miniconda3"
-```
-Use python 3.8 version. Linux 18 and 20 ships with 3.8 Stick with 3.8 for now.
-```console
-conda install python=3.8
-```
-Create a new environment liten for tenanlytics tests
-```console
-conda create --name liten python=3.8
-```
-Change env to liten everytime for work
-```console
-conda activate liten
-```
-If needed env can be removed.
-```
-conda env remove --name liten
-```
-Update pip and setuptools. This is typically not needed.
-```console
-curl https://bootstrap.pypa.io/get-pip.py | python
-pip install --upgrade setuptools
-```
-
-#### Install Jupyter
-Install jupyter notebook and then start the notebook.
-```console
-conda install jupyter
-```
-
-#### Install required packges
-You can create a new environment called liten using the following commands
-```console
-conda env create -f py/environment.yml
-conda activate liten
-```
-The existing environment can be updated using the following environments.
-```console
-conda env update --file environment.yml --prune
-```
-
-To save python environments, you can export conda env.
-```console
-conda env export > environment.yml
-```
 
 #### Conda env from scratch
 
