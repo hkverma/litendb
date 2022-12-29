@@ -37,41 +37,22 @@ $ export MINICONDA_ROOT_DIR="/home/azureuser/miniconda3"
 ### Jupyter Notebook and Python lib Installations
 Use conda and create a new env liten. Use this env and install new environment. Python is used for a real notbook environment.
 
-#### Install required packges from the git hub repo
-You can create a new environment called liten using the following commands
+#### Install required packges from conda
+First create a new environment called liten. 
+Use py/environment.yml to create liten with all the required packages
 ```console
 conda env create -f py/environment.yml
 conda activate liten
 ```
 
-Use python 3.8 version. Linux 18 and 20 ships with 3.8 Stick with 3.8 for now.
-```console
-conda install python=3.8
-```
-Create a new environment liten for tenanlytics tests
+Create a new environment liten like this if not using environment.yml for other reasons. Use python 3.8 version. Linux 18 and 20 ships with 3.8 Stick with 3.8 for now.
 ```console
 conda create --name liten python=3.8
-```
-Change env to liten everytime for work
-```console
 conda activate liten
-conda install -c conda-forge/label/cf202003 shap
-```
-If needed env can be removed.
-```
-conda env remove --name liten
-```
-Update pip and setuptools. This is typically not needed.
-```console
-curl https://bootstrap.pypa.io/get-pip.py | python
-pip install --upgrade setuptools
-```
-
-#### Install Jupyter
-Install jupyter notebook and then start the notebook.
-```console
 conda install jupyter
 ```
+
+#### Updating environment.yml
 
 The existing environment can be updated using the following environments.
 ```console
@@ -83,12 +64,24 @@ To save python environments, you can export conda env.
 conda env export > environment.yml
 ```
 
+$$$$$$
+Change env to liten everytime for work
+```console
+conda install -c conda-forge/label/cf202003 shap
+```
+If needed env can be removed.
+```
+conda env remove --name liten
+```
+Update pip and setuptools. This is typically not needed.
+```console
+curl https://bootstrap.pypa.io/get-pip.py | python
+pip install --upgrade setuptools
+```
 $$$$$
 
-Use python3 for all python code.
-```html
-https://cmake.org/download/
-```
+
+### Git repo and compilation
 
 Set LITEN_ROOT_DIR to the root of the repository.
 ```console
@@ -110,11 +103,39 @@ Within cpp these directories exist.
 * external_libs - All external C++ libs. These include boost, Poco, Apache-arrow
 * Other directories in C++ are liten specific code.
 
-For local machine setup, following environment is used.
+### How to build Liten?
 
-* Ubuntu Linux 18.04.04 LTS
-* C++-17 standards
-* g++-9, gcc-9 compiler
+#### Clone from github
+
+Clone Ltten code from github.
+```console
+git clone https://<user-name>@bitbucket.org/hkv/dbaistuff.git
+```
+
+Update all the submodules as shown below.
+```console
+$ cd ${LITEN_ROOT_DIR}/cpp/external_libs
+$ git submodule update --recursive
+```
+
+#### Compile C++ code
+
+These are the packages in external_libs that Liten uses.
+
+One can build all the packages using the following command
+```console
+ $ cd ${LITEN_ROOT_DIR}/cpp/external_libs
+ $ sudo ./buildall.sh [debug|release]
+```
+See below for details on how to build various submodules.
+
+Build the Liten code.
+```console
+$ cd ${LITEN_ROOT_DIR}/cpp
+$ ./buildall.sh [debug|release]
+```
+
+$$$$$$
 
 #### Performance analysis tools
 * valgrind, callgrind for memory, perf analysis
@@ -137,7 +158,6 @@ https://github.com/brendangregg/FlameGraph
 #### Required packages
 SSL should be installed
 ```console
-apt-get install openssl libssl-dev
 sudo apt update
 sudo apt-get install bzip2
 sudo apt install liblz4-tool
@@ -155,35 +175,6 @@ sudo apt-get install libaio-dev
 sudo apt install rapidjson-dev
 ```
 
-### How to build Liten?
-
-#### Clone from github
-
-Clone Ltten code from github.
-```console
-git clone https://<user-name>@bitbucket.org/hkv/dbaistuff.git
-```
-
-Update all the submodules as shown below.
-```console
-$ cd ${LITEN_ROOT_DIR}/cpp/external_libs
-$ git submodule update --recursive
-```
-
-#### Compile C++ code
-These are the packages in external_libs that Tenalytics uses.
-One can build all the packages using the following command
-```console
- $ cd ${LITEN_ROOT_DIR}/cpp/external_libs
- $ sudo ./buildall.sh [debug|release]
-```
-See below for details on how to build various submodules.
-
-Build the Liten code.
-```console
-$ cd ${LITEN_ROOT_DIR}/cpp
-$ ./buildall.sh [debug|release]
-```
 
 
 #### Conda env from scratch

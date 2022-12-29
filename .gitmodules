@@ -43,3 +43,12 @@
 [submodule "cpp/external_libs/gflags/gflags"]
 	path = cpp/external_libs/gflags/gflags
 	url = https://github.com/gflags/gflags
+[submodule "cpp/opensource/folly"]
+	path = cpp/opensource/folly
+	url = https://github.com/facebook/folly.git
+[submodule "cpp/opensource/fizz"]
+	path = cpp/opensource/fizz
+	url = https://github.com/facebookincubator/fizz.git
+[submodule "cpp/opensource/wangle"]
+	path = cpp/opensource/wangle
+	url = https://github.com/facebook/wangle.git

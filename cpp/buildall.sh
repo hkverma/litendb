@@ -28,7 +28,7 @@ cmake ${LITEN_ROOT_DIR}/cpp -DCMAKE_BUILD_TYPE=${build_type} -DLITEN_BIN_DIR=${b
 
 # Now build all the targets
 #
-if [[ "$#" -gt 1 ]]; then
+if [ "$#" -gt 1 ]; then
     for var in "${@:2}"
     do
         echo "Build $var"

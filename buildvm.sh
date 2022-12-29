@@ -16,3 +16,29 @@ sudo apt-get -y update
 # Install libstdc++
 # sudo apt-get install libstdc++6
 sudo apt-get -y install cmake
+sudo apt-get -y install openssl libssl-dev
+sudo apt-get install -y m4
+#Install all these C++ lib dependencies for fizz, folly and wangle
+sudo apt-get -y install \
+    g++ \
+    cmake \
+    libboost-all-dev \
+    libevent-dev \
+    libdouble-conversion-dev \
+    libgoogle-glog-dev \
+    libgflags-dev \
+    libiberty-dev \
+    liblz4-dev \
+    liblzma-dev \
+    libsnappy-dev \
+    make \
+    zlib1g-dev \
+    binutils-dev \
+    libjemalloc-dev \
+    libssl-dev \
+    pkg-config \
+    libsodium-dev \
+    libfmt-dev \
+    libgtest-dev \
+    libzstd-dev \
+    libgmock-dev
