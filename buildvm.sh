@@ -43,6 +43,7 @@ sudo apt-get -y install \
     libzstd-dev \
     libgmock-dev \
     libre2-dev \
-    libgoogle-perftools-dev
+    libgoogle-perftools-dev \
+    nlohmann-json3-dev
     
     
