@@ -41,4 +41,8 @@ sudo apt-get -y install \
     libfmt-dev \
     libgtest-dev \
     libzstd-dev \
-    libgmock-dev
+    libgmock-dev \
+    libre2-dev \
+    libgoogle-perftools-dev
+    
+    

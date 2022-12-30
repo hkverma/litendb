@@ -49,3 +49,6 @@
 [submodule "cpp/opensource/wangle"]
 	path = cpp/opensource/wangle
 	url = https://github.com/facebook/wangle.git
+[submodule "cpp/opensource/arrow"]
+	path = cpp/opensource/arrow
+	url = https://github.com/apache/arrow.git
