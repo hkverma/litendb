@@ -51,6 +51,7 @@ conda create --name liten python=3.8
 conda activate liten
 conda install jupyter
 ```
+In this new environment, all the required packages present in environment.yml will need to be installed.
 
 #### Updating environment.yml
 
@@ -63,23 +64,6 @@ To save python environments, you can export conda env.
 ```console
 conda env export > environment.yml
 ```
-
-$$$$$$
-Change env to liten everytime for work
-```console
-conda install -c conda-forge/label/cf202003 shap
-```
-If needed env can be removed.
-```
-conda env remove --name liten
-```
-Update pip and setuptools. This is typically not needed.
-```console
-curl https://bootstrap.pypa.io/get-pip.py | python
-pip install --upgrade setuptools
-```
-$$$$$
-
 
 ### Git repo and compilation
 
@@ -135,7 +119,22 @@ $ cd ${LITEN_ROOT_DIR}/cpp
 $ ./buildall.sh [debug|release]
 ```
 
-$$$$$$
+## TO BE CLEANED
+
+Change env to liten everytime for work
+```console
+conda install -c conda-forge/label/cf202003 shap
+```
+If needed env can be removed.
+```
+conda env remove --name liten
+```
+Update pip and setuptools. This is typically not needed.
+```console
+curl https://bootstrap.pypa.io/get-pip.py | python
+pip install --upgrade setuptools
+```
+
 
 #### Performance analysis tools
 * valgrind, callgrind for memory, perf analysis

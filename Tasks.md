@@ -2,6 +2,8 @@
 
 ## In Progress
 
+  Modify all C++ names to follow google naming conventions
+
   Add the following APIs and execute query6 and query5 using these APIs.
   
   API -
