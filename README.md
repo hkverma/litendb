@@ -45,13 +45,38 @@ conda env create -f py/environment.yml
 conda activate liten
 ```
 
-Create a new environment liten like this if not using environment.yml for other reasons. Use python 3.8 version. Linux 18 and 20 ships with 3.8 Stick with 3.8 for now.
-```console
-conda create --name liten python=3.8
+#### Conda env from scratch
+
+You can also follow the following installs to create an env from scratch. Use python 3.8 version. Linux 18 and 20 ships with 3.8 Stick with 3.8 for now.
+```
+conda create -n liten python=3.8
 conda activate liten
+```
+Install latest versions of the following tools.
+```
 conda install jupyter
 ```
-In this new environment, all the required packages present in environment.yml will need to be installed.
+cython is needed for python bindings of C++ code
+```
+conda install -c conda-forge cython=0.29.30
+```
+
+No arrow install needed for now. It is shipped as a library.
+Arrow installations can also be done from apt-get. TBD - how to build total conda installationa
+Arrow can be installed using conda and used in the env. See here arrow.apache.org/install
+```
+conda install arrow-cpp=10.0.0.* -c conda-forge
+conda install pyarrow=10.0.0.* -c conda-forge
+```
+
+```
+For C++ build to pick the correct arrow lib, add following to LD_LIBRARY_PATH
+```console
+export LD_LIBRARY_PATH=${MINICONDA_ROOT_DIR}/envs/liten/lib:${LD_LIBRARY_PATH}
+```
+Liten uses graphviz to show query plans. It is installed using sudo command.
+```console
+```
 
 #### Updating environment.yml
 
@@ -118,6 +143,38 @@ Build the Liten code.
 $ cd ${LITEN_ROOT_DIR}/cpp
 $ ./buildall.sh [debug|release]
 ```
+#### Build Liten python wheel
+
+First get to the liten conda environment. This should have all the library components.
+```console
+conda activate liten
+```console
+Run setup.py to build from py/liten directory.
+       
+```console
+python setup.py build
+```
+To check for a dist do the following
+```console
+python3 setup.py sdist
+```
+Create a wheel (zip file with all the install libs, files etc.) do the following.
+```console
+python3 setup.py bdist_wheel
+```
+
+This wheel can be testeted locally by using pip install. Uninstall liten first if installed earlier.
+```console
+pip uninstall liten
+```console
+pip install dist/liten-0.0.1-cp38-cp38-linux_x86_64.whl
+```
+
+You can check cmake command separately. Not needed but useful if cmake canges are made.
+```console
+cmake -DPYTHON_EXECUTABLE=/home/hkverma/miniconda3/envs/liten/bin/python -DPython3_EXECUTABLE=/home/hkverma/miniconda3/envs/liten/bin/python  -DCMAKE_BUILD_TYPE=debug /mnt/c/Users/hkver/Documents/dbai/dbaistuff/py/liten
+cmake --build . --config _liten
+```
 
 ## TO BE CLEANED
 
@@ -176,42 +233,6 @@ sudo apt install rapidjson-dev
 
 
 
-#### Conda env from scratch
-
-You can also follow the following installs to create an env from scracth
-```
-conda create -n liten python=3.8
-conda activate liten
-```
-Install latest versions of the following tools.
-```
-conda install ipython
-conda install jupyter
-```
-Arrow can be installed using conda and used in the env. See here arrow.apache.org/install
-C++ and python conda package needs to be installd
-```
-conda install arrow-cpp=8.0.* -c conda-forge
-conda install pyarrow=8.0.* -c conda-forge
-```
-cmake should be atleast 3.22
-```
-conda install cmake -c anaconda
-```
-cython is needed for python bindings of C++ code
-```
-conda install -c conda-forge cython=0.29.30
-```
-
-```
-For C++ build to pick the correct arrow lib, add following to LD_LIBRARY_PATH
-```console
-export LD_LIBRARY_PATH=${MINICONDA_ROOT_DIR}/envs/liten/lib:${LD_LIBRARY_PATH}
-```
-Liten uses graphviz to show query plans. It is installed using sudo command.
-```console
-sudo apt install graphviz
-```
 
 #### Check Arrow Installation
 
@@ -229,39 +250,6 @@ jupyter notebook
 ```
 
 
-#### Build Liten python wheel
-Python setup.py is in py/liten subdirectory.
-
-Always develop in liten environment.
-You can check cmake command separately. Not needed but useful if cmake canges are made.
-```console
-cmake -DPYTHON_EXECUTABLE=/home/hkverma/miniconda3/envs/liten/bin/python -DPython3_EXECUTABLE=/home/hkverma/miniconda3/envs/liten/bin/python  -DCMAKE_BUILD_TYPE=debug /mnt/c/Users/hkver/Documents/dbai/dbaistuff/py/liten
-cmake --build . --config _liten
-```
-First get to the liten conda environment. This should have all the library components.
-```console
-conda activate liten
-```console
-Run setup.py to build from py/liten directory.
-       
-```console
-python setup.py build
-```
-To check for a dist do the following
-```console
-python3 setup.py sdist
-```
-Create a wheel (zip file with all the install libs, files etc.) do the following.
-```console
-python3 setup.py bdist_wheel
-```
-
-This wheel can be testeted locally by using pip install. Uninstall liten first if installed earlier.
-```console
-pip uninstall liten
-```console
-pip install dist/liten-0.0.1-cp38-cp38-linux_x86_64.whl
-```
 
 #### Check Liten Installation
 Open LitenIntro.ipynb in notebook and run to check that arrow is ok.
