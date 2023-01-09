@@ -142,8 +142,12 @@ TResult<std::shared_ptr<TTable>> TCache::ReadCsvTable(std::string tableName,
   int64_t fileSize = fileSizeResult.ValueOrDie();
 
   // Random access file reader
-  std::shared_ptr<arrow::io::InputStream> inputStream =
+  arrow::Result<std::shared_ptr<arrow::io::InputStream>> inputStreamResult =
     arrow::io::RandomAccessFile::GetStream(fp, 0, fileSize);
+  if (!inputStreamResult.ok()) {
+    return TStatus::UnknownError(inputStreamResult.status().message());
+  }
+  auto inputStream = inputStreamResult.ValueOrDie();
 
   // Instantiate TableReader from input stream and options
   arrow::io::IOContext ioContext = arrow::io::default_io_context();
@@ -237,8 +241,12 @@ TResult<std::shared_ptr<TTable>> TCache::ReadCsv(std::string tableName,
   int64_t fileSize = fileSizeResult.ValueOrDie();
 
   // Random access file reader
-  std::shared_ptr<arrow::io::InputStream> inputStream =
+  arrow::Result<std::shared_ptr<arrow::io::InputStream>> inputStreamResult =
     arrow::io::RandomAccessFile::GetStream(fp, 0, fileSize);
+  if (!inputStreamResult.ok()) {
+    return TStatus::UnknownError(inputStreamResult.status().message());
+  }
+  auto inputStream = inputStreamResult.ValueOrDie();
 
   // Instantiate TableReader from input stream and options
   arrow::io::IOContext ioContext = arrow::io::default_io_context();
@@ -276,7 +284,11 @@ TResult<std::shared_ptr<TTable>> TCache::ReadCsv(std::string tableName,
       TLOG(ERROR) << "Creating RowBlock from csv= " << trbResult.status().ToString();
       return TResult<std::shared_ptr<TTable>>(TStatus::IOError("Reading csv table= ", trbResult.status().ToString()));
     }
-    reader->ReadNext(&rb);
+    auto arrowStatus = std::move(reader->ReadNext(&rb));
+    if (!arrowStatus.ok()) {
+      TLOG(ERROR) << "Creating RowBlock from csv= " << arrowStatus.message();
+      return TStatus::IOError(std::move(arrowStatus.message()));
+    }
   }
 
   // Log table information

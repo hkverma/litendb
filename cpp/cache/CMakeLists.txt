@@ -9,5 +9,5 @@ target_include_directories(cache_objects PUBLIC ${COMMON_SRC}  ${CACHE_SRC})
 #
 add_library(cache STATIC $<TARGET_OBJECTS:cache_objects>)
 target_link_libraries(cache general common arrow)
-target_link_libraries(cache debug glogd)
+target_link_libraries(cache debug glog)
 target_link_libraries(cache optimized glog)

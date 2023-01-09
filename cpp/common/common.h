@@ -1,6 +1,5 @@
 #pragma once
 
-// TBD wrap TBB here for a task scheduler
 // TBD write an assert library
 // TBD Clean for all constness
 
@@ -21,7 +20,6 @@
 #include <arrow/csv/api.h>
 #include <arrow/filesystem/api.h>
 #include <arrow/io/api.h>
-#include <arrow/util/string_view.h>
 
 #include <THashFuncs.h>
 #include <TJSon.h>

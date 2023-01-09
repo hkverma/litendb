@@ -18,6 +18,9 @@ sudo apt-get -y update
 sudo apt-get -y install cmake
 sudo apt-get -y install openssl libssl-dev
 sudo apt-get install -y m4
+# install intel tbb
+sudo apt-get -y install libtbb-dev
+sudo apt-get -y install valgrind kcachegrind
 #Install all these C++ lib dependencies for fizz, folly and wangle
 sudo apt-get -y install \
     g++ \

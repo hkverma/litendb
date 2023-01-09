@@ -251,7 +251,7 @@ inline TResult<Type> TColumn::GetValue(TRowId& id)
     return TStatus::Invalid("Invalid row id");
   }
   Type value;
-  if constexpr(std::is_same_v<Type, arrow::util::string_view>)
+  if constexpr(std::is_same_v<Type, std::string_view>)
   {
     value = array->GetView(id.rowNum);
   }

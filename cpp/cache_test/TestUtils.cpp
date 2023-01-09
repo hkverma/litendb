@@ -213,7 +213,12 @@ int ReadFile(std::string fileName)
   }
   int64_t fileSize = fileSizeResult.ValueOrDie();
   
-  std::shared_ptr<arrow::io::InputStream> inputStream = arrow::io::RandomAccessFile::GetStream(fp, 0, fileSize);
+  arrow::Result<std::shared_ptr<arrow::io::InputStream>> input_stream_result = arrow::io::RandomAccessFile::GetStream(fp, 0, fileSize);
+  if (!input_stream_result.ok()) {
+    std::cout << "Cannot create stream for the file " << fileName << std::endl;
+    return EXIT_SUCCESS;
+  }
+  auto input_stream = input_stream_result.ValueOrDie();
 
   auto read_options = arrow::csv::ReadOptions::Defaults();
   auto parse_options = arrow::csv::ParseOptions::Defaults();
@@ -223,7 +228,7 @@ int ReadFile(std::string fileName)
 
   // Instantiate TableReader from input stream and options
   arrow::Result<std::shared_ptr<arrow::csv::TableReader>> readerResult
-    = arrow::csv::TableReader::Make(io_context, inputStream, read_options,
+    = arrow::csv::TableReader::Make(io_context, input_stream, read_options,
                                     parse_options, convert_options);
   if (!readerResult.ok()) {
     std::cout << "Cannot read table " << fileName << std::endl;
