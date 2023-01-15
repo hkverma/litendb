@@ -19,14 +19,52 @@ We use Ubuntu 22.04 LTS Linux OS for development
 * g++-11, gcc-11 compiler
 * Minimum cmake version 3.22
 
-Run buildvm.sh to install relevant build tools
+Run buildvm.sh to install relevant build tools and libraries on the VM
+
 ```
 sudo ./buildvm.sh
 ```
+### Git repo and code
+
+Set LITEN_ROOT_DIR to the root of the repository.
+```console
+$ export LITEN_ROOT_DIR=<root-dir>
+```
+Set LITEN_BUILD_TYPE to debug or release for C++ and python wheel builds.
+```console
+$ export LITEN_BUILD_TYPE=<debug|release>
+```
+#### Clone from github
+
+Clone Liten code from github.
+```console
+git clone https://<user-name>@bitbucket.org/hkv/dbaistuff.git
+```
+
+Update all the submodules as shown below.
+```console
+$ cd ${LITEN_ROOT_DIR}/cpp/opensource
+$ git submodule update --recursive
+```
+From the root following directories exist.
+
+* cpp - Has C++ code. Use CMake to build and maintain.
+* jvm - Has java & scala code. Use maven to build and maintain.
+* py  - Has python code.
+
+Within cpp these directories exist.
+
+* opensource - All external C++ libs. These include arrow, fizz, folly and wangle. Various other libraries are installed using apt-get install while building the VM
+* Other directories in C++ are liten specific code.
+
+### Docker - TBD
+Install docker following these instructions
+https://docs.docker.com/engine/install/ubuntu/
 
 ### Python and conda 
 
 #### Conda environment
+
 Install miniconda with python3. Follow instructions from here
 https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html
 Set environement variabel MINICONDA_ROOT_DIR to ~/miniconda3 or other directory where conda was installed.
@@ -45,7 +83,7 @@ conda env create -f py/environment.yml
 conda activate liten
 ```
 
-#### Conda env from scratch
+#### Conda packages from scratch
 
 You can also follow the following installs to create an env from scratch. Use python 3.8 version. Linux 18 and 20 ships with 3.8 Stick with 3.8 for now.
 ```
@@ -55,6 +93,7 @@ conda activate liten
 Install latest versions of the following tools.
 ```
 conda install jupyter
+conda install numpy
 ```
 cython is needed for python bindings of C++ code
 ```
@@ -62,7 +101,9 @@ conda install -c conda-forge cython=0.29.30
 ```
 
 No arrow install needed for now. It is shipped as a library.
-Arrow installations can also be done from apt-get. TBD - how to build total conda installationa
+
+Arrow installations can also be done from apt-get. For now we use conda env to get the correct arrow library.
+
 Arrow can be installed using conda and used in the env. See here arrow.apache.org/install
 ```
 conda install arrow-cpp=10.0.0.* -c conda-forge
@@ -73,9 +114,6 @@ conda install pyarrow=10.0.0.* -c conda-forge
 For C++ build to pick the correct arrow lib, add following to LD_LIBRARY_PATH
 ```console
 export LD_LIBRARY_PATH=${MINICONDA_ROOT_DIR}/envs/liten/lib:${LD_LIBRARY_PATH}
-```
-Liten uses graphviz to show query plans. It is installed using sudo command.
-```console
 ```
 
 #### Updating environment.yml
@@ -90,42 +128,7 @@ To save python environments, you can export conda env.
 conda env export > environment.yml
 ```
 
-### Git repo and compilation
-
-Set LITEN_ROOT_DIR to the root of the repository.
-```console
-$ export LITEN_ROOT_DIR=<root-dir>
-```
-Set LITEN_BUILD_TYPE to debug or release for C++ and python wheel builds.
-```console
-$ export LITEN_BUILD_TYPE=<debug|release>
-```
-
-From the root following directories exist.
-
-* cpp - Has C++ code. Use CMake to build and maintain.
-* jvm - Has java & scala code. Use maven to build and maintain.
-* py  - Has python code.
-
-Within cpp these directories exist.
-
-* external_libs - All external C++ libs. These include boost, Poco, Apache-arrow
-* Other directories in C++ are liten specific code.
-
 ### How to build Liten?
-
-#### Clone from github
-
-Clone Ltten code from github.
-```console
-git clone https://<user-name>@bitbucket.org/hkv/dbaistuff.git
-```
-
-Update all the submodules as shown below.
-```console
-$ cd ${LITEN_ROOT_DIR}/cpp/external_libs
-$ git submodule update --recursive
-```
 
 #### Compile C++ code
 
@@ -143,6 +146,7 @@ Build the Liten code.
 $ cd ${LITEN_ROOT_DIR}/cpp
 $ ./buildall.sh [debug|release]
 ```
+
 #### Build Liten python wheel
 
 First get to the liten conda environment. This should have all the library components.
