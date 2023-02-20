@@ -63,14 +63,11 @@ https://docs.docker.com/engine/install/ubuntu/
 
 ### Python and conda 
 
-#### Conda environment
+#### Installing Conda
 
 Install miniconda with python3. Follow instructions from here
 https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html
-Set environement variabel MINICONDA_ROOT_DIR to ~/miniconda3 or other directory where conda was installed.
-```console
-$ export MINICONDA_ROOT_DIR="/home/azureuser/miniconda3"
-```
+
 
 ### Jupyter Notebook and Python lib Installations
 Use conda and create a new env liten. Use this env and install new environment. Python is used for a real notbook environment.
@@ -81,6 +78,29 @@ Use py/environment.yml to create liten with all the required packages
 ```console
 conda env create -f py/environment.yml
 conda activate liten
+```
+
+#### Setting conda specific variables
+
+set env_vars.sh like this -
+```console
+cd $CONDA_PREFIX
+mkdir -p ./etc/conda/activate.d
+mkdir -p ./etc/conda/deactivate.d
+touch ./etc/conda/activate.d/env_vars.sh
+touch ./etc/conda/deactivate.d/env_vars.sh
+```
+activate.d/env_vars.sh is like the following
+```
+export LITEN_SITELIBS_DIR=${CONDA_PREFIX}/lib/python3.8/site-packages
+export OLD_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=${CONDA_PREFIX}/lib:${LD_LIBRARY_PATH}
+```
+activate.d/env_vars.sh brings back original vars.
+
+```console
+unset LITEN_SITELIB_DIRS
+export LD_LIBRARY_PATH=${OLD_LD_LIBRARY_PATH}
 ```
 
 #### Conda packages from scratch
