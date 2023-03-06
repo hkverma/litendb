@@ -1,29 +1,7 @@
 #!/bin/sh
-#
-# Install docker - Liten is distributed as a docker container
+
+# Install gnome-terminal
 sudo apt-get -y install gnome-terminal
-sudo apt-get -y remove docker-desktop
-rm -rf $HOME/.docker/desktop
-sudo rm -rf /usr/local/bin/com.docker.cli
-sudo apt-get -y purge docker-desktop
-# set up docker repo
-sudo apt-get update
-sudo apt-get -y install \
-    ca-certificates \
-    curl \
-    gnupg \
-    lsb-release
-sudo mkdir -p /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-# update the packages
-sudo apt-get update
-sudo apt-get -y install docker-ce docker-ce-cli containerd.io docker-compose-plugin
-#Run docker helloworld
-sudo systemctl start dockerd
-sudo docker run hello-world
 
 # Add the ununtu toolchain the repo
 sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test 
@@ -77,25 +55,34 @@ sudo apt-get -y install \
     
 #Install docker
 # https://docs.docker.com/engine/install/ubuntu/
+
+# Install docker - Liten is distributed as a docker container
+sudo apt-get -y remove docker-desktop
+rm -rf $HOME/.docker/desktop
+sudo rm -rf /usr/local/bin/com.docker.cli
+sudo apt-get -y purge docker-desktop
+# set up docker repo
 sudo apt-get update
-sudo apt-get install \
+sudo apt-get -y install \
     ca-certificates \
     curl \
     gnupg \
     lsb-release
-sudo mkdir -m 0755 -p /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-sudo mkdir -m 0755 -p /etc/apt/keyrings
+sudo mkdir -p /etc/apt/keyrings
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 echo \
   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
   $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+# update the packages
 sudo apt-get update
-sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-# Can test the installation by using
-# sudo docker run hello-world
+sudo apt-get -y install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+sudo apt-get -y install docker-compose
 
-# Install cubectl
+#Run docker helloworld
+sudo systemctl start dockerd
+sudo docker run hello-world
+
+# Install kubectl
 # https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-using-native-package-management
 sudo apt-get update
 sudo apt-get install -y ca-certificates curl
@@ -109,3 +96,11 @@ sudo apt-get install -y kubectl
 #https://minikube.sigs.k8s.io/docs/start/
 curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
 sudo install minikube-linux-amd64 /usr/local/bin/minikube
+
+#Install node.js
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
+npm install --lts     
+npm install node
+npm install -g typescript
+npm install -g ts-node
+

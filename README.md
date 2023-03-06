@@ -57,9 +57,33 @@ Within cpp these directories exist.
 * opensource - All external C++ libs. These include arrow, fizz, folly and wangle. Various other libraries are installed using apt-get install while building the VM
 * Other directories in C++ are liten specific code.
 
-### Docker - TBD
-Install docker following these instructions
+### Docler and Kubernetes
+./buildvm.sh script should already install docker and K8s components.
+
+Docker can be installed following these instructions
 https://docs.docker.com/engine/install/ubuntu/
+
+K8s can also be installed using these directions
+https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-using-native-package-management
+
+#### pyspark in jupyter notebook
+
+Docker daemon should be running. If not, run it like this -
+```
+sudo dockerd > /dev/null 2>&1 &
+disown
+```
+
+In docker do the following to start pyspark. It uses jupyter/pyspark-notebook image and creates a docker container with the name of hkspark. It uses mount to binf working directory to work in the container, so all work will be saved in current directory.
+
+```
+docker run -it --rm -p 8888:8888 --name hkspark --mount type=bind,source="$(pwd)",target=/home/jovyan/work jupyter/pyspark-notebook
+```
+
+If needed we can start a shell into the same container.
+```
+docker exec -it hkspark /bin/bash
+```
 
 ### Python and conda 
 
