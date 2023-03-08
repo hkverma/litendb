@@ -1,0 +1,56 @@
+# Uses conda and package sizes are much bigger avoid using pyspark package for now
+# docker compose --file docker-compose-pyspark.yml up
+version: '3'
+services:
+# jupyterlab with pyspark
+  pyspark-master:
+    image: jupyter/pyspark-notebook:spark-3.3.2
+#    dockerfile: Dockerfile
+    ports:
+      - "9999:8888"
+      - "9090:8080"
+      - "7077:7077"
+      - "4040:4040"
+    volumes:
+      - ./data:/home/jovyan/work
+#    args:
+#      - spark_version=3.3.2
+#      - hadoop_version=3.3
+#      - openjdk_version=11
+#      - scala_version=2.13
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+      - SPARK_LOCAL_IP=spark-master
+      - SPARK_WORKLOAD=master
+  pyspark-worker-a:
+    image: jupyter/pyspark-notebook:spark-3.3.2
+    ports:
+      - "9091:8080"
+      - "7000:7000"
+    depends_on:
+      - pyspark-master
+    volumes:
+       - ./data:/home/jovyan/work
+#    args:
+#      - spark_version=3.3.2
+#      - hadoop_version=3.3
+#      - openjdk_version=11
+#      - scala_version=2.13
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER=spark://spark-master:7077
+      - SPARK_WORKER_CORES=1
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_DRIVER_MEMORY=1G
+      - SPARK_EXECUTOR_MEMORY=1G
+      - SPARK_WORKLOAD=worker
+      - SPARK_LOCAL_IP=spark-worker-a
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no

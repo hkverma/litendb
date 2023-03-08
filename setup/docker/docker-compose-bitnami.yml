@@ -1,16 +1,26 @@
-version: "3.3"
+# docker compose --file docker-compose-bitnami.yml
+version: '3'
 services:
   spark-master:
     image: docker.io/bitnami/spark:3.3
     ports:
       - "9090:8080"
       - "7077:7077"
+      - "8888:8888"
     volumes:
        - ./apps:/opt/spark-apps
        - ./data:/opt/spark-data
     environment:
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
       - SPARK_LOCAL_IP=spark-master
       - SPARK_WORKLOAD=master
+      - PYSPARK_DRIVER_PYTHON=jupyter
+      - PYSPARK_DRIVER_PYTHON_OPTS=notebook
+      - PYSPARK_PYTHON=python3
   spark-worker-a:
     image: docker.io/bitnami/spark:3.3
     ports:
@@ -19,6 +29,7 @@ services:
     depends_on:
       - spark-master
     environment:
+      - SPARK_MODE=worker
       - SPARK_MASTER=spark://spark-master:7077
       - SPARK_WORKER_CORES=1
       - SPARK_WORKER_MEMORY=1G
@@ -26,6 +37,10 @@ services:
       - SPARK_EXECUTOR_MEMORY=1G
       - SPARK_WORKLOAD=worker
       - SPARK_LOCAL_IP=spark-worker-a
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
     volumes:
        - ./apps:/opt/spark-apps
        - ./data:/opt/spark-data
@@ -37,6 +52,7 @@ services:
     depends_on:
       - spark-master
     environment:
+      - SPARK_MODE=worker
       - SPARK_MASTER=spark://spark-master:7077
       - SPARK_WORKER_CORES=1
       - SPARK_WORKER_MEMORY=1G
@@ -44,6 +60,10 @@ services:
       - SPARK_EXECUTOR_MEMORY=1G
       - SPARK_WORKLOAD=worker
       - SPARK_LOCAL_IP=spark-worker-b
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no      
     volumes:
         - ./apps:/opt/spark-apps
         - ./data:/opt/spark-data

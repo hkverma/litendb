@@ -1,2 +1,3 @@
 #### python package requirements ####
 pyspark == 3.3.2       # Install pyspark 3.3.2
+jupyterlab             # Install latest jupyter
