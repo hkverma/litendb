@@ -1,8 +1,19 @@
 # docker compose --file docker-compose-bitnami.yml
 version: '3'
+networks:
+  frontend:
+    name: liten_frontend
+    driver: bridge
+    subnet: 172.19.0.0/16
+    
+  backend:
+    name: liten_backend
 services:
   spark-master:
+#   dockerfile: Dockerfile  
     image: docker.io/bitnami/spark:3.3
+    networks:
+      - liten_frontend
     ports:
       - "9090:8080"
       - "7077:7077"
@@ -21,8 +32,14 @@ services:
       - PYSPARK_DRIVER_PYTHON=jupyter
       - PYSPARK_DRIVER_PYTHON_OPTS=notebook
       - PYSPARK_PYTHON=python3
+    extra_hosts:
+      - "somehost:162.242.195.82"
+      - "otherhost:50.31.209.229"      
+    RUN useradd -rm liten
   spark-worker-a:
     image: docker.io/bitnami/spark:3.3
+    networks:
+      - liten_frontend
     ports:
       - "9091:8080"
       - "7000:7000"
@@ -44,8 +61,11 @@ services:
     volumes:
        - ./apps:/opt/spark-apps
        - ./data:/opt/spark-data
+    RUN useradd -rm liten       
   spark-worker-b:
     image: docker.io/bitnami/spark:3.3
+    networks:
+      - liten_frontend
     ports:
       - "9092:8080"
       - "7001:7000"
@@ -67,9 +87,26 @@ services:
     volumes:
         - ./apps:/opt/spark-apps
         - ./data:/opt/spark-data
+    RUN useradd -rm liten
+  pyspark-notebook:
+    image: jupyter/pyspark-notebook:spark-3.3
+    networks:
+      - liten_frontend
+    ports:
+      - "9999:8888"
+    volumes:
+      - ./data:/home/jovyan/work
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+    depends_on:
+     -spark-master
+    RUN useradd -rm liten
+
   demo-database:
     image: postgres:11.7-alpine
     ports:
       - "5432:5432"
+    networks:
+      - liten_frontend
     environment:
       - POSTGRES_PASSWORD=securepassword

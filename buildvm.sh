@@ -104,3 +104,8 @@ npm install node
 npm install -g typescript
 npm install -g ts-node
 
+#pyspark & java
+sudo apt install openjdk-17-jdk openjdk-17-jre
+pip install jupyterlab
+pip install pyspark=3.3.2
+pip install seaborn
