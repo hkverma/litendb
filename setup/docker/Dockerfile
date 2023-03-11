@@ -42,6 +42,8 @@ touch $SPARK_WORKER_LOG && \
 ln -sf /dev/stdout $SPARK_MASTER_LOG && \
 ln -sf /dev/stdout $SPARK_WORKER_LOG
 
+RUN useradd -rm liten
+
 COPY requirements.txt /
 CMD ["/bin/bash", "pip install -r /requirements.txt"]
 

@@ -1,26 +1,24 @@
-# docker compose --file docker-compose-bitnami.yml
+# docker compose --file docker-compose.yml [build | start | restart]
 version: '3'
 networks:
-  frontend:
-    name: liten_frontend
+  spark_cluster_frontend:
     driver: bridge
-    subnet: 172.19.0.0/16
-    
-  backend:
-    name: liten_backend
+# If creating from Dockerfile
+# context:
+#   dockerfile: Dockerfile  
+#
 services:
   spark-master:
-#   dockerfile: Dockerfile  
     image: docker.io/bitnami/spark:3.3
     networks:
-      - liten_frontend
+      - spark_cluster_frontend
     ports:
-      - "9090:8080"
-      - "7077:7077"
-      - "8888:8888"
+      - "9080:8080"
+      - "9077:7077"
+      - "9888:8888"
     volumes:
-       - ./apps:/opt/spark-apps
-       - ./data:/opt/spark-data
+       - ${APPDIR}:/opt/spark-apps
+       - ${WORKDIR}:/opt/spark-data
     environment:
       - SPARK_MODE=master
       - SPARK_RPC_AUTHENTICATION_ENABLED=no
@@ -32,17 +30,16 @@ services:
       - PYSPARK_DRIVER_PYTHON=jupyter
       - PYSPARK_DRIVER_PYTHON_OPTS=notebook
       - PYSPARK_PYTHON=python3
-    extra_hosts:
-      - "somehost:162.242.195.82"
-      - "otherhost:50.31.209.229"      
-    RUN useradd -rm liten
+#    extra_hosts:
+#      - "somehost:162.242.195.82"
+#      - "otherhost:50.31.209.229"
   spark-worker-a:
     image: docker.io/bitnami/spark:3.3
     networks:
-      - liten_frontend
+      - spark_cluster_frontend
     ports:
       - "9091:8080"
-      - "7000:7000"
+      - "9001:7000"
     depends_on:
       - spark-master
     environment:
@@ -59,16 +56,15 @@ services:
       - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
       - SPARK_SSL_ENABLED=no
     volumes:
-       - ./apps:/opt/spark-apps
-       - ./data:/opt/spark-data
-    RUN useradd -rm liten       
+       - ${APPDIR}:/opt/spark-apps
+       - ${WORKDIR}:/opt/spark-data
   spark-worker-b:
     image: docker.io/bitnami/spark:3.3
     networks:
-      - liten_frontend
+      - spark_cluster_frontend
     ports:
       - "9092:8080"
-      - "7001:7000"
+      - "9002:7000"
     depends_on:
       - spark-master
     environment:
@@ -85,28 +81,14 @@ services:
       - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
       - SPARK_SSL_ENABLED=no      
     volumes:
-        - ./apps:/opt/spark-apps
-        - ./data:/opt/spark-data
-    RUN useradd -rm liten
-  pyspark-notebook:
-    image: jupyter/pyspark-notebook:spark-3.3
-    networks:
-      - liten_frontend
-    ports:
-      - "9999:8888"
-    volumes:
-      - ./data:/home/jovyan/work
-    environment:
-      - JUPYTER_ENABLE_LAB=yes
-    depends_on:
-     -spark-master
-    RUN useradd -rm liten
+        - ${APPDIR}:/opt/spark-apps
+        - ${WORKDIR}:/opt/spark-data
 
   demo-database:
     image: postgres:11.7-alpine
     ports:
       - "5432:5432"
     networks:
-      - liten_frontend
+       - spark_cluster_frontend
     environment:
       - POSTGRES_PASSWORD=securepassword

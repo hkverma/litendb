@@ -66,6 +66,9 @@ https://docs.docker.com/engine/install/ubuntu/
 K8s can also be installed using these directions
 https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/#install-using-native-package-management
 
+For local kube management can use minikube. See here for installations.
+https://minikube.sigs.k8s.io/docs/start/
+
 #### pyspark in jupyter notebook
 
 Docker daemon should be running. If not, run it like this -
