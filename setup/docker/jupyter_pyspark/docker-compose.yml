@@ -1,5 +1,5 @@
 # Uses conda and package sizes are much bigger avoid using pyspark package for now
-# docker compose --file docker-compose-pyspark.yml up
+# docker compose --file docker-compose up
 version: '3'
 networks:
   pyspark_frontend:
@@ -16,6 +16,6 @@ services:
       - "9078:7077"
       - "9040:4040"
     volumes:
-      - ${WORKDIR}:/home/jovyan/work
+      - /home/hkverma/work:/home/jovyan/work
     environment:
       - JUPYTER_ENABLE_LAB=yes

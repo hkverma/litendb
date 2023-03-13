@@ -1,6 +1,8 @@
 # Tasks
 
-## In Progress
+## Demo in progress
+
+## Programming In Progress
 
   Modify all C++ names to follow google naming conventions
 
