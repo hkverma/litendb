@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: sparkrunner
+  labels:
+    app: sparkrunner
+spec:
+  selector:
+    matchLabels:
+      app: sparkrunner
+  serviceName: sparkrunner
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: sparkrunner
+    spec:
+      containers:
+        - name: sparkrunner
+          image: litendata/spark:v3.3.2
+          imagePullPolicy: Never
+          ports:
+            - name: application 
+              containerPort: 9100
+            - name: driver-rpc-port
+              containerPort: 7077
+            - name: blockmanager
+              containerPort: 7078

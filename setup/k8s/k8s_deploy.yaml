@@ -1,0 +1,33 @@
+# Headless service for stable DNS entries of StatefulSet members.
+apiVersion: v1
+kind: Service
+metadata:
+  name: sparkrunner
+spec:
+  ports:
+  - name: driver-rpc-port
+    protocol: TCP 
+    port: 7077
+    targetPort: 7077
+  - name: blockmanager
+    protocol: TCP 
+    port: 7078
+    targetPort: 7078
+  clusterIP: None
+  selector:
+    app: sparkrunner
+
+---
+
+# Client service for connecting to any spark instance.
+apiVersion: v1
+kind: Service
+metadata:
+  name: sparkdriver
+spec:
+  type: NodePort
+  ports:
+  - name: sparkdriver
+    port: 9100
+  selector:
+    app: sparkrunner

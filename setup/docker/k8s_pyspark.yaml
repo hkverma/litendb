@@ -1,0 +1,36 @@
+# Uses conda and package sizes are much bigger avoid using pyspark package for now
+# docker compose --file docker-compose-pyspark.yml up
+
+#Install docker desktop
+wget "https://desktop.docker.com/linux/main/amd64/docker-desktop-4.17.0-amd64.deb?utm_source=docker&utm_medium=webreferral&utm_campaign=docs-driven-download-linux-amd64"
+
+apiVersion: v1
+kind: Pod
+metadata:
+   name: redis-pod
+spec:
+   containers:
+   - name: redis-container01
+     image: saravak/redis:latest
+     ports:
+     - containerPort: 6379
+     
+version: '3'
+networks:
+  pyspark_frontend:
+    driver: bridge
+services:
+# jupyterlab with pyspark
+  pyspark-notebook:
+    image: jupyter/pyspark-notebook:spark-3.3.2
+    networks:
+     - pyspark_frontend
+    ports:
+      - "9889:8888"
+      - "9081:8080"
+      - "9078:7077"
+      - "9040:4040"
+    volumes:
+      - ${WORKDIR}:/home/jovyan/work
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
