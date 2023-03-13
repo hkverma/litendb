@@ -78,6 +78,7 @@ sudo apt-get update
 sudo apt-get -y install docker-ce docker-ce-cli containerd.io docker-compose-plugin
 sudo apt-get -y install docker-compose
 
+# https://desktop.docker.com/linux/main/amd64/docker-desktop-4.17.0-amd64.deb?utm_source=docker&utm_medium=webreferral&utm_campaign=docs-driven-download-linux-amd64
 #Run docker helloworld
 sudo systemctl start dockerd
 sudo docker run hello-world

@@ -7,7 +7,7 @@ networks:
 services:
 # jupyterlab with pyspark
   pyspark-notebook:
-    image: jupyter/pyspark-notebook:spark-3.3.2
+    image: litendata/spark-py:v3.3.2
     networks:
      - pyspark_frontend
     ports:
@@ -16,6 +16,6 @@ services:
       - "9078:7077"
       - "9040:4040"
     volumes:
-      - ${WORKDIR}:/home/jovyan/work
+      - ${WORKDIR}:/opt/spark/
     environment:
       - JUPYTER_ENABLE_LAB=yes
