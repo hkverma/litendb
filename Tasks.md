@@ -1,7 +1,12 @@
 # Tasks
 
 ## Demo in progress
-
+  pyspark weblog analytics with
+  Query 5 TPCH query using Liten
+  K8s setup with Spark
+  K8s setup with Liten data layer and Spark
+  Liten Data on AWS
+  
 ## Programming In Progress
 
   Modify all C++ names to follow google naming conventions
