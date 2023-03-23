@@ -40,8 +40,17 @@ class Session:
         """
         Create and initialize sessions
         """
+        start("Default session")
         pass
     
+    def new(self, desc="New interactive session"):
+        """
+        Start a new interactive session. Stops if an ongoing session.
+        """
+        if (self.ongoing_session):
+            self.stop()
+        return self.start(desc)
+        
     def start(self, desc="New interactive session"):
         """
         Start an interactive session 
@@ -51,7 +60,7 @@ class Session:
         self.ongoing_session=True
         self.session_id = self.session_id+1        
         print(f"_liten_session_start={self.session_id} desc={desc}")
-        session_file = f"liten_session_{self.session_id}.py"
+        #session_file = f"liten_session_{self.session_id}.py"
         #    %logstop
         #    %logstart -o -r -t -q f"{self.session_file}"
         return f"Started Session={self.session_id}"
