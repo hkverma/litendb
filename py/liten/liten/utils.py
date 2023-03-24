@@ -2,6 +2,7 @@
 Utility functions used across different files
 """
 import codecs
+from IPython.core.getipython import get_ipython
 
 def to_bytes(s):
     """
@@ -18,3 +19,14 @@ def to_bytes(s):
         return codecs.encode(s, 'utf-8')
     else:
         raise TypeError("Expected bytes or string, but got %s." % type(s))
+
+def create_new_cell(contents):
+    shell = get_ipython()
+    payload = dict(
+        source='set_next_input',
+        text=contents,
+        replace=False,
+    )
+    shell.payload_manager.write_payload(payload, single=False)
+    return
+
