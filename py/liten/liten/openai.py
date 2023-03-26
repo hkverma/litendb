@@ -20,6 +20,7 @@ class OpenAI:
             "text-davinci-003",
             "text-davinci-002",
             "code-davinci-002"]
+        self.model_ = self.models_[1]
         # max tokens must be < 4096
         self.max_tokens_=1024
         # Temperature - higher temperature means more variations
@@ -30,11 +31,15 @@ class OpenAI:
         self.stop_=None
         pass
 
+    @property
+    def max_tokens(self):
+        return self.max_tokens_;
+
     @timeout(timeout_secs_)
     def complete_chat(self, prompt):
         # Generate a response
         completion = openai.Completion.create(
-            engine=self.models_[1],
+            engine=self.model_,
             prompt=prompt,
             max_tokens=self.max_tokens_,
             n=self.n_,

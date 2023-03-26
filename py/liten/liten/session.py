@@ -1,5 +1,7 @@
 from liten import openai
+from liten import utils
 import json
+import re
 
 # %%capture cap
 
@@ -17,7 +19,6 @@ class Session:
         self.start_marker_="_liten_session_start"
         self.stop_marker_="_liten_session_end"
 
-        self.ids_=0
         self.data_={}
         self.code_={}
 
@@ -74,7 +75,19 @@ class Session:
         self.active_=False
         return
 
-    def summarize(self, nbname):
+    def if_image_cell(self, cell):
+        """
+        return true if cell contains an image
+        """
+        for k1,v1 in cell.items():
+            if 'outputs' == k1:
+                for e1 in v1:
+                    for k2,v2 in e1.items():
+                        if 'data' == k2 and 'image/png' in v2.keys():
+                            return True
+        return False
+        
+    def load(self, nbname):
         """
         Read all sessions and summarize each of them
         """
@@ -96,7 +109,7 @@ class Session:
             # session can change only across cells, see if this cell changes session
             # if session_start called in the cell it will add this cell in new session
             for key, value in cell.items():
-                if (code_cell_type and key == "outputs"):
+                if (key == "outputs"):
                     for output in value:
                         if ("text" in output.keys()):
                             for text in output["text"]:
@@ -104,8 +117,15 @@ class Session:
                                     liten_session_id=session_id
                                     session_id=0
                                 if (self.start_marker_ in text):
-                                    liten_session_id += 1
-                                    session_id = liten_session_id
+                                    m = re.search(f"{self.start_marker_}=([0-9]+)", text)
+                                    if (m.groups()):
+                                        session_id = int(m.group(1))
+                                    else:
+                                        session_id = 0
+                                        print("Error extracting session id from liten start marker")
+                                
+                                            
+                                            
                 if (code_cell_type and key == "source"):
                     code.append(value)
             # Extract code in session_code session_id
@@ -117,7 +137,8 @@ class Session:
             # Append to session data
             if session_id not in session_data.keys():
                 session_data[session_id] = []
-            session_data[session_id].append(cell)
+            if not self.if_image_cell(cell):
+                session_data[session_id].append(cell)
             
         # Replace self code & data
         self.code_ = session_code
@@ -125,16 +146,46 @@ class Session:
         #print(f"Code={self.code_}")        
         return
 
-    def explain(self, session_id):
+    def reduce_prompt_size(self, prompt):
+        """
+        remove image etc to reduce prompt size
+        """
+        words = prompt.split();
+        max_tokens = self.openai_.max_tokens
+        rprompt = prompt
+        if (len(words) > max_tokens):
+            #rprompt = ' '.join(words[0:max_tokens])
+            rprompt = prompt[0:5*max_tokens]
+        return rprompt
+        
+    def summarize(self):
+        for k,v in self.data_.items():
+            prompt = "Following are cells from a python notebook from jupyter in json format. Please summarize what it is trying to do?\n"
+            prompt += json.dumps(v)
+            rprompt = self.reduce_prompt_size(prompt)
+            s = self.openai_.complete_chat(rprompt)
+            print(f"Session {k}: {s.strip()}\n")
+        return
+        
+    def explain(self, id):
         """
         Explain a session id
         """
+        if (id not in self.data_):
+            print(f"Session {id}: does not exist")
+        prompt = "Following are cells of a python notebook from jupyter is json format. Please explain what it is trying to do?\n"+json.dumps(self.data_[id])
+        rprompt = self.reduce_prompt_size(prompt)
+        s = self.openai_.complete_chat(rprompt)
+        print(f"Session {id}: {s.strip()}\n")
         return
 
-    def replay(self, session_id):
+    def replay(self, id):
         """
         Replay the queries of a session
         """
+        if (id not in self.code_):
+            print(f"Session {id}: does not exist")
+        utils.create_new_cell(self.code_[id])
         return
 
     def complete_chat(self, prompt):
