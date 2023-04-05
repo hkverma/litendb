@@ -21,6 +21,7 @@ class Session:
 
         self.data_={}
         self.code_={}
+        self.summary_={}
 
         self.openai_ = openai.OpenAI()
         self.start("Default session")
@@ -163,8 +164,8 @@ class Session:
             prompt = "Following are cells from a python notebook from jupyter in json format. Please summarize what it is trying to do?\n"
             prompt += json.dumps(v)
             rprompt = self.reduce_prompt_size(prompt)
-            s = self.openai_.complete_chat(rprompt)
-            print(f"Session {k}: {s.strip()}\n")
+            self.summary_[k] = self.openai_.complete_chat(rprompt).strip()
+            print(f"Session {k}: {self.summary_[k]}\n")
         return
         
     def explain(self, id):
@@ -192,4 +193,16 @@ class Session:
         return self.openai_.complete_chat(prompt)
 
     def generate_sql(self, prompt):
-        return self.openai_.generate_sql(prompt)    
+        return self.openai_.generate_sql(prompt)
+
+    def find_similar(self, prompt):
+        chatprompt = "Find a list of sessions below. Each session starts with session keyword followed by a number. It is followed by a short summary.\n"
+        for k,v in self.summary_.items():
+            chatprompt += f"Session {k} = {v}\n"
+        chatprompt += "List the session closest to the following session summary.\n"
+        chatprompt += prompt
+        rchatprompt = self.reduce_prompt_size(chatprompt)
+        answer = self.openai_.complete_chat(rchatprompt)
+        print(f"{answer.strip()}\n")
+        return
+        

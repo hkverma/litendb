@@ -1,5 +1,6 @@
 import random
 import time
+import os
 import openai
 from liten import utils
 
@@ -61,8 +62,7 @@ class OpenAI:
         """
         Initialize openai variables
         """
-        openai.api_key="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"
-        #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"
+        openai.api_key= os.environ["OPENAI_API_KEY"]
         # Pick a model - https://platform.openai.com/docs/models/gpt-3-5
         self.models_ = [
             "gpt-3.5-turbo",
