@@ -1,7 +1,55 @@
-import openai
+import random
 import time
-from wrapt_timeout_decorator import *
+import openai
 from liten import utils
+
+# define a retry decorator
+def retry_with_exponential_backoff(
+        func,
+        initial_delay: float = 1,
+        exponential_base: float = 2,
+        jitter: bool = True,
+        max_retries: int = 4,
+        errors: tuple = (openai.error.RateLimitError,),
+):
+    """Retry a function with exponential backoff."""
+ 
+    def wrapper(*args, **kwargs):
+        # Initialize variables
+        num_retries = 0
+        delay = initial_delay
+ 
+        # Loop until a successful response or max_retries is hit or an exception is raised
+        while True:
+            try:
+                return func(*args, **kwargs)
+ 
+            # Retry on specific errors
+            except errors as e:
+                # Increment retries
+                num_retries += 1
+ 
+                # Check if max retries has been reached
+                if num_retries > max_retries:
+                    raise Exception(
+                        f"Maximum number of retries ({max_retries}) exceeded."
+                    )
+ 
+                # Increment the delay
+                delay *= exponential_base * (1 + jitter * random.random())
+ 
+                # Sleep for the delay
+                time.sleep(delay)
+ 
+            # Raise exceptions for any errors not specified
+            except Exception as e:
+                raise e
+ 
+    return wrapper
+    
+@retry_with_exponential_backoff
+def completions_with_backoff(**kwargs):
+    return openai.Completion.create(**kwargs)
 
 class OpenAI:
     """
@@ -13,7 +61,8 @@ class OpenAI:
         """
         Initialize openai variables
         """
-        openai.api_key="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"
+        openai.api_key="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"
+        #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"
         # Pick a model - https://platform.openai.com/docs/models/gpt-3-5
         self.models_ = [
             "gpt-3.5-turbo",
@@ -35,10 +84,9 @@ class OpenAI:
     def max_tokens(self):
         return self.max_tokens_;
 
-    @timeout(timeout_secs_)
     def complete_chat(self, prompt):
         # Generate a response
-        completion = openai.Completion.create(
+        completion = completions_with_backoff(
             engine=self.model_,
             prompt=prompt,
             max_tokens=self.max_tokens_,
@@ -50,7 +98,6 @@ class OpenAI:
         return response
 
     # Generate SQL prompt from given prompt
-    @timeout(timeout_secs_)
     def generate_sql(self,prompt):
         summarize_prompt = "Summarize the following request:\n"
         summarize_prompt += prompt
