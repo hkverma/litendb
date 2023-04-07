@@ -105,6 +105,13 @@ class OpenAI:
         sql_prompt = "Convert the following text to a SQL statement.\n"
         sql_prompt += prompt
         sql = self.complete_chat(sql_prompt)
-        spark_sql = "sqlDf=spark.sql(\""+sql.strip()+"\")\nsqlDf.show()"
+        spark_sql = "sqlDf=tdb.spark.sql(\""+sql.strip()+"\")\nsqlDf.show()"
         utils.create_new_cell(spark_sql)
+        return summary
+
+    def query_sql(self,prompt):
+        sql_prompt = "Convert the following text to a SQL statement.\n"
+        sql_prompt += prompt
+        sql = self.complete_chat(sql_prompt)
+        spark_sql = "tdb.spark.sql(\""+sql.strip()+"\")\nsqlDf.show()"
         return summary
