@@ -31,11 +31,7 @@ class Database:
         return self.work_
 
     def complete_chat(self, prompt):
-        msg = [
-            {"role": "system", "content" : "Complete the given prompt and its directives"},
-            {"role": "user", "content" : prompt}
-        ]
-        resp = self.openai_.complete_chat(msg)
+        resp = self.openai_.complete_prompt_chat(prompt)
         return resp
 
     def generate_sql(self, prompt):

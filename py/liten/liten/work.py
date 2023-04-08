@@ -164,7 +164,7 @@ class Work:
             prompt = "Following are cells from a python notebook from jupyter in json format. Please summarize what it is trying to do?\n"
             prompt += json.dumps(v)
             rprompt = self.reduce_prompt_size(prompt)
-            self.summary_[k] = self.openai_.complete_chat(rprompt).strip()
+            self.summary_[k] = self.openai_.summarize(rprompt).strip()
             print(f"Work {k}: {self.summary_[k]}\n")
         return
         
@@ -174,9 +174,14 @@ class Work:
         """
         if (id not in self.data_):
             print(f"Work {id}: does not exist")
-        prompt = "Following are cells of a python notebook from jupyter is json format. Please explain what it is trying to do?\n"+json.dumps(self.data_[id])
-        rprompt = self.reduce_prompt_size(prompt)
-        s = self.openai_.complete_chat(rprompt)
+            return
+        
+        prompt = self.reduce_prompt_size(json.dumps(self.data_[id]))
+        msg = [
+            {"role": "system", "content" : "Following are cells of a python notebook from jupyter is json format. Can you explain what it is trying to do?"},
+            {"role": "user", "content" : prompt}
+        ]
+        s = self.openai_.complete_chat(msg)
         print(f"Work {id}: {s.strip()}\n")
         return
 
@@ -190,14 +195,18 @@ class Work:
         return
 
     def find_similar(self, prompt):
-        chatprompt = "Find a list of works below. Each work starts with work keyword followed by a number. It is followed by a short summary.\n"
+        syscontent = "Find a list of works below. Each work starts with work keyword followed by a number. It is followed by a short summary.\n"
         for k,v in self.summary_.items():
-            chatprompt += f"Work {k} = {v}\n"
-        chatprompt += "List the work closest to the following work summary.\n"
-        chatprompt += prompt
-        rchatprompt = self.reduce_prompt_size(chatprompt)
-        answer = self.openai_.complete_chat(rchatprompt)
-        print(f"{answer.strip()}\n")
+            syscontent += f"Work {k} = {v}\n"
+        rsyscontent = self.reduce_prompt_size(syscontent)
+        prompt += "List the work closest to the following work summary.\n"
+        chatprompt += prompt        
+        msg = [
+            {"role": "system", "content" : rsyscontent},
+            {"role": "user", "content" : chatprompt}
+        ]        
+        answer = self.openai_.complete_chat(msg).strip()
+        print(answer)
         return
         
     def complete_chat(self, prompt):

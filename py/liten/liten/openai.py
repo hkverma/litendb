@@ -135,3 +135,11 @@ class OpenAI:
         ]
         sql = self.complete_chat(msg)
         return sql
+
+    def complete_prompt_chat(self, prompt):
+        msg = [
+            {"role": "system", "content" : "Complete the given prompt and its directives"},
+            {"role": "user", "content" : prompt}
+        ]
+        resp = self.openai_.complete_chat(msg)
+        return resp
