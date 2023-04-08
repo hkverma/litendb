@@ -30,3 +30,8 @@ def create_new_cell(contents):
     shell.payload_manager.write_payload(payload, single=False)
     return
 
+class Suite(set):
+    def __getattr__(self, name):
+        if name in self:
+            return name
+        raise AttributeError

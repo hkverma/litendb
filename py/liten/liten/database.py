@@ -5,6 +5,7 @@ import pyspark
 from pyspark.sql import SparkSession
 from liten.openai import OpenAI
 from liten.work import Work
+from liten import utils
 
 class Database:
     """
@@ -30,10 +31,17 @@ class Database:
         return self.work_
 
     def complete_chat(self, prompt):
-        return self.openai_.complete_chat(prompt)
+        msg = [
+            {"role": "system", "content" : "Complete the given prompt and its directives"},
+            {"role": "user", "content" : prompt}
+        ]
+        resp = self.openai_.complete_chat(msg)
+        return resp
 
     def generate_sql(self, prompt):
-        return self.openai_.generate_sql(prompt)    
+        sql_cmd = self.openai_.generate_sql(prompt)
+        utils.create_new_cell(f"spark.sql(\"{sql_cmd}\").show()")
+        return
 
     def run_query(self, prompt):
         sqlstr = self.openai_.generate_sql(prompt)

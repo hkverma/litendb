@@ -3,8 +3,8 @@ import time
 import os
 import openai
 from liten import utils
+from liten.utils import Suite
 
-# define a retry decorator
 def retry_with_exponential_backoff(
         func,
         initial_delay: float = 1,
@@ -13,7 +13,15 @@ def retry_with_exponential_backoff(
         max_retries: int = 4,
         errors: tuple = (openai.error.RateLimitError,),
 ):
-    """Retry a function with exponential backoff."""
+    """Retry a function with exponential backoff with delay with retry multiplies like
+      delay *= exponential_base * (1 + jitter * random.random())
+    func -- wrapper function
+    initial_delay -- in secs (default=1)
+    exponential_base -- in sec (default=2)
+    jitter -- True/False for varying delay
+    max_retries -- Number of retries (default=4)
+    errors -- Rate limit error for backoff
+    """
  
     def wrapper(*args, **kwargs):
         # Initialize variables
@@ -49,8 +57,15 @@ def retry_with_exponential_backoff(
     return wrapper
     
 @retry_with_exponential_backoff
-def completions_with_backoff(**kwargs):
-    return openai.Completion.create(**kwargs)
+def chat_completions_with_backoff(**kwargs):
+    return openai.ChatCompletion.create(**kwargs)
+
+# GPT3.5 models https://platform.openai.com/docs/models/gpt-3-5
+class GPT35Model:
+    gpt_3_5_turbo = 'gpt-3.5-turbo'
+    text_davinci_003 = 'text-davinci-003'
+    text_davinci_002 = 'text-davinci-002'
+    code_davinci_002 = 'code-davinci-002'
 
 class OpenAI:
     """
@@ -63,13 +78,6 @@ class OpenAI:
         Initialize openai variables
         """
         openai.api_key= os.environ["OPENAI_API_KEY"]
-        # Pick a model - https://platform.openai.com/docs/models/gpt-3-5
-        self.models_ = [
-            "gpt-3.5-turbo",
-            "text-davinci-003",
-            "text-davinci-002",
-            "code-davinci-002"]
-        self.model_ = self.models_[1]
         # max tokens must be < 4096
         self.max_tokens_=1024
         # Temperature - higher temperature means more variations
@@ -78,40 +86,52 @@ class OpenAI:
         self.n_=1
         # stop 
         self.stop_=None
+        # model name is like models_.data{id:"modelname"}
+        # self.models_=openai.Model.list()
         pass
 
     @property
     def max_tokens(self):
         return self.max_tokens_;
 
-    def complete_chat(self, prompt):
-        # Generate a response
-        completion = completions_with_backoff(
-            engine=self.model_,
-            prompt=prompt,
+    def complete_chat(self, messages):
+        """
+        Generate a response from GPT model
+        """
+        response = chat_completions_with_backoff(
+            model=GPT35Model.gpt_3_5_turbo,
+            messages=messages,
             max_tokens=self.max_tokens_,
             n=self.n_,
             stop=self.stop_,
             temperature=self.temp_,
         )
-        response = completion.choices[0].text
-        return response
+        content = ""
+        try:
+            content = response['choices'][0]['message']['content']
+        except:
+            raise Excpetion('Could not get content from OpenAI response')
+        return content
 
     # Generate SQL prompt from given prompt
-    def generate_sql(self,prompt):
-        summarize_prompt = "Summarize the following request:\n"
-        summarize_prompt += prompt
-        summary = self.complete_chat(summarize_prompt)
-        sql_prompt = "Convert the following text to a SQL statement.\n"
-        sql_prompt += prompt
-        sql = self.complete_chat(sql_prompt)
-        spark_sql = "sqlDf=tdb.spark.sql(\""+sql.strip()+"\")\nsqlDf.show()"
-        utils.create_new_cell(spark_sql)
+    
+    def summarize(self,prompt):
+        msg = [
+            {"role": "system", "content" : "Summarize the given text"},
+            {"role": "user", "content" : prompt}
+        ]
+        summary = self.complete_chat(msg)
         return summary
 
-    def query_sql(self,prompt):
-        sql_prompt = "Convert the following text to a SQL statement.\n"
-        sql_prompt += prompt
-        sql = self.complete_chat(sql_prompt)
-        spark_sql = "tdb.spark.sql(\""+sql.strip()+"\")\nsqlDf.show()"
-        return summary
+    def generate_sql(self,prompt):
+        """
+        Generate sql from the given prompt
+        """
+        msg = [
+            {"role": "system", "content" : "Convert given user content to SQL"},
+            {"role": "user", "content" : "Count number of rows from weblog table where Status column has 500 errors"},
+            {"role": "assistant", "content" : "SELECT COUNT(*) FROM weblog WHERE Status = 500;"},
+            {"role": "user", "content": prompt}
+        ]
+        sql = self.complete_chat(msg)
+        return sql
