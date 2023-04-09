@@ -124,9 +124,6 @@ class Work:
                                     else:
                                         work_id = 0
                                         print("Error extracting work id from liten start marker")
-                                
-                                            
-                                            
                 if (code_cell_type and key == "source"):
                     code.append(value)
             # Extract code in work_code work_id
@@ -151,13 +148,7 @@ class Work:
         """
         remove image etc to reduce prompt size
         """
-        words = prompt.split();
-        max_tokens = self.openai_.max_tokens
-        rprompt = prompt
-        if (len(words) > max_tokens):
-            #rprompt = ' '.join(words[0:max_tokens])
-            rprompt = prompt[0:5*max_tokens]
-        return rprompt
+        return self.openai_.reduce_prompt_size(prompt, self.openai_.max_input_tokens)
         
     def summarize(self):
         for k,v in self.data_.items():
@@ -199,11 +190,12 @@ class Work:
         for k,v in self.summary_.items():
             syscontent += f"Work {k} = {v}\n"
         rsyscontent = self.reduce_prompt_size(syscontent)
-        prompt += "List the work closest to the following work summary.\n"
-        chatprompt += prompt        
+        chatprompt = "List the work closest to the following work summary.\n"
+        chatprompt += prompt
+        rchatprompt = self.reduce_prompt_size(chatprompt)
         msg = [
             {"role": "system", "content" : rsyscontent},
-            {"role": "user", "content" : chatprompt}
+            {"role": "user", "content" : rchatprompt}
         ]        
         answer = self.openai_.complete_chat(msg).strip()
         print(answer)

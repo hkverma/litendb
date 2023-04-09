@@ -2,6 +2,7 @@ import random
 import time
 import os
 import openai
+import tiktoken
 from liten import utils
 from liten.utils import Suite
 
@@ -78,8 +79,10 @@ class OpenAI:
         Initialize openai variables
         """
         openai.api_key= os.environ["OPENAI_API_KEY"]
-        # max tokens must be < 4096
-        self.max_tokens_=1024
+        # max tokens must be < 4096, this is number of input tokens
+        self.max_tokens_=4096
+        self.max_output_tokens_=1024
+        self.max_input_tokens_=2*1024
         # Temperature - higher temperature means more variations
         self.temp_=0.5
         # n = number of answers to generate
@@ -88,21 +91,42 @@ class OpenAI:
         self.stop_=None
         # model name is like models_.data{id:"modelname"}
         # self.models_=openai.Model.list()
+        self.model_ = GPT35Model.gpt_3_5_turbo
+        #self.encoding = tiktoken.get_encoding('cl100k_base')
+        self.encoding_ = tiktoken.encoding_for_model(self.model_)
         pass
 
     @property
     def max_tokens(self):
         return self.max_tokens_;
 
+    @property
+    def max_input_tokens(self):
+        return self.max_input_tokens_;
+
+    @property
+    def max_output_tokens(self):
+        return self.max_output_tokens_;
+
+    def reduce_prompt_size(self, prompt, num_tokens):
+        """
+        remove image etc to reduce prompt size
+        """
+        tokens=self.encoding_.encode(prompt)
+        reduced_prompt=prompt
+        if (len(tokens) > num_tokens):
+            reduced_prompt = self.encoding_.decode(tokens[:num_tokens-1])
+        return reduced_prompt
+    
     def complete_chat(self, messages):
         """
         Generate a response from GPT model
         """
         response = chat_completions_with_backoff(
-            model=GPT35Model.gpt_3_5_turbo,
+            model=self.model_,
             messages=messages,
-            max_tokens=self.max_tokens_,
-            n=self.n_,
+            max_tokens=self.max_output_tokens_, # Max tokens to generate in output
+            n=self.n_,  # Number of responses
             stop=self.stop_,
             temperature=self.temp_,
         )
