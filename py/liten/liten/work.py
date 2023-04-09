@@ -156,9 +156,24 @@ class Work:
             prompt += json.dumps(v)
             rprompt = self.reduce_prompt_size(prompt)
             self.summary_[k] = self.openai_.summarize(rprompt).strip()
-            print(f"Work {k}: {self.summary_[k]}\n")
+            print(f"Workitem {k}: {self.summary_[k]}\n")
         return
         
+    def analyze(self, prompt):
+        for k,v in self.data_.items():
+            syscontent = "Following are the data cells from a python notebook from jupyter in json format. outputs key provide the output value. The text key in this value provides output result.\n"
+            syscontent += json.dumps(v)
+            rsyscontent = self.reduce_prompt_size(syscontent)
+            rsyscontent += "Based on this output result is similar to the provided user text.\n"
+            usertext = self.reduce_prompt_size(prompt)
+            msg = [
+                {"role": "system", "content" : rsyscontent},
+                {"role": "user", "content" : usertext}
+            ]
+            s = self.openai_.complete_chat(msg)
+            print(f"Workitem {k}: {s}\n")
+        return
+    
     def explain(self, id):
         """
         Explain a work id
