@@ -39,9 +39,17 @@ class Database:
         utils.create_new_cell(f"spark.sql(\"{sql_cmd}\").show()")
         return
 
-    def run_query(self, prompt):
+    def run_query(self, prompt, check="" ):
         sqlstr = self.openai_.generate_sql(prompt)
         sqlstr.strip()
         print(f"Running the following sql query.\n{sqlstr}\n")
-        self.spark_.sql(sqlstr).show()
+        df=self.spark_.sql(sqlstr)
+        print(f"Total rows in result={df.count()}")
+        df.show(5)
+        if check != "":
+            if df.first()[df.columns[0]] == 0:
+                print(f"Did not find any {check}")
+            else:
+                print(f"Found that there were {check}")
+                
         return

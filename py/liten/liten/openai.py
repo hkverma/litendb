@@ -152,7 +152,7 @@ class OpenAI:
         Generate sql from the given prompt
         """
         msg = [
-            {"role": "system", "content" : "Convert given user content to SQL"},
+            {"role": "system", "content" : "Convert given user content to SQL. The output should contain only SQL code."},
             {"role": "user", "content" : "Count number of rows from weblog table where Status column has 500 errors"},
             {"role": "assistant", "content" : "SELECT COUNT(*) FROM weblog WHERE Status = 500;"},
             {"role": "user", "content": prompt}
@@ -165,5 +165,5 @@ class OpenAI:
             {"role": "system", "content" : "Complete the given prompt and its directives"},
             {"role": "user", "content" : prompt}
         ]
-        resp = self.openai_.complete_chat(msg)
+        resp = self.complete_chat(msg)
         return resp
