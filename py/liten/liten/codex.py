@@ -36,13 +36,13 @@ class Story:
         return self.junit_code_
 
     def write_java(self):
-        java_file = class_name+".java"
+        java_file = self.class_name_+".java"
         jf = open(java_file, "w")
         jf.write(code)
         jf.close()
 
     def write_junit(self):
-        junit_file = class_name+"Test.java"
+        junit_file = self.class_name_+"Test.java"
         jf = open(junit_file, "w")
         jf.write(code)
         jf.close()
