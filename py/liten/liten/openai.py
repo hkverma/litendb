@@ -167,3 +167,30 @@ class OpenAI:
         ]
         resp = self.complete_chat(msg)
         return resp
+
+    def generate_java_code(self, prompt, class_name):
+        """
+        Generate java code from the prompt
+        """
+        msg = [
+            {"role": "system", "content" : "Generate java code with a class that performs the given task. The class name must be " + class_name},
+            {"role": "user", "content": prompt}
+        ]
+        java_code = self.complete_chat(msg)
+        return java_code
+
+    def generate_junit_code(self, java_code, desc):
+        """
+        Generate junit code for the given java code
+        """
+        content_prompt = "Generate java junit test for the given java code. The test code class name should be name of the class with Test appended to the name. "
+        if (desc):
+            content_prompt = content_prompt+ "This code performs the following operations." + desc
+        content_prompt = content_prompt + " This is the actual java code for which you have to generate junit code." + java_code
+        msg = [
+            {"role": "system", "content" : "Generate java unit junit code with a class that tests the given code."},
+            {"role": "user", "content" : content_prompt}
+        ]
+        junit_code = self.complete_chat(msg)
+        return junit_code
+
