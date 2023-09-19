@@ -6,12 +6,15 @@ import re
 import shlex
 import shutil
 import sys
-import numpy
+from pathlib import Path
+
 
 from Cython.Distutils import build_ext as _build_ext
 import Cython
 from setuptools import setup, Extension, Distribution
 from distutils import sysconfig
+
+import numpy
 
 #from distutils.command.build_ext import build_ext
 
@@ -55,10 +58,26 @@ class cmake_build_ext(_build_ext):
   CYTHON_MODULE_NAMES = [
     'lib']
 
+  def build_extensions(self):
+    self.extensions = [ext for ext in self.extensions
+                      if ext.name != '__dummy__']
+    for ext in self.extensions:
+      if (hasattr(ext, 'include_dirs') and
+               self.pyarrow_incl not in ext.include_dirs):
+         ext.include_dirs.append(numpy_incl)
+    print(f"built extenstion {self.extensions}")
+    _build_ext.build_extensions(self)
 
   def initialize_options(self):
     _build_ext.initialize_options(self)
     self.build_type = os.environ.get('LITEN_BUILD_TYPE','debug').lower()
+    # check if build_type is correctly passed / set
+    if self.build_type.lower() not in ('release', 'debug'):
+      raise ValueError("--build-type needs to be 'release' or 'debug'")
+    self.pyarrow_incl = os.environ.get('LITEN_ROOT_DIR') + "/cpp/opensource/arrow/python/pyarrow"
+    if not Path(self.pyarrow_incl).is_dir():
+      raise Exception(f"liten pyarrow dir {pyarrow_incl} does not exist")
+    print(f"initialized options {self.pyarrow_incl}")
 
   def run(self):
     self._run_cmake()
@@ -77,9 +96,6 @@ class cmake_build_ext(_build_ext):
     shutil.copyfile(liten_lib, pjoin(build_prefix, build_lib, 'liten','libliten.so'))
                     
   def _run_cmake(self):
-    # check if build_type is correctly passed / set
-    if self.build_type.lower() not in ('release', 'debug'):
-      raise ValueError("--build-type needs to be 'release' or 'debug'")
 
     # The directory containing this setup.py
     source = os.path.dirname(os.path.abspath(__file__))
@@ -179,7 +195,7 @@ with open("README.md", "r") as fh:
 
 setup(
   name='liten',
-  version='0.0.8',  # should be sam as lib.pyx::_version
+  version='0.0.9',  # should be sam as lib.pyx::_version
   author='HK Verma',
   author_email='hkverma@gmail.com',
   description='Big Data Analytics Toolset',
@@ -192,9 +208,8 @@ setup(
   package_data={'liten': ['*.pxd','*.pyx','includes/*.pxd']},
   include_package_data=True,
   distclass=BinaryDistribution,
-  # build_ext is overridden to call cmake, the Extension is just
-  # needed so things like bdist_wheel understand what's going on
-    ext_modules=[Extension('liten', sources=[], include_dirs=[numpy.get_include()])],
+  # Dummy extenstion to trigger build_ext
+  ext_modules=[Extension('__dummy__', sources=[])],
   # This includes both build and install requirements. Setuptools' setup_requires
   # option does not actually install things, so isn't actually helpful...
   install_requires = ['cython'],
@@ -207,5 +222,5 @@ setup(
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
   ],
-  python_requires='>=3.6',
+  python_requires='>=3.10',
 )

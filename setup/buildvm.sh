@@ -111,10 +111,12 @@ sudo apt install -y openjdk-17-jdk openjdk-17-jre
 sudo apt install python3-pip
 alias python=python3
 pip install numpy
-pip install cython==0.29.30
-pip install jupyterlab
-pip install pyspark=3.2.4
-pip install seaborn
+pip install cython==3.0.2
+# Ensure that this changes if arrow version is changed in opensource submodule
+pip install pyarrow==13.0.0
+#pip install jupyterlab
+#pip install pyspark=3.2.4
+#pip install seaborn
 
 #Install arrow dev For now, build it in opensources
 #sudo apt update
