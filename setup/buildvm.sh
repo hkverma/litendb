@@ -62,7 +62,7 @@ rm -rf $HOME/.docker/desktop
 sudo rm -rf /usr/local/bin/com.docker.cli
 sudo apt-get -y purge docker-desktop
 # set up docker repo
-sudo apt-get update
+sudo apt-get  update
 sudo apt-get -y install \
     ca-certificates \
     curl \
@@ -108,7 +108,7 @@ sudo install minikube-linux-amd64 /usr/local/bin/minikube
 # install jdk
 sudo apt install -y openjdk-17-jdk openjdk-17-jre
 # install python - keep default python (3.10) for Ubuntu22
-sudo apt install python3-pip
+sudo apt install -y python3-pip
 alias python=python3
 pip install numpy
 pip install cython==3.0.2
