@@ -114,7 +114,9 @@ pip install numpy
 pip install cython==3.0.2
 # Ensure that this changes if arrow version is changed in opensource submodule
 pip install pyarrow==13.0.0
-#pip install jupyterlab
+pip install pandas
+pip install jupyterlab
+pip install graphviz
 #pip install pyspark=3.2.4
 #pip install seaborn
 
