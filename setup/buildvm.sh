@@ -18,17 +18,16 @@ sudo apt-get -y update
 #
 # Install libstdc++
 # sudo apt-get install libstdc++6
-sudo apt-get -y install cmake
+#sudo apt-get -y install cmake
 sudo apt-get -y install openssl libssl-dev
 sudo apt-get install -y m4
 # install intel tbb
-sudo apt-get -y install libtbb-dev
+#sudo apt-get -y install libtbb-dev
 sudo apt-get -y install valgrind kcachegrind
 sudo apt-get -y install graphviz
 #Install all these C++ lib dependencies for fizz, folly and wangle
 sudo apt-get -y install \
     g++ \
-    cmake \
     libboost-all-dev \
     libevent-dev \
     libdouble-conversion-dev \
@@ -55,6 +54,22 @@ sudo apt-get -y install \
     
 #Install docker
 # https://docs.docker.com/engine/install/ubuntu/
+#Install cmake
+pushd /opt
+sudo wget https://github.com/Kitware/CMake/releases/download/v3.27.6/cmake-3.27.6-linux-x86_64.sh
+sudo chmod +x ./cmake-3.27.6-linux-x86_64.sh
+sudo ./cmake-3.27.6-linux-x86_64.sh
+cd /usr/bin
+sudo ln -s /opt/cmake-3.27.6-linux-x86_64/bin/cmake cmake
+popd
+
+#Install oneapi tbb - remove it when not needed
+# download the key to system keyring
+#wget -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB \
+#| gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
+# add signed entry to apt sources and configure the APT client to use Intel repository:
+#echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
+#sudo apt install -y intel-basekit
 
 # Install docker - Liten is distributed as a docker container
 sudo apt-get -y remove docker-desktop

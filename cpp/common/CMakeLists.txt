@@ -5,6 +5,7 @@ message(STATUS "Building common using CMake version: ${CMAKE_VERSION}")
 #
 add_library(common_objects OBJECT TTimeUtils.cpp TStatus.cpp TLog.cpp TService.cpp TGuid.cpp TTaskScheduler.cpp TConfigs.cpp TResult.cpp)
 target_include_directories(common_objects PUBLIC ${TBB_INC_DIR} ${COMMON_SRC})
+
 #
 # common static library for executables
 #

@@ -48,5 +48,8 @@ set(CACHE_TEST_SRC $ENV{LITEN_ROOT_DIR}/cpp/cache_test)
 # Global include and link directories
 # TODO expand include directories
 #
+include_directories(/home/hkverma/.local/include)
 include_directories(/usr/include/python3.6 /home/azureuser/miniconda3/envs/liten/lib/python3.10/site-packages/numpy/core/include/numpy/)
+include_directories(/home/hkverma/.local/lib)
+#link_directories(/opt/intel/oneapi/tbb/latest/lib/intel64/gcc4.8/)
 

@@ -30,6 +30,7 @@ git clone https://<user-name>@bitbucket.org/hkv/dbaistuff.git
 Update all the submodules as shown below.
 ```console
 $ cd ${LITEN_ROOT_DIR}/cpp/opensource
+$ git submodule init
 $ git submodule update --recursive
 ```
 From the root following directories exist.
