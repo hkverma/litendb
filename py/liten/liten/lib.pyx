@@ -21,7 +21,7 @@ from liten import utils
 import liten.lib as cliten
 
 # should be same as ../setup.py::setup::version
-_version = "0.0.9"
+_version = "0.0.10"
 
 # Schema
 include "tschema.pxi"

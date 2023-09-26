@@ -8,7 +8,6 @@ import shutil
 import sys
 from pathlib import Path
 
-
 from Cython.Distutils import build_ext as _build_ext
 import Cython
 from setuptools import setup, Extension, Distribution
@@ -193,9 +192,10 @@ class cmake_build_ext(_build_ext):
 with open("README.md", "r") as fh:
   long_description = fh.read()
 
+# TBD move version to version.py  
 setup(
   name='liten',
-  version='0.0.9',  # should be sam as lib.pyx::_version
+  version='0.0.10', # should be same as liten.lib:pyx:_version
   author='HK Verma',
   author_email='hkverma@gmail.com',
   description='Big Data Analytics Toolset',
@@ -212,7 +212,11 @@ setup(
   ext_modules=[Extension('__dummy__', sources=[])],
   # This includes both build and install requirements. Setuptools' setup_requires
   # option does not actually install things, so isn't actually helpful...
-  install_requires = ['cython'],
+  install_requires = ['cython==3.0.2',
+                      'pyarrow==13.0.0',
+                      'numpy',
+                      'graphviz',
+                      'tbb-devel'],
   cmdclass={
     'build_ext': cmake_build_ext
   },
