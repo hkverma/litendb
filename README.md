@@ -1,17 +1,9 @@
 # README #
 
-## What is this repository for?
 
-Liten Data - Build and Run 
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+## Build Liten
 
 Following sections describe development tools and software needed to build Liten.
-
-## git repo
-
-## Build Machine and development software versions
-
-We use Ubuntu 22.04 LTS Linux OS for development
 
 ### C++, gdb versions
 
@@ -19,31 +11,26 @@ We use Ubuntu 22.04 LTS Linux OS for development
 * g++-11, gcc-11 compiler
 * Minimum cmake version 3.22
 
-Run buildvm.sh to install relevant build tools and libraries on the VM
+### Build Machine setup
+
+We use Ubuntu 22.04 LTS Linux OS for development
+
+Run setup/buildvm.sh to install relevant build tools and libraries on the VM
 
 ```
-sudo ./buildvm.sh
+sudo ./setup/buildvm.sh
 ```
+
 ### Git repo and code
-
-Set LITEN_ROOT_DIR to the root of the repository.
-```console
-$ export LITEN_ROOT_DIR=<root-dir>
-```
-Set LITEN_BUILD_TYPE to debug or release for C++ and python wheel builds.
-```console
-$ export LITEN_BUILD_TYPE=<debug|release>
-```
-#### Clone from github
 
 Clone Liten code from github.
 ```console
 git clone https://<user-name>@bitbucket.org/hkv/dbaistuff.git
 ```
-
 Update all the submodules as shown below.
 ```console
 $ cd ${LITEN_ROOT_DIR}/cpp/opensource
+$ git submodule init
 $ git submodule update --recursive
 ```
 From the root following directories exist.
@@ -54,8 +41,68 @@ From the root following directories exist.
 
 Within cpp these directories exist.
 
-* opensource - All external C++ libs. These include arrow, fizz, folly and wangle. Various other libraries are installed using apt-get install while building the VM
+* opensource - All external C++ libs. These include arrow, fizz, folly and wangle. Various other libraries are installed using apt-get install while building the VM.
 * Other directories in C++ are liten specific code.
+
+### Compile C++ code
+
+Set LITEN_ROOT_DIR to the root of the repository.
+```console
+$ export LITEN_ROOT_DIR=<root-dir>
+```
+Set LITEN_BUILD_TYPE to debug or release for C++ and python wheel builds.
+```console
+$ export LITEN_BUILD_TYPE=<debug|release>
+```
+These are the packages in external_libs that Liten uses. Build debug or release based on LITEN_BUILD_TYPE settings.
+
+One can build all the packages using the following command
+```console
+ $ cd ${LITEN_ROOT_DIR}/cpp/opensource
+ $ sudo ./buildall.sh
+```
+See below for details on how to build various submodules.
+
+Build the Liten code.
+```console
+$ cd ${LITEN_ROOT_DIR}/cpp
+$ ./buildall.sh
+```
+
+You can run the following test and check the log file as well. By default, log files are in /tmp/Liten.INFO The dataset should have all the Tpch data files.
+
+```
+build/debug/bin/cache_test ../../tpch-kit/sf1g
+```
+
+### Build Liten python wheel
+
+Run setup.py to build from py/liten directory.
+       
+```console
+python setup.py build
+```
+To check for a dist do the following
+```console
+python3 setup.py sdist
+```
+Create a wheel (zip file with all the install libs, files etc.) do the following.
+```console
+python3 setup.py bdist_wheel
+```
+
+This wheel can be testeted locally by using pip install. Uninstall liten first if installed earlier.
+```console
+pip uninstall liten
+```console
+pip install dist/liten-0.0.1-cp38-cp38-linux_x86_64.whl
+```
+
+You can check cmake command separately. Not needed but useful if cmake canges are made.
+```console
+cmake -DPYTHON_EXECUTABLE=/home/hkverma/miniconda3/envs/liten/bin/python -DPython3_EXECUTABLE=/home/hkverma/miniconda3/envs/liten/bin/python  -DCMAKE_BUILD_TYPE=debug /mnt/c/Users/hkver/Documents/dbai/dbaistuff/py/liten
+cmake --build . --config _liten
+```
 
 ### Docler and Kubernetes
 ./buildvm.sh script should already install docker and K8s components.
@@ -175,57 +222,6 @@ To save python environments, you can export conda env.
 conda env export > environment.yml
 ```
 
-### How to build Liten?
-
-#### Compile C++ code
-
-These are the packages in external_libs that Liten uses.
-
-One can build all the packages using the following command
-```console
- $ cd ${LITEN_ROOT_DIR}/cpp/external_libs
- $ sudo ./buildall.sh [debug|release]
-```
-See below for details on how to build various submodules.
-
-Build the Liten code.
-```console
-$ cd ${LITEN_ROOT_DIR}/cpp
-$ ./buildall.sh [debug|release]
-```
-
-#### Build Liten python wheel
-
-First get to the liten conda environment. This should have all the library components.
-```console
-conda activate liten
-```console
-Run setup.py to build from py/liten directory.
-       
-```console
-python setup.py build
-```
-To check for a dist do the following
-```console
-python3 setup.py sdist
-```
-Create a wheel (zip file with all the install libs, files etc.) do the following.
-```console
-python3 setup.py bdist_wheel
-```
-
-This wheel can be testeted locally by using pip install. Uninstall liten first if installed earlier.
-```console
-pip uninstall liten
-```console
-pip install dist/liten-0.0.1-cp38-cp38-linux_x86_64.whl
-```
-
-You can check cmake command separately. Not needed but useful if cmake canges are made.
-```console
-cmake -DPYTHON_EXECUTABLE=/home/hkverma/miniconda3/envs/liten/bin/python -DPython3_EXECUTABLE=/home/hkverma/miniconda3/envs/liten/bin/python  -DCMAKE_BUILD_TYPE=debug /mnt/c/Users/hkver/Documents/dbai/dbaistuff/py/liten
-cmake --build . --config _liten
-```
 
 ## TO BE CLEANED
 
