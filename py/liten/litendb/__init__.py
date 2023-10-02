@@ -4,7 +4,7 @@ Init python in conda release
 from ctypes import cdll
 import os
 
-import .lib as cliten
+import lib as cliten
 from .lib import *
 
 import utils
