@@ -1,8 +1,7 @@
 """
 Liten Cache
 """
-import utils
-import .lib as cliten
+from .utils import *
 
 from .schema import Schema
 from .table import Table
@@ -12,6 +11,8 @@ from pyarrow import csv
 
 import sys
 import codecs
+
+import .lib as cliten
 
 class Cache:
     """

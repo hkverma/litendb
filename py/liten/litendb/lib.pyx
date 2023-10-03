@@ -19,9 +19,6 @@ import codecs
 import utils
 import lib as cliten
 
-# should be same as ../setup.py::setup::version
-_version = "0.0.11"
-
 # Schema
 include "tschema.pxi"
 

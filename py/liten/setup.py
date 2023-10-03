@@ -13,6 +13,13 @@ import Cython
 from setuptools import setup, Extension, Distribution
 from distutils import sysconfig
 
+def get_version() :
+    fp = open('litendb/version.py')
+    version = fp.readline().strip()
+    fp.close()
+    return version
+VERSION = get_version()
+
 import numpy
 
 #from distutils.command.build_ext import build_ext
@@ -192,10 +199,9 @@ class cmake_build_ext(_build_ext):
 with open("README.md", "r") as fh:
   long_description = fh.read()
 
-# TBD move version to version.py  
 setup(
   name='litendb',
-  version='0.0.11', # should be same as liten.lib:pyx:_version
+  version=VERSION,
   author='HK Verma',
   author_email='hkverma@gmail.com',
   description='Big Data Analytics Toolset',

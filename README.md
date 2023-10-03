@@ -306,6 +306,10 @@ jupyter notebook
 ```
 #### Upload to pip website
 It is not needed for local runs. However, once uploaded anyone can use it.
+You may need to repair the wheel to manylinux distro. Use the following commands
+```
+auditwheel repair litendb-0.0.11-cp310-cp310-linux_x86_64.whl -w . --plat manylinux_2_35_x86_64
+```
 Upload it for pip install commands from testpy repository.
 ```console
 python3 -m twine upload --repository dist/*
@@ -313,6 +317,15 @@ python3 -m twine upload --repository dist/*
 This package can be installed using conda like.
 ```console
 python3 -m pip install --index-url https://test.pypi.org/simple/ --no-deps liten-pkg-liten
+```
+
+It can also be uploaded to main pip.
+```
+twine upload dist/*
+```
+Now the package can be installed directly like.
+```
+pip install litendb
 ```
 
 ### Submodule packages

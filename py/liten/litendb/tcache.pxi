@@ -101,10 +101,6 @@ cdef class TCache:
         self.tcache = self.sp_tcache.get()
 
     @property
-    def version(self):
-        return _version
-
-    @property
     def FactTable(self):
         return 1
 
