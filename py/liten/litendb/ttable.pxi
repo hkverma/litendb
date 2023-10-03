@@ -16,7 +16,7 @@ from graphviz import Source
 import sys
 import codecs
 
-import utils
+from .utils import to_bytes
 
 cdef class TTable:
     """
@@ -37,7 +37,7 @@ cdef class TTable:
           unique name of the table
         """
         name = self.p_ttable.GetName()
-        return utils.to_bytes(name)
+        return to_bytes(name)
     
     def get_type(self):
         """

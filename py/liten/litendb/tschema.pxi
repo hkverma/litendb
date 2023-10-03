@@ -16,7 +16,7 @@ from graphviz import Source
 import sys
 import codecs
 
-import utils
+from .utils import to_bytes
 
 cdef class TSchema:
     """
@@ -36,7 +36,7 @@ cdef class TSchema:
           unique name of the table
         """
         name = self.sp_tschema.get().GetName()
-        return utils.to_bytes(name)
+        return to_bytes(name)
 
     def get_info(self):
         """
@@ -44,7 +44,7 @@ cdef class TSchema:
           unique name of the table
         """
         schema_str = self.p_tschema.ToString()
-        return utils.to_bytes(schema_str)
+        return to_bytes(schema_str)
     
     def get_type(self):
         """
@@ -68,7 +68,7 @@ cdef class TSchema:
         cdef:
            CTResultFieldType ftype_result
            FieldType ftype
-        ftype_result = self.p_tschema.GetFieldType(utils.to_bytes(field_name))
+        ftype_result = self.p_tschema.GetFieldType(to_bytes(field_name))
         if (not ftype_result.ok()):
             raise ValueError("Failed to get field by msg={ftype_result.status.message()}")
 
@@ -101,7 +101,7 @@ cdef class TSchema:
             ftype = FeatureField
         if (field_type == self.tcache.EmbeddingField):
             ftype = EmbeddingField
-        status = self.p_tschema.SetFieldType(utils.to_bytes(field_name), ftype)
+        status = self.p_tschema.SetFieldType(to_bytes(field_name), ftype)
         if ( not status.ok()):
             print(f"Failed to set field with msg={status.message()}")
             return False
@@ -121,7 +121,7 @@ cdef class TSchema:
             print(f"parent_schema {type(parent_schema)} must be TSchema")
             return False
         p_parent_schema = <TSchema>parent_schema
-        status = self.p_tschema.Join(utils.to_bytes(field_name), p_parent_schema.sp_tschema, utils.to_bytes(parent_field_name))
+        status = self.p_tschema.Join(to_bytes(field_name), p_parent_schema.sp_tschema, to_bytes(parent_field_name))
         if (status.ok()):
             return True
         else:

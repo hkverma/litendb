@@ -1,7 +1,7 @@
 """
 Liten Service
 """
-import .lib as cliten
+import litendb.lib as cliten
 
 class Service:
     """

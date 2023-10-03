@@ -1,8 +1,7 @@
 """
 Liten Schema
 """
-import utils
-import .lib as cliten
+import litendb.lib as cliten
 
 import sys
 import codecs

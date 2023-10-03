@@ -15,10 +15,11 @@ from distutils import sysconfig
 
 def get_version() :
     fp = open('litendb/version.py')
-    version = fp.readline().strip()
+    version = fp.readline().strip().split('=')[1].strip().strip('\"')
     fp.close()
     return version
 VERSION = get_version()
+print("version="+VERSION)
 
 import numpy
 
@@ -227,7 +228,6 @@ setup(
   cmdclass={
     'build_ext': cmake_build_ext
   },
-
   classifiers=[
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",

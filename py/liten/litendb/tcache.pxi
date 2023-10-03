@@ -16,8 +16,7 @@ from graphviz import Source
 import sys
 import codecs
 import time
-
-import utils
+from .utils import to_bytes
 
 def q6digraph():
     """
@@ -143,7 +142,7 @@ cdef class TCache:
         return info
 
     def get_table_exc(self, name):
-        table_name = utils.to_bytes(name)
+        table_name = to_bytes(name)
         if table_name in self.nameToTTable:
             ttable = self.nameToTTable[table_name]
             return ttable
@@ -164,7 +163,7 @@ cdef class TCache:
         return info
 
     def get_schema_exc(self, name):
-        schema_name = utils.to_bytes(name)
+        schema_name = to_bytes(name)
         if schema_name in self.nameToTSchema:
             tschema = self.nameToTSchema[schema_name]
             return tschema
@@ -203,7 +202,7 @@ cdef class TCache:
         if ttype != self.DimensionTable and ttype != self.FactTable:
             raise TypeError("Type ttype must be Dimension or Fact")
         tc_ttype = <TableType>ttype
-        sp_tschema_result = self.tcache.AddSchema(utils.to_bytes(name), ttype, sp_pa_schema)
+        sp_tschema_result = self.tcache.AddSchema(to_bytes(name), ttype, sp_pa_schema)
         if (not sp_tschema_result.ok()):
             raise TypeError(f"Failed to add schema {name}. {sp_tschema_result.status().message()}")
 
@@ -245,14 +244,14 @@ cdef class TCache:
         return True
 
     def if_valid_schema(self, name):
-        schema_name = utils.to_bytes(name)
+        schema_name = to_bytes(name)
         if schema_name in self.nameToTSchema:
             tschema = self.nameToTSchema[schema_name]
             return True
         return False
 
     def get_schema(self, name):
-        schema_name = utils.to_bytes(name)
+        schema_name = to_bytes(name)
         if schema_name in self.nameToTSchema:
             tschema = self.nameToTSchema[schema_name]
             return tschema
@@ -267,7 +266,7 @@ cdef class TCache:
         sp_tschema = p_ttable.p_ttable.GetSchema()
         p_tschema = sp_tschema.get()
 
-        schema_name = utils.to_bytes(p_tschema.GetName())
+        schema_name = to_bytes(p_tschema.GetName())
         if schema_name in self.nameToTSchema:
             print(f"Found already existing schema {schema_name} in cache.")            
             return schema_name
@@ -294,7 +293,7 @@ cdef class TCache:
             raise ValueError(f"Table type must be Dimension or Fact")
         
         tc_ttype = <TableType>ttype
-        sp_ttable_result = self.tcache.AddTable(utils.to_bytes(name), tc_ttype, utils.to_bytes(schema_name))
+        sp_ttable_result = self.tcache.AddTable(to_bytes(name), tc_ttype, to_bytes(schema_name))
         if (not sp_ttable_result.ok()):
             raise ValueError(f"Failed to add table {name} {sp_ttable_result.status().message()}")
         
@@ -318,7 +317,7 @@ cdef class TCache:
         return name
 
     def if_valid_table(self, name):
-        table_name = utils.to_bytes(name)
+        table_name = to_bytes(name)
         if table_name in self.nameToTTable:
             return True
         return False
@@ -449,7 +448,7 @@ ORDER BY
         Returns:
           arrow table with the given slice, None if table not found
         """
-        sp_table = self.tcache.Slice(utils.to_bytes(table_name), offset, length)
+        sp_table = self.tcache.Slice(to_bytes(table_name), offset, length)
         if (NULL == sp_table.get()):
             print ("Failed to get table=", table_name)
             return None

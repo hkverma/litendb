@@ -16,9 +16,6 @@ from graphviz import Source
 import sys
 import codecs
 
-import utils
-import lib as cliten
-
 # Schema
 include "tschema.pxi"
 
