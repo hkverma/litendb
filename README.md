@@ -77,7 +77,12 @@ build/debug/bin/cache_test ../../tpch-kit/sf1g
 
 ### Build Liten python wheel
 
-Run setup.py to build from py/liten directory.
+There is a build.sh script in py/liten to build the wheels. Do the following.
+
+```
+./build.sh -b
+```
+You can also run setup.py to build from py/liten directory.
        
 ```console
 python setup.py build
@@ -91,11 +96,12 @@ Create a wheel (zip file with all the install libs, files etc.) do the following
 python3 setup.py bdist_wheel
 ```
 
-This wheel can be testeted locally by using pip install. Uninstall liten first if installed earlier.
+This wheel can be testted locally by using pip install. Uninstall liten first if installed earlier.
 ```console
-pip uninstall liten
+pip uninstall litendb
+```
 ```console
-pip install dist/liten-0.0.1-cp38-cp38-linux_x86_64.whl
+pip install dist/litendb-0.0.1-cp38-cp38-linux_x86_64.whl
 ```
 
 You can check cmake command separately. Not needed but useful if cmake canges are made.
@@ -103,8 +109,44 @@ You can check cmake command separately. Not needed but useful if cmake canges ar
 cmake -DPYTHON_EXECUTABLE=/home/hkverma/miniconda3/envs/liten/bin/python -DPython3_EXECUTABLE=/home/hkverma/miniconda3/envs/liten/bin/python  -DCMAKE_BUILD_TYPE=debug /mnt/c/Users/hkver/Documents/dbai/dbaistuff/py/liten
 cmake --build . --config _liten
 ```
+#### Upload to pip website
+It is not needed for local runs. However, once uploaded anyone can use it. You can use the build.sh script to upload the wheels.
+```
+#To repair
+./build.sh -r
+#To upload to testpypi
+./build.sh -t
+#To upload to pypi
+./build.sh -u
+```
+You may need to repair the wheel to manylinux distro. Use the following commands
+```
+auditwheel repair litendb-0.0.11-cp310-cp310-linux_x86_64.whl -w . --plat manylinux_2_35_x86_64
+```
+Upload it for pip install commands from testpy repository.
+```console
+python3 -m twine upload --repository dist/*
+```
+This package can be installed using conda like.
+```console
+python3 -m pip install --index-url https://test.pypi.org/simple/ --no-deps liten-pkg-liten
+```
 
-### Docler and Kubernetes
+It can also be uploaded to main pip.
+```
+twine upload dist/*
+```
+Now the package can be installed directly like.
+```
+#From testpy
+pip install -i https://test.pypi.org/simple/ litendb
+#From pypi
+pip install litendb
+```
+
+## TO BE CLEANED
+
+### Docker and Kubernetes
 ./buildvm.sh script should already install docker and K8s components.
 
 Docker can be installed following these instructions
@@ -223,8 +265,6 @@ conda env export > environment.yml
 ```
 
 
-## TO BE CLEANED
-
 Change env to liten everytime for work
 ```console
 conda install -c conda-forge/label/cf202003 shap
@@ -303,16 +343,6 @@ Open LitenIntro.ipynb in notebook and run to check that arrow is ok.
 ```
 cd py/notebooks
 jupyter notebook
-```
-#### Upload to pip website
-It is not needed for local runs. However, once uploaded anyone can use it.
-Upload it for pip install commands from testpy repository.
-```console
-python3 -m twine upload --repository dist/*
-```
-This package can be installed using conda like.
-```console
-python3 -m pip install --index-url https://test.pypi.org/simple/ --no-deps liten-pkg-liten
 ```
 
 ### Submodule packages

@@ -8,11 +8,18 @@ import shutil
 import sys
 from pathlib import Path
 
-
 from Cython.Distutils import build_ext as _build_ext
 import Cython
 from setuptools import setup, Extension, Distribution
 from distutils import sysconfig
+
+def get_version() :
+    fp = open('litendb/version.py')
+    version = fp.readline().strip().split('=')[1].strip().strip('\"')
+    fp.close()
+    return version
+VERSION = get_version()
+print("version="+VERSION)
 
 import numpy
 
@@ -93,7 +100,7 @@ class cmake_build_ext(_build_ext):
     liten_lib = pjoin(liten_root_dir,'cpp','build', self.build_type.lower(), 'bin','libliten.so')
     if not liten_lib:
       raise Exception("Could not find " + liten_lib)
-    shutil.copyfile(liten_lib, pjoin(build_prefix, build_lib, 'liten','libliten.so'))
+    shutil.copyfile(liten_lib, pjoin(build_prefix, build_lib, 'litendb','libliten.so'))
                     
   def _run_cmake(self):
 
@@ -157,7 +164,7 @@ class cmake_build_ext(_build_ext):
 
       # Move the libraries to the place expected by the Python build
       try:
-        os.makedirs(pjoin(build_lib, 'liten'))
+        os.makedirs(pjoin(build_lib, 'litendb'))
       except OSError:
         pass
 
@@ -177,7 +184,7 @@ class cmake_build_ext(_build_ext):
                              os.path.abspath(built_path))
 
         # The destination path to move the built C extension to
-        ext_path = pjoin(build_lib, 'liten', self.get_ext_built(name))
+        ext_path = pjoin(build_lib, 'litendb', self.get_ext_built(name))
         if os.path.exists(ext_path):
           os.remove(ext_path)
         self.mkpath(os.path.dirname(ext_path))
@@ -194,8 +201,8 @@ with open("README.md", "r") as fh:
   long_description = fh.read()
 
 setup(
-  name='liten',
-  version='0.0.9',  # should be sam as lib.pyx::_version
+  name='litendb',
+  version=VERSION,
   author='HK Verma',
   author_email='hkverma@gmail.com',
   description='Big Data Analytics Toolset',
@@ -203,20 +210,24 @@ setup(
   long_description_content_type='text/markdown',
   url='https://github.com/liten/',
   # pkg data
-  packages=['liten'],
+  packages=['litendb'],
+  package_dir={'litendb': 'litendb'},
   zip_safe=False,
-  package_data={'liten': ['*.pxd','*.pyx','includes/*.pxd']},
+  package_data={'litendb': ['*.pxd','*.pyx','includes/*.pxd']},
   include_package_data=True,
-  distclass=BinaryDistribution,
+#  distclass=BinaryDistribution,
   # Dummy extenstion to trigger build_ext
   ext_modules=[Extension('__dummy__', sources=[])],
   # This includes both build and install requirements. Setuptools' setup_requires
   # option does not actually install things, so isn't actually helpful...
-  install_requires = ['cython'],
+  install_requires = ['cython==3.0.2',
+                      'pyarrow==13.0.0',
+                      'numpy',
+                      'graphviz',
+                      'tbb-devel'],
   cmdclass={
     'build_ext': cmake_build_ext
   },
-
   classifiers=[
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",

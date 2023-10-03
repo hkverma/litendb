@@ -136,6 +136,10 @@ pip install tbb-devel
 #pip install pyspark=3.2.4
 #pip install seaborn
 
+#install auditwheel to repair wheels
+pip install auditwheel
+sudo apt install -y patchelf
+
 #Install arrow dev For now, build it in opensources
 #sudo apt update
 #sudo apt install -y -V ca-certificates lsb-release wget

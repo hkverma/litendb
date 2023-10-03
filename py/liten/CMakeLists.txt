@@ -1,6 +1,6 @@
 # Top level CMake file
 cmake_minimum_required(VERSION 3.22)
-project(liten VERSION "${LITEN_BASE_VERSION}")
+project(litendb VERSION "${LITEN_BASE_VERSION}")
 
 # Running from a Python sdist tarball
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "$ENV{LITEN_ROOT_DIR}/cpp/cmake_modules")
@@ -31,7 +31,7 @@ include_directories(${LITEN_ROOT_DIR}/py/liten/liten)
 include_directories(${NUMPY_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS})
 set(LINK_LIBS liten)
 
-set(module_SRC liten/${module}.pyx)
+set(module_SRC litendb/${module}.pyx)
 set_source_files_properties(${module_SRC} PROPERTIES CYTHON_IS_CXX 1)
 cython_add_module(${module_name} ${module_name}_pyx ${module_name}_output ${module_SRC})
 target_link_libraries(${module_name} PRIVATE ${LINK_LIBS})
