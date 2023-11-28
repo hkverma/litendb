@@ -99,30 +99,6 @@ cdef class TCache:
         self.sp_tcache = CTCache.GetInstance()
         self.tcache = self.sp_tcache.get()
 
-    @property
-    def FactTable(self):
-        return 1
-
-    @property
-    def DimensionTable(self):
-        return 0
-    
-    @property
-    def DimensionField(self):
-        return 0
-
-    @property
-    def MetricField(self):
-        return 1
-
-    @property
-    def FeatureField(self):
-        return 2
-
-    @property
-    def EmbeddingField(self):
-        return 3
-
     def info(self):
         cdef:
            c_string cache_info

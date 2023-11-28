@@ -1,56 +1,70 @@
 """
-Liten Cache
+Flask routes for litenDB API
+To start the Flask server do the following -
+flask --app=litendbapp.py run
+See the docstring below for the api routes. These Restful calls can be made from the browser or from a client.
 """
-from .schema import Schema
-from .table import Table
-
-import pyarrow as pa
-from pyarrow import csv
 
 import sys
-import codecs
+import json
+import litendb as tendb
+import os
 
-import litendb.lib as cliten
+from flask import Flask
+from flask import request
 
-class Cache:
+app = Flask(__name__)
+service = None
+tcache = None
+
+
+@app.route("/v1/status")
+def status():
     """
-    Liten Cache Class
+    Send a current status for litendb service
+    Example:
+    http://localhost:5560/status
     """
-    tcache = cliten.TCache()
-    
-    def __init__(self):
-        """
-        Create and initialize Liten Cache
-        """
-        pass
+    status = ""
+    if not service:
+        return f"Service did not start", 300
+    if not cache:
+        return f"Liten Cache did not start", 300
+    return f"OK", 200
 
-    @property
-    def version(self):
-        return Cache.tcache.version
-    
+@app.route("/v1/version")
+def version():
+    """
+    Send the version for litendb service
+    Example:
+    http://localhost:5560/version
+    """
+    return cache.version, 200
+
+
     @property
     def FactTable(self):
-        return 1
+        return Cache.tcache.FactTable
 
     @property
     def DimensionTable(self):
-        return 0
+        return Cache.tcache.DimensionTable
     
     @property
     def DimensionField(self):
-        return 0
+        return Cache.tcache.DimensionField
 
     @property
     def MetricField(self):
-        return 1
+        return Cache.tcache.MetricField
 
     @property
     def FeatureField(self):
-        return 2
+        return Cache.tcache.FeatureField
 
     @property
     def EmbeddingField(self):
-        return 3
+        return Cache.tcache.EmbeddingField
 
     def info(self):
         """
@@ -293,3 +307,92 @@ class Cache:
         pa_table = pa.csv.read_csv(input_file=input_file, parse_options=parse_options)
         ttable = Cache.tcache.add_table(table_name, pa_table, ttype, schema_name)
         return table_name
+
+## TBD
+
+@app.route("/v1/tpchquery6")
+def append_user_message(session_name, prompt):
+    """
+    get a session with the given session_name
+    If creating use the config file_name
+    """
+    session = None
+    try:
+        session = tenai.Session.get(session_name)
+    except Exception as exc:
+        error_message = f"Failed to get session {session_name}. Exception={exc}"
+        return error_message, 406
+    if not session:
+        return f"Failed to get session {session_name}", 406
+    try:
+        session.context.user(prompt)
+    except Exception as exc:
+        error_message = f"Failed to append user prompt {prompt}. Exception={exc}"
+        return error_message, 500
+    return "Added user prompt successfully", 200
+
+
+@app.route("/ask/<session_name>/<prompt>")
+def ask_liten(session_name, prompt):
+    """
+    Ask to complete prompt for session_name
+    Example:
+    http://127.0.0.1:5000/ask/test/%22What%20are%20status%20code%20errors%22
+    """
+    session = None
+    try:
+        session = tenai.Session.get(session_name)
+    except Exception as exc:
+        error_message = f"Failed to get session {session_name}. Exception={exc}"
+        return error_message, 406
+    if not session:
+        return f"Failed to get session {session_name}", 406
+    chat_response = ""
+    try:
+        chat_response= session._openai.complete_prompt_chat(prompt)
+    except Exception as exc:
+        error_message = f"Failed ask for user prompt {prompt}. Exception={exc}"
+        return error_message, 500
+    return chat_response, 200
+
+@app.route("/send/<session_name>/<prompt>")
+def send_liten(session_name, prompt):
+    """
+    Send to complete prompt for session_name. Master agent identifies the action from the prompt and completes it using the appropriate agent.
+    Example:
+    http://127.0.0.1:5000/send/xxx/%22Generate%20sql%20for%20the%20following.%20Select%20top%20100%20rows.%22
+    """
+    session = None
+    try:
+        session = tenai.Session.get(session_name)
+    except Exception as exc:
+        error_message = f"Failed to get session {session_name}. Exception={exc}"
+        return error_message, 406
+    if not session:
+        return f"Failed to get session {session_name}", 406    
+    resp = session.get_response_for_send(prompt)
+    if resp.derr:
+        return f"Failed to send user prompt with error {resp.derr}", 406
+    resp_str = ""
+    if resp.dout:
+        resp_str = resp.dout + "\n"
+    resp_str = resp_str + resp.d
+    return resp_str, 200
+
+if __name__ == '__main__':
+    HOST = os.environ.get('LITEN_SERVER_HOST','localhost')
+    PORT = 5560
+    try:
+        PORT = int(os.environ.get('LITENDB_SERVER_PORT','5560'))
+    except ValueError:
+        PORT = 5560
+    try:
+        service = tendb.Service()
+        service.start()
+        cache = tendb.Cache()
+        app.run(HOST, PORT)
+    except Exception:
+        service = None
+        cache = None
+    if service:
+        service.stop()

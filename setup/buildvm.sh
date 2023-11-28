@@ -120,8 +120,11 @@ sudo install minikube-linux-amd64 /usr/local/bin/minikube
 # npm install -g typescript
 # npm install -g ts-node
 
-# install jdk
+# install jdk and maven
 sudo apt install -y openjdk-17-jdk openjdk-17-jre
+sudo apt install -y maven
+curl -fL https://github.com/coursier/coursier/releases/latest/download/cs-x86_64-pc-linux.gz | gzip -d > cs && chmod +x cs && ./cs install scala:2.12.15 && ./cs install scalac:2.12.15
+echo "export PATH=${HOME}.local/share/coursier/bin:\$PATH" >> $HOME/.bashrc
 # install python - keep default python (3.10) for Ubuntu22
 sudo apt install -y python3-pip
 alias python=python3
