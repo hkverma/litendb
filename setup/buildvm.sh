@@ -4,8 +4,8 @@
 sudo apt-get -y install gnome-terminal
 
 # Add the ununtu toolchain the repo
-sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test 
-sudo apt-get -y update 
+sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+sudo apt-get -y update
 sudo apt-get -y dist-upgrade
 #
 # Install c++ and gdb
@@ -51,7 +51,7 @@ sudo apt-get -y install \
     libre2-dev \
     libgoogle-perftools-dev \
     nlohmann-json3-dev
-    
+
 #Install docker
 # https://docs.docker.com/engine/install/ubuntu/
 #Install cmake
@@ -113,12 +113,7 @@ sudo apt-get install -y kubectl
 curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
 sudo install minikube-linux-amd64 /usr/local/bin/minikube
 
-#Install node.js
-# curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
-# npm install --lts     
-# npm install node
-# npm install -g typescript
-# npm install -g ts-node
+
 
 # install jdk and maven
 sudo apt install -y openjdk-17-jdk openjdk-17-jre
@@ -131,34 +126,45 @@ alias python=python3
 pip install numpy
 pip install cython==3.0.2
 # Ensure that this changes if arrow version is changed in opensource submodule
-pip install pyarrow==13.0.0
+pip install pyarrow==18.1.0
 pip install pandas
 pip install jupyterlab
 pip install graphviz
 pip install tbb-devel
-#pip install pyspark=3.2.4
+pip install pyspark=3.5.3
 #pip install seaborn
 
 #install auditwheel to repair wheels
 pip install auditwheel
 sudo apt install -y patchelf
 
-#Install arrow dev For now, build it in opensources
-#sudo apt update
-#sudo apt install -y -V ca-certificates lsb-release wget
-#wget https://apache.jfrog.io/artifactory/arrow/$(lsb_release --id --short | tr 'A-Z' 'a-z')/apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
-#sudo apt install -y -V ./apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
-#sudo apt update
-#sudo apt install -y -V libarrow-dev # For C++
-#sudo apt install -y -V libarrow-glib-dev # For GLib (C)
-#sudo apt install -y -V libarrow-dataset-dev # For Apache Arrow Dataset C++
-#sudo apt install -y -V libarrow-dataset-glib-dev # For Apache Arrow Dataset GLib (C)
-#sudo apt install -y -V libarrow-acero-dev # For Apache Arrow Acero
-#sudo apt install -y -V libarrow-flight-dev # For Apache Arrow Flight C++
-#sudo apt install -y -V libarrow-flight-glib-dev # For Apache Arrow Flight GLib (C)
-#sudo apt install -y -V libarrow-flight-sql-dev # For Apache Arrow Flight SQL C++
-#sudo apt install -y -V libarrow-flight-sql-glib-dev # For Apache Arrow Flight SQL GLib (C)
-##sudo apt install -y -V libgandiva-dev  For Gandiva C++
-##sudo apt install -y -V libgandiva-glib-dev  For Gandiva GLib (C)
-#sudo apt install -y -V libparquet-dev # For Apache Parquet C++
-#sudo apt install -y -V libparquet-glib-dev # For Apache Parquet GLib (C)
+: '
+Install node.js if needed
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
+npm install --lts
+npm install node
+npm install -g typescript
+npm install -g ts-node
+'
+
+: '
+Install arrow dev libraries if needed
+sudo apt update
+sudo apt install -y -V ca-certificates lsb-release wget
+wget https://apache.jfrog.io/artifactory/arrow/$(lsb_release --id --short | tr 'A-Z' 'a-z')/apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
+sudo apt install -y -V ./apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
+sudo apt update
+sudo apt install -y -V libarrow-dev # For C++
+sudo apt install -y -V libarrow-glib-dev # For GLib (C)
+sudo apt install -y -V libarrow-dataset-dev # For Apache Arrow Dataset C++
+sudo apt install -y -V libarrow-dataset-glib-dev # For Apache Arrow Dataset GLib (C)
+sudo apt install -y -V libarrow-acero-dev # For Apache Arrow Acero
+sudo apt install -y -V libarrow-flight-dev # For Apache Arrow Flight C++
+sudo apt install -y -V libarrow-flight-glib-dev # For Apache Arrow Flight GLib (C)
+sudo apt install -y -V libarrow-flight-sql-dev # For Apache Arrow Flight SQL C++
+sudo apt install -y -V libarrow-flight-sql-glib-dev # For Apache Arrow Flight SQL GLib (C)
+sudo apt install -y -V libgandiva-dev  # For Gandiva C++
+sudo apt install -y -V libgandiva-glib-dev  # For Gandiva GLib (C)
+sudo apt install -y -V libparquet-dev # For Apache Parquet C++
+sudo apt install -y -V libparquet-glib-dev # For Apache Parquet GLib (C)
+'

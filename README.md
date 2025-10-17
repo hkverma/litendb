@@ -13,7 +13,7 @@ Following sections describe development tools and software needed to build Liten
 
 ### Build Machine setup
 
-We use Ubuntu 22.04 LTS Linux OS for development
+We use Ubuntu 24.01 LTS Linux OS for development
 
 Run setup/buildvm.sh to install relevant build tools and libraries on the VM
 
@@ -25,8 +25,18 @@ sudo ./setup/buildvm.sh
 
 Clone Liten code from github.
 ```console
-git clone https://<user-name>@bitbucket.org/hkv/dbaistuff.git
+https://github.com/hkverma/tendb.git
 ```
+Set LITEN_ROOT_DIR to the root of the repository.
+```console
+$ export LITEN_ROOT_DIR=<root-dir>
+```
+Set LITEN_BUILD_TYPE to debug or release for C++ and python wheel builds.
+```console
+$ export LITEN_BUILD_TYPE=<debug|release>
+```
+These are the packages in external_libs that Liten uses. Build debug or release based on LITEN_BUILD_TYPE settings.
+
 Update all the submodules as shown below.
 ```console
 $ cd ${LITEN_ROOT_DIR}/cpp/opensource
@@ -45,16 +55,6 @@ Within cpp these directories exist.
 * Other directories in C++ are liten specific code.
 
 ### Compile C++ code
-
-Set LITEN_ROOT_DIR to the root of the repository.
-```console
-$ export LITEN_ROOT_DIR=<root-dir>
-```
-Set LITEN_BUILD_TYPE to debug or release for C++ and python wheel builds.
-```console
-$ export LITEN_BUILD_TYPE=<debug|release>
-```
-These are the packages in external_libs that Liten uses. Build debug or release based on LITEN_BUILD_TYPE settings.
 
 One can build all the packages using the following command
 ```console

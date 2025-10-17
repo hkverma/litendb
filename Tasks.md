@@ -6,13 +6,13 @@
   K8s setup with Spark
   K8s setup with Liten data layer and Spark
   Liten Data on AWS
-  
+
 ## Programming In Progress
 
   Modify all C++ names to follow google naming conventions
 
   Add the following APIs and execute query6 and query5 using these APIs.
-  
+
   API -
   lineitem = vector<region>  region contains set<nations>
   lineitem = vector<orders>  orders contain set<customer>
@@ -21,35 +21,35 @@
   l2[set<lineitem-ids>] = l1[set<lineitem-ids>].filter(for col == "orders" do pred = "orderdate == 1996")
   l2.aggregate(revenue as ep*(1-dis) by nation)
   map????
-  
+
   Modify Liten to enable these two operations
-  
+
   Change ML training example and add features as table in Liten as well
   Add pcap reading and parsing for network security work with streaming actions
-  
+
   Use RecordBatches instead of Table in C++ code, make type names consistent across python and cpp
 
 ## Pipeline
 
-  Use property instead of get_* functions in python  
+  Use property instead of get_* functions in python
   Enhance make_dtensor to replace only dimensional columns and replace fact table completely
   Clean and rerun all the other demo python codes
 
   Explore Splunk addition
-  
+
   Reading logs from multiple database systems and doing performance analysis (say between Oracle and SQL-Server)
-  
+
 * Clean LitenIntro_1.ipynb for print outputs
 * Design LitenIntro_2.ipynb with multiple remote cache
 
-* Create demo with optimized timing 
+* Create demo with optimized timing
 * Select between all TXXX name or Lxxx names. Make it consistent across python and cpp
 * Write cache into SSD or storage for persistence
 * In TTable.h remove multiple maps_ copies, keep only one. Do an analysis.
 * Use ctest to run tests (from cmake)
 * What to do if same table is read again & again
-* Register Liten library with pytest 
-* 
+* Register Liten library with pytest
+*
 
 * Clean notebooks. Reproduce on Azure web.
 * Draw query plan, print query and result for each query.
