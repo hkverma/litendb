@@ -1,0 +1,11 @@
+# keep default python should be >3.12 Ubuntu24.01
+numpy
+cython==3.1.4
+pyarrow==21.0.0
+pandas
+jupyterlab
+graphviz
+tbb-devel
+pyspark==3.5.3
+seaborn
+auditwheel

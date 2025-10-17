@@ -11,16 +11,6 @@ Following sections describe development tools and software needed to build Liten
 * g++-11, gcc-11 compiler
 * Minimum cmake version 3.22
 
-### Build Machine setup
-
-We use Ubuntu 24.01 LTS Linux OS for development
-
-Run setup/buildvm.sh to install relevant build tools and libraries on the VM
-
-```
-sudo ./setup/buildvm.sh
-```
-
 ### Git repo and code
 
 Clone Liten code from github.
@@ -53,6 +43,29 @@ Within cpp these directories exist.
 
 * opensource - All external C++ libs. These include arrow, fizz, folly and wangle. Various other libraries are installed using apt-get install while building the VM.
 * Other directories in C++ are liten specific code.
+
+### Build Machine setup
+
+We use Ubuntu 24.01 LTS Linux OS for development
+
+First you must create a venv in python to start working.
+```bash
+python -m venv tendb
+source tendb/bin/activate
+```
+Update and get the required python libs.
+```
+pip install -r ./setup/requirements.txt
+```
+Set LITEN_VENV_DIR it is currently used in CMakefile.
+```
+export LITEN_VENV_DIR=<tendb-venv-dir>
+```
+Run setup/buildvm.sh to install relevant build tools and libraries on the VM
+
+```
+sudo ./setup/buildvm.sh
+```
 
 ### Compile C++ code
 

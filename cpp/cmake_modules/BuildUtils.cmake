@@ -8,9 +8,9 @@ message(STATUS "Building using CMake version: ${CMAKE_VERSION}")
 set(LITEN_VERSION "0.0.1")
 string(REGEX MATCH "^[0-9]+\\.[0-9]+\\.[0-9]+" LITEN_BASE_VERSION "${LITEN_VERSION}")
 #
-# Select C++17
+# Select C++20
 #
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #
 # if no build build type is specified, default to debug builds
@@ -19,10 +19,12 @@ if(NOT DEFINED CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build.")
 endif()
 message( "CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}" )
-message( "LITEN_BIN_DIR = ${LITEN_BIN_DIR}" )
 if(NOT DEFINED LITEN_BIN_DIR)
-  set(LITEN_BIN_DIR $ENV{LITEN_ROOT_DIR}/cpp/build/bin CACHE STRING "Specify the build dir.")
+  set(LITEN_BIN_DIR $ENV(LITEN_ROOT_DIR)/cpp/build/bin CACHE STRING "Specify the build dir.")
 endif()
+message( "LITEN_BIN_DIR = ${LITEN_BIN_DIR}" )
+set(LITEN_VENV_DIR $ENV{LITEN_VENV_DIR})
+message( "LITEN_VENV_DIR=${LITEN_VENV_DIR}" )
 
 #
 # Set global compile options
@@ -48,8 +50,6 @@ set(CACHE_TEST_SRC $ENV{LITEN_ROOT_DIR}/cpp/cache_test)
 # Global include and link directories
 # TODO expand include directories
 #
-include_directories(/home/hkverma/.local/include)
-include_directories(/usr/include/python3.6 /home/azureuser/miniconda3/envs/liten/lib/python3.10/site-packages/numpy/core/include/numpy/)
-link_directories(/home/hkverma/.local/lib)
-#link_directories(/opt/intel/oneapi/tbb/latest/lib/intel64/gcc4.8/)
+include_directories(${LITEN_VENV_DIR}/include)
+link_directories(${LITEN_VENV_DIR}/lib)
 
