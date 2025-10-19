@@ -1,7 +1,0 @@
-<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node2" href="$classliten_1_1TColumn.html" title="liten::TColumn" alt="" coords="222,5,329,32"/>
-<area shape="rect" id="node3" href="$classliten_1_1TSchema.html" title="Wrap arrow schema with fact, dimension and join columns. " alt="" coords="220,56,331,83"/>
-<area shape="rect" id="node5" href="$classliten_1_1TTable.html" title="liten::TTable" alt="" coords="228,111,323,137"/>
-<area shape="rect" id="node4" href="$structliten_1_1TSchema_1_1MakeSharedEnabler.html" title="liten::TSchema::MakeShared\lEnabler" alt="" coords="379,45,569,86"/>
-<area shape="rect" id="node6" href="$structliten_1_1TTable_1_1MakeSharedEnabler.html" title="liten::TTable::MakeShared\lEnabler" alt="" coords="387,110,561,151"/>
-</map>
