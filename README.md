@@ -69,23 +69,22 @@ sudo ./setup/buildvm.sh
 
 ### Compile C++ code
 
-One can build all the packages using the following command
-```console
- $ cd ${LITEN_ROOT_DIR}/cpp/opensource
- $ sudo ./buildall.sh
-```
-See below for details on how to build various submodules.
-
 Build the Liten code.
 ```console
 $ cd ${LITEN_ROOT_DIR}/cpp
 $ ./buildall.sh
 ```
 
+One can build all the opensource packages using the following command. It is not needed unless one wants to have a local copy for debug.
+```console
+ $ cd ${LITEN_ROOT_DIR}/cpp/opensource
+ $ sudo ./buildall.sh
+```
+
 You can run the following test and check the log file as well. By default, log files are in /tmp/Liten.INFO The dataset should have all the Tpch data files.
 
 ```
-build/debug/bin/cache_test ../../tpch-kit/sf1g
+build/debug/bin/cache_test ../../data/tpch/sfdot001g
 ```
 
 ### Build Liten python wheel
@@ -98,7 +97,7 @@ There is a build.sh script in py/liten to build the wheels. Do the following.
 You can also run setup.py to build from py/liten directory.
        
 ```console
-python setup.py build
+python3 setup.py build
 ```
 To check for a dist do the following
 ```console
