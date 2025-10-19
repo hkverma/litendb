@@ -220,11 +220,17 @@ setup(
   ext_modules=[Extension('__dummy__', sources=[])],
   # This includes both build and install requirements. Setuptools' setup_requires
   # option does not actually install things, so isn't actually helpful...
-  install_requires = ['cython==3.0.2',
-                      'pyarrow==13.0.0',
-                      'numpy',
-                      'graphviz',
-                      'tbb-devel'],
+  install_requires = [
+      'numpy',
+      'cython==3.1.4',
+      'pyarrow==21.0.0',
+      'pandas',
+      'jupyterlab',
+      'graphviz',
+      'tbb-devel',
+      'pyspark==3.5.3',
+      'seaborn'
+  ],
   cmdclass={
     'build_ext': cmake_build_ext
   },
@@ -233,5 +239,5 @@ setup(
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
   ],
-  python_requires='>=3.10',
+  python_requires='>=3.12',
 )
