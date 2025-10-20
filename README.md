@@ -44,12 +44,26 @@ This query lists the revenue volume generated through local suppliers.
 | Spark 3.2.0 | 31 sec         |
 | **Liten**   | **0.64 sec**   |
 
+## Development Directions
 
-## Try it out now
+**[Build directions](docs/Build.md)**:  It has directions on how to build and install Liten locally.
 
-TODO: python notebook and how to try it on colab
+## Try It Now
 
-For building 
+### Notebooks Summary
+
+1. **[Liten TPC-H Queries](py/notebooks/LitenTpchQ5Q6.ipynb)**: This notebook demonstrates how to use the Liten library for data processing and querying with TPC-H datasets, including setting up a cache, reading tables, and creating relationships between them. This also explains how it can achieve the query acceleration.
+
+2. **[Liten Basic Sentiment Analysis](py/notebooks/LitenBasicSentimentAnalysis.ipynb)**: This notebook demonstrates how to use the Liten cache to download a dataset, process reviews, and analyze sentiment using the TextBlob library.
+
+3. **[Liten NY Taxi XGBoost](py/notebooks/LitenNYTaxiXGBoost.ipynb)**: This notebook focuses on predicting New York City taxi fares using XGBoost, demonstrating data cleaning, feature engineering, model training, and prediction. It keeps the data in cache.
+
+4. **[Spark TPC-H Queries](py/notebooks/SparkTpchQueries.ipynb)**: This notebook shows how to run TPC-H queries using Spark, including loading datasets, defining schemas, and executing SQL queries to analyze data. This can be used to compare against Liten Runs.
+
+### Demos
+- **[Liten TPC-H Queries Demo](py/notebooks/demos/LitenTpchQ5Q6.ipynb)**
+- **[Liten Basic Sentiment Analysis Demo](py/notebooks/demos/LitenBasicSentimentAnalysis.ipynb)**
+- **[Liten NY Taxi XGBoost Demo](py/notebooks/demos/LitenNYTaxiXGBoost.ipynb)**
 
 ### Summary:
 Liten’s tensor indexing model and distributed engine demonstrate over 100× faster query performance on common analytical workloads compared to Spark 3.2.0.
