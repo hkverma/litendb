@@ -1,6 +1,6 @@
 # README #
 
-## Liten Database Tensor Indexing Overview
+## Liten Database
 
 ### Concept
 The Liten database constructs a tensor-based data structure that uses indices to link dimensional data with corresponding metrics. This architecture transforms traditional tabular relationships into highly efficient index lookups, resulting in dramatically faster query execution.
@@ -20,7 +20,6 @@ Many query operations become direct index lookups rather than complex joins. Mul
 * Further acceleration with GPU and FPGA hardware tensors
 * Open lakehouse storage, enabling interoperability with other analytics tools
 
-Transactional guarantees maintained over the data lake layer
 
 ### Query Performance Examples
 
@@ -44,9 +43,12 @@ This query lists the revenue volume generated through local suppliers.
 | Spark 3.2.0 | 31 sec         |
 | **Liten**   | **0.64 sec**   |
 
+The accelerated results are shown here.
+![Tpch Q1 and Q5 results](docs/tenq1q5charts.png)
+
 ## Development Directions
 
-**[Build directions](docs/Build.md)**:  It has directions on how to build and install Liten locally.
+**[Build directions](docs/Build.md)**:  It has directions on how to build and install Liten locally. Follow this to build litendb locally. pypi litendb has not been updated with the latest code. To try out the notebooks, it should be built locally and installed.
 
 ## Try It Now
 
