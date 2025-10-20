@@ -3,6 +3,7 @@ Liten Cache
 """
 from .schema import Schema
 from .table import Table
+from .version import VERSION
 
 import pyarrow as pa
 from pyarrow import csv
@@ -17,7 +18,7 @@ class Cache:
     Liten Cache Class
     """
     tcache = cliten.TCache()
-    
+
     def __init__(self):
         """
         Create and initialize Liten Cache
@@ -26,8 +27,8 @@ class Cache:
 
     @property
     def version(self):
-        return Cache.tcache.version
-    
+        return VERSION
+
     @property
     def FactTable(self):
         return 1
@@ -35,7 +36,7 @@ class Cache:
     @property
     def DimensionTable(self):
         return 0
-    
+
     @property
     def DimensionField(self):
         return 0
@@ -54,7 +55,7 @@ class Cache:
 
     def info(self):
         """
-        return cache information including compute and storage 
+        return cache information including compute and storage
         Returns
           string containing cache information
         """
@@ -62,7 +63,7 @@ class Cache:
 
     def compute_info(self):
         """
-        return cache information including compute and storage 
+        return cache information including compute and storage
         Returns
           string containing cache information
         """
@@ -70,7 +71,7 @@ class Cache:
 
     def table_info(self):
         """
-        return cache information including compute and storage 
+        return cache information including compute and storage
         Returns
           string containing cache information
         """
@@ -92,12 +93,12 @@ class Cache:
 
     def schema_info(self):
         """
-        return cache information including compute and storage 
+        return cache information including compute and storage
         Returns
           string containing cache information
         """
         return Cache.tcache.schema_info()
-    
+
     def get_schema_info(self, name):
         """
         return schema information
@@ -119,7 +120,7 @@ class Cache:
            schema name or exception if failed to add
         """
         return Cache.tcache.add_schema(name, ttype, pa_schema)
-    
+
     def if_valid_schema(self, name):
         """
         Is a valid schema by name
@@ -145,7 +146,7 @@ class Cache:
         Get pyarrow schema from Liten schema
         """
         return self.tcache.get_schema_pyarrow(name)
-    
+
     def get_schema_type(self, name):
         """
         Returns
@@ -174,7 +175,7 @@ class Cache:
           True if set else False or exceptions
         """
         return Cache.tcache.set_schema_field_type(schema_name, field_name, field_type)
-    
+
     def add_table(self, name, pa_table, ttype, schema_name=""):
         """
         Create arrow table in cache by name
@@ -196,19 +197,19 @@ class Cache:
            True if exists else False
         """
         return Cache.tcache.if_valid_table(name)
-        
+
     def make_tensor_table(self, name):
         """
         Create data-tensor for name table
         Parameters
-           name: Name of table 
+           name: Name of table
         Returns
            true if create successfully else false
         """
         map_result = Cache.tcache.make_maps(name, False)
         ten_result = Cache.tcache.make_tensor(name)
         return map_result or ten_result
-    
+
     def make_tensor(self):
         """
         Create n-dimensional data tensor for all n dimension tables in cache
@@ -218,17 +219,17 @@ class Cache:
         map_result = Cache.tcache.make_maps(False)
         ten_result = Cache.tcache.make_tensor()
         return map_result or ten_result
-    
+
     def make_maps_table(self, name, if_reverse_map):
         """
         Create data-tensor for name table
         Parameters
-           name: Name of table 
+           name: Name of table
         Returns
            true if create successfully else false
         """
         return Cache.tcache.make_maps_table(name, if_reverse_map)
-    
+
     def make_maps(self, if_reverse_map):
         """
         Create n-dimensional data tensor for all n dimension tables in cache
@@ -236,7 +237,7 @@ class Cache:
            true if create successfully else false
         """
         return Cache.tcache.make_maps(if_reverse_map)
-    
+
     def query6(self):
         """
         Run Tpch query 6
@@ -265,7 +266,7 @@ class Cache:
            True if success else False
         """
         return Cache.tcache.join(child_schema_name, child_field_name, parent_schema_name, parent_field_name)
-        
+
     def slice(self, table_name, offset, length):
         """
         Parameters
