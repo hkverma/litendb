@@ -22,14 +22,14 @@ cdef class TSchema:
     """
     Liten Schema Class
     """
-    
+
     def get_pyarrow_schema(self):
         """
         Get pyarrow schema from Liten schema
         """
         pa_schema = pyarrow_wrap_schema(self.sp_pa_schema)
         return pa_schema
-    
+
     def get_name(self):
         """
         Returns
@@ -45,7 +45,7 @@ cdef class TSchema:
         """
         schema_str = self.p_tschema.ToString()
         return to_bytes(schema_str)
-    
+
     def get_type(self):
         """
         Returns
@@ -53,9 +53,9 @@ cdef class TSchema:
         """
         ttype = self.p_tschema.GetType()
         if (ttype == DimensionTable):
-            return self.tcache.DimensionTable
+            return DimensionTable
         else:
-            return self.tcache.FactTable
+            return FactTable
 
     def get_field_type(self, field_name):
         """
@@ -72,15 +72,15 @@ cdef class TSchema:
         if (not ftype_result.ok()):
             raise ValueError("Failed to get field by msg={ftype_result.status.message()}")
 
-        ftype = ftype_result.ValueOrDie()        
+        ftype = ftype_result.ValueOrDie()
         if (ftype == DimensionField):
-            return self.tcache.DimensionField
+            return DimensionField
         elif (FeatureField == ftype):
-            return self.tcache.FeatureField
+            return FeatureField
         elif (EmbeddingField == ftype):
-            return self.tcache.EmbeddingField
+            return EmbeddingField
         else:
-            return self.tcache.MetricField
+            return MetricField
 
     def set_field_type(self, field_name, field_type):
         """
@@ -95,18 +95,18 @@ cdef class TSchema:
            FieldType ftype
            CTStatus status
         ftype = MetricField
-        if (field_type == self.tcache.DimensionField):
+        if (field_type == DimensionField):
             ftype = DimensionField
-        elif (field_type == self.tcache.FeatureField):
+        elif (field_type == FeatureField):
             ftype = FeatureField
-        if (field_type == self.tcache.EmbeddingField):
+        if (field_type == EmbeddingField):
             ftype = EmbeddingField
         status = self.p_tschema.SetFieldType(to_bytes(field_name), ftype)
         if ( not status.ok()):
             print(f"Failed to set field with msg={status.message()}")
             return False
         return True
-            
+
     def join(self, field_name, parent_schema, parent_field_name):
         """
         joints child field with parent field which creates data tensor dimensionality

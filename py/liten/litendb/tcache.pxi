@@ -9,6 +9,7 @@ from cython.operator cimport dereference as deref, postincrement
 from pyarrow.includes.libarrow cimport *
 from pyarrow.lib cimport *
 from .includes.ctcache cimport *
+from .includes.ctcache cimport TableType, DimensionTable, FactTable
 
 from graphviz import Digraph
 from graphviz import Source
@@ -91,7 +92,7 @@ cdef class TCache:
     """
     nameToTSchema = { }
     nameToTTable = { }
-    
+
     def __cinit__(self):
         """
         Create and initialize Liten Cache
@@ -123,11 +124,11 @@ cdef class TCache:
             ttable = self.nameToTTable[table_name]
             return ttable
         raise ValueError(f"No existing schema {name} in cache.")
-    
+
     def get_table_pyarrow(self, name):
         ttable = self.get_table_exc(name)
         return ttable.get_pyarrow_table()
-    
+
     def get_table_type(self, name):
         ttable = self.get_table_exc(name)
         return ttable.get_type()
@@ -144,15 +145,15 @@ cdef class TCache:
             tschema = self.nameToTSchema[schema_name]
             return tschema
         raise ValueError(f"No existing schema {name} in cache.")
-    
+
     def get_schema_info(self, name):
         tschema = self.get_schema_exc(name)
-        return tschema.get_info()            
+        return tschema.get_info()
 
     def get_schema_pyarrow(self, name):
         tschema = self.get_schema_exc(name)
         return tschema.get_pyarrow_schema()
-    
+
     def get_schema_type(self, name):
         tschema = self.get_schema_exc(name)
         return tschema.get_type()
@@ -173,9 +174,9 @@ cdef class TCache:
         if name in self.nameToTSchema:
             print(f"Found already existing schema {name} in cache.")
             return name
-        
+
         sp_pa_schema = pyarrow_unwrap_schema(pa_schema)
-        if ttype != self.DimensionTable and ttype != self.FactTable:
+        if ttype != DimensionTable and ttype != FactTable:
             raise TypeError("Type ttype must be Dimension or Fact")
         tc_ttype = <TableType>ttype
         sp_tschema_result = self.tcache.AddSchema(to_bytes(name), ttype, sp_pa_schema)
@@ -192,15 +193,15 @@ cdef class TCache:
         tschema.p_tschema = p_tschema
         tschema.sp_pa_schema = sp_pa_schema
         tschema.tcache = self
-        
+
         self.nameToTSchema[name] = tschema
         return name
-    
+
     def set_schema_field_type(self, schema_name, field_name, field_type):
         tschema = self.get_schema(schema_name)
         if (None == tschema):
             raise ValueError(f"Invalid schema name {schema_name}")
-        
+
         field_names = []
         field_types = []
         if (list == type(field_name)):
@@ -209,14 +210,14 @@ cdef class TCache:
             field_names = [field_name]
         if (list != field_type):
             field_types = [field_type] * len(field_names)
-            
+
         if (len(field_names) != len(field_types)):
             raise ValueError(f"Incorrect size for field names {len(field_names)} and types {len(field_types)}")
 
         for i in range(0, len(field_names)):
             if (not tschema.set_field_type(field_names[i], field_types[i])):
                 raise ValueError(f"Failed to set field name {field_names[i]} to type {field_types[i]} for schema {schema_name}")
-            
+
         return True
 
     def if_valid_schema(self, name):
@@ -232,7 +233,7 @@ cdef class TCache:
             tschema = self.nameToTSchema[schema_name]
             return tschema
         return None
-    
+
     def add_schema_from_ttable(self, ttable):
         cdef:
            shared_ptr[CTSchema] sp_tschema
@@ -244,35 +245,35 @@ cdef class TCache:
 
         schema_name = to_bytes(p_tschema.GetName())
         if schema_name in self.nameToTSchema:
-            print(f"Found already existing schema {schema_name} in cache.")            
+            print(f"Found already existing schema {schema_name} in cache.")
             return schema_name
-        
+
         tschema = TSchema()
         tschema.sp_tschema = sp_tschema
         tschema.p_tschema = p_tschema
         tschema.sp_pa_schema = p_tschema.GetSchema()
         tschema.tcache = self
-        
+
         self.nameToTSchema[schema_name] = tschema
-        return schema_name        
-    
+        return schema_name
+
     def add_table(self, name, pa_table, ttype, schema_name=""):
         cdef:
            shared_ptr[CTable] sp_pa_table
            CTResultCTTable sp_ttable_result
            shared_ptr[CTTable] sp_ttable
            CTTable* p_ttable
-           TableType tc_ttype 
-        
+           TableType tc_ttype
+
         sp_pa_table = pyarrow_unwrap_table(pa_table)
-        if ttype != self.DimensionTable and ttype != self.FactTable:
+        if ttype != DimensionTable and ttype != FactTable:
             raise ValueError(f"Table type must be Dimension or Fact")
-        
+
         tc_ttype = <TableType>ttype
         sp_ttable_result = self.tcache.AddTable(to_bytes(name), tc_ttype, to_bytes(schema_name))
         if (not sp_ttable_result.ok()):
             raise ValueError(f"Failed to add table {name} {sp_ttable_result.status().message()}")
-        
+
         sp_ttable = sp_ttable_result.ValueOrDie()
         p_ttable = sp_ttable.get()
         if (NULL == p_ttable):
@@ -289,7 +290,7 @@ cdef class TCache:
         ttable.tcache = self
 
         self.nameToTTable[name] = ttable
-        self.add_schema_from_ttable(ttable)        
+        self.add_schema_from_ttable(ttable)
         return name
 
     def if_valid_table(self, name):
@@ -297,7 +298,7 @@ cdef class TCache:
         if table_name in self.nameToTTable:
             return True
         return False
-        
+
     def make_maps_table(self, name, bool if_reverse_map):
         result = self.tcache.MakeMaps(name, if_reverse_map)
         if (not result.ok()):
@@ -309,7 +310,7 @@ cdef class TCache:
         if (not result.ok()):
             print ("Failed to create data-tensor")
         return result.ok()
-    
+
     def make_tensor_table(self, name):
         result = self.tcache.MakeTensor(name)
         if (not result.ok()):
@@ -321,17 +322,17 @@ cdef class TCache:
         if (not result.ok()):
             print ("Failed to create data-tensor with msg=", result.message())
         return result.ok()
-    
+
     def query6(self):
         cdef:
             shared_ptr[CTpchDemo] sp_tpch_demo
             CTpchDemo* p_tpch_demo
         sp_tpch_demo = CTpchDemo.GetInstance(self.sp_tcache)
         p_tpch_demo = sp_tpch_demo.get()
-        print (""" TPCH QUERY 6 
-SELECT 
-  SUM(L_EXTENDEDPRICE * L_DISCOUNT) AS REVENUE 
-FROM 
+        print (""" TPCH QUERY 6
+SELECT
+  SUM(L_EXTENDEDPRICE * L_DISCOUNT) AS REVENUE
+FROM
   LINEITEM
 WHERE
   L_SHIPDATE >= DATE '1997-01-01'
@@ -345,7 +346,7 @@ WHERE
         print("Revenue=",result);
         print("")
         print("Time(ms)=",(end-start)/1000000)
-        print("")        
+        print("")
         q6di = Source(q6diggraphcmd, filename="_temp.gv", format="png")
         return q6di
 
@@ -357,7 +358,7 @@ WHERE
             unordered_map[c_string, double]* p_result
         sp_tpch_demo = CTpchDemo.GetInstance(self.sp_tcache)
         p_tpch_demo = sp_tpch_demo.get()
-        print (""" 
+        print ("""
 SELECT
 	N_NAME,
 	SUM(L_EXTENDEDPRICE * (1 - L_DISCOUNT)) AS REVENUE
@@ -387,7 +388,7 @@ ORDER BY
         sp_result = p_tpch_demo.Query5(True)
         end = time.time_ns();
         p_result = sp_result.get()
-        q5result = { }        
+        q5result = { }
         if (NULL == p_result):
             print("Failed to run Query5")
             return q5result
@@ -414,7 +415,7 @@ ORDER BY
             return False
         result = child_schema.join(child_field_name, parent_schema, parent_field_name)
         return result
-        
+
     def slice(self, table_name, offset, length):
         """
         Parameters

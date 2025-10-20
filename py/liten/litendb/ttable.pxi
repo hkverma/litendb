@@ -22,7 +22,7 @@ cdef class TTable:
     """
     Liten Table Class
     """
-    
+
     def get_pyarrow_table(self):
         """
         Returns
@@ -38,7 +38,7 @@ cdef class TTable:
         """
         name = self.p_ttable.GetName()
         return to_bytes(name)
-    
+
     def get_type(self):
         """
         Returns
@@ -46,6 +46,6 @@ cdef class TTable:
         """
         ttype = self.p_ttable.GetType()
         if (ttype == DimensionTable):
-            return self.tcache.DimensionTable
+            return DimensionTable
         else:
-            return self.tcache.FactTable
+            return FactTable
