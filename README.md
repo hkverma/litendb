@@ -68,3 +68,9 @@ This query lists the revenue volume generated through local suppliers.
 ### Summary:
 Liten’s tensor indexing model and distributed engine demonstrate over 100× faster query performance on common analytical workloads compared to Spark 3.2.0.
 
+## License
+This project is licensed under the [Apache License 2.0](py/liten/LICENSE).
+
+© 2025 HK Verma and contributors
+
+
