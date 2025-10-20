@@ -1,9 +1,0 @@
-<map id="cache/TCatalog.h" name="cache/TCatalog.h">
-<area shape="rect" id="node2" href="$cache_8h.html" title="cache/cache.h" alt="" coords="5,80,112,107"/>
-<area shape="rect" id="node3" href="$TBlock_8cpp.html" title="cache/TBlock.cpp" alt="" coords="137,80,263,107"/>
-<area shape="rect" id="node4" href="$TCache_8cpp.html" title="cache/TCache.cpp" alt="" coords="287,80,419,107"/>
-<area shape="rect" id="node5" href="$TCatalog_8cpp.html" title="cache/TCatalog.cpp" alt="" coords="444,80,583,107"/>
-<area shape="rect" id="node6" href="$TColumn_8cpp.html" title="cache/TColumn.cpp" alt="" coords="607,80,745,107"/>
-<area shape="rect" id="node7" href="$TSchema_8cpp.html" title="cache/TSchema.cpp" alt="" coords="770,80,913,107"/>
-<area shape="rect" id="node8" href="$TTable_8cpp.html" title="cache/TTable.cpp" alt="" coords="937,80,1063,107"/>
-</map>
