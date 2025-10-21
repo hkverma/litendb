@@ -1,0 +1,8 @@
+# Force Cython/PyX files to count as Python
+*.pyx linguist-language=Python
+*.pxd linguist-language=Python
+*.pxi linguist-language=Python
+
+# Ignore docs, examples, and vendor code
+py/notebooks/* linguist-detectable=false
+py/notebooks/demos/* linguist-detectable=false
