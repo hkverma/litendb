@@ -18,7 +18,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     -r|--repair)
       pushd dist
-      auditwheel repair litendb-*-linux_x86_64.whl -w . --plat manylinux_2_35_x86_64
+      auditwheel repair litendb-*-linux_x86_64.whl -w . --plat manylinux_2_39_x86_64
       popd
       shift # past argument
       ;;
