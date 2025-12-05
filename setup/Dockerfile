@@ -25,9 +25,12 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Make sure locale is sane
+# Make sure locale is sane and set Liten-specific defaults
 ENV LC_ALL=C.UTF-8 \
-    LANG=C.UTF-8
+    LANG=C.UTF-8 \
+    LITEN_ROOT_DIR=/work \
+    LITEN_BUILD_TYPE=release \
+    LITEN_VENV_DIR=/work/venv
 
 # Pre-install Python build tooling for all available CPython installations
 RUN set -euo pipefail; \
@@ -39,12 +42,16 @@ RUN set -euo pipefail; \
         python3 -m pip install --upgrade pip setuptools wheel build auditwheel; \
     fi
 
+# Create a dedicated virtualenv for Liten and auto-activate it for every shell
+RUN mkdir -p "${LITEN_ROOT_DIR}" && \
+    python3 -m venv "${LITEN_VENV_DIR}" && \
+    "${LITEN_VENV_DIR}/bin/pip" install --upgrade pip setuptools wheel && \
+    echo "source ${LITEN_VENV_DIR}/bin/activate" >> /etc/bash.bashrc
+ENV VIRTUAL_ENV=${LITEN_VENV_DIR} \
+    PATH=${LITEN_VENV_DIR}/bin:$PATH
+
 # Default workdir; your project will be mounted here
 WORKDIR /work
-
-# Optional: add a helper script into the image
-#COPY build_wheels.sh /usr/local/bin/build_wheels.sh
-#RUN chmod +x /usr/local/bin/build_wheels.sh
 
 # Default to bash; you can override with build_wheels.sh in `docker run`
 ENTRYPOINT ["/bin/bash"]
