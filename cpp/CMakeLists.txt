@@ -1,5 +1,5 @@
 # Min 3.22 version
-cmake_minimum_required(VERSION 3.25)
+cmake_minimum_required(VERSION 3.22)
 # common build utils
 include($ENV{LITEN_ROOT_DIR}/cpp/cmake_modules/BuildUtils.cmake)
 #

@@ -42,16 +42,24 @@ RUN set -euo pipefail; \
         python3 -m pip install --upgrade pip setuptools wheel build auditwheel; \
     fi
 
-# Create a dedicated virtualenv for Liten and auto-activate it for every shell
+# Include Python requirements so they can be installed at build time
+COPY requirements.txt /tmp/requirements.txt
+
 RUN mkdir -p "${LITEN_ROOT_DIR}" && \
     python3 -m venv "${LITEN_VENV_DIR}" && \
     "${LITEN_VENV_DIR}/bin/pip" install --upgrade pip setuptools wheel && \
-    echo "source ${LITEN_VENV_DIR}/bin/activate" >> /etc/bash.bashrc
+    "${LITEN_VENV_DIR}/bin/pip" install -r /tmp/requirements.txt && \
+    echo "source ${LITEN_VENV_DIR}/bin/activate" >> /etc/bash.bashrc && \
+    rm /tmp/requirements.txt
 ENV VIRTUAL_ENV=${LITEN_VENV_DIR} \
     PATH=${LITEN_VENV_DIR}/bin:$PATH
 
 # Default workdir; your project will be mounted here
 WORKDIR /work
 
-# Default to bash; you can override with build_wheels.sh in `docker run`
-ENTRYPOINT ["/bin/bash"]
+# Keep the container alive even after interactive shell exit
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Default entrypoint ensures shell access while keeping container running
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

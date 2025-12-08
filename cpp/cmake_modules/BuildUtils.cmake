@@ -47,9 +47,21 @@ set(COMMON_SRC  $ENV{LITEN_ROOT_DIR}/cpp/common)
 set(CACHE_SRC $ENV{LITEN_ROOT_DIR}/cpp/cache)
 set(CACHE_TEST_SRC $ENV{LITEN_ROOT_DIR}/cpp/cache_test)
 #
-# Global include and link directories
-# TODO expand include directories
+# Get Python setups
 #
-include_directories(${LITEN_VENV_DIR}/include)
-link_directories(${LITEN_VENV_DIR}/lib)
+find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
+set(Python_Major_Minor ${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR})
+message(STATUS "Python version: ${Python_Major_Minor}")
+message(STATUS "Python interpreter: ${Python3_EXECUTABLE}")
+#message(STATUS "Python include dir: ${Python3_INCLUDE_DIRS}")
+#message(STATUS "Python library: ${Python3_LIBRARIES}")
+
+#
+# Global include and link directories
+#
+message(STATUS "Python include dir: ${LITEN_VENV_DIR}/include ${LITEN_VENV_DIR}/lib/python${Python_Major_Minor}/site-packages/pyarrow/include" )
+include_directories(${LITEN_VENV_DIR}/include ${LITEN_VENV_DIR}/lib/python${Python_Major_Minor}/site-packages/pyarrow/include )
+message(STATUS "Python link dir: ${LITEN_VENV_DIR}/lib ${LITEN_VENV_DIR}/lib/python${Python_Major_Minor}/site-packages/pyarrow ")
+link_directories(${LITEN_VENV_DIR}/lib ${LITEN_VENV_DIR}/lib/python${Python_Major_Minor}/site-packages/pyarrow )
+
 
