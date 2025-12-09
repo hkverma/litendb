@@ -18,8 +18,8 @@ while [[ $# -gt 0 ]]; do
       ;;
     -r|--repair)
       pushd dist
-      # Use manylinux_2_34_x86_64 for ubuntu21
-      auditwheel repair litendb-*-linux_x86_64.whl -w . --plat manylinux_2_39_x86_64
+      # Use manylinux_2_39_x86_64 for ubuntu24
+      auditwheel repair litendb-*-linux_x86_64.whl -w . --plat manylinux_2_34_x86_64
       popd
       shift # past argument
       ;;
