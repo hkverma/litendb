@@ -15,15 +15,24 @@ RUN apt-get update && \
         curl \
         git \
         wget \
-        python3 \
-        python3-pip \
-        python3-venv \
+        build-essential \
+        software-properties-common \
         ninja-build && \
     chmod +x /tmp/buildvm.sh && \
     /tmp/buildvm.sh && \
     rm -f /tmp/buildvm.sh && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
+# Add deadsnakes PPA for Python 3.12
+RUN add-apt-repository ppa:deadsnakes/ppa -y && \
+    apt-get update && apt-get install -y --no-install-recommends \
+    python3.12 python3.12-dev python3.12-venv \
+    && rm -rf /var/lib/apt/lists/*
+
+# Make python3/python point to 3.12
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1 && \
+    update-alternatives --install /usr/bin/python python /usr/bin/python3.12 1
 
 # Make sure locale is sane and set Liten-specific defaults
 ENV LC_ALL=C.UTF-8 \
@@ -32,24 +41,19 @@ ENV LC_ALL=C.UTF-8 \
     LITEN_BUILD_TYPE=release \
     LITEN_VENV_DIR=/work/venv
 
-# Pre-install Python build tooling for all available CPython installations
-RUN set -euo pipefail; \
-    if compgen -G "/opt/python/cp3*-cp3*/bin" > /dev/null; then \
-        for PYBIN in /opt/python/cp3*-cp3*/bin; do \
-            "${PYBIN}/python" -m pip install --upgrade pip setuptools wheel build auditwheel; \
-        done; \
-    else \
-        python3 -m pip install --upgrade pip setuptools wheel build auditwheel; \
-    fi
-
 # Include Python requirements so they can be installed at build time
 COPY requirements.txt /tmp/requirements.txt
 
-RUN mkdir -p "${LITEN_ROOT_DIR}" && \
+RUN mkdir -p "${LITEN_VENV_DIR}" && \
     python3 -m venv "${LITEN_VENV_DIR}" && \
-    "${LITEN_VENV_DIR}/bin/pip" install --upgrade pip setuptools wheel && \
-    "${LITEN_VENV_DIR}/bin/pip" install -r /tmp/requirements.txt && \
+    source ${LITEN_VENV_DIR}/bin/activate && \
+    python3 -m ensurepip --upgrade || \
+       curl -sS https://bootstrap.pypa.io/get-pip.py | python3 && \
+    python3 -m pip install --upgrade pip && \    
+    pip install --upgrade pip setuptools wheel && \
+    pip install -r /tmp/requirements.txt && \
     echo "source ${LITEN_VENV_DIR}/bin/activate" >> /etc/bash.bashrc && \
+    ln -s ${LITEN_VENV_DIR}/lib/python3.12/site-packages/pyarrow/libarrow.so.2100 ${LITEN_VENV_DIR}/lib/python3.12/site-packages/pyarrow/libarrow.so && \
     rm /tmp/requirements.txt
 ENV VIRTUAL_ENV=${LITEN_VENV_DIR} \
     PATH=${LITEN_VENV_DIR}/bin:$PATH

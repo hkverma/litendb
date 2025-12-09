@@ -5,6 +5,20 @@ docker build . -t myubuntu22
 ```
 Get a bash shell. Map root dir to work.
 ```
-docker run -v /home/hkverma/github/litendb:/work -it myubuntu22:latest
+docker run -v /path/to/litendb:/work -it myubuntu22:latest
 ```
-After that follow the build direction from root README
+If venv not activated do the following in docker shell.
+```
+source /work/venv/bin/activate
+```
+After that build C++ code.
+```
+cd /path/to/litendb/cpp
+./buildall.sh
+```
+The python can be built after that.
+```
+cd /path/to/litendb/py/liten
+./build.sh -b
+```
+This will build a wheel in dist directory.

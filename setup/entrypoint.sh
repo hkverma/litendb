@@ -5,7 +5,7 @@ set -euo pipefail
 if [ "$#" -gt 0 ]; then
     "$@"
 else
-    /bin/bash -l
+    /bin/bash
 fi
 
 # Keep container alive even after interactive sessions end
