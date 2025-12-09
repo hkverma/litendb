@@ -1,5 +1,5 @@
-# keep default python should be >3.12 Ubuntu24.01
-numpy
+# keep default python should be >3.12, also numpy=2.0.2 for colab
+numpy==2.0.2
 cython==3.1.4
 pyarrow==21.0.0
 pandas
